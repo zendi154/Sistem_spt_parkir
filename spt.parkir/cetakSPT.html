@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak SPT Parkir</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 22px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .header,
+        .footer {
+            text-align: center;
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .photo-box {
+            width: 3cm;
+            height: 4cm;
+            border: 1px solid #000;
+            display: inline-block;
+            margin-left: 20px;
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            line-height: 4cm;
+        }
+
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .tebusan-area {
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .photo-area {
+            text-align: center;
+        }
+
+        #searchId:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.6);
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        @media print {
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="searchSection" style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+        <label for="searchId" style="font-weight: bold; color: #2c3e50;">Cari SPT Parkir:</label>
+        <input type="text" id="searchId" placeholder="Masukkan Nomor SPT Parkir...."
+            style="padding: 10px; border: 2px solid #3498db; border-radius: 8px; outline: none; transition: 0.3s; flex: 1;">
+        <button onclick="cariSPT()"
+            style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s;">Cari</button>
+    </div>
+
+    <div class="container" id="printArea">
+        <div class="header">
+            <h2>PEMERINTAH KOTA BENGKULU <br> BADAN PENDAPATAN DAERAH</h2>
+            <p>Jl. WR. Supratman Kelurahan Bentiring Permai Kecamatan Muara
+                Bangkahulu<br>Kota Bengkulu, Bengkulu 38119</p>
+        </div>
+        <p>Status Parkir : "<span id="statusParkir"></span>" / ZonaParkir/Nomor|TitikParkir : "<span
+                id="zonaNomor"></span>"</p>
+
+        <div class="content">
+            <h3 style="text-align: center; text-decoration: underline;">SURAT PERINTAH TUGAS</h3>
+            <h4 style="text-align: center;">Nomor : <span id="nomorSPT"></span></strong></h4>
+
+            <p><strong>Dasar:</strong></p>
+            <ol>
+                <li>Peraturan Daerah Kota Bengkulu Nomor : 13 Tahun 2011 tentang Retribusi Tempat Khusus Parkir</li>
+                <li>Peraturan Daerah Kota Bengkulu Nomor : 04 Tahun 2022 Tentang Perubahan Atas Peraturan Daerah
+                    Kota
+                    Bengkulu Nomor : 05 Tahun 2019 Tentang Penyelengara Perparkiran;</li>
+                <li>Peraturan Daerah Kota Bengkulu Nomor : 01 Tahun 2024 tentang Pajak Daerah dan Retibusi Daerah.
+                </li>
+            </ol>
+
+            <h3 style="text-align: center;"><strong>M E N U G A S K A N</strong></h3>
+            <p><strong>Kepada:</strong>
+            <ol>
+                <p>Nama Juru Parkir : <span id="namaJuru"></span><br>
+                    Nomor KTP : <span id="nomorKTP"></span><br>
+                    Tempat/Tanggal Lahir : <span id="tempatLahir"></span> <span id="ttl"></span><br>
+                    Jenis Kelamin : <span id="jenisKelamin"></span><br>
+                    Alamat : <span id="alamat"></span>
+                </p>
+
+                <p style="text-decoration: underline;"><strong>Untuk melaksanakan tugas sebagai "Juru Parkir" di lokasi
+                        ;</strong><br>
+                <p>Lokasi Parkir : <span id="lokasi"></span><br>
+                    Ukuran Panjang : <span id="ukuran"></span> Meter/
+                    Pukul : <span id="jam"></span> WIB<br>
+                    Retribusi Perbulan <span id="retribusi"></span>
+                </p>
+            </ol>
+            <p><strong>Dengan Tugas dan Kewajiban sebagai berikut :</strong></p>
+            <p>1. Juru parkir wajib menggunakan seragam, tanda pengenal, atau
+                perlengkapan lainnya sesuai dengan yang telah ditetapkan.<br>
+                2. Menjaga keamanan, ketertiban, kenyamanan di tempat lokasi
+                parkir.<br>
+                3. Wajib menyerahkan karcis parkir resmi sebagai tanda bukti untuk
+                setiap kali parkir.<br>
+                4. Wajib mengembalikan Bongkol karcis parkir ke Badan Pendapatan
+                Daerah Kota Bengkulu.<br>
+                5. Dilarang mengalihkan tugas dan tanggung jawabnya kepada orang
+                lain.<br>
+                6. Permohonan baru tidak melalui perantara.<br>
+                7. Setiap orang dilarang melaksanakan tugas juru parkir tanpa
+                Surat Perintah Tugas (SPT) dari Kepala BAPENDA.<br>
+                8. Wajib memungut retribusi parkir sesuai Peraturan Daerah Nomor 01 Tahun 2024.<br>
+                9. Dilarang memungut retribusi parkir di luar lokasi yang telah
+                ditentukan.<br>
+                10. Dilarang menyewakan lokasi tersebut kepada para pedagang.<br>
+                11. Wajib mengganti kerugian dan kerusakan kendaraan yang diparkir sesuai ketentuan.<br>
+                12. Wajib menyetorkan retribusi ke kas daerah paling lambat tanggal 5 setiap bulan.<br>
+                13. Jika terdapat tunggakan selama 2 bulan, SPT akan dicabut
+                tanpa pemberitahuan.<br>
+                14. Keterlambatan penyetoran dikenakan denda 2% dari jumlah retribusi terhutang.<br>
+                15. Surat Perintah Tugas ini berlaku dari <span id="berlakuDari"></span> hingga <span
+                    id="berlakuHingga"></span><br>
+                16. SPT dapat dicabut sewaktu-waktu jika diperlukan pemerintah.<br>
+                17. SPT ini menggantikan SPT sebelumnya.
+            </p>
+
+            <div class="footer-section">
+                <div class="tebusan-area">
+                    <p><strong>Tebusan, Yth :</strong></p>
+                    <p>1. Kepala Dinas Perhubungan<br> Kota Bengkulu</p>
+                </div>
+
+                <div class="photo-area">
+                    <p><strong>Tampilan Foto </strong></p>
+                    <img id="gambar" alt=" Pas Foto 3x6" width="100" height="133">
+                </div>
+
+                <div class="signature" style="text-align: center;">
+                    Dikeluarkan di: BENGKULU<br>
+                    Pada Tanggal : <span id="tanggalDibuat"></span><br>
+                    Kepala Badan Pendapatan Daerah <br> Kota Bengkulu
+                    <br><br><br>
+                    <p><strong>Dr. NURLIA DEWI, SH, MH</strong><br>NIP. 19850418 200312 2 002</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="window.print()">Cetak SPT</button><br>
+
+    <script>
+        // Ambil data dari localStorage
+        const data = JSON.parse(localStorage.getItem('sptData')) || [];
+
+        // Fungsi untuk mengisi data ke dalam elemen HTML
+        function isiData(item) {
+            document.getElementById('statusParkir').textContent = item.statusParkir || '';
+            document.getElementById('zonaNomor').textContent = item.zonaNomor || '';
+            document.getElementById('nomorSPT').textContent = item.id || '';
+            document.getElementById('namaJuru').textContent = item.namaJuru || '';
+            document.getElementById('nomorKTP').textContent = item.nomorKTP || '';
+            document.getElementById('tempatLahir').textContent = item.tempatLahir || '';
+            document.getElementById('ttl').textContent = item.tanggalLahir || '';
+            document.getElementById('jenisKelamin').textContent = item.jenisKelamin || '';
+            document.getElementById('alamat').textContent = item.alamat || '';
+            document.getElementById('lokasi').textContent = item.lokasi || '';
+            document.getElementById('ukuran').textContent = item.ukuran || '';
+            document.getElementById('jam').textContent = item.jam || '';
+            document.getElementById('retribusi').textContent = item.retribusi || '';
+
+            if (item.berlaku) {
+                const [dari, hingga] = item.berlaku.split(' - ');
+                document.getElementById('berlakuDari').textContent = dari;
+                document.getElementById('berlakuHingga').textContent = hingga;
+            }
+
+            document.getElementById('tanggalDibuat').textContent = item.tanggalDibuat || '';
+
+            // Menampilkan gambar jika ada
+            if (item.gambar) {
+                document.getElementById('gambar').src = item.gambar;
+            }
+        }
+
+        // Menampilkan data terbaru secara otomatis
+        if (data.length > 0) {
+            isiData(data[data.length - 1]);
+        }
+
+        // Fungsi pencarian berdasarkan ID
+        function cariSPT() {
+            const idInput = document.getElementById('searchId').value.trim();
+            const foundData = data.find(item => item.id === idInput);
+
+            if (foundData) {
+                isiData(foundData);
+            } else {
+                alert('Data SPT dengan Nomor tersebut tidak ditemukan.');
+            }
+        }
+
+        // Input gambar untuk memperbarui data
+        const gambarInput = document.getElementById('gambarInput');
+        gambarInput.addEventListener('change', function () {
+            const file = gambarInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const latestData = data[data.length - 1];
+                    if (latestData) {
+                        latestData.gambar = e.target.result;
+                        localStorage.setItem('sptData', JSON.stringify(data));
+                        document.getElementById('gambar').src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+<!--Table data-->
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Surat Perintah Tugas Parkir</title>
+    <style>
+        /* Gaya modern dan keren untuk Form SPT Parkir */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6, #ffffff);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        button {
+            background: #3498db;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        @media print {
+            .form-area {
+                display: none;
+            }
+        }
+
+        /* Tabel modern dan responsif */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        td img {
+            max-width: 40px;
+            border-radius: 4px;
+        }
+
+        /* Responsif */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            table {
+                font-size: 10px;
+            }
+
+            th,
+            td {
+                padding: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+<script>
+    function generateRandomId() {
+        const randomPart = Math.floor(100000 + Math.random() * 900000);
+        const year = new Date().getFullYear();
+        return `900.1.13.1/Ret.P/B.1/${randomPart}/Bapenda/${year}`;
+    }
+
+    function hitungUmur() {
+        const ttl = document.getElementById('ttl').value;
+        const birthDate = new Date(ttl);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        document.getElementById('umur').value = age + ' tahun';
+    }
+
+    function simpanData() {
+        const gambarInput = document.getElementById('gambar');
+        const gambar = gambarInput.files[0];
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = {
+                id: generateRandomId(),
+                statusParkir: document.getElementById('statusParkir').value,
+                zonaNomor: document.getElementById('zonaNomor').value,
+                nomorKTP: document.getElementById('nomorKTP').value,
+                namaJuru: document.getElementById('namaJuru').value,
+                alamat: document.getElementById('alamat').value,
+                tempatLahir: document.getElementById('tempatLahir').value,
+                tanggalLahir: document.getElementById('ttl').value,
+                umur: document.getElementById('umur').value,
+                jenisKelamin: document.getElementById('jenisKelamin').value,
+                lokasi: document.getElementById('lokasi').value,
+                ukuran: document.getElementById('ukuran').value,
+                jam: document.getElementById('jam').value + ' - ' + document.getElementById('jamHingga').value,
+                retribusi: document.getElementById('retribusi').value,
+                berlaku: document.getElementById('berlakuDari').value + ' - ' + document.getElementById('berlakuHingga').value,
+                tanggalDibuat: new Date().toLocaleDateString('id-ID'),
+                gambar: e.target.result
+            };
+
+            let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+            sptData.push(data);
+            localStorage.setItem('sptData', JSON.stringify(sptData));
+            alert("Data berhasil disimpan!");
+            document.getElementById('sptForm').reset();
+            tampilkanData();
+        };
+
+        if (gambar) {
+            reader.readAsDataURL(gambar);
+        }
+    }
+
+    function editData(index) {
+        let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+        const item = sptData[index];
+
+        document.getElementById('statusParkir').value = item.statusParkir;
+        document.getElementById('zonaNomor').value = item.zonaNomor;
+        document.getElementById('nomorKTP').value = item.nomorKTP;
+        document.getElementById('namaJuru').value = item.namaJuru;
+        document.getElementById('alamat').value = item.alamat;
+        document.getElementById('tempatLahir').value = item.tempatLahir;
+        document.getElementById('ttl').value = item.tanggalLahir;
+        document.getElementById('jenisKelamin').value = item.jenisKelamin;
+        document.getElementById('lokasi').value = item.lokasi;
+        document.getElementById('ukuran').value = item.ukuran;
+
+        const jamSplit = item.jam.split(' - ');
+        document.getElementById('jam').value = jamSplit[0];
+        document.getElementById('jamHingga').value = jamSplit[1];
+
+        const berlakuSplit = item.berlaku.split(' - ');
+        document.getElementById('berlakuDari').value = berlakuSplit[0];
+        document.getElementById('berlakuHingga').value = berlakuSplit[1];
+
+        document.getElementById('retribusi').value = item.retribusi;
+
+        document.getElementById('submitBtn').onclick = function () {
+            updateData(index);
+        };
+    }
+
+    function updateData(index) {
+        const gambarInput = document.getElementById('gambar');
+        const gambar = gambarInput.files[0];
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+
+            sptData[index] = {
+                id: sptData[index].id, // Tetap gunakan ID lama
+                statusParkir: document.getElementById('statusParkir').value,
+                zonaNomor: document.getElementById('zonaNomor').value,
+                nomorKTP: document.getElementById('nomorKTP').value,
+                namaJuru: document.getElementById('namaJuru').value,
+                alamat: document.getElementById('alamat').value,
+                tempatLahir: document.getElementById('tempatLahir').value,
+                tanggalLahir: document.getElementById('ttl').value,
+                umur: document.getElementById('umur').value,
+                jenisKelamin: document.getElementById('jenisKelamin').value,
+                lokasi: document.getElementById('lokasi').value,
+                ukuran: document.getElementById('ukuran').value,
+                jam: document.getElementById('jam').value + ' - ' + document.getElementById('jamHingga').value,
+                retribusi: document.getElementById('retribusi').value,
+                berlaku: document.getElementById('berlakuDari').value + ' - ' + document.getElementById('berlakuHingga').value,
+                tanggalDibuat: sptData[index].tanggalDibuat, // Tetap gunakan tanggal dibuat lama
+                gambar: e.target.result
+            };
+
+            localStorage.setItem('sptData', JSON.stringify(sptData));
+            alert("Data berhasil diperbarui!");
+
+            document.getElementById('sptForm').reset();
+            document.getElementById('submitBtn').onclick = simpanData;
+            tampilkanData();
+        };
+
+        if (gambar) {
+            reader.readAsDataURL(gambar);
+        } else {
+            reader.onload({ target: { result: sptData[index].gambar } });
+        }
+    }
+
+    function tampilkanData() {
+        const data = JSON.parse(localStorage.getItem('sptData')) || [];
+        const tbody = document.querySelector('#dataTable tbody');
+        tbody.innerHTML = '';
+
+        data.forEach((item, index) => {
+            const row = `<tr>
+            <td>${item.id}</td>
+            <td>${item.statusParkir}</td>
+            <td>${item.zonaNomor}</td>
+            <td>${item.namaJuru}</td>
+            <td>${item.alamat}</td>
+            <td>${item.umur}</td>
+            <td>${item.jenisKelamin}</td>
+            <td>${item.lokasi}</td>
+            <td>${item.retribusi}</td>
+            <td>${item.berlaku}</td>
+            <td>${item.tanggalDibuat}</td>
+            <td>
+            </td>
+        </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function hapusData(index) {
+        let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+        sptData.splice(index, 1);
+        localStorage.setItem('sptData', JSON.stringify(sptData));
+        tampilkanData();
+    }
+
+    window.onload = tampilkanData;
+</script>
+</body>
+
+</html>

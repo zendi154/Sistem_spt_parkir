@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Surat Perintah Tugas Parkir</title>
+    <style>
+        /* Gaya modern dan keren untuk Form SPT Parkir */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6, #ffffff);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            background: #3498db;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        @media print {
+            .form-area {
+                display: none;
+            }
+        }
+
+        /* Tabel modern dan responsif */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        td img {
+            max-width: 40px;
+            border-radius: 4px;
+        }
+
+        /* Responsif */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            table {
+                font-size: 10px;
+            }
+
+            th,
+            td {
+                padding: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-area">
+            <h2>Fomulir Surat Perintah Tugas Parkir</h2>
+            <form id="sptForm">
+                <label>Input Status Parkir :</label>
+                <select id="statusParkir" required>
+                    <option value="Baru">Baru</option>
+                    <option value="Perpanjangan">Perpanjangan</option>
+                </select>
+
+                <label>Input Zona/Nomor :</label>
+                <input type="text" id="zonaNomor" placeholder="*Contoh = '06/200'" required>
+
+                <label>Input Nomor KTP :</label>
+                <input type="number" id="nomorKTP" required>
+
+                <label>Input Nama Juru Parkir :</label>
+                <input type="text" id="namaJuru" required>
+
+                <label>Input Alamat Juru Parkir :</label>
+                <input type="text" id="alamat" required>
+
+                <label>Input Tempat Lahir :</label>
+                <input type="text" id="tempatLahir" required>
+
+                <label>Input Tanggal Lahir :</label>
+                <input type="date" id="ttl" required oninput="hitungUmur()">
+
+                <label>Input Umur :</label>
+                <input type="text" id="umur" readonly>
+
+                <label>Input Jenis Kelamin :</label>
+                <select id="jenisKelamin" required>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+
+                <label>Input Lokasi Tugas Parkir :</label>
+                <input type="text" id="lokasi" required>
+
+                <label>Input Ukuran Panjang (m) :</label>
+                <input type="number" id="ukuran" required>
+
+                <label>Input Jam Berlaku Dari :</label>
+                <input type="time" id="jam" required>
+
+                <label>Input Jam Berlaku Hingga :</label>
+                <input type="time" id="jamHingga" required>
+
+                <label>Input Setoran Retribusi perbulan :</label>
+                <input type="text" id="retribusi" placeholder="*Contoh = : 'Rp.700.000.00. (Keterangan Nominal)'"
+                    required>
+
+                <label>Input SPT Berlaku Dari :</label>
+                <input type="date" id="berlakuDari" required>
+
+                <label>Input SPT Berlaku Hingga :</label>
+                <input type="date" id="berlakuHingga" required>
+
+                <label>Input Unggah Foto :</label>
+                <input type="file" id="gambar" accept="image/*" required>
+
+                <button type="button" onclick="simpanData()">Simpan Data</button>
+            </form>
+        </div>
+
+        <h2>Table Data Inputan Sebagai Berikut Seluruh Zona :</h2>
+
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>ID/Nomor SPT Parkir</th>
+                    <th>Status Parkir</th>
+                    <th>Zona/Nomor</th>
+                    <th>Nomor KTP</th>
+                    <th>Nama Juru Parkir</th>
+                    <th>Alamat Juru Parkir</th>
+                    <th>Tempat Lahir</th>
+                    <th>Tanggal Lahir</th>
+                    <th>Umur</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Lokasi Tugas Parkir</th>
+                    <th>Ukuran Panjang (M)</th>
+                    <th>Jam Berlaku</th>
+                    <th>Retribusi (Perbulan)</th>
+                    <th>TMT s/d Selesai</th>
+                    <th>Tanggal Terbit (SPT)</th>
+                    <th>Gambar</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function generateRandomId() {
+            const randomPart = Math.floor(100000 + Math.random() * 900000);
+            const year = new Date().getFullYear();
+            return `900.1.13.1/Ret.P/${randomPart}/Bapenda/${year}`;
+        }
+
+        function hitungUmur() {
+            const ttl = document.getElementById('ttl').value;
+            const birthDate = new Date(ttl);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            document.getElementById('umur').value = age + ' tahun';
+        }
+
+        function simpanData() {
+            const gambarInput = document.getElementById('gambar');
+            const gambar = gambarInput.files[0];
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = {
+                    id: generateRandomId(),
+                    statusParkir: document.getElementById('statusParkir').value,
+                    zonaNomor: document.getElementById('zonaNomor').value,
+                    nomorKTP: document.getElementById('nomorKTP').value,
+                    namaJuru: document.getElementById('namaJuru').value,
+                    alamat: document.getElementById('alamat').value,
+                    tempatLahir: document.getElementById('tempatLahir').value,
+                    tanggalLahir: document.getElementById('ttl').value,
+                    umur: document.getElementById('umur').value,
+                    jenisKelamin: document.getElementById('jenisKelamin').value,
+                    lokasi: document.getElementById('lokasi').value,
+                    ukuran: document.getElementById('ukuran').value,
+                    jam: document.getElementById('jam').value + ' - ' + document.getElementById('jamHingga').value,
+                    retribusi: document.getElementById('retribusi').value,
+                    berlaku: document.getElementById('berlakuDari').value + ' - ' + document.getElementById('berlakuHingga').value,
+                    tanggalDibuat: new Date().toLocaleDateString('id-ID'),
+                    gambar: e.target.result
+                };
+
+                let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+                sptData.push(data);
+                localStorage.setItem('sptData', JSON.stringify(sptData));
+                alert("Data berhasil disimpan!");
+                document.getElementById('sptForm').reset();
+                tampilkanData();
+            };
+
+            if (gambar) {
+                reader.readAsDataURL(gambar);
+            }
+        }
+
+        function editData(index) {
+            let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+            const item = sptData[index];
+
+            document.getElementById('statusParkir').value = item.statusParkir;
+            document.getElementById('zonaNomor').value = item.zonaNomor;
+            document.getElementById('nomorKTP').value = item.nomorKTP;
+            document.getElementById('namaJuru').value = item.namaJuru;
+            document.getElementById('alamat').value = item.alamat;
+            document.getElementById('tempatLahir').value = item.tempatLahir;
+            document.getElementById('ttl').value = item.tanggalLahir;
+            document.getElementById('jenisKelamin').value = item.jenisKelamin;
+            document.getElementById('lokasi').value = item.lokasi;
+            document.getElementById('ukuran').value = item.ukuran;
+
+            const jamSplit = item.jam.split(' - ');
+            document.getElementById('jam').value = jamSplit[0];
+            document.getElementById('jamHingga').value = jamSplit[1];
+
+            const berlakuSplit = item.berlaku.split(' - ');
+            document.getElementById('berlakuDari').value = berlakuSplit[0];
+            document.getElementById('berlakuHingga').value = berlakuSplit[1];
+
+            document.getElementById('retribusi').value = item.retribusi;
+
+            document.getElementById('submitBtn').onclick = function () {
+                updateData(index);
+            };
+        }
+
+        function updateData(index) {
+            const gambarInput = document.getElementById('gambar');
+            const gambar = gambarInput.files[0];
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+
+                sptData[index] = {
+                    id: sptData[index].id, // Tetap gunakan ID lama
+                    statusParkir: document.getElementById('statusParkir').value,
+                    zonaNomor: document.getElementById('zonaNomor').value,
+                    nomorKTP: document.getElementById('nomorKTP').value,
+                    namaJuru: document.getElementById('namaJuru').value,
+                    alamat: document.getElementById('alamat').value,
+                    tempatLahir: document.getElementById('tempatLahir').value,
+                    tanggalLahir: document.getElementById('ttl').value,
+                    umur: document.getElementById('umur').value,
+                    jenisKelamin: document.getElementById('jenisKelamin').value,
+                    lokasi: document.getElementById('lokasi').value,
+                    ukuran: document.getElementById('ukuran').value,
+                    jam: document.getElementById('jam').value + ' - ' + document.getElementById('jamHingga').value,
+                    retribusi: document.getElementById('retribusi').value,
+                    berlaku: document.getElementById('berlakuDari').value + ' - ' + document.getElementById('berlakuHingga').value,
+                    tanggalDibuat: sptData[index].tanggalDibuat, // Tetap gunakan tanggal dibuat lama
+                    gambar: e.target.result
+                };
+
+                localStorage.setItem('sptData', JSON.stringify(sptData));
+                alert("Data berhasil diperbarui!");
+
+                document.getElementById('sptForm').reset();
+                document.getElementById('submitBtn').onclick = simpanData;
+                tampilkanData();
+            };
+
+            if (gambar) {
+                reader.readAsDataURL(gambar);
+            } else {
+                reader.onload({ target: { result: sptData[index].gambar } });
+            }
+        }
+
+        function tampilkanData() {
+            const data = JSON.parse(localStorage.getItem('sptData')) || [];
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = `<tr>
+            <td>${index + 1}</td>
+            <td>${item.id}</td>
+            <td>${item.statusParkir}</td>
+            <td>${item.zonaNomor}</td>
+            <td>${item.nomorKTP}</td>
+            <td>${item.namaJuru}</td>
+            <td>${item.alamat}</td>
+            <td>${item.tempatLahir}</td>
+            <td>${item.tanggalLahir}</td>
+            <td>${item.umur}</td>
+            <td>${item.jenisKelamin}</td>
+            <td>${item.lokasi}</td>
+            <td>${item.ukuran}</td>
+            <td>${item.jam}</td>
+            <td>${item.retribusi}</td>
+            <td>${item.berlaku}</td>
+            <td>${item.tanggalDibuat}</td>
+            <td><img src="${item.gambar}" width="50"></td>
+            <td>
+                <button onclick="hapusData(${index})">Hapus</button>
+                <button onclick="editData(${index})">Edit</button>
+            </td>
+        </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function hapusData(index) {
+            let sptData = JSON.parse(localStorage.getItem('sptData')) || [];
+            sptData.splice(index, 1);
+            localStorage.setItem('sptData', JSON.stringify(sptData));
+            tampilkanData();
+        }
+
+        window.onload = tampilkanData;
+    </script>
+</body>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Jukir Manual Bulanan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #007BFF;
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar-menu {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-menu li a:hover {
+            color: #d4e6fb;
+        }
+
+        /* Optional: Responsive for smaller screens */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .navbar-menu li {
+                margin: 5px 0;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #62f265, #133ff0, #f93f8f);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0d47a1;
+            margin-bottom: 30px;
+            background-color: #bbdefb;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            font-size: 13px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        thead th {
+            background-color: #0d47a1;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        thead tr:nth-child(2) th {
+            background-color: #1976d2;
+            font-weight: normal;
+            font-size: 12px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #e3f2fd;
+            /* Lebih lembut dan cerah */
+        }
+
+        tbody tr:hover {
+            background-color: #7fea68;
+            /* Warna biru cerah saat hover */
+            transform: scale(1.01);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        th[colspan="12"],
+        th[colspan="8"],
+        td[colspan="8"],
+        th[colspan="2"],
+        td[colspan="2"] {
+            background-color: rgb(249, 212, 3);
+            /* Biru lebih terang dengan transparansi */
+            color: rgb(39, 38, 38);
+            /* Menjaga teks tetap kontras */
+            font-weight: bold;
+            /* Menambahkan border untuk tepi yang lebih menonjol */
+        }
+
+        tfoot {
+            background-color: #2f2f30;
+            /* Biru gelap dengan sedikit gradasi */
+            color: white;
+            /* Teks footer yang jelas */
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                display: none;
+            }
+
+            tbody td {
+                text-align: right;
+                padding-left: 60%;
+                position: relative;
+            }
+
+            tbody td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-left: 10px;
+                font-weight: bold;
+                text-align: left;
+            }
+        }
+
+        /* Styling umum untuk form */
+        .form-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        /* Tombol print */
+        .no-print {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .no-print:hover {
+            background-color: #0056b3;
+        }
+
+        .no-print i {
+            margin-right: 8px;
+        }
+
+        /* Styling for the search wrapper */
+        .search-wrapper {
+            position: relative;
+            width: 300px;
+            /* Atur lebar sesuai kebutuhan */
+            margin: 20px 0;
+        }
+
+        /* Icon styling */
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #007bff;
+        }
+
+        /* Styling input field */
+        .search-input {
+            width: 100%;
+            padding: 12px 12px 12px 30px;
+            /* Memberikan ruang untuk ikon */
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: padding 0.2s ease, font-size 0.2s ease, transform 0.2s ease;
+            color: #333;
+            /* Pastikan teks input dapat terlihat */
+        }
+
+        /* Shrinking placeholder effect when typing */
+        .search-input:focus {
+            padding-left: 30px;
+            /* Memberikan ruang untuk ikon tetap */
+            font-size: 14px;
+            /* Tetap ukuran font normal saat fokus */
+        }
+
+        .search-input:focus::placeholder {
+            transform: translateY(-20px);
+            font-size: 12px;
+            color: #007bff;
+            /* Warna placeholder saat fokus */
+            transition: transform 0.2s ease, font-size 0.2s ease;
+        }
+
+        /* Styling for placeholder */
+        .search-input::placeholder {
+            color: #888;
+            /* Warna placeholder default */
+            font-size: 14px;
+            /* Ukuran font normal untuk placeholder */
+            transition: transform 0.2s ease, font-size 0.2s ease;
+        }
+
+        /* Placeholder animation */
+        .search-input:focus::placeholder {
+            transform: translateY(-20px);
+            /* Placeholder naik saat fokus */
+            font-size: 12px;
+            /* Ukuran font placeholder saat fokus */
+        }
+
+        /* Responsif untuk perangkat kecil */
+        @media (max-width: 768px) {
+            .form-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-wrapper {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .no-print {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Tata letak horizontal */
+        .form-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            /* Supaya tetap rapi di layar kecil */
+            margin-bottom: 20px;
+        }
+
+        /* Tombol cetak */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #printArea,
+            #printArea * {
+                visibility: visible;
+            }
+
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+            }
+
+            th,
+            td {
+                border: 1px solid black;
+                padding: 4px;
+                text-align: center;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            h2 {
+                font-size: 16px;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">Sistem Retribusi Parkir Tepi Jalan Umum</div>
+            <ul class="navbar-menu">
+                <li><a href="fomulir.html">Beranda</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <form id="jukirForm" class="form-toolbar">
+        <input type="hidden" id="korlap">
+
+        <button class="no-print" onclick="printTable()">
+            <i class="fas fa-print"></i> Print
+        </button>
+
+        <div class="search-wrapper">
+            <i class="search-icon fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-input"
+                placeholder="Cari Data Nama Juru Parkir / Lokasi Parkir" oninput="renderTable()" />
+        </div>
+
+        <h2><i class="fas fa-table"></i>
+            Data Retribusi Parkir Tepi Jalan Umum Kota Bengkulu ZONA 06</h2>
+        <table id="jukirTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Jukir</th>
+                    <th>Lokasi Tugas Parkir</th>
+                    <th>Zona<br>Parkir</th>
+                    <th>No. Titik<br>Parkir</th>
+                    <th>Target/Bulan</th>
+                    <th colspan="12">Status Pembayaran Dalam 12 Bulan</th>
+                    <th>Pesan<br>(System)</th>
+                    <th>Total Setoran</th>
+                </tr>
+                <tr>
+                    <td colspan="6"></td>
+                    <th>Jan</th>
+                    <th>Feb</th>
+                    <th>Mar</th>
+                    <th>Apr</th>
+                    <th>Mei</th>
+                    <th>Jun</th>
+                    <th>Jul</th>
+                    <th>Agu</th>
+                    <th>Sep</th>
+                    <th>Okt</th>
+                    <th>Nov</th>
+                    <th>Des</th>
+                    <td colspan="2"></td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <script src="script.js"></script>
+
+        <script>
+            let dataJukir = JSON.parse(localStorage.getItem('dataJukir')) || [];
+            let editIndex = null;
+
+            function saveToLocalStorage() {
+                localStorage.setItem('dataJukir', JSON.stringify(dataJukir));
+            }
+
+            // Format input setoranDisplay menjadi rupiah saat diketik
+            document.addEventListener('DOMContentLoaded', function () {
+                const setoranInput = document.getElementById('setoranDisplay');
+
+                setoranInput.addEventListener('input', function (e) {
+                    // Ambil hanya angka
+                    let value = this.value.replace(/[^,\d]/g, '');
+                    // Tampilkan dalam format Rp
+                    this.value = formatRupiah(value, 'Rp ');
+                });
+            });
+
+            function formatRupiah(angka, prefix) {
+                const number_string = angka.replace(/[^,\d]/g, '').toString();
+                const split = number_string.split(',');
+                const sisa = split[0].length % 3;
+                let rupiah = split[0].substr(0, sisa);
+                const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                if (ribuan) rupiah += (sisa ? '.' : '') + ribuan.join('.');
+                return prefix + rupiah + (split[1] !== undefined ? ',' + split[1] : '');
+            }
+
+            // Fungsi untuk format nominal menjadi Rupiah
+            function formatRupiah(angka) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return 'Rp ' + rupiah;
+            }
+
+            // Fungsi untuk menangani input di setiap bulan
+            function updateRupiahInput() {
+                var inputs = document.querySelectorAll('.rupiah-input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        var angka = this.value;
+                        this.value = formatRupiah(angka);
+                    });
+                });
+            }
+
+            // Memanggil fungsi updateRupiahInput untuk menangani setiap input
+            updateRupiahInput();
+
+            function parseRupiahToNumber(rupiah) {
+                return parseInt(rupiah.replace(/[^0-9]/g, ''), 10) || 0;
+            }
+
+            function generateKorlapID() {
+                const today = new Date();
+                const dd = String(today.getDate()).padStart(2, '0');
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                const kode = Math.floor(100 + Math.random() * 900);
+                return `P.3.KLP.${dd}${mm}${yyyy}.${kode}`;
+            }
+
+            function hitungKurangBayar(targetPerBulan, setoranBulanan) {
+                return setoranBulanan.map(setor => targetPerBulan - setor);
+            }
+
+            function renderTable() {
+                const tbody = document.querySelector('#jukirTable tbody');
+                tbody.innerHTML = '';  // Clear existing rows
+                let counter = 1;
+                let grandTotalSetoran = 0;
+                let grandTotalPiutang = 0;
+
+                const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+                const filteredData = dataJukir.filter(data =>
+                    data.nama.toLowerCase().includes(keyword) ||
+                    data.lokasi.toLowerCase().includes(keyword) ||
+                    data.zona.toLowerCase().includes(keyword)
+                );
+
+                // Check if no data is found after filtering
+                if (filteredData.length === 0) {
+                    alert('Mohon Maaf Data tidak ditemukan!');
+                }
+
+                filteredData.forEach((data) => {
+                    const indexAsli = dataJukir.indexOf(data); // Index asli di array utama
+
+                    const row1 = tbody.insertRow();
+                    row1.innerHTML = `
+                    <td>${counter}</td>
+                    <td>${data.nama}</td>
+                    <td>${data.lokasi}</td>
+                    <td>${data.zona}</td>
+                    <td>${data.titik}</td>
+                    <td>${data.setoranManual}</td>
+                    `;
+
+                    data.setoran.forEach(setor => {
+                        const cell = row1.insertCell();
+                        cell.textContent = formatRupiah(setor.toString(), 'Rp ');
+                        cell.style.color = (setor === 0) ? 'red' : 'darkgreen';
+                        cell.style.fontWeight = 'medium';
+                    });
+
+                    const targetPerBulan = parseRupiahToNumber(data.setoranManual);
+                    const totalSetoran = data.setoran.reduce((a, b) => a + b, 0);
+                    const kurangBayar = hitungKurangBayar(targetPerBulan, data.setoran);
+                    const totalKurang = kurangBayar.reduce((a, b) => a + b, 0);
+                    const totalTarget = targetPerBulan * data.setoran.length;
+                    const selisih = totalSetoran - totalTarget;
+
+                    const bulanSekarang = new Date().getMonth(); // 0 = Januari
+                    const triwulanSekarang = Math.floor(bulanSekarang / 3) + 1;
+
+                    const namaBulan = [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ];
+
+                    // 🔢 Inisialisasi data triwulan
+                    const triwulanData = {
+                        1: [],
+                        2: [],
+                        3: [],
+                        4: []
+                    };
+
+                    // ✅ Kelompokkan bulan yang belum lunas, tapi hanya sampai triwulan sekarang
+                    for (let i = 0; i < 12; i++) {
+                        const triwulanKe = Math.floor(i / 3) + 1;
+                        if (triwulanKe > triwulanSekarang) continue; // Jangan tampilkan triwulan berikutnya
+
+                        const setor = data.setoran[i] || 0;
+                        if (setor < targetPerBulan) {
+                            triwulanData[triwulanKe].push(namaBulan[i]);
+                        }
+                    }
+
+                    // Hapus triwulan 1 jika sudah lunas semua
+                    if (triwulanData[1].length === 0) {
+                        delete triwulanData[1];
+                    }
+
+                    const triwulanBelumLunas = Object.entries(triwulanData)
+                        .filter(([_, bulan]) => bulan.length > 0)
+                        .map(([tw, bulan]) => `Triwulan.${tw}_📌(${bulan.join(', ')})`);
+
+                    // ✅ Tentukan status
+                    let status = '';
+
+                    // Jika ada override lunas dari data lama, tetap anggap lunas
+                    if (data.statusOverride === 'Lunas') {
+                        status = 'Lunas';
+                    } else {
+                        if (totalSetoran === 0) {
+                            status = 'Piutang 😞';
+                        } else if (totalKurang === 0) {
+                            status = 'Lunas 😁';
+                            data.setoran = data.setoran.map(setor => setor === 0 ? targetPerBulan : setor); // pelunasan otomatis
+                        } else if (triwulanBelumLunas.length > 0) {
+                            status = '⚠️';
+                        } else if (data.setoran[bulanSekarang] < targetPerBulan) {
+                            status = 'Proses (Bulan Berjalan)';
+                        } else {
+                            status = 'Proses Bayar';
+                        }
+                    }
+
+                    // 🖨️ Tampilkan ke keterangan
+                    const keteranganCell = row1.insertCell();
+                    keteranganCell.style.fontSize = '13px';
+
+                    let keteranganText = status;
+
+                    // Tambahkan catatan perubahan target jika ada
+                    if (data.setoranManualSebelumnya && data.setoranManual !== data.setoranManualSebelumnya) {
+                        keteranganText += `\n 🔄 Target berubah dari ${data.setoranManualSebelumnya} Menjadi ${data.setoranManual}`;
+                    }
+
+                    // Tambahkan info bulan belum lunas (selain Triwulan 1 yang sudah dihapus)
+                    if (status === '⚠️' && triwulanBelumLunas.length > 0) {
+                        keteranganText += '\n' + triwulanBelumLunas.join('\n');
+                    }
+
+                    keteranganCell.textContent = keteranganText;
+                    keteranganCell.style.whiteSpace = 'pre-line';
+                    keteranganCell.style.color = {
+                        'Lunas 😁': 'green',
+                        'Proses Bayar': 'orange',
+                        'Piutang 😞': 'red',
+                        '⚠️': '#cc3300',
+                        'Proses (Bulan Berjalan)': '#FF9900'
+                    }[status];
+
+                    if (triwulanBelumLunas.length > 0) {
+                        keteranganCell.title = `*Belum lunas ${triwulanBelumLunas.join(', ')}`;
+                    }
+
+                    row1.insertCell().textContent = formatRupiah(totalSetoran.toString(), 'Rp ');
+
+                    grandTotalSetoran += totalSetoran;
+                    grandTotalPiutang += totalKurang;
+                    counter++;
+
+                    // Baris kedua (kurang bayar)
+                    const row2 = tbody.insertRow();
+                    const labelCell = row2.insertCell();
+                    labelCell.colSpan = 6;
+                    labelCell.style.fontStyle = 'italic';
+                    labelCell.textContent = '*Catatan : (🟧) Kurang Bayar / (🔴) Piutang / (🔵) Lebih Bayar / (🟢) Lunas';
+
+                    data.setoran.forEach((setor, bulanIndex) => {
+                        const cell = row2.insertCell();
+                        const kurang = kurangBayar[bulanIndex];
+
+                        if (setor === 0) {
+                            // Piutang = belum setor sama sekali
+                            cell.textContent = `😞 ${formatRupiah(kurang.toString(), 'Rp ')}`;
+                            cell.style.color = 'red';
+                            cell.title = 'Belum Ada setoran sama sekali (Piutang) 😞';
+                        } else if (kurang > 0) {
+                            // Kurang bayar
+                            cell.textContent = `🫤 Kurang ${formatRupiah(kurang.toString(), 'Rp ')}`;
+                            cell.style.color = 'orange';
+                            cell.title = 'Kurang bayar 🫤';
+                        } else if (setor > targetPerBulan) {
+                            // Lebih bayar (WOW!)
+                            const lebihBayar = setor - targetPerBulan;
+                            cell.textContent = `🤯 WOW! ${formatRupiah(lebihBayar.toString(), 'Rp ')}`;
+                            cell.style.color = 'blue';
+                            cell.title = 'Kamu Lebih bayar dari target (Hebat!) 🤯';
+                        } else {
+                            // Lunas
+                            cell.textContent = '😁 LUNAS ';
+                            cell.style.color = 'green';
+                            cell.title = 'Terimakasih, Telah Membayar Pajak 😁 ';
+                        }
+
+                        cell.style.fontWeight = 'bold';
+                    });
+
+                    // Memeriksa apakah bulan sudah lunas
+                    const isLunas = data.status === 'Lunas';  // Misalnya status sudah ada pada data untuk menandai jika bulan sudah lunas
+
+                    const piutangCell = row2.insertCell();
+                    piutangCell.colSpan = 2;
+                    piutangCell.style.textAlign = 'center';
+                    piutangCell.style.fontWeight = 'bold';
+
+                    if (isLunas) {
+                        // Jika sudah lunas, tampilkan status lunas meskipun ada perubahan target
+                        piutangCell.textContent = '🟢 *LUNAS 😁';
+                        piutangCell.style.color = 'green';
+                        piutangCell.title = 'Pembayaran sudah pas';
+                    } else {
+                        if (selisih < 0) {
+                            // Kekurangan (Piutang)
+                            piutangCell.textContent = '😞 *Total Piutang ' + formatRupiah(Math.abs(selisih).toString(), 'Rp ');
+                            piutangCell.style.color = 'red';
+                            piutangCell.title = 'Masih ada kekurangan pembayaran';
+                        } else if (selisih > 0) {
+                            // Kelebihan
+                            piutangCell.textContent = '🔵 *Lebih Bayar 😊 ' + formatRupiah(selisih.toString(), 'Rp ');
+                            piutangCell.style.color = 'blue';
+                            piutangCell.title = 'Pembayaran melebihi target';
+                        } else {
+                            // Lunas pas
+                            piutangCell.textContent = '🟢 *LUNAS 😁';
+                            piutangCell.style.color = 'green';
+                            piutangCell.title = 'Pembayaran sudah pas';
+                        }
+                    }
+                });
+
+                // Total baris
+                const totalPiutangRow = tbody.insertRow();
+                totalPiutangRow.innerHTML = `
+        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Piutang Juru Parkir Zona (06) :</td>
+        <td style="font-weight:bold;">${formatRupiah(grandTotalPiutang.toString(), 'Rp ')}</td>
+        <td></td>
+    `;
+
+                const totalRow = tbody.insertRow();
+                totalRow.innerHTML = `
+        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Setoran Juru Parkir Zona (06) :</td>
+        <td style="font-weight:bold;">${formatRupiah(grandTotalSetoran.toString(), 'Rp ')}</td>
+        <td></td>
+    `;
+
+                const legendaRow = tbody.insertRow();
+                const legendaCell = legendaRow.insertCell();
+                legendaCell.colSpan = 24;
+                legendaCell.innerHTML = `
+        <div style="margin-top:10px; font-size: 14px;">
+            <strong>Makna Warna :</strong><br>
+            <span style="color: red; font-weight: bold;">Warna Merah :</span> Tidak ada setoran (Rp 0)<br>
+            <span style="color: orange; font-weight: bold;">Warna Oranye :</span> Setoran kurang dari target bulan<br>
+            <span style="color: blue; font-weight: bold;">Warna Biru :</span> Lebih bayar (Setoran lebih dari target)<br>
+            <span style="color: green; font-weight: bold;">Warna Hijau :</span> Setoran sesuai atau lunas
+        </div>
+    `;
+
+                // Event listener untuk input pencarian
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById('searchInput').addEventListener('input', renderTable);
+
+                    // Panggil renderTable pertama kali saat halaman dimuat
+                    renderTable();
+                });
+            }
+
+            function fillFormForEdit(index) {
+                const data = dataJukir[index];
+                editIndex = index;
+
+                document.getElementById('nama').value = data.nama;
+                document.getElementById('lokasi').value = data.lokasi;
+                document.getElementById('zona').value = data.zona;
+                document.getElementById('titik').value = data.titik;
+                document.getElementById('setoranDisplay').value = data.setoranManual;
+                document.getElementById('keterangan').value = data.keterangan;
+
+                ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].forEach((id, i) => {
+                    document.getElementById(id).value = formatRupiah(data.setoran[i].toString(), 'Rp ');
+                });
+            }
+
+            document.getElementById('jukirForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const korlapID = editIndex === null ? generateKorlapID() : dataJukir[editIndex].korlapID;
+
+                const nama = document.getElementById('nama').value;
+                const zona = document.getElementById('zona').value;
+                const titik = document.getElementById('titik').value;
+                const lokasi = document.getElementById('lokasi').value;
+                const setoranManual = document.getElementById('setoranDisplay').value;
+                const keterangan = document.getElementById('keterangan').value;
+
+                const bulanIds = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+                const setoran = bulanIds.map(id => parseRupiahToNumber(document.getElementById(id).value));
+                const totalSetoran = setoran.reduce((total, bulan) => total + bulan, 0);
+
+                const data = {
+                    nama, alamat, zona, titik, lokasi,
+                    setoranManual, setoran, totalSetoran, keterangan
+                };
+
+                // Di dalam handle submit:
+                if (editIndex !== null) {
+                    const oldData = dataJukir[editIndex];
+
+                    // Simpan target lama jika berubah
+                    if (oldData.setoranManual !== setoranManual) {
+                        data.setoranManualSebelumnya = oldData.setoranManual;
+                    }
+
+                    // Jika sebelumnya lunas, simpan statusOverride
+                    const oldTarget = parseRupiahToNumber(oldData.setoranManual);
+                    const oldTotalTarget = oldTarget * 12;
+                    const oldTotalSetoran = oldData.setoran.reduce((a, b) => a + b, 0);
+
+                    if (oldTotalSetoran >= oldTotalTarget) {
+                        data.statusOverride = 'Lunas';
+                    }
+                }
+
+                if (editIndex === null) {
+                    dataJukir.push(data);
+                } else {
+                    dataJukir[editIndex] = data;
+                    editIndex = null;
+                }
+
+                saveToLocalStorage();
+                renderTable();
+                this.reset();
+
+                // Tambahkan setelah renderTable() dan this.reset()
+                const submitButton = document.querySelector('.btn-submit');
+                const btnText = submitButton.querySelector('span') || submitButton;
+
+                // Ubah tombol jadi loading
+                submitButton.disabled = true;
+                btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan Data...';
+
+                // Simulasi delay untuk UX (bisa dihapus kalau tidak perlu)
+                setTimeout(() => {
+                    // Kembalikan tombol ke kondisi semula
+                    btnText.innerHTML = 'Simpan';
+                    submitButton.disabled = false;
+
+                    // Tampilkan alert
+                    alert("Terimkasih, Data berhasil disimpan!");
+                }, 4000);
+
+            });
+
+            function openTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+                document.getElementById(tabId).style.display = 'block';
+            }
+
+            window.addEventListener('load', renderTable);
+
+            function printTable() {
+                const originalContent = document.body.innerHTML;
+                const printContent = document.getElementById('jukirTable').outerHTML;
+
+                // Mengambil tanggal saat ini
+                const today = new Date();
+                const formattedDate = today.toLocaleDateString('id-ID', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+                // Style untuk cetakan
+                const style = `
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 20mm 25mm 20mm 25mm; /* top, right, bottom, left */
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 12px; 
+        }
+
+        th, td { 
+            border: 1px solid black; 
+            padding: 6px; 
+            text-align: center; 
+        }
+
+        h2 { 
+            text-align: center; 
+            font-size: 16px; 
+            margin-bottom: 20px; 
+        }
+
+        .header, .footer { 
+            text-align: center; 
+            font-size: 14px; 
+            margin-top: 10px; 
+        }
+
+         table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin-bottom: 60px; /* agar footer tidak menindih tabel */
+    }
+
+    .footer {
+        text-align: center;
+        font-size: 12px;
+        margin-top: 20px;
+    }
+
+        .signature {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+`;
+
+                // Membuka jendela baru untuk cetakan
+                const printWindow = window.open('', '', 'width=1000,height=800');
+                printWindow.document.write(`<html><head><title>Cetak Tabel</title>${style}</head><body>`);
+
+                // Menambahkan Header
+                printWindow.document.write(`
+        <div class="header">
+            <h2>Pemerintah Kota Bengkulu <br> Badan Pendaparan Daerah <br> Laporan Retribusi Parkir ZONA 06</h2>
+            <p>Tanggal Cetak: ${formattedDate}</p>
+        </div>
+    `);
+
+                // Menambahkan Tabel
+                printWindow.document.write(printContent);
+
+                // Menambahkan Footer
+                printWindow.document.write(`
+    <div class="footer">
+        <p>Powered by Sistem : &copy; 2025 BlackSwanPictured.Com_Semua hak dilindungi undang-undang.</p>
+    </div>
+`);
+
+                // Menambahkan Tanda Tangan
+                printWindow.document.write(`
+        <div class="signature">
+            <p>Koordinator, <br>
+             Parkir Zona 6 </p>
+            <br><br><br>
+            <p>Kiki Andriyanto | Zendi Afrian Saputra, S.H</p>
+        </div>
+    `);
+
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }
+
+        </script>
+
+</body>
+
+</html>

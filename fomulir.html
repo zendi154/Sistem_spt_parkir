@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Jukir Manual Bulanan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #007BFF;
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar-menu {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-menu li a:hover {
+            color: #d4e6fb;
+        }
+
+        /* Optional: Responsive for smaller screens */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .navbar-menu li {
+                margin: 5px 0;
+            }
+        }
+
+        /* Font dan Warna Dasar */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            gap: 10px;
+        }
+
+        .input-group i {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .input-group input,
+        .input-group select {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background-color: transparent;
+            padding: 0.5rem 0;
+        }
+
+        /* Select Styling */
+        .input-group select {
+            appearance: none;
+            background: transparent;
+        }
+
+        /* Placeholder Merah */
+        .placeholder-red::placeholder {
+            color: crimson;
+            font-style: italic;
+        }
+
+        /* Judul Section */
+        h2 {
+            font-size: 1.4rem;
+            margin: 20px 0 10px;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Monthly Inputs */
+        .monthly-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .row-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        /* Floating Label Input */
+        .floating-label-group {
+            position: relative;
+            flex: 1;
+        }
+
+        .floating-label-group input {
+            width: 100%;
+            padding: 0.8rem 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .floating-label-group input:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+
+        .floating-label-group label {
+            position: absolute;
+            top: -0.6rem;
+            left: 0.8rem;
+            background-color: #fff;
+            padding: 0 5px;
+            font-size: 0.75rem;
+            color: #4caf50;
+        }
+
+        /* Button Group */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 20px;
+        }
+
+        .btn-submit,
+        .export-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-submit {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #43a047;
+        }
+
+        .export-btn {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background-color: #1e88e5;
+        }
+
+        /* Search Input */
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-top: 2rem;
+            background-color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-icon {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .row-group {
+                flex-direction: column;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Table styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Table styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Table container */
+        table {
+            width: 50%;
+            /* memperkecil lebar tabel menjadi 50% */
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table header */
+        th {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 4px;
+            /* mengurangi padding menjadi 4px */
+            font-size: 11px;
+            /* mengurangi ukuran font menjadi 11px */
+            border: 1px solid #ddd;
+        }
+
+        /* Table cells */
+        td {
+            text-align: center;
+            padding: 4px;
+            /* mengurangi padding menjadi 4px */
+            font-size: 10px;
+            /* mengurangi ukuran font menjadi 10px */
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        /* Striped rows */
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Highlighted row when hovering */
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* Status cell color */
+        td.status-lunas {
+            background-color: #c8e6c9;
+            color: #388e3c;
+        }
+
+        td.status-kurang-bayar {
+            background-color: #ffebee;
+            color: #e57373;
+        }
+
+        td.status-lebih-bayar {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        /* Column for the year-month format (Jan-Dec) */
+        th[colspan="12"] {
+            background-color: #0288d1;
+            color: white;
+        }
+
+        /* Formatted currency */
+        .currency {
+            font-weight: bold;
+            color: #388e3c;
+        }
+
+        /* Center the table header text */
+        th,
+        td {
+            text-align: center;
+        }
+
+        /* Buttons */
+        button {
+            padding: 6px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 0 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003f7d;
+        }
+
+        /* Header for the page */
+        h2 {
+            text-decoration: underline;
+            font-size: 22px;
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Footer for printed version */
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        /* Tombol Print */
+        .btn-print {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #0069d9;
+        }
+
+        /* Tombol Export Excel */
+        .export-btn {
+            background-color: #198754;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background-color: #157347;
+        }
+
+        /* Container pencarian */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 16px;
+        }
+
+        /* Input pencarian */
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Ikon pencarian */
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">Sistem Retribusi Parkir Tepi Jalan Umum</div>
+            <ul class="navbar-menu">
+                <li><a href="Table.html">Laporan</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <h2 style="text-decoration: underline;">
+        <i class="fas fa-pen-nib"></i> Form Input Data Jukir
+    </h2>
+
+    <form id="jukirForm">
+        <input type="hidden" id="korlap">
+
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <select id="nama" name="Nama" required>
+                <option value="" disabled selected>[Pilih Nama Juru Parkir]</option>
+                <option value="Osti Br Gultom">Osti Br Gultom</option>
+                <option value="Hotnaria Sijabat">Hotnaria Sijabat</option>
+                <option value="Yeni Hartati">Yeni Hartati</option>
+                <option value="Pangihutan Sirumapea">Pangihutan Sirumapea</option>
+                <option value="Bairin">Bairin</option>
+                <option value="Mimi Granika ">Mimi Granika</option>
+                <option value="Dodi Hermansyah">Dodi Hermansyah</option>
+                <option value="Winarzon">Winarzon</option>
+                <option value="Ucok Sitorus">Ucok Sitorus</option>
+                <option value="Sri Menanti">Sri Menanti</option>
+                <option value="Raswan">Raswan</option>
+                <option value="Enda Hartati">Enda Hartati</option>
+                <option value="Jauhari">Jauhari</option>
+                <option value="Soni Karnolis">Soni Karnolis</option>
+                <option value="Darma Sakti Ritonga">Darma Sakti Ritonga</option>
+                <option value="Donna Sitompul">Donna Sitompul</option>
+                <option value="Yogi Darminto">Yogi Darminto</option>
+                <option value="Yupita Andespa">Yupita Andespa</option>
+                <option value="Darmawan">Darmawan</option>
+                <option value="Sohan">Sohan</option>
+                <option value="Irwandi">Irwandi</option>
+                <option value="Indah Kurnia Hutabarat">Indah Kurnia Hutabarat</option>
+                <option value="Tri Putra Hutabarat">Tri Putra Hutabarat</option>
+                <option value="Gempa Hutabarat">Gempa Hutabarat</option>
+                <option value="Andi Kusmajaya">Andi Kusmajaya</option>
+                <option value="Parmita Yuli ">Parmita Yuli</option>
+                <option value="Andika Eka Pratama">Andika Eka Pratama</option>
+                <option value="Junaidi">Junaidi</option>
+                <option value="Mardimpos Hutabarat">Mardimpos Hutabarat</option>
+                <option value="Parlin Hutabarat">Parlin Hutabarat</option>
+                <option value="Yhosep Hutabarat">Yhosep Hutabarat</option>
+                <option value="Medra Yodi">Medra Yodi</option>
+                <option value="Sandi Duwirsa">Sandi Duwirsa</option>
+                <option value="Sundari">Sundari</option>
+                <option value="Yermaini">Yermaini</option>
+                <option value="Zultani Andri">Zultani Andri</option>
+                <option value="Nirpansi">Nirpansi</option>
+                <option value="Widiawati">Widiawati</option>
+                <option value="Farasian Sitorus">Farasian Sitorus</option>
+                <option value="Nelson Sitorus">Nelson Sitorus</option>
+                <option value="Bahori">Bahori</option>
+                <option value="Eli Zurni">Eli Zurni</option>
+                <option value="Munawir Zazali">Munawir Zazali</option>
+                <option value="Angga Saputra">Angga Saputra</option>
+                <option value="Dahari">Dahari</option>
+                <option value="Misran Depi">Misran Depi</option>
+                <option value="Lira Virna Reta">Lira Virna Reta</option>
+                <option value="Yetra Herlangga">Yetra Herlangga</option>
+                <option value="Sutopo">Sutopo</option>
+                <option value="Ritha Siahaan">Ritha Siahaan</option>
+                <option value="Suryani Simanungkalit">52.Suryani Simanungkalit</option>
+                <option value="Yovi Wijaya">Yovi Wijaya</option>
+                <option value="Edo Deska Mandala">Edo Deska Mandala</option>
+                <option value="Sisi Artika">Sisi Artika</option>
+                <option value="Ade Adrian Ramadhan P.">Ade Adrian Ramadhan P.</option>
+                <option value="Iwan S">Iwan S</option>
+                <option value="Maruri Sitorus">Maruri Sitorus</option>
+                <option value="Ekawati">Ekawati</option>
+                <option value="Raswan">Raswan</option>
+                <option value="Suryani Simanungkalit">Suryani Simanungkalit</option>
+                <option value="Sukirman">Sukirman</option>
+                <option value="Abdul Amin">Abdul Amin</option>
+                <option value="Lolo Hutabarat">Lolo Hutabarat</option>
+                <option value="Hermanto">Hermanto</option>
+                <option value="Arianto">Arianto</option>
+                <option value="Efrita">Efrita</option>
+                <option value="Julius Andri Putra">Julius Andri Putra</option>
+                <option value="Maya Ramantir">Maya Ramantir</option>
+                <option value="Yovi">Yovi</option>
+                <option value="Rahmat Ardiansyah">Rahmat Ardiansyah</option>
+                <option value="Bela Enggelia">Bela Enggelia</option>
+                <option value="Harianto">Harianto</option>
+                <option value="Claudia Vista Maret">Claudia Vista Maret</option>
+                <option value="Lesmini Anggraini">Lesmini Anggraini</option>
+                <option value="Pramita Yuli">Pramita Yuli</option>
+                <option value="Bascik">Bascik</option>
+                <option value="Onik Sariono">Onik Sariono</option>
+                <option value="Aluwi">Aluwi</option>
+                <option value="Tio Valentino">Tio Valentino</option>
+                <option value="Tajudin">Tajudin</option>
+                <option value="Herlan Sandi">Herlan Sandi</option>
+                <option value="Alex Candra">Alex Candra</option>
+                <option value="Nazarudin">Nazarudin</option>
+                <option value="Sutrisno">Sutrisno</option>
+                <option value="Samsul Bahri">Samsul Bahri</option>
+                <option value="Reni Virna Reta">Reni Virna Reta</option>
+                <option value="Rendi Juliansyah">Rendi Juliansyah</option>
+                <option value="Warsol Azhari">Warsol Azhari</option>
+                <option value="Erwansayh">Erwansayh</option>
+                <option value="Yusup">Yusup</option>
+                <option value="Sohan">Sohan</option>
+                <option value="Suandi">Suandi</option>
+                <option value="Nopran Sinatra">Nopran Sinatra</option>
+                <option value="Rustam Efendi">Rustam Efendi</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-map"></i>
+            <select id="lokasi" name="Lokasi Parkir" required>
+                <option value="" disabled selected>[Pilih Nama Jukir Untuk Lokasi Tugas Parkir]</option>
+                <option value="Jl. Salak Dari Toko Abadi s/d Cemara Malam">Osti Br Gultom</option>
+                <option value="Jl. Salak Dari Gang III s/d Gang Salak IV">Hotnaria Sijabat</option>
+                <option value="Jl. Hibrida (Bakso Solo Mas Yanto)">Yeni Hartati</option>
+                <option value="Jl. Kedondong dari 1/2 Toko Samudra Pancing s/d 1/2 Harapan Jaya">Pangihutan Sirumapea
+                </option>
+                <option value="Jl. Salak Raya Dari Gang ke III s/d Gardu Listrik">Bairin</option>
+                <option value="Jl. Salak (Bank BCA s/d Pinggir Jalan)">Mimi Granika</option>
+                <option value="Jl. Kedondong Dari Pinggir Pasar Panorama Titik 1">Dodi Hermansyah</option>
+                <option value="Jl. Lingkar Timur (Depan Toko Emas Mahkota Dalam Pasar Panorama)">Winarzon</option>
+                <option value="Jl. Salak Dari Gg Salak 1 s/d Gg Salak 2 (Siang)">Ucok Sitorus</option>
+                <option value="Jl. Salak Dari Bhineka Computer s/d Warnet Qita">Sri Menanti</option>
+                <option value="Jl. Semangka Titik 2 Gerang Pasar Panorama s/d Tiang Listrik">Raswan</option>
+                <option value="Jl. Semangka Bank BRI Cabang Panorama (Malam)">Enda Hartati</option>
+                <option value="Jl. Semangka Bank BRI Cabang Panorama (Siang)">Jauhari</option>
+                <option value="Jl. Hibrida Raya (Depan Rumah Sakit Ummi)">Soni Karnolis</option>
+                <option value="Jl. Belimbing dari Toko Beras Nur s/d Jembatan">Darma Sakti Ritonga</option>
+                <option value="Jl. Salak Raya Bank Bengkulu (Gg Simpang Puskesmas s/d Bank Bengkulu)">Donna Sitompul
+                </option>
+                <option value="Jl. Salak (Gg Salak 4 s/d Salak 5)">Yogi Darminto</option>
+                <option value="Jl. Salak Raya Dari Toko Kenzo s/d Gang Puskesmas">Yupita Andespa</option>
+                <option value="Jl. Kedondong Titik 6 Pinggir Pasar Panorama">Darmawan</option>
+                <option value="Jl. Salak Raya Simpang Muhajirin s/d Salak 10 Malam">Sohan</option>
+                <option value="Jl. Kedondong (Toko Adra s/d Toko Anugrah)">Irwandi</option>
+                <option value="Area Parkir Jl. Belimbing (Dari Toko Telur s/d Ruko Cigok)">Indah Kurnia Hutabarat
+                </option>
+                <option value="Area Parkir Jl. Kedondong Titik 10 (dari Toko Andi s/d Pintu Masuk Pos Polisi)">Tri
+                    Putra Hutabarat</option>
+                <option
+                    value="Area Parkir Jl. Kedondong (Pos TPR s/d Pintu Masuk Pasar Samping Pos Satpol PP Depan Rumah Makan Fajar)">
+                    Gempa Hutabarat
+                </option>
+                <option value="Jl. Belimbing (Dari Toko Ferri s/d Fajar)">Andi Kusmajaya</option>
+                <option value="Jl. Belimbing (dari Toko Ferri s/d Fajar)">Parmita Yuli</option>
+                <option value="Jl. Belimbing (Dari Toko Saudi s/d Toko Helen)">Andika Eka Pratama</option>
+                <option value="Jl. Salak dari (Gang Salak II s/d Gang III)">Junaidi</option>
+                <option value="Jl. Semangka dari Toko Burma Tani s/d RM. Empat Putra">Mardimpos Hutabarat</option>
+                <option value="Jl. Semangka dari Toko Carvit s/d Toko Hervina">Parlin Hutabarat</option>
+                <option value="Jl. Semangka dari Toko Manisan s/d Citra Group">Yhosep Hutabarat</option>
+                <option value="Jl. Salak Depan Kantor Pinzy">Medra Yodi</option>
+                <option value="Jl. Salak Raya Badan Jalan Sinar Mas s/d Podomoro">Sandi Duwirsa</option>
+                <option value="Jl. Semangka dari (Lingkar Utama s/d Semangka 7)">Sundari</option>
+                <option value="Jl. Semangka Raya (Dari Toko Delta Motor s/d Toko Aw Sport)">Yermaini</option>
+                <option value="Jl. Semangka (Dari Toko Delta s/d Toko Aw Sport)">Zultani Andri</option>
+                <option value="Jl. Semangka Dari Semangka 7 s/d Toko Santun (Siang)">Nirpansi</option>
+                <option value="Jl. Semangka Dari Semangka 7 s/d Toko Santun (Malam)">Widiawati</option>
+                <option value="Jl. Salak (Simpang Kedondong s/d Gang Ke-1)">Farasian Sitorus</option>
+                <option value="Jl. Salak Dari Toko Ayuka s/d Hotel Sindu">Nelson Sitorus</option>
+                <option value="Jl. Semangka Dari Toko Mainan Anak s/d RM. Empat Putra">Bahori</option>
+                <option value="Jl. Belimbing Simpang Tiga Kedondong s/d Toko Beras">Eli Zurni</option>
+                <option value="Jl. Semangka dari Toko Baronan Tani s/d Saga Motor">Munawir Zazali</option>
+                <option value="Jl. Kedondong dari 1/2 Toko Lolita s/d Fuji Fashion">Angga Saputra</option>
+                <option value="Area parkir Jl. Kedondong (Titik 4)">Dahari</option>
+                <option value="Area Parkir Jl. Salak Raya (Rumah Makan Pondok Selero)">Misran Depi</option>
+                <option value="Jl. Kedondong dari (Tpr Angkot Kuning, Toko Anne s/d Tiang Listrik)">Lira Virna Reta
+                </option>
+                <option value="Jl. Kedondong dari (Tpr Angkot Kuning, Toko Anne s/d Tiang Listrik)">Yetra Herlangga
+                </option>
+                <option value="Lontong Tunjang Ibu Puja, Simpang SLB s/d Ayam Geprek Tri">Sutopo</option>
+                <option value="Jl. Salak Depan Toko Nainggolan 7 Ruko">Ritha Siahaan</option>
+                <option value="Area Parkir Jl. Kedondong (Dari 1/2 Harapan Jayas/d Mabel)">Suryani Simanungkalit
+                </option>
+                <option value="Dari Toko Inti Cycle s/d Toko Forceum">Yovi Wijaya</option>
+                <option value="Dari Sebelah Kiri Toko Forceum s/d Pau Otto">Edo Deska Mandala</option>
+                <option value="Jl. Kedondong dari Samping Duta Sari s/d Toko Marko">Sisi Artika</option>
+                <option value="Jl. Dalam Pasar Panorama (Depan dan Samping Salon Ade s/d Blok FF,FF dan LL Toko Mas,
+                        Blok FF, GG, s/d LL Toko Sari Blok BM Toko Racun)">Ade Adrian Ramadhan P.</option>
+                <option value="Jl. Salak Dari Salak II s/d RM. Ojo Lali">Iwan S</option>
+                <option value="Jl. Salak II Toko Fitri s/d Toko Sumber Logam">Maruri Sitorus</option>
+                <option value="Jl. Salak Gang ke I s/d II">Ekawati</option>
+                <option value="Jl. Semangka Titik 2 Gang Pasar Panorama s/d Tiang Listrik">Raswan</option>
+                </option>
+                <option value="Jl. Salak Bank Mandiri">Sukirman</option>
+                <option value="Jl. Semangka Raya (dari Gang Masjid Al-Muhtadin) s/d Jl. Nangka Toko Yonis">Abdul Amin
+                </option>
+                <option value="Jl. Salak Raya, Pos Polisi s/d Hotel Sindu (Malam)">Lolo Hutabarat</option>
+                <option value="Jl. Semangka dari Toko Hervina s/d Rm Taraso Bana">Hermanto</option>
+                <option value="Jl. Semangka dari Muable s/d Show Room (Siang)">Arianto</option>
+                <option value="Jl. Semangka dari Muable s/d Show Room (Malam)">Efrita</option>
+                <option value="Jl. Belimbing (dari simpang pangkalan ojek s/d Pintu masuk LLAJ)">Julius Andri Putra
+                </option>
+                <option value="Jl. Belimbing (dari simpang pangkalan ojek s/d Pintu masuk LLAJ)">Maya Ramantir</option>
+                <option value="Jl. Belimbing Toko Helen s/d Simpang Perumahan">Yovi</option>
+                <option value="Jl. Belimbing (Dari toko 4 Saudara s/d Gudang Udin)">Rahmat Ardiansyah</option>
+                <option value="Jl. Dalam Pasar Gang Pintu Masuk DLLAJ Rm DE s/d Toko Dona">Bela Enggelia</option>
+                <option value="Jl. Kendondong Dari T. Parabola s/d Tiang Listrik (Batas SPT Yetra)">Harianto</option>
+                <option
+                    value="Jl. Dalam Pasar Panorama Masuk Wc Toko Berkat Toni, Toko Kimi, Ud Am Santun (Siang - Malam)">
+                    Claudia Vista Maret</option>
+                <option value="Jl. Salak Raya Dari Simpang Taman s/d Toko Sinar Bulan">Lesmini Anggraini</option>
+                <option value="Jl. belimbing (Dari Toko Ferri s/d Rm Fajar)">Pramita Yuli</option>
+                <option value="Jl. Seman (Sinar Motor s/d Semangka Motor)">Bascik</option>
+                <option value="Jl. Salak (Gang Salak III B s/d Gank Salak IV)">Onik Sariono</option>
+                <option value="Jl. Salak dari Bank Danamon s/d Asuransi Barokah">Aluwi</option>
+                <option value="Jl. Belimbing Raya (Toko Sumber Agung s/d Pondok Beras / Pagi - Sore)">Tio Valentino
+                </option>
+                <option value="Jl. Belimbing Raya (Toko Sumber Agung s/d Pondok Beras / Malam - Pagi)">Tajudin</option>
+                <option value="Jl. Kedondong dari Toko Anugrah s/d Doni Beras">Herlan Sandi</option>
+                <option value="Jl. Salak dari Fitri Remaja Foto s/d Toko Yeni">Alex Candra</option>
+                <option value="Jl. Kedondong (Gang Kedondong II Pasar Panorama)">Nazarudin</option>
+                <option value="Jl. Salak Dari Harapan Makmur s/d Gank Toko Aidi (Siang)">Sutrisno</option>
+                <option value="Jl. Semangka (Pos TPR s/d Ex Miss Nur/Hotel Diva)">Samsul Bahri</option>
+                <option value="Jl. Kedondong dari TPR Angkot Kuning s/d Tiang Listrik">Reni Virna Reta</option>
+                <option value="Jl. Salak Raya 2 (Toko Pertanian Cahaya Indo Tani)">Rendi Juliansyah</option>
+                <option value="Jl. Salak (Dari Remaja Foto s/d Toko Kemongo)">Warsol Azhari</option>
+                <option value="Jl. Salak (Dari Toko Tiara Salon s/d Kenzo Jaya)">Erwansayh</option>
+                <option value="Jl. Salak (Toko Yenny s/d Toko Ayuko)">Yusup</option>
+                <option value="Jl. Salak Raya Simpang Muhajirin s/d Salak 10 (Malam)">Sohan</option>
+                <option value="Jl. Belimbing Ruko Blok B dari Ruko 1 s/d Ruko Ke 10">Suandi</option>
+                <option value="Jl. Salak Dari Gang Salak I s/d Gang Salak II (Malam)">Nopran Sinatra</option>
+                <option value="Jl. Salak Depan Bank Mandiri Termasuk Mie Ayam Podo Moro">Rustam Efendi</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-layer-group"></i>
+            <select id="zona" name="Zona" required>
+                <option value="" disabled selected>[Pilih Wilayah/Zona Juru Parkir]</option>
+                <option value="06">Zona 06</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-map-marker-alt"></i>
+            <select id="titik" name="No. Titik Parkir" required>
+                <option value="" disabled selected>[Pilih Nama Dibawah Ini Untuk Memilih Titik Parkir]</option>
+                <option value="44">Osti Br Gultom</option>
+                <option value="124">Hotnaria Sijabat</option>
+                <option value="162">Yeni Hartati</option>
+                <option value="72">Pangihutan Sirumapea</option>
+                <option value="85">Bairin</option>
+                <option value="94">Mimi Granika</option>
+                <option value="82">Dodi Hermansyah</option>
+                <option value="322">Winarzon</option>
+                <option value="1004">Ucok Sitorus</option>
+                <option value="168">Sri Menanti</option>
+                <option value="37">Raswan</option>
+                <option value="38">Enda Hartati</option>
+                <option value="15">Jauhari</option>
+                <option value="93">Soni Karnolis</option>
+                <option value="66">Darma Sakti Ritonga</option>
+                <option value="67">Donna Sitompul</option>
+                <option value="148">Yogi Darminto</option>
+                <option value="68">Yupita Andespa</option>
+                <option value="37">Darmawan</option>
+                <option value="43">Sohan</option>
+                <option value="61">Irwandi</option>
+                <option value="-">Indah Kurnia Hutabarat</option>
+                <option value="129">Tri Putra Hutabarat</option>
+                <option value="128">Gempa Hutabarat</option>
+                <option value="54">Andi Kusmajaya</option>
+                <option value="61">Parmita Yuli</option>
+                <option value="-">Andika Eka Pratama</option>
+                <option value="32">Junaidi</option>
+                <option value="112">Mardimpos Hutabarat</option>
+                <option value="83">Parlin Hutabarat</option>
+                <option value="28">Yhosep Hutabarat</option>
+                <option value="148">Medra Yodi</option>
+                <option value="131">Sandi Duwirsa</option>
+                <option value="23">Sundari</option>
+                <option value="31">Yermaini</option>
+                <option value="34">Zultani Andri</option>
+                <option value="86">Nirpansi</option>
+                <option value="55">Widiawati</option>
+                <option value="133">Farasian Sitorus</option>
+                <option value="54">Nelson Sitorus</option>
+                <option value="103">Bahori</option>
+                <option value="121">Eli Zurni</option>
+                <option value="346">Munawir Zazali</option>
+                <option value="349">Angga Saputra</option>
+                <option value="101">Dahari</option>
+                <option value="59">Misran Depi</option>
+                <option value="35.A">Lira Virna Reta</option>
+                <option value="35">Yetra Herlangga</option>
+                <option value="-">Sutopo</option>
+                <option value="-">Ritha Siahaan</option>
+                <option value="119">Suryani Simanungkalit</option>
+                <option value="127">Yovi Wijaya</option>
+                <option value="127.A">Edo Deska Mandala</option>
+                <option value="124">Sisi Artika</option>
+                <option value="143">Ade Adrian Ramadhan P</option>
+                <option value="102">Iwan S</option>
+                <option value="103">Maruri Sitorus</option>
+                <option value="101">Ekawati</option>
+                <option value="46">Raswan</option>
+                <option value="023">Sukirman</option>
+                <option value="358">Abdul Amin</option>
+                <option value="182">Lolo Hutabarat</option>
+                <option value="34">Hermanto</option>
+                <option value="63">Arianto</option>
+                <option value="149">Efrita</option>
+                <option value="28">Julius Andri Putra</option>
+                <option value="27 A">Maya Ramantri</option>
+                <option value="322">Yovi</option>
+                <option value="346">Rahmat Ardiansyah</option>
+                <option value="142">Bela Enggelia</option>
+                <option value="127">Harianto</option>
+                <option value="141">Claudia Vista Maret</option>
+                <option value="133">Lesmini Anggraini</option>
+                <option value="61">Pramita Yuli</option>
+                <option value="83">Bascik</option>
+                <option value="01">Onik Sariono</option>
+                <option value="32">Aluwi</option>
+                <option value="-">Tio Valentino</option>
+                <option value="-">Tajudin</option>
+                <option value="78">Herlan Sandi</option>
+                <option value="84">Alex Candra</option>
+                <option value="349">Nazarudin</option>
+                <option value="52">Sutrisno</option>
+                <option value="54">Samsul Bahri</option>
+                <option value="437">Reni Virna Reta</option>
+                <option value="62">Rendi Juliansyah</option>
+                <option value="161">Warsol Azhari</option>
+                <option value="96">Erwansayh</option>
+                <option value="161">Yusup</option>
+                <option value="43">Sohan</option>
+                <option value="85">Suandi</option>
+                <option value="-">Nopran Sinatra</option>
+                <option value="31">Rustam Efendi</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-university"></i>
+            <select id="alamat" name="Alamat" required>
+                <option value="" disabled selected>[Pilih Metdoe Pembayaran]</option>
+                <option value="Bank Bengkulu">Bank Bengkulu</option>
+                <option value="Belum Ada Pembayaran">Belum Ada Pembayaran</option>
+            </select>
+        </div>
+
+        <!-- Setoran -->
+        <div class="input-group">
+            <i class="fas fa-money-bill-wave"></i>
+            <input type="text" id="setoranDisplay" class="rupiah-input" placeholder="Nominal Target/Bulan" required>
+        </div>
+
+        <!-- Keterangan Otomatis -->
+        <div class="input-group">
+            <i class="fas fa-ban"></i>
+            <input type="text" id="keterangan" placeholder="*Fungsi Keterangan Otomatis Berdasarkan Data..."
+                style="pointer-events: none;" class="placeholder-red">
+        </div>
+
+        <h2 style="text-decoration: underline;"><i class="fas fa-coins"></i> Masukan Data Setoran Perbulan</h2>
+
+        <div class="monthly-inputs">
+
+            <div class="row-group">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="jan" class="rupiah-input" required placeholder=" " />
+                    <label for="jan">*Pembayaran Bulan Januari</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="feb" class="rupiah-input" required placeholder=" " />
+                    <label for="feb">*Pembayaran Bulan Februari</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="mar" class="rupiah-input" required placeholder=" " />
+                    <label for="mar">*Pembayaran Bulan Maret</label>
+                </div>
+            </div>
+
+            <div class="row-group">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="apr" class="rupiah-input" required placeholder=" " />
+                    <label for="apr">*Pembayaran Bulan April</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="mei" class="rupiah-input" required placeholder=" " />
+                    <label for="mei">*Pembayaran Bulan Mei</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="jun" class="rupiah-input" required placeholder=" " />
+                    <label for="jun">*Pembayaran Bulan Juni</label>
+                </div>
+            </div>
+
+            <div class="row-group">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="jul" class="rupiah-input" required placeholder=" " />
+                    <label for="jul">*Pembayaran Bulan Juli</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="agu" class="rupiah-input" required placeholder=" " />
+                    <label for="agu">*Pembayaran Bulan Agustus</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="sep" class="rupiah-input" required placeholder=" " />
+                    <label for="sep">*Pembayaran Bulan September</label>
+                </div>
+            </div>
+
+            <div class="row-group">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="okt" class="rupiah-input" required placeholder=" " />
+                    <label for="okt">*Pembayaran Bulan Oktober</label>
+                </div>
+                <i class="fas fa-calendar-alt"></i>
+                <div class="input-group floating-label-group">
+                    <input type="text" id="nov" class="rupiah-input" required placeholder=" " />
+                    <label for="nov">*Pembayaran Bulan November</label>
+                </div>
+
+                <div class="input-group floating-label-group">
+                    <input type="text" id="des" class="rupiah-input" required placeholder=" " />
+                    <label for="des">*Pembayaran Bulan Desember</label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i><span>Simpan</span>
+            </button>
+
+            <button onclick="exportToExcel()" class="export-btn">
+                <i class="fas fa-file-excel"></i> Export ke Excel
+            </button>
+        </div>
+
+        <div class="search-container">
+            <i class="search-icon fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Cari Nama / Lokasi / Zona..."
+                oninput="renderTable()" />
+        </div>
+
+        <h2><i class="fas fa-book"></i>
+            Selamat Datang Koordinator Parkir Zona 6</h2>
+        <table id="jukirTable">
+            <thead>
+                <tr>
+                    <th>Kode Data</th>
+                    <th>Nama Jukir</th>
+                    <th>Lokasi Parkir Jukir</th>
+                    <th>ZN</th>
+                    <th>T. Parkir</th>
+                    <th>Metode Pembayaran</th>
+                    <th>Target/Bulan</th>
+                    <th colspan="12">Status Pembayaran Dalam 12 Bulan</th>
+                    <th>Pesan<br>(System)</th>
+                    <th>Total Setoran</th>
+                    <th>Aksi</th>
+                </tr>
+                <tr>
+                    <td colspan="7"></td>
+                    <th>Jan</th>
+                    <th>Feb</th>
+                    <th>Mar</th>
+                    <th>Apr</th>
+                    <th>Mei</th>
+                    <th>Jun</th>
+                    <th>Jul</th>
+                    <th>Agu</th>
+                    <th>Sep</th>
+                    <th>Okt</th>
+                    <th>Nov</th>
+                    <th>Des</th>
+                    <td colspan="3"></td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <script src="script.js"></script>
+
+        <script>
+            let dataJukir = JSON.parse(localStorage.getItem('dataJukir')) || [];
+            let editIndex = null;
+
+            function saveToLocalStorage() {
+                localStorage.setItem('dataJukir', JSON.stringify(dataJukir));
+            }
+
+            // Format input setoranDisplay menjadi rupiah saat diketik
+            document.addEventListener('DOMContentLoaded', function () {
+                const setoranInput = document.getElementById('setoranDisplay');
+
+                setoranInput.addEventListener('input', function (e) {
+                    // Ambil hanya angka
+                    let value = this.value.replace(/[^,\d]/g, '');
+                    // Tampilkan dalam format Rp
+                    this.value = formatRupiah(value, 'Rp ');
+                });
+            });
+
+            function formatRupiah(angka, prefix) {
+                const number_string = angka.replace(/[^,\d]/g, '').toString();
+                const split = number_string.split(',');
+                const sisa = split[0].length % 3;
+                let rupiah = split[0].substr(0, sisa);
+                const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                if (ribuan) rupiah += (sisa ? '.' : '') + ribuan.join('.');
+                return prefix + rupiah + (split[1] !== undefined ? ',' + split[1] : '');
+            }
+
+            // Fungsi untuk format nominal menjadi Rupiah
+            function formatRupiah(angka) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return 'Rp ' + rupiah;
+            }
+
+            // Fungsi untuk menangani input di setiap bulan
+            function updateRupiahInput() {
+                var inputs = document.querySelectorAll('.rupiah-input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        var angka = this.value;
+                        this.value = formatRupiah(angka);
+                    });
+                });
+            }
+
+            // Memanggil fungsi updateRupiahInput untuk menangani setiap input
+            updateRupiahInput();
+
+            function parseRupiahToNumber(rupiah) {
+                return parseInt(rupiah.replace(/[^0-9]/g, ''), 10) || 0;
+            }
+
+            function generateKorlapID() {
+                const today = new Date();
+                const dd = String(today.getDate()).padStart(2, '0');
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                const kode = Math.floor(100 + Math.random() * 900);
+                return `P.3.KLP.${dd}${mm}${yyyy}.${kode}`;
+            }
+
+            function hitungKurangBayar(targetPerBulan, setoranBulanan) {
+                return setoranBulanan.map(setor => targetPerBulan - setor);
+            }
+
+            function renderTable() {
+                const tbody = document.querySelector('#jukirTable tbody');
+                tbody.innerHTML = '';
+                let counter = 1;
+                let grandTotalSetoran = 0;
+                let grandTotalPiutang = 0;
+
+                const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+                const filteredData = dataJukir.filter(data =>
+                    data.nama.toLowerCase().includes(keyword) ||
+                    data.lokasi.toLowerCase().includes(keyword) ||
+                    data.zona.toLowerCase().includes(keyword)
+                );
+
+                filteredData.forEach((data) => {
+                    const indexAsli = dataJukir.indexOf(data); // Index asli di array utama
+
+                    const row1 = tbody.insertRow();
+                    row1.innerHTML = `
+                        <td>${data.korlapID}</td>
+                                 <td>${data.nama}</td>
+                                     <td>${data.lokasi}</td>
+                                         <td>${data.zona}</td>
+                            <td>${data.titik}</td>
+                        <td>${data.alamat}</td>
+                    <td>${data.setoranManual}</td>
+                    `;
+
+                    data.setoran.forEach(setor => {
+                        const cell = row1.insertCell();
+                        cell.textContent = formatRupiah(setor.toString(), 'Rp ');
+                        cell.style.color = (setor === 0) ? 'red' : 'darkgreen';
+                        cell.style.fontWeight = 'medium';
+                    });
+
+                    const targetPerBulan = parseRupiahToNumber(data.setoranManual);
+                    const totalSetoran = data.setoran.reduce((a, b) => a + b, 0);
+                    const kurangBayar = hitungKurangBayar(targetPerBulan, data.setoran);
+                    const totalKurang = kurangBayar.reduce((a, b) => a + b, 0);
+                    const totalTarget = targetPerBulan * data.setoran.length;
+                    const selisih = totalSetoran - totalTarget;
+
+                    const bulanSekarang = new Date().getMonth(); // 0 = Januari
+                    const triwulanSekarang = Math.floor(bulanSekarang / 3) + 1;
+
+                    const namaBulan = [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ];
+
+                    // 🔢 Inisialisasi data triwulan
+                    const triwulanData = {
+                        1: [],
+                        2: [],
+                        3: [],
+                        4: []
+                    };
+
+                    // ✅ Kelompokkan bulan yang belum lunas, tapi hanya sampai triwulan sekarang
+                    for (let i = 0; i < 12; i++) {
+                        const triwulanKe = Math.floor(i / 3) + 1;
+                        if (triwulanKe > triwulanSekarang) continue; // Jangan tampilkan triwulan berikutnya
+
+                        const setor = data.setoran[i] || 0;
+                        if (setor < targetPerBulan) {
+                            triwulanData[triwulanKe].push(namaBulan[i]);
+                        }
+                    }
+
+                    // Hapus triwulan 1 jika sudah lunas semua
+                    if (triwulanData[1].length === 0) {
+                        delete triwulanData[1];
+                    }
+
+                    const triwulanBelumLunas = Object.entries(triwulanData)
+                        .filter(([_, bulan]) => bulan.length > 0)
+                        .map(([tw, bulan]) => `Triwulan.${tw}_📌(${bulan.join(', ')})`);
+
+                    // ✅ Tentukan status
+                    let status = '';
+
+                    // Jika ada override lunas dari data lama, tetap anggap lunas
+                    if (data.statusOverride === 'Lunas') {
+                        status = 'Lunas';
+                    } else {
+                        if (totalSetoran === 0) {
+                            status = 'Piutang 😞';
+                        } else if (totalKurang === 0) {
+                            status = 'Lunas 😁';
+                            data.setoran = data.setoran.map(setor => setor === 0 ? targetPerBulan : setor); // pelunasan otomatis
+                        } else if (triwulanBelumLunas.length > 0) {
+                            status = '⚠️ WARNING';
+                        } else if (data.setoran[bulanSekarang] < targetPerBulan) {
+                            status = 'Proses (Bulan Berjalan)';
+                        } else {
+                            status = 'Proses Bayar';
+                        }
+                    }
+
+                    // 🖨️ Tampilkan ke keterangan
+                    const keteranganCell = row1.insertCell();
+                    keteranganCell.style.fontSize = '13px';
+
+                    let keteranganText = status;
+
+                    // Tambahkan catatan perubahan target jika ada
+                    if (data.setoranManualSebelumnya && data.setoranManual !== data.setoranManualSebelumnya) {
+                        keteranganText += `\n 🔄 Target berubah dari ${data.setoranManualSebelumnya} Menjadi ${data.setoranManual}`;
+                    }
+
+                    // Tambahkan info bulan belum lunas (selain Triwulan 1 yang sudah dihapus)
+                    if (status === '⚠️ WARNING' && triwulanBelumLunas.length > 0) {
+                        keteranganText += '\n' + triwulanBelumLunas.join('\n');
+                    }
+
+                    keteranganCell.textContent = keteranganText;
+                    keteranganCell.style.whiteSpace = 'pre-line';
+                    keteranganCell.style.color = {
+                        'Lunas 😁': 'green',
+                        'Proses Bayar': 'orange',
+                        'Piutang 😞': 'red',
+                        '⚠️ WARNING': '#cc3300',
+                        'Proses (Bulan Berjalan)': '#FF9900'
+                    }[status];
+
+                    if (triwulanBelumLunas.length > 0) {
+                        keteranganCell.title = `*Belum lunas ${triwulanBelumLunas.join(', ')}`;
+                    }
+
+                    row1.insertCell().textContent = formatRupiah(totalSetoran.toString(), 'Rp ');
+
+                    const aksiCell = row1.insertCell();
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = "Hapus Data";
+                    deleteBtn.onclick = () => {
+                        if (confirm("Yakin ingin menghapus Data Ini?")) {
+                            dataJukir.splice(indexAsli, 1);
+                            saveToLocalStorage();
+                            renderTable();
+                        }
+                    };
+
+                    const editBtn = document.createElement('button');
+                    editBtn.textContent = "Edit Data";
+                    editBtn.type = "button"; // <- Ini penting
+                    editBtn.style.marginLeft = '10px';
+                    editBtn.onclick = () => fillFormForEdit(indexAsli);
+
+                    aksiCell.appendChild(deleteBtn);
+                    aksiCell.appendChild(editBtn);
+
+                    grandTotalSetoran += totalSetoran;
+                    grandTotalPiutang += totalKurang;
+                    counter++;
+
+                    // Baris kedua (kurang bayar)
+                    const row2 = tbody.insertRow();
+                    const labelCell = row2.insertCell();
+                    labelCell.colSpan = 8;
+                    labelCell.style.fontStyle = 'italic';
+                    labelCell.textContent = '*Catatan : (🟧) *Kurang Bayar / (🔴) *Piutang / (🔵) *Lebih Bayar Dari Target / (🟢) *Lunas';
+
+                    data.setoran.forEach((setor, bulanIndex) => {
+                        const cell = row2.insertCell();
+                        const kurang = kurangBayar[bulanIndex];
+
+                        if (setor === 0) {
+                            // Piutang = belum setor sama sekali
+                            cell.textContent = `😞 ${formatRupiah(kurang.toString(), 'Rp ')}`;
+                            cell.style.color = 'red';
+                            cell.title = 'Belum setor sama sekali (N.Piutang)';
+                        } else if (kurang > 0) {
+                            // Kurang bayar
+                            cell.textContent = `🫤 Kurang ${formatRupiah(kurang.toString(), 'Rp ')}`;
+                            cell.style.color = 'orange';
+                            cell.title = 'Kurang bayar';
+                        } else if (setor > targetPerBulan) {
+                            // Lebih bayar (WOW!)
+                            const lebihBayar = setor - targetPerBulan;
+                            cell.textContent = `🤯 WOW! ${formatRupiah(lebihBayar.toString(), 'Rp ')}`;
+                            cell.style.color = 'blue';
+                            cell.title = 'Lebih bayar dari target (Hebat!)';
+                        } else {
+                            // Lunas
+                            cell.textContent = '😁 LUNAS ';
+                            cell.style.color = 'green';
+                            cell.title = 'Sudah lunas';
+                        }
+
+                        cell.style.fontWeight = 'bold';
+                    });
+
+                    // Memeriksa apakah bulan sudah lunas
+                    const isLunas = data.status === 'Lunas';  // Misalnya status sudah ada pada data untuk menandai jika bulan sudah lunas
+
+                    const piutangCell = row2.insertCell();
+                    piutangCell.colSpan = 2;
+                    piutangCell.style.textAlign = 'center';
+                    piutangCell.style.fontWeight = 'bold';
+
+                    if (isLunas) {
+                        // Jika sudah lunas, tampilkan status lunas meskipun ada perubahan target
+                        piutangCell.textContent = '🟢 *LUNAS 😁';
+                        piutangCell.style.color = 'green';
+                        piutangCell.title = 'Pembayaran sudah pas';
+                    } else {
+                        if (selisih < 0) {
+                            // Kekurangan (Piutang)
+                            piutangCell.textContent = '😞 *Total Piutang ' + formatRupiah(Math.abs(selisih).toString(), 'Rp ');
+                            piutangCell.style.color = 'red';
+                            piutangCell.title = 'Masih ada kekurangan pembayaran';
+                        } else if (selisih > 0) {
+                            // Kelebihan
+                            piutangCell.textContent = '🔵 *Lebih Bayar 😊 ' + formatRupiah(selisih.toString(), 'Rp ');
+                            piutangCell.style.color = 'blue';
+                            piutangCell.title = 'Pembayaran melebihi target';
+                        } else {
+                            // Lunas pas
+                            piutangCell.textContent = '🟢 *LUNAS 😁';
+                            piutangCell.style.color = 'green';
+                            piutangCell.title = 'Pembayaran sudah pas';
+                        }
+                    }
+                });
+
+                // Total baris
+                const totalPiutangRow = tbody.insertRow();
+                totalPiutangRow.innerHTML = `
+        <td colspan="21" style="text-align:right; font-weight:bold;"> Jumlah Piutang Juru Parkir Zona (06) :</td>
+        <td style="font-weight:bold;">${formatRupiah(grandTotalPiutang.toString(), 'Rp ')}</td>
+        <td></td>
+    `;
+
+                const totalRow = tbody.insertRow();
+                totalRow.innerHTML = `
+        <td colspan="21" style="text-align:right; font-weight:bold;"> Jumlah Setoran Juru Parkir Zona (06) :</td>
+        <td style="font-weight:bold;">${formatRupiah(grandTotalSetoran.toString(), 'Rp ')}</td>
+        <td></td>
+    `;
+
+                const legendaRow = tbody.insertRow();
+                const legendaCell = legendaRow.insertCell();
+                legendaCell.colSpan = 24;
+                legendaCell.innerHTML = `
+        <div style="margin-top:10px; font-size: 14px;">
+            <strong>Makna Warna :</strong><br>
+            <span style="color: red; font-weight: bold;">Warna Merah :</span> Tidak ada setoran (Rp 0)<br>
+            <span style="color: orange; font-weight: bold;">Warna Oranye :</span> Setoran kurang dari target bulan<br>
+            <span style="color: blue; font-weight: bold;">Warna Biru :</span> Lebih bayar (Setoran lebih dari target)<br>
+            <span style="color: green; font-weight: bold;">Warna Hijau :</span> Setoran sesuai atau lunas
+        </div>
+    `;
+
+                // Event listener untuk input pencarian
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById('searchInput').addEventListener('input', renderTable);
+
+                    // Panggil renderTable pertama kali saat halaman dimuat
+                    renderTable();
+                });
+            }
+
+            function fillFormForEdit(index) {
+                const data = dataJukir[index];
+                editIndex = index;
+
+                document.getElementById('korlap').value = data.korlapID;
+                document.getElementById('nama').value = data.nama;
+                document.getElementById('lokasi').value = data.lokasi;
+                document.getElementById('zona').value = data.zona;
+                document.getElementById('titik').value = data.titik;
+                document.getElementById('alamat').value = data.alamat;
+                document.getElementById('setoranDisplay').value = data.setoranManual;
+                document.getElementById('keterangan').value = data.keterangan;
+
+                ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].forEach((id, i) => {
+                    document.getElementById(id).value = formatRupiah(data.setoran[i].toString(), 'Rp ');
+                });
+            }
+
+            document.getElementById('jukirForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const korlapID = editIndex === null ? generateKorlapID() : dataJukir[editIndex].korlapID;
+
+                const nama = document.getElementById('nama').value;
+                const alamat = document.getElementById('alamat').value;
+                const zona = document.getElementById('zona').value;
+                const titik = document.getElementById('titik').value;
+                const lokasi = document.getElementById('lokasi').value;
+                const setoranManual = document.getElementById('setoranDisplay').value;
+                const keterangan = document.getElementById('keterangan').value;
+
+                const bulanIds = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+                const setoran = bulanIds.map(id => parseRupiahToNumber(document.getElementById(id).value));
+                const totalSetoran = setoran.reduce((total, bulan) => total + bulan, 0);
+
+                const data = {
+                    korlapID, nama, alamat, zona, titik, lokasi,
+                    setoranManual, setoran, totalSetoran, keterangan
+                };
+
+                // Di dalam handle submit:
+                if (editIndex !== null) {
+                    const oldData = dataJukir[editIndex];
+
+                    // Simpan target lama jika berubah
+                    if (oldData.setoranManual !== setoranManual) {
+                        data.setoranManualSebelumnya = oldData.setoranManual;
+                    }
+
+                    // Jika sebelumnya lunas, simpan statusOverride
+                    const oldTarget = parseRupiahToNumber(oldData.setoranManual);
+                    const oldTotalTarget = oldTarget * 12;
+                    const oldTotalSetoran = oldData.setoran.reduce((a, b) => a + b, 0);
+
+                    if (oldTotalSetoran >= oldTotalTarget) {
+                        data.statusOverride = 'Lunas';
+                    }
+                }
+
+                if (editIndex === null) {
+                    dataJukir.push(data);
+                } else {
+                    dataJukir[editIndex] = data;
+                    editIndex = null;
+                }
+
+                saveToLocalStorage();
+                renderTable();
+                this.reset();
+
+                // Tambahkan setelah renderTable() dan this.reset()
+                const submitButton = document.querySelector('.btn-submit');
+                const btnText = submitButton.querySelector('span') || submitButton;
+
+                // Ubah tombol jadi loading
+                submitButton.disabled = true;
+                btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan Data...';
+
+                // Simulasi delay untuk UX (bisa dihapus kalau tidak perlu)
+                setTimeout(() => {
+                    // Kembalikan tombol ke kondisi semula
+                    btnText.innerHTML = 'Simpan';
+                    submitButton.disabled = false;
+
+                    // Tampilkan alert
+                    alert("Terimkasih, Data berhasil disimpan!");
+                }, 4000);
+
+            });
+
+
+            function openTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+                document.getElementById(tabId).style.display = 'block';
+            }
+
+            window.addEventListener('load', renderTable);
+
+            function exportToExcel() {
+                // Buat array header
+                const headers = [
+                    "No", "Kode Data", "Nama Jukir", "Metode Pembayaran", "Zona Parkir",
+                    "No.Titik Parkir", "Lokasi Parkir", "Target/Bulan",
+                    "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
+                    "Keterangan", "Setoran/Bulan"
+                ];
+
+                // Buat array data isi
+                const data = dataJukir.map((d, i) => {
+                    return [
+                        i + 1,
+                        d.korlapID,
+                        d.nama,
+                        d.alamat,
+                        d.zona,
+                        d.titik,
+                        d.lokasi,
+                        d.setoranManual,
+                        ...d.setoran.map(s => s), // angka bulanan
+                        d.keterangan,
+                        d.totalSetoran
+                    ];
+                });
+
+                // Gabungkan header dan data
+                const worksheetData = [headers, ...data];
+
+                // Buat worksheet dan workbook
+                const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Data Jukir");
+
+                // Simpan sebagai file Excel
+                XLSX.writeFile(workbook, "Data_Jukir_Bengkulu_2025.xlsx");
+            }
+
+            function printTable() {
+                const tableClone = document.getElementById('jukirTable').cloneNode(true);
+
+                // Hapus kolom "Aksi" dari thead
+                tableClone.querySelectorAll('thead tr').forEach(row => {
+                    row.removeChild(row.lastElementChild);
+                });
+
+                // Hapus kolom "Aksi" dari tbody
+                tableClone.querySelectorAll('tbody tr').forEach(row => {
+                    row.removeChild(row.lastElementChild);
+                });
+
+                const tableHTML = tableClone.outerHTML;
+
+                // Tanggal format Indonesia
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                const tanggalCetak = formatter.format(now);
+
+                const printWindow = window.open('', '', 'width=1000,height=800');
+                printWindow.document.write(`
+        <html>
+            <head>
+                <title>Data Retribusi Parkir Kota Bengkulu Tahun 2025</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; margin: 0; }
+                    h2 { text-align: center; font-size: 1.5em; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+                    th { background-color: #007BFF; color: white; }
+                    tbody tr:nth-child(even) { background-color: #f2f2f2; }
+                   .signature {
+                    width: 100%;
+                    margin-top: 60px;
+                    text-align: right;
+                    padding-right: 60px;
+                    font-size: 12px;
+                    line-height: 1.8;
+                 }
+                .signature .name {
+                  font-weight: bold;
+                    text-decoration: underline;
+                    }
+                .signature .ttd-space {
+                  margin: 50px 0; /* ruang untuk tanda tangan */
+                }
+                    footer {
+                        margin-top: 30px;
+                        text-align: center;
+                        font-size: 0.9em;
+                        color: #555;
+                    }
+                </style>
+            </head>
+            <body>
+                <h2>Badan Pendapatan Daerah Kota Bengkulu<br>Koordinator Lapangan Zona Parkir</h2>
+                ${tableHTML}
+                <div class="signature">
+                <p>Bengkulu, ${tanggalCetak}<br>
+                Koordinator Lapangan</p>
+                <div class="ttd-space"></div><br>
+                <p class="name">Kiki Andriyanto & Zendi Afrian Saputra, SH</p>
+                </div>
+                <footer>&copy; 2025 Pemerintah Kota Bengkulu. Semua hak dilindungi undang-undang.</footer>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.onafterprint = function() { window.close(); };
+                    };
+                <\/script>
+            </body>
+        </html>
+    `);
+                printWindow.document.close();
+            }
+        </script>
+
+</body>
+
+</html>

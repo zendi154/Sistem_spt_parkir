@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Parkir</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7fc;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group>div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .export-button {
+            background-color: #28a745;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        .export-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Form Data Juru Parkir</h2>
+    <form id="parkirForm">
+        <div class="form-group">
+            <div>
+                <label>Zona</label>
+                <input type="text" id="zona" required />
+            </div>
+            <div>
+                <label>Nomor</label>
+                <input type="text" id="nomor" required />
+            </div>
+        </div>
+        <label>Nama</label>
+        <input type="text" id="nama" required />
+        <label>Tempat, Tanggal Lahir</label>
+        <input type="text" id="ttl" required />
+        <label>Jenis Kelamin</label>
+        <select id="jk" required>
+            <option value="">Pilih</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+        </select>
+        <label>Nomor KTP</label>
+        <input type="text" id="ktp" required />
+        <label>Alamat</label>
+        <input type="text" id="alamat" required />
+        <label>Lokasi Parkir</label>
+        <input type="text" id="lokasi" required />
+        <div class="form-group">
+            <div>
+                <label>Jam Mulai (WIB)</label>
+                <input type="time" id="jamMulai" required />
+            </div>
+            <div>
+                <label>Jam Selesai (WIB)</label>
+                <input type="time" id="jamSelesai" required />
+            </div>
+        </div>
+        <label>Retribusi per Bulan (Rp)</label>
+        <input type="text" id="retribusi" required />
+        <button type="submit">Simpan</button>
+    </form>
+
+    <h2>Data Tersimpan</h2>
+    <div class="button-container">
+        <button class="export-button" onclick="exportToExcel()">Export ke Excel</button>
+    </div>
+    </form>
+
+    <!-- Tabel Data -->
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Zona</th>
+                <th>Nomor</th>
+                <th>Nama</th>
+                <th>TTL</th>
+                <th>JK</th>
+                <th>No. KTP</th>
+                <th>Alamat</th>
+                <th>Lokasi Parkir</th>
+                <th>Jam WIB</th>
+                <th>Retribusi</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('parkirForm');
+        const tableBody = document.querySelector('#dataTable tbody');
+        const retribusiInput = document.getElementById('retribusi');
+        const submitBtn = document.getElementById('submitBtn');
+
+        let dataParkir = JSON.parse(localStorage.getItem('dataParkir')) || [];
+        let indexEdit = null; // Nilai index dari data yang sedang diedit
+
+        function renderTable() {
+            tableBody.innerHTML = '';
+            dataParkir.forEach((data, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+    <td>${data.zona}</td>
+    <td>${data.nomor}</td>
+    <td>${data.nama}</td>
+    <td>${data.ttl}</td>
+    <td>${data.jk}</td>
+    <td>${data.ktp}</td>
+    <td>${data.alamat}</td>
+    <td>${data.lokasi}</td>
+    <td>${data.jamMulai} - ${data.jamSelesai}</td>
+    <td>Rp ${parseInt(data.retribusi).toLocaleString('id-ID')}</td>
+    <td>
+        <button onclick="editData(${index})">Edit</button>
+        <button onclick="deleteData(${index})">Hapus</button>
+    </td>
+`;
+            });
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const newData = {
+                zona: document.getElementById('zona').value,
+                nomor: document.getElementById('nomor').value,
+                nama: document.getElementById('nama').value,
+                ttl: document.getElementById('ttl').value,
+                jk: document.getElementById('jk').value,
+                ktp: document.getElementById('ktp').value,
+                alamat: document.getElementById('alamat').value,
+                lokasi: document.getElementById('lokasi').value,
+                jamMulai: document.getElementById('jamMulai').value,
+                jamSelesai: document.getElementById('jamSelesai').value,
+                retribusi: getRawNumber(retribusiInput.value)
+            };
+
+            if (indexEdit !== null) {
+                dataParkir[indexEdit] = newData;
+                indexEdit = null;
+                submitBtn.textContent = 'Simpan';
+            } else {
+                dataParkir.push(newData);
+            }
+
+            localStorage.setItem('dataParkir', JSON.stringify(dataParkir));
+            renderTable();
+            form.reset();
+        });
+
+        function editData(index) {
+            const data = dataParkir[index];
+            document.getElementById('zona').value = data.zona;
+            document.getElementById('nomor').value = data.nomor;
+            document.getElementById('nama').value = data.nama;
+            document.getElementById('ttl').value = data.ttl;
+            document.getElementById('jk').value = data.jk;
+            document.getElementById('ktp').value = data.ktp;
+            document.getElementById('alamat').value = data.alamat;
+            document.getElementById('lokasi').value = data.lokasi;
+            document.getElementById('jamMulai').value = data.jamMulai;
+            document.getElementById('jamSelesai').value = data.jamSelesai;
+            retribusiInput.value = formatRupiah(data.retribusi);
+
+            indexEdit = index;
+            submitBtn.textContent = 'Update';
+        }
+
+        retribusiInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value ? formatRupiah(value) : '';
+        });
+
+        function getRawNumber(rupiahText) {
+            return rupiahText.replace(/\D/g, '');
+        }
+
+        function formatRupiah(value) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
+
+        function deleteData(index) {
+            if (confirm("Yakin ingin menghapus data ini?")) {
+                dataParkir.splice(index, 1);
+                localStorage.setItem('dataParkir', JSON.stringify(dataParkir));
+                location.reload(); // reset halaman otomatis
+            }
+        }
+
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(document.getElementById('dataTable'));
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Parkir');
+            XLSX.writeFile(wb, 'Data_Juru_Parkir.xlsx');
+        }
+
+        renderTable();
+    </script>
+
+</body>
+
+</html>
