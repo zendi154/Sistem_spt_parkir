@@ -1,5 +1,4 @@
 ﻿# Sistem_spt_parkir
-<!DOCTYPE html>
 <html lang="id">
 
 <head>
