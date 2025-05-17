@@ -2,961 +2,876 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Fomulir_RetribusiParkir</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>Kakulator Moderen</title>
+    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        /* Base styles */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            padding: 20px;
-            text-align: center;
-            background-color: #f4f6f8;
-            color: #333;
-        }
-
-        .navbar {
-            background-color: #007BFF;
-            padding: 10px 20px;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: auto;
-            flex-wrap: wrap;
-        }
-
-        .navbar-brand {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .navbar-menu {
-            list-style: none;
-            display: flex;
-            gap: 20px;
+        /* Reset dasar */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #323232e5;
         }
 
-        .navbar-menu li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-menu li a:hover {
-            color: #d4e6fb;
-        }
-
-        /* Optional: Responsive for smaller screens */
-        @media (max-width: 768px) {
-            .navbar-container {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .navbar-menu {
-                flex-direction: column;
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            .navbar-menu li {
-                margin: 5px 0;
-            }
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #62f265, #133ff0, #f93f8f);
-            margin: 0;
-            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #ebeef0;
+        }
+
+        #formNakes {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Kontainer utama */
+        main {
+            flex: 1;
+            padding-bottom: 2rem;
+            /* agar tidak tertabrak footer saat scroll */
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            background: #007bff;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            text-align: center;
+            letter-spacing: 1.5px;
+            box-shadow: 0 2px 5px rgb(0 123 255 / 0.4);
+            z-index: 1000;
+            /* supaya selalu di atas */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 2rem auto 4rem;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem 3rem;
+            box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+        }
+
+        /* Heading */
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #222;
+        }
+
+        .form-group {
+            border: 1px solid #ccc;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            max-width: 500px;
+        }
+
+        .form-group>div {
+            margin-bottom: 12px;
+        }
+
+        .form-group>div:first-child {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
             color: #333;
         }
 
-        h2 {
-            text-align: center;
-            color: #0d47a1;
-            margin-bottom: 30px;
-            background-color: #bbdefb;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            font-size: 20px;
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
         }
 
-        table {
+        .form-group input[type="text"],
+        .form-group input[type="time"],
+        .form-group select {
             width: 100%;
-            max-width: 1100px;
-            margin: 0 auto 40px;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 15px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
         }
 
-        table th,
-        table td {
-            border: 1px solid #ddd;
-            padding: 8px 6px;
-            text-align: center;
-            font-size: 12px;
-            transition: background-color 0.3s ease;
+        .form-group input[type="text"]:focus,
+        .form-group input[type="time"]:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            background-color: #fff;
         }
 
-        thead th {
-            background-color: #0d47a1;
-            color: #ffffff;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 13px;
+        /* Kalau kamu mau tombol tambahNakes dan form lebih rapih */
+        #formNakes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        thead tr:nth-child(2) th {
-            background-color: #1976d2;
-            font-weight: normal;
-            font-size: 12px;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #e3f2fd;
-            /* Lebih lembut dan cerah */
-        }
-
-        tbody tr:hover {
-            background-color: #7fea68;
-            /* Warna biru cerah saat hover */
-            transform: scale(1.01);
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        th[colspan="12"],
-        th[colspan="8"],
-        td[colspan="8"],
-        th[colspan="2"],
-        td[colspan="2"] {
-            background-color: rgb(249, 212, 3);
-            /* Biru lebih terang dengan transparansi */
-            color: rgb(39, 38, 38);
-            /* Menjaga teks tetap kontras */
-            font-weight: bold;
-            /* Menambahkan border untuk tepi yang lebih menonjol */
-        }
-
-        tfoot {
-            background-color: #2f2f30;
-            /* Biru gelap dengan sedikit gradasi */
-            color: white;
-            /* Teks footer yang jelas */
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-
-            table,
-            thead,
-            tbody,
-            th,
-            td,
-            tr {
-                display: block;
+        /* Responsif (mobile) */
+        @media (max-width: 600px) {
+            .form-group>div {
+                flex: 1 1 100%;
             }
 
-            thead tr {
-                display: none;
-            }
-
-            tbody td {
-                text-align: right;
-                padding-left: 60%;
-                position: relative;
-            }
-
-            tbody td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 10px;
-                width: 45%;
-                padding-left: 10px;
-                font-weight: bold;
+            .form-group label {
+                width: 110px;
                 text-align: left;
             }
         }
 
-        /* Styling umum untuk form */
-        .form-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            user-select: none;
         }
 
-        /* Tombol print */
-        .no-print {
-            background-color: #007bff;
+        input[type="date"],
+        input[type="text"],
+        input[type="number"],
+        select {
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            outline-offset: 2px;
+        }
+
+        input[type="date"]:focus,
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 6px #007bffaa;
+        }
+
+        /* Button styling */
+        button {
+            cursor: pointer;
+            background: #007bff;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            padding: 0.7rem 1.4rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            margin-right: 1rem;
+            box-shadow: 0 4px 10px rgb(0 123 255 / 0.4);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            user-select: none;
         }
 
-        .no-print:hover {
-            background-color: #0056b3;
+        button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
         }
 
-        .no-print i {
-            margin-right: 8px;
+        button:active {
+            transform: translateY(0);
         }
 
-        /* Styling for the search wrapper */
-        .search-wrapper {
-            position: relative;
-            width: 300px;
-            /* Atur lebar sesuai kebutuhan */
-            margin: 20px 0;
+        /* Loading text */
+        #loading {
+            color: #ff6600;
+            font-weight: 600;
+            margin: 1rem 0;
         }
 
-        /* Icon styling */
-        .search-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px;
-            color: #007bff;
+        /* Total honor text */
+        #totalHonorText {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #28a745;
         }
 
-        /* Styling input field */
-        .search-input {
-            width: 100%;
-            padding: 12px 12px 12px 30px;
-            /* Memberikan ruang untuk ikon */
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-            transition: padding 0.2s ease, font-size 0.2s ease, transform 0.2s ease;
+        /* Filter Box Container tetap sama */
+        .filter-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin: 1.5rem auto;
+            max-width: 1000px;
+        }
+
+        .filter-container h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
             color: #333;
-            /* Pastikan teks input dapat terlihat */
         }
 
-        /* Shrinking placeholder effect when typing */
-        .search-input:focus {
-            padding-left: 30px;
-            /* Memberikan ruang untuk ikon tetap */
-            font-size: 14px;
-            /* Tetap ukuran font normal saat fokus */
+        /* Filter row style */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: space-between;
         }
 
-        .search-input:focus::placeholder {
-            transform: translateY(-20px);
-            font-size: 12px;
-            color: #007bff;
-            /* Warna placeholder saat fokus */
-            transition: transform 0.2s ease, font-size 0.2s ease;
+        /* Ubah form-group jadi flex row */
+        .filter-row .form-group {
+            flex: 1 1 45%;
+            display: flex;
+            align-items: center;
+            /* vertical center */
+            gap: 1rem;
         }
 
-        /* Styling for placeholder */
-        .search-input::placeholder {
-            color: #888;
-            /* Warna placeholder default */
-            font-size: 14px;
-            /* Ukuran font normal untuk placeholder */
-            transition: transform 0.2s ease, font-size 0.2s ease;
+        /* Label dibuat lebar tetap agar sejajar rapi */
+        .filter-row label {
+            width: 140px;
+            /* sesuaikan dengan kebutuhan */
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 0;
+            /* hapus margin bawah karena sudah sejajar */
         }
 
-        /* Placeholder animation */
-        .search-input:focus::placeholder {
-            transform: translateY(-20px);
-            /* Placeholder naik saat fokus */
-            font-size: 12px;
-            /* Ukuran font placeholder saat fokus */
+        /* Select isi full sisa ruang */
+        .filter-row select {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
         }
 
-        /* Responsif untuk perangkat kecil */
-        @media (max-width: 768px) {
-            .form-toolbar {
+        /* Responsif HP: stack vertikal lagi */
+        @media (max-width: 600px) {
+            .filter-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .filter-row .form-group {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .search-wrapper {
+            .filter-row label {
                 width: 100%;
-                margin-top: 10px;
+                margin-bottom: 0.5rem;
             }
 
-            .no-print {
+            .filter-row select {
                 width: 100%;
-                margin-bottom: 10px;
+                flex: none;
+            }
+
+            .filter-container {
+                padding: 1rem;
+                margin: 1rem;
             }
         }
 
-        /* Tata letak horizontal */
-        .form-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            /* Supaya tetap rapi di layar kecil */
+
+        /* Horizontal line */
+        hr {
+            margin: 2rem 0;
+            border: none;
+            border-top: 1.5px solid #ddd;
+        }
+
+        .container-hasil {
+            margin: 40px auto;
+            padding: 20px;
+            max-width: 100%;
+            background-color: #fdfdfd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-hasil h3 {
             margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+            font-weight: 600;
         }
 
-        /* Tombol cetak */
-        @media print {
-            body * {
-                visibility: hidden;
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        #hasilTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        #hasilTable th,
+        #hasilTable td {
+            border: 1px solid #ddd;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        #hasilTable th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        #hasilTable tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #hasilTable tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+
+        /* Responsif */
+
+        /* Tablet (min-width 600px) */
+        @media (min-width: 600px) {
+
+            .form-group,
+            label+select {
+                flex-direction: row;
+                align-items: center;
             }
 
-            #printArea,
-            #printArea * {
-                visibility: visible;
+            .form-group label {
+                width: 220px;
+                margin-bottom: 0;
+                padding-right: 1rem;
+                text-align: right;
             }
 
-            #printArea {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
+            label+select {
+                margin-right: 2rem;
+                margin-bottom: 0;
             }
+        }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 11px;
-            }
-
-            th,
-            td {
-                border: 1px solid black;
-                padding: 4px;
-                text-align: center;
-            }
-
-            .no-print {
-                display: none;
+        /* Mobile (max-width 599px) */
+        @media (max-width: 599px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem 1.5rem;
             }
 
             h2 {
-                font-size: 16px;
+                font-size: 1.4rem;
                 text-align: center;
-                margin-bottom: 10px;
             }
+
+            button {
+                width: 100%;
+                margin: 0.4rem 0;
+            }
+
+            label+select {
+                width: 100%;
+                margin: 0.5rem 0 1rem 0;
+                min-width: auto;
+            }
+
+            .form-group label {
+                margin-bottom: 0.4rem;
+                text-align: left;
+                width: 100%;
+                padding-right: 0;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .container-hasil {
+                padding: 15px;
+            }
+
+            #hasilTable th,
+            #hasilTable td {
+                font-size: 12px;
+                padding: 10px 6px;
+            }
+        }
+
+        /* Aksi tombol dalam tabel */
+        table button {
+            background: #6457f8;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            box-shadow: none;
+            margin: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        table button:hover {
+            background: #a71d2a;
+        }
+
+        /* Footer */
+        footer {
+            background: #222;
+            color: #ccc;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            user-select: none;
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <h1>
-                <div class="navbar-brand">Selamat datang di Sistem SPT Parkir</div>
-            </h1>
-            <ul class="navbar-menu">
-                <li><a href="index.html">Beranda</a></li>
-            </ul>
-        </div>
+    <nav>
+        Kakulator Moderen
     </nav>
+    <div class="container">
+        <h2><i class="fas fa-clipboard-list"></i> Pembagian Hasil Dinas P, S, M, Tenaga Kesehatan RSUD Tais <br> Ruangan
+            Kebidanan</h2>
+        <hr>
+        <p><i class="fas fa-info-circle"></i> <em>Pembagian berdasarkan status dinas & jumlah jam kerja nakes</em></p>
+        <br>
+        <hr>
+        <div class="form-group">
+            <label>-Nominal Penerimaan Bpjs :</label>
+            <label for="totalHonor"></label>
+            <input id="totalHonor" oninput="handleHonorInput(this)" placeholder="Masukkan Hanya Angka..." />
+        </div>
+        <hr>
+        <p><strong><i class="fas fa-coins"></i> Total Insentif Terbagi:</strong> <span id="totalHonorText">Rp0</span>
+        </p>
+        <hr>
+        <div class="form-group">
+            <label>-Tanggal Penerimaan Bpjs :</label>
+            <label for="tanggalHonor"></label>
+            <input type="date" id="tanggalHonor" required />
+        </div>
+        <hr>
+        <div class="button-group">
+            <button onclick="tambahNakes()"><i class="fas fa-user-plus"></i> Tambah Nakes</button>
+            <button onclick="hitungHonor()"><i class="fas fa-calculator"></i> Hitung/Simpan</button>
+            <button id="batalEdit" onclick="batalEdit()" style="display:none;"><i class="fas fa-times-circle"></i>
+                Batal</button>
+            <button onclick="eksporPDF()"><i class="fas fa-file-pdf"></i> Ekspor PDF</button>
+            <button onclick="eksporExcel()"><i class="fas fa-file-excel"></i>Ekspor Excel</button>
+        </div><br>
 
-    <form id="jukirForm" class="form-toolbar">
-        <input type="hidden" id="korlap">
+        <hr>
 
-        <button class="no-print" onclick="printTable()">
-            <i class="fas fa-print"></i> Print
-        </button>
+        <div id="formNakes"></div>
 
-        <div class="search-wrapper">
-            <i class="search-icon fas fa-search"></i>
-            <input type="text" id="searchInput" class="search-input"
-                placeholder="Cari Data Nama Juru Parkir / Lokasi Parkir" oninput="renderTable()" />
+        <hr>
+
+        <p id="loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Menghitung pembagian Insentif, mohon
+            tunggu...</p>
+
+        <br>
+        <div class="filter-container">
+            <h3><i class="fas fa-filter"></i> Filter Data Honor Nakes</h3>
+            <div class="filter-row">
+                <div class="form-group">
+                    <label for="filterBulan"><i class="fas fa-calendar-alt"></i> Pilih Bulan</label>
+                    <select id="filterBulan" onchange="filterBulanTahun()">
+                        <option value="">Semua Bulan</option>
+                        <option value="01">Januari</option>
+                        <option value="02">Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label for="filterTahun"><i class="fas fa-calendar"></i> Pilih Tahun</label>
+                    <select id="filterTahun" onchange="filterBulanTahun()">
+                        <option value="">Semua Tahun</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
-        <h2><i class="fas fa-table"></i>
-            Data Retribusi Parkir Tepi Jalan Umum Kota Bengkulu ZONA 06</h2>
-        <table id="jukirTable">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Jukir</th>
-                    <th>Lokasi Tugas Parkir</th>
-                    <th>Zona<br>Parkir</th>
-                    <th>No. Titik<br>Parkir</th>
-                    <th>Target/Bulan</th>
-                    <th colspan="12">Status Pembayaran Dalam 12 Bulan</th>
-                    <th>Pesan<br>(System)</th>
-                    <th>Total Setoran</th>
-                </tr>
-                <tr>
-                    <td colspan="6"></td>
-                    <th>Jan</th>
-                    <th>Feb</th>
-                    <th>Mar</th>
-                    <th>Apr</th>
-                    <th>Mei</th>
-                    <th>Jun</th>
-                    <th>Jul</th>
-                    <th>Agu</th>
-                    <th>Sep</th>
-                    <th>Okt</th>
-                    <th>Nov</th>
-                    <th>Des</th>
-                    <td colspan="2"></td>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <script src="script.js"></script>
-
-        <script>
-            let dataJukir = JSON.parse(localStorage.getItem('dataJukir')) || [];
-            let editIndex = null;
-
-            function saveToLocalStorage() {
-                localStorage.setItem('dataJukir', JSON.stringify(dataJukir));
-            }
-
-            // Format input setoranDisplay menjadi rupiah saat diketik
-            document.addEventListener('DOMContentLoaded', function () {
-                const setoranInput = document.getElementById('setoranDisplay');
-
-                setoranInput.addEventListener('input', function (e) {
-                    // Ambil hanya angka
-                    let value = this.value.replace(/[^,\d]/g, '');
-                    // Tampilkan dalam format Rp
-                    this.value = formatRupiah(value, 'Rp ');
-                });
-            });
-
-            function formatRupiah(angka, prefix) {
-                const number_string = angka.replace(/[^,\d]/g, '').toString();
-                const split = number_string.split(',');
-                const sisa = split[0].length % 3;
-                let rupiah = split[0].substr(0, sisa);
-                const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-                if (ribuan) rupiah += (sisa ? '.' : '') + ribuan.join('.');
-                return prefix + rupiah + (split[1] !== undefined ? ',' + split[1] : '');
-            }
-
-            // Fungsi untuk format nominal menjadi Rupiah
-            function formatRupiah(angka) {
-                var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                }
-
-                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-                return 'Rp ' + rupiah;
-            }
-
-            // Fungsi untuk menangani input di setiap bulan
-            function updateRupiahInput() {
-                var inputs = document.querySelectorAll('.rupiah-input');
-                inputs.forEach(input => {
-                    input.addEventListener('input', function () {
-                        var angka = this.value;
-                        this.value = formatRupiah(angka);
-                    });
-                });
-            }
-
-            // Memanggil fungsi updateRupiahInput untuk menangani setiap input
-            updateRupiahInput();
-
-            function parseRupiahToNumber(rupiah) {
-                return parseInt(rupiah.replace(/[^0-9]/g, ''), 10) || 0;
-            }
-
-            function generateKorlapID() {
-                const today = new Date();
-                const dd = String(today.getDate()).padStart(2, '0');
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const yyyy = today.getFullYear();
-                const kode = Math.floor(100 + Math.random() * 900);
-                return `P.3.KLP.${dd}${mm}${yyyy}.${kode}`;
-            }
-
-            function hitungKurangBayar(targetPerBulan, setoranBulanan) {
-                return setoranBulanan.map(setor => targetPerBulan - setor);
-            }
-
-            function renderTable() {
-                const tbody = document.querySelector('#jukirTable tbody');
-                tbody.innerHTML = '';  // Clear existing rows
-                let counter = 1;
-                let grandTotalSetoran = 0;
-                let grandTotalPiutang = 0;
-
-                const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
-
-                const filteredData = dataJukir.filter(data =>
-                    data.nama.toLowerCase().includes(keyword) ||
-                    data.lokasi.toLowerCase().includes(keyword) ||
-                    data.zona.toLowerCase().includes(keyword)
-                );
-
-                // Check if no data is found after filtering
-                if (filteredData.length === 0) {
-                    alert('Mohon Maaf Data tidak ditemukan!');
-                }
-
-                filteredData.forEach((data) => {
-                    const indexAsli = dataJukir.indexOf(data); // Index asli di array utama
-
-                    const row1 = tbody.insertRow();
-                    row1.innerHTML = `
-                    <td>${counter}</td>
-                    <td>${data.nama}</td>
-                    <td>${data.lokasi}</td>
-                    <td>${data.zona}</td>
-                    <td>${data.titik}</td>
-                    <td>${data.setoranManual}</td>
-                    `;
-
-                    data.setoran.forEach(setor => {
-                        const cell = row1.insertCell();
-                        cell.textContent = formatRupiah(setor.toString(), 'Rp ');
-                        cell.style.color = (setor === 0) ? 'red' : 'darkgreen';
-                        cell.style.fontWeight = 'medium';
-                    });
-
-                    const targetPerBulan = parseRupiahToNumber(data.setoranManual);
-                    const totalSetoran = data.setoran.reduce((a, b) => a + b, 0);
-                    const kurangBayar = hitungKurangBayar(targetPerBulan, data.setoran);
-                    const totalKurang = kurangBayar.reduce((a, b) => a + b, 0);
-                    const totalTarget = targetPerBulan * data.setoran.length;
-                    const selisih = totalSetoran - totalTarget;
-
-                    const bulanSekarang = new Date().getMonth(); // 0 = Januari
-                    const triwulanSekarang = Math.floor(bulanSekarang / 3) + 1;
-
-                    const namaBulan = [
-                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                    ];
-
-                    // 🔢 Inisialisasi data triwulan
-                    const triwulanData = {
-                        1: [],
-                        2: [],
-                        3: [],
-                        4: []
-                    };
-
-                    // ✅ Kelompokkan bulan yang belum lunas, tapi hanya sampai triwulan sekarang
-                    for (let i = 0; i < 12; i++) {
-                        const triwulanKe = Math.floor(i / 3) + 1;
-                        if (triwulanKe > triwulanSekarang) continue; // Jangan tampilkan triwulan berikutnya
-
-                        const setor = data.setoran[i] || 0;
-                        if (setor < targetPerBulan) {
-                            triwulanData[triwulanKe].push(namaBulan[i]);
-                        }
-                    }
-
-                    // Hapus triwulan 1 jika sudah lunas semua
-                    if (triwulanData[1].length === 0) {
-                        delete triwulanData[1];
-                    }
-
-                    const triwulanBelumLunas = Object.entries(triwulanData)
-                        .filter(([_, bulan]) => bulan.length > 0)
-                        .map(([tw, bulan]) => `Triwulan.${tw}_📌(${bulan.join(', ')})`);
-
-                    // ✅ Tentukan status
-                    let status = '';
-
-                    // Jika ada override lunas dari data lama, tetap anggap lunas
-                    if (data.statusOverride === 'Lunas') {
-                        status = 'Lunas';
-                    } else {
-                        if (totalSetoran === 0) {
-                            status = 'Piutang 😞';
-                        } else if (totalKurang === 0) {
-                            status = 'Lunas 😁';
-                            data.setoran = data.setoran.map(setor => setor === 0 ? targetPerBulan : setor); // pelunasan otomatis
-                        } else if (triwulanBelumLunas.length > 0) {
-                            status = '⚠️';
-                        } else if (data.setoran[bulanSekarang] < targetPerBulan) {
-                            status = 'Proses (Bulan Berjalan)';
-                        } else {
-                            status = 'Proses Bayar';
-                        }
-                    }
-
-                    // 🖨️ Tampilkan ke keterangan
-                    const keteranganCell = row1.insertCell();
-                    keteranganCell.style.fontSize = '13px';
-
-                    let keteranganText = status;
-
-                    // Tambahkan catatan perubahan target jika ada
-                    if (data.setoranManualSebelumnya && data.setoranManual !== data.setoranManualSebelumnya) {
-                        keteranganText += `\n 🔄 Target berubah dari ${data.setoranManualSebelumnya} Menjadi ${data.setoranManual}`;
-                    }
-
-                    // Tambahkan info bulan belum lunas (selain Triwulan 1 yang sudah dihapus)
-                    if (status === '⚠️' && triwulanBelumLunas.length > 0) {
-                        keteranganText += '\n' + triwulanBelumLunas.join('\n');
-                    }
-
-                    keteranganCell.textContent = keteranganText;
-                    keteranganCell.style.whiteSpace = 'pre-line';
-                    keteranganCell.style.color = {
-                        'Lunas 😁': 'green',
-                        'Proses Bayar': 'orange',
-                        'Piutang 😞': 'red',
-                        '⚠️': '#cc3300',
-                        'Proses (Bulan Berjalan)': '#FF9900'
-                    }[status];
-
-                    if (triwulanBelumLunas.length > 0) {
-                        keteranganCell.title = `*Belum lunas ${triwulanBelumLunas.join(', ')}`;
-                    }
-
-                    row1.insertCell().textContent = formatRupiah(totalSetoran.toString(), 'Rp ');
-
-                    grandTotalSetoran += totalSetoran;
-                    grandTotalPiutang += totalKurang;
-                    counter++;
-
-                    // Baris kedua (kurang bayar)
-                    const row2 = tbody.insertRow();
-                    const labelCell = row2.insertCell();
-                    labelCell.colSpan = 6;
-                    labelCell.style.fontStyle = 'italic';
-                    labelCell.textContent = '*Catatan : (🟧) Kurang Bayar / (🔴) Piutang / (🔵) Lebih Bayar / (🟢) Lunas';
-
-                    data.setoran.forEach((setor, bulanIndex) => {
-                        const cell = row2.insertCell();
-                        const kurang = kurangBayar[bulanIndex];
-
-                        if (setor === 0) {
-                            // Piutang = belum setor sama sekali
-                            cell.textContent = `😞 ${formatRupiah(kurang.toString(), 'Rp ')}`;
-                            cell.style.color = 'red';
-                            cell.title = 'Belum Ada setoran sama sekali (Piutang) 😞';
-                        } else if (kurang > 0) {
-                            // Kurang bayar
-                            cell.textContent = `🫤 Kurang ${formatRupiah(kurang.toString(), 'Rp ')}`;
-                            cell.style.color = 'orange';
-                            cell.title = 'Kurang bayar 🫤';
-                        } else if (setor > targetPerBulan) {
-                            // Lebih bayar (WOW!)
-                            const lebihBayar = setor - targetPerBulan;
-                            cell.textContent = `🤯 WOW! ${formatRupiah(lebihBayar.toString(), 'Rp ')}`;
-                            cell.style.color = 'blue';
-                            cell.title = 'Kamu Lebih bayar dari target (Hebat!) 🤯';
-                        } else {
-                            // Lunas
-                            cell.textContent = '😁 LUNAS ';
-                            cell.style.color = 'green';
-                            cell.title = 'Terimakasih, Telah Membayar Pajak 😁 ';
-                        }
-
-                        cell.style.fontWeight = 'bold';
-                    });
-
-                    // Memeriksa apakah bulan sudah lunas
-                    const isLunas = data.status === 'Lunas';  // Misalnya status sudah ada pada data untuk menandai jika bulan sudah lunas
-
-                    const piutangCell = row2.insertCell();
-                    piutangCell.colSpan = 2;
-                    piutangCell.style.textAlign = 'center';
-                    piutangCell.style.fontWeight = 'bold';
-
-                    if (isLunas) {
-                        // Jika sudah lunas, tampilkan status lunas meskipun ada perubahan target
-                        piutangCell.textContent = '🟢 *LUNAS 😁';
-                        piutangCell.style.color = 'green';
-                        piutangCell.title = 'Pembayaran sudah pas';
-                    } else {
-                        if (selisih < 0) {
-                            // Kekurangan (Piutang)
-                            piutangCell.textContent = '😞 *Total Piutang ' + formatRupiah(Math.abs(selisih).toString(), 'Rp ');
-                            piutangCell.style.color = 'red';
-                            piutangCell.title = 'Masih ada kekurangan pembayaran';
-                        } else if (selisih > 0) {
-                            // Kelebihan
-                            piutangCell.textContent = '🔵 *Lebih Bayar 😊 ' + formatRupiah(selisih.toString(), 'Rp ');
-                            piutangCell.style.color = 'blue';
-                            piutangCell.title = 'Pembayaran melebihi target';
-                        } else {
-                            // Lunas pas
-                            piutangCell.textContent = '🟢 *LUNAS 😁';
-                            piutangCell.style.color = 'green';
-                            piutangCell.title = 'Pembayaran sudah pas';
-                        }
-                    }
-                });
-
-                // Total baris
-                const totalPiutangRow = tbody.insertRow();
-                totalPiutangRow.innerHTML = `
-        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Piutang Juru Parkir Zona (06) :</td>
-        <td style="font-weight:bold;">${formatRupiah(grandTotalPiutang.toString(), 'Rp ')}</td>
-        <td></td>
-    `;
-
-                const totalRow = tbody.insertRow();
-                totalRow.innerHTML = `
-        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Setoran Juru Parkir Zona (06) :</td>
-        <td style="font-weight:bold;">${formatRupiah(grandTotalSetoran.toString(), 'Rp ')}</td>
-        <td></td>
-    `;
-
-                const legendaRow = tbody.insertRow();
-                const legendaCell = legendaRow.insertCell();
-                legendaCell.colSpan = 24;
-                legendaCell.innerHTML = `
-        <div style="margin-top:10px; font-size: 14px;">
-            <strong>Makna Warna :</strong><br>
-            <span style="color: red; font-weight: bold;">Warna Merah :</span> Tidak ada setoran (Rp 0)<br>
-            <span style="color: orange; font-weight: bold;">Warna Oranye :</span> Setoran kurang dari target bulan<br>
-            <span style="color: blue; font-weight: bold;">Warna Biru :</span> Lebih bayar (Setoran lebih dari target)<br>
-            <span style="color: green; font-weight: bold;">Warna Hijau :</span> Setoran sesuai atau lunas
-        </div>
-    `;
-
-                // Event listener untuk input pencarian
-                document.addEventListener("DOMContentLoaded", () => {
-                    document.getElementById('searchInput').addEventListener('input', renderTable);
-
-                    // Panggil renderTable pertama kali saat halaman dimuat
-                    renderTable();
-                });
-            }
-
-            function fillFormForEdit(index) {
-                const data = dataJukir[index];
-                editIndex = index;
-
-                document.getElementById('nama').value = data.nama;
-                document.getElementById('lokasi').value = data.lokasi;
-                document.getElementById('zona').value = data.zona;
-                document.getElementById('titik').value = data.titik;
-                document.getElementById('setoranDisplay').value = data.setoranManual;
-                document.getElementById('keterangan').value = data.keterangan;
-
-                ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].forEach((id, i) => {
-                    document.getElementById(id).value = formatRupiah(data.setoran[i].toString(), 'Rp ');
-                });
-            }
-
-            document.getElementById('jukirForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                const korlapID = editIndex === null ? generateKorlapID() : dataJukir[editIndex].korlapID;
-
-                const nama = document.getElementById('nama').value;
-                const zona = document.getElementById('zona').value;
-                const titik = document.getElementById('titik').value;
-                const lokasi = document.getElementById('lokasi').value;
-                const setoranManual = document.getElementById('setoranDisplay').value;
-                const keterangan = document.getElementById('keterangan').value;
-
-                const bulanIds = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
-                const setoran = bulanIds.map(id => parseRupiahToNumber(document.getElementById(id).value));
-                const totalSetoran = setoran.reduce((total, bulan) => total + bulan, 0);
-
-                const data = {
-                    nama, alamat, zona, titik, lokasi,
-                    setoranManual, setoran, totalSetoran, keterangan
-                };
-
-                // Di dalam handle submit:
-                if (editIndex !== null) {
-                    const oldData = dataJukir[editIndex];
-
-                    // Simpan target lama jika berubah
-                    if (oldData.setoranManual !== setoranManual) {
-                        data.setoranManualSebelumnya = oldData.setoranManual;
-                    }
-
-                    // Jika sebelumnya lunas, simpan statusOverride
-                    const oldTarget = parseRupiahToNumber(oldData.setoranManual);
-                    const oldTotalTarget = oldTarget * 12;
-                    const oldTotalSetoran = oldData.setoran.reduce((a, b) => a + b, 0);
-
-                    if (oldTotalSetoran >= oldTotalTarget) {
-                        data.statusOverride = 'Lunas';
-                    }
-                }
-
-                if (editIndex === null) {
-                    dataJukir.push(data);
-                } else {
-                    dataJukir[editIndex] = data;
-                    editIndex = null;
-                }
-
-                saveToLocalStorage();
-                renderTable();
-                this.reset();
-
-                // Tambahkan setelah renderTable() dan this.reset()
-                const submitButton = document.querySelector('.btn-submit');
-                const btnText = submitButton.querySelector('span') || submitButton;
-
-                // Ubah tombol jadi loading
-                submitButton.disabled = true;
-                btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan Data...';
-
-                // Simulasi delay untuk UX (bisa dihapus kalau tidak perlu)
-                setTimeout(() => {
-                    // Kembalikan tombol ke kondisi semula
-                    btnText.innerHTML = 'Simpan';
-                    submitButton.disabled = false;
-
-                    // Tampilkan alert
-                    alert("Terimkasih, Data berhasil disimpan!");
-                }, 4000);
-
-            });
-
-            function openTab(tabId) {
-                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-                document.getElementById(tabId).style.display = 'block';
-            }
-
-            window.addEventListener('load', renderTable);
-
-            function printTable() {
-                const originalContent = document.body.innerHTML;
-                const printContent = document.getElementById('jukirTable').outerHTML;
-
-                // Mengambil tanggal saat ini
-                const today = new Date();
-                const formattedDate = today.toLocaleDateString('id-ID', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                });
-
-                // Style untuk cetakan
-                const style = `
-    <style>
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 20mm 25mm 20mm 25mm; /* top, right, bottom, left */
-            }
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
-
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 12px; 
-        }
-
-        th, td { 
-            border: 1px solid black; 
-            padding: 6px; 
-            text-align: center; 
-        }
-
-        h2 { 
-            text-align: center; 
-            font-size: 16px; 
-            margin-bottom: 20px; 
-        }
-
-        .header, .footer { 
-            text-align: center; 
-            font-size: 14px; 
-            margin-top: 10px; 
-        }
-
-         table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        margin-bottom: 60px; /* agar footer tidak menindih tabel */
+        <hr>
+
+        <div class="container-hasil">
+            <h3>📋 Table Data Hasil Pembagian Insentif Rsud Tais Ruangan Kebidanan</h3>
+            <div class="table-wrapper">
+                <table id="hasilTable" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>ID Inputan Data </th>
+                            <th>Nama Nakes</th>
+                            <th>Jadwal Dinas</th>
+                            <th>Dari Pukul (Wib)</th>
+                            <th>Sampai Pukul (Wib)</th>
+                            <th>Hitungan Jam</th>
+                            <th>Persentase (%)</th>
+                            <th>Total Pembagian</th>
+                            <th>Tanggal Penerimaan (BPJS)</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            </main>
+            <hr>
+            <footer>
+                &copy; 2025 Provinder : Zendi Afrian Saputra,S.H | &copy; 2024 Disigen By : BlackswanPictured | Hak
+                Cipta Dilindungi
+                Undang-Undang
+            </footer>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</body>
+
+<script>
+    let nakesData = JSON.parse(localStorage.getItem('nakesData')) || [];
+
+    function handleHonorInput(el) {
+        let number = el.value.replace(/[^0-9]/g, '');
+        localStorage.setItem("totalHonorValue", number); // Simpan nilai bersih
+        el.value = new Intl.NumberFormat("id-ID").format(number);
     }
 
-    .footer {
-        text-align: center;
-        font-size: 12px;
-        margin-top: 20px;
+    function parseRupiah(str) {
+        return parseInt(str.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
     }
 
-        .signature {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
+    function getOrCreateID(nama) {
+        let idMap = JSON.parse(localStorage.getItem("idMap")) || {};
+        if (!idMap[nama]) {
+            idMap[nama] = "NK." + Date.now() + Math.floor(Math.random() * 1000);
+            localStorage.setItem("idMap", JSON.stringify(idMap));
         }
-    </style>
-`;
+        return idMap[nama];
+    }
 
-                // Membuka jendela baru untuk cetakan
-                const printWindow = window.open('', '', 'width=1000,height=800');
-                printWindow.document.write(`<html><head><title>Cetak Tabel</title>${style}</head><body>`);
-
-                // Menambahkan Header
-                printWindow.document.write(`
-        <div class="header">
-            <h2>Pemerintah Kota Bengkulu <br> Badan Pendaparan Daerah <br> Laporan Retribusi Parkir ZONA 06</h2>
-            <p>Tanggal Cetak: ${formattedDate}</p>
+    function tambahNakes() {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.innerHTML = `
+        <div>
+        <label> Fomulir Inputan Data :</label>
         </div>
-    `);
-
-                // Menambahkan Tabel
-                printWindow.document.write(printContent);
-
-                // Menambahkan Footer
-                printWindow.document.write(`
-    <div class="footer">
-        <p>Powered by Sistem : &copy; 2025 BlackSwanPictured.Com_Semua hak dilindungi undang-undang.</p>
-    </div>
-`);
-
-                // Menambahkan Tanda Tangan
-                printWindow.document.write(`
-        <div class="signature">
-            <p>Koordinator, <br>
-             Parkir Zona 6 </p>
-            <br><br><br>
-            <p>Kiki Andriyanto | Zendi Afrian Saputra, S.H</p>
+        <div>
+            <label>*Nama Lengkap :</label>
+            <input type="text" placeholder="Nama Nakes" class="nama" required>
         </div>
-    `);
+        <div>
+            <label>*Pilih Jadwal Dinas :</label>
+            <select class="status" required>
+                <option value="" disabled selected>Pilih</option>
+                <option value="Pagi">Pagi</option>
+                <option value="Sore">Sore</option>
+                <option value="Malam">Malam</option>
+            </select>
+        </div>
+        <div>
+            <label>*Dari Pukul :</label>
+            <input type="time" class="dari" required>
+        </div>
+        <div>
+            <label>*Sampai Pukul :</label>
+            <input type="time" class="sampai" required>
+        </div>
+    `;
+        document.getElementById('formNakes').appendChild(div);
+    }
 
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
+    function hitungDurasi(jamAwal, jamAkhir) {
+        const [h1, m1] = jamAwal.split(":").map(Number);
+        const [h2, m2] = jamAkhir.split(":").map(Number);
+        let durasi = (h2 + m2 / 60) - (h1 + m1 / 60);
+        return durasi > 0 ? durasi : (24 + durasi);
+    }
 
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
+    function hitungHonor() {
+        document.getElementById("loading").style.display = "block";
+
+        setTimeout(() => {
+            const honorInput = document.getElementById("totalHonor");
+            let honorTotal = parseInt(honorInput.value.replace(/\D/g, "")) || 0;
+
+            // Simpan ke localStorage
+            localStorage.setItem("totalHonorValue", honorTotal);
+
+            // Kosongkan input total honor agar tidak muncul lagi di form
+            honorInput.value = "";
+
+            const namaEls = document.querySelectorAll(".nama");
+            const statusEls = document.querySelectorAll(".status");
+            const dariEls = document.querySelectorAll(".dari");
+            const sampaiEls = document.querySelectorAll(".sampai");
+            const tanggal = document.getElementById("tanggalHonor").value;
+
+            let totalJam = 0;
+            let tempData = [];
+
+            for (let i = 0; i < namaEls.length; i++) {
+                const nama = namaEls[i].value.trim();
+                const status = statusEls[i].value;
+                const dari = dariEls[i].value;
+                const sampai = sampaiEls[i].value;
+
+                if (!nama || !status || !dari || !sampai) continue;
+
+                const jam = hitungDurasi(dari, sampai);
+                totalJam += jam;
+
+                const id = getOrCreateID(nama); // Tetap pakai ID unik per nama
+                tempData.push({ id, nama, status, dari, sampai, jam, tanggal, honorTotal });
             }
 
-        </script>
+            const editId = document.getElementById('formNakes').getAttribute("data-edit-id");
 
+            if (editId) {
+                const index = nakesData.findIndex(n => n.id === editId);
+                if (index !== -1) nakesData.splice(index, 1);
+                nakesData.push(...tempData);
+                document.getElementById('formNakes').removeAttribute("data-edit-id");
+                document.getElementById("batalEdit").style.display = "none";
+            } else {
+                nakesData = [...nakesData, ...tempData];
+            }
+
+            localStorage.setItem("nakesData", JSON.stringify(nakesData));
+            tampilkanData(nakesData);
+
+            // Tampilkan honor total di luar form sebagai ringkasan
+            document.getElementById("totalHonorText").innerText = `Rp ${honorTotal.toLocaleString("id-ID")}`;
+
+            document.getElementById("loading").style.display = "none";
+            alert("✅ Sukses, Terimakasih Fitri Widya Nengsih, Amd. Keb. Pembagian Insentif berhasil dihitung dan disimpan!");
+        }, 3000); // Tiga detik
+    }
+
+    function editNakes(index) {
+        const n = nakesData[index];
+        const form = document.getElementById("formNakes");
+        form.innerHTML = "";
+        tambahNakes();
+
+        const inputs = form.querySelectorAll("input, select");
+        inputs[0].value = n.nama;
+        inputs[1].value = n.status;
+        inputs[2].value = n.dari;
+        inputs[3].value = n.sampai;
+
+        document.getElementById("tanggalHonor").value = n.tanggal || "";
+        document.getElementById("totalHonor").value = new Intl.NumberFormat("id-ID").format(n.honorTotal || 0);
+        localStorage.setItem("totalHonorValue", n.honorTotal); // Simpan ulang ke localStorage
+
+        form.setAttribute("data-edit-id", n.id);
+        document.getElementById("batalEdit").style.display = "inline-block";
+    }
+
+    function batalEdit() {
+        document.getElementById('formNakes').removeAttribute("data-edit-id");
+        document.getElementById("formNakes").innerHTML = "";
+        tambahNakes();
+        document.getElementById("batalEdit").style.display = "none";
+    }
+
+    function hapusNakes(index) {
+        if (confirm("Yakin ingin menghapus data ini?")) {
+            nakesData.splice(index, 1);
+            localStorage.setItem("nakesData", JSON.stringify(nakesData));
+            filterBulanTahun();
+        }
+    }
+
+    function filterBulanTahun() {
+        const bulan = document.getElementById("filterBulan").value;
+        const tahun = document.getElementById("filterTahun").value;
+
+        const hasil = nakesData.filter(n => {
+            const [y, m] = n.tanggal.split("-");
+            return (!bulan || m === bulan) && (!tahun || y === tahun);
+        });
+
+        tampilkanData(hasil);
+    }
+
+    function tampilkanData(data) {
+        let tbody = document.querySelector("#hasilTable tbody");
+        tbody.innerHTML = "";
+
+        const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
+        let totalJam = data.reduce((sum, n) => sum + n.jam, 0);
+
+        if (data.length === 0) {
+            document.getElementById("hasilTable").style.display = "none";
+            document.getElementById("totalHonorText").innerText = "Rp0";
+            // Sembunyikan paragraf total honor juga
+            document.getElementById("totalHonorText").parentElement.style.display = "none";
+            return; // keluar dari fungsi agar tidak lanjut render tabel
+        } else {
+            document.getElementById("hasilTable").style.display = "table";
+            // Tampilkan paragraf total honor jika ada data
+            document.getElementById("totalHonorText").parentElement.style.display = "block";
+        }
+
+        data.forEach((n, idx) => {
+            let persen = (n.jam / totalJam) * 100;
+            let honor = Math.round((n.jam / totalJam) * totalHonor);
+
+            tbody.innerHTML += `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${n.id}</td>
+                <td>${n.nama}</td>
+                <td>${n.status}</td>
+                <td>${n.dari}</td>
+                <td>${n.sampai}</td>
+                <td>${n.jam.toFixed(2)}</td>
+                <td>${persen.toFixed(2)}%</td>
+                <td>Rp ${honor.toLocaleString("id-ID")}</td>
+                <td>${n.tanggal}</td>
+                <td>
+                   <button class="btn-small" onclick="editNakes(${idx})"><i class="fas fa-edit"></i> Edit</button>
+                   <button class="btn-small" onclick="hapusNakes(${idx})"><i class="fas fa-trash-alt"></i> Hapus</button>
+
+                </td>
+            </tr>
+        `;
+        });
+
+        document.getElementById("totalHonorText").innerText = `Rp ${totalHonor.toLocaleString("id-ID")}`;
+    }
+
+    window.onload = () => {
+        const savedHonor = localStorage.getItem("totalHonorValue");
+        if (savedHonor) {
+            // Jangan tampilkan lagi di input form
+            document.getElementById("totalHonor").value = ""; // dikosongkan
+            document.getElementById("totalHonorText").innerText = `Rp ${parseInt(savedHonor).toLocaleString("id-ID")}`;
+        }
+
+        tambahNakes();
+        if (nakesData.length > 0) {
+            tampilkanData(nakesData);
+        }
+    };
+
+    async function eksporPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const columns = ["No", "ID", "Nama", "Status", "Dari", "Sampai", "Jam", "Persen", "Honor", "Tanggal"];
+        const rows = [];
+
+        const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
+        let totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+
+        nakesData.forEach((n, idx) => {
+            let persen = (n.jam / totalJam) * 100;
+            let honor = Math.round((n.jam / totalJam) * totalHonor);
+            rows.push([
+                idx + 1,
+                n.id,
+                n.nama,
+                n.status,
+                n.dari,
+                n.sampai,
+                n.jam.toFixed(2),
+                persen.toFixed(2) + "%",
+                "Rp " + honor.toLocaleString("id-ID"),
+                n.tanggal
+            ]);
+        });
+
+        doc.text("Data Pembagian Honor Nakes RSUD Tais", 14, 15);
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            startY: 20,
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [41, 128, 185] }
+        });
+
+        doc.save("data_honor_nakes.pdf");
+    }
+
+    function eksporExcel() {
+        const headers = ["No", "ID", "Nama", "Status", "Dari", "Sampai", "Jam", "Persen", "Honor", "Tanggal"];
+        const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
+        let totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+
+        const rows = nakesData.map((n, idx) => {
+            let persen = (n.jam / totalJam) * 100;
+            let honor = Math.round((n.jam / totalJam) * totalHonor);
+            return [
+                idx + 1,
+                n.id,
+                n.nama,
+                n.status,
+                n.dari,
+                n.sampai,
+                n.jam.toFixed(2),
+                persen.toFixed(2) + "%",
+                honor,
+                n.tanggal
+            ].join(",");
+        });
+
+        const csvContent = [headers.join(","), ...rows].join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "data_honor_nakes.csv");
+        link.style.visibility = "hidden";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
 </body>
 
 </html>
