@@ -50,19 +50,58 @@
             /* agar tidak tertabrak footer saat scroll */
         }
 
+        /* Navbar */
         nav {
             position: sticky;
             top: 0;
-            background: #007bff;
+            background-color: #3498db;
             color: white;
-            font-weight: 700;
-            font-size: 1.5rem;
-            padding: 1rem 2rem;
-            text-align: center;
-            letter-spacing: 1.5px;
-            box-shadow: 0 2px 5px rgb(0 123 255 / 0.4);
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             z-index: 1000;
-            /* supaya selalu di atas */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex-wrap: nowrap;
+            /* agar tetap sejajar */
+            gap: 10px;
+        }
+
+        .title {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        nav button {
+            background-color: white;
+            color: #3498db;
+            border: none;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        nav button i {
+            margin-right: 5px;
+        }
+
+        /* Tambahkan overflow scroll jika layar terlalu sempit */
+        @media (max-width: 480px) {
+            nav {
+                overflow-x: auto;
+            }
         }
 
         .container {
@@ -434,6 +473,36 @@
             background: #a71d2a;
         }
 
+        /* Spinner Wrapper */
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         /* Footer */
         footer {
             background: #222;
@@ -444,54 +513,110 @@
             user-select: none;
             width: 100%;
         }
+
+        #formNakesContainer {
+            display: none;
+        }
+
+        .form-group {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Filter */
+        .filter-container {
+            display: none;
+            /* default tersembunyi */
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
 <body>
     <nav>
-        Kakulator Moderen
+        <div class="title"><i class="fas fa-clipboard-list"></i> Kakulator_Moderen</div>
+        <div class="actions">
+            <button onclick="eksporPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button onclick="eksporExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+        </div>
     </nav>
     <div class="container">
-        <h2><i class="fas fa-clipboard-list"></i><br> Pembagian Hasil Pembayaran BPJS <br> Dinas Pagi, Siang, Malam, <br> Tenaga Kesehatan <br> RSUD Tais <br> Ruangan
-            Kebidanan</h2>
+        <h2>Pembagian Hasil Pembayaran BPJS <br> Dinas Pagi, Siang, Malam,
+            <br> Tenaga Kesehatan <br> (Kabupaten Seluma RSUD Tais)
+        </h2>
         <hr>
-        <p><i class="fas fa-info-circle"></i> <em>Pembagian berdasarkan status dinas & jumlah jam kerja nakes</em></p>
-        <br>
+        <p>*Catatan ;</p>
+        <p><i class="fas fa-info-circle"></i><em> 1. Pembagian berdasarkan jumlah jam kerja.</em></p>
+        <p><i class="fas fa-info-circle"></i><em> 2. Pembagian berdasarkan Jadwal Shift Dinas.</em></p>
+        <p><i class="fas fa-info-circle"></i><em> 3. Periksa kembali sebelum mengirim data.</em></p>
+        <p><i class="fas fa-info-circle"></i><em> 4. Mohon maaf 🙏, Sistem ini masih dalam proses penembangan.</em></p>
         <hr>
         <div class="form-group">
-            <label>*Nominal Penerimaan Bpjs :</label>
+            <label>*Nominal BPJS (Rp) :</label><br>
             <label for="totalHonor"></label>
             <input id="totalHonor" oninput="handleHonorInput(this)" placeholder="Masukkan Hanya Angka..." />
         </div>
-        <hr>
-        <p><strong><i class="fas fa-coins"></i>Total Pembayaran (Bpjs) Keluar :<br></strong> <span id="totalHonorText">Rp0 | "Aporved"</span>
-        </p>
-        <hr>
         <div class="form-group">
-            <label>*Tanggal Penerimaan Bpjs :</label>
+            <label>*Tanggal Bpjs :</label>
             <label for="tanggalHonor"></label>
             <input type="date" id="tanggalHonor" required />
         </div>
         <hr>
+        <button onclick="toggleFormNakes()" id="toggleFormBtn">
+            <i class="fas fa-eye"></i> Tampilkan Formulir
+        </button>
+
+        <div class="form-group" id="formNakesContainer">
+            <label>*Formulir Input Data Nakes:</label>
+            <div id="formNakes"></div>
+            <hr>
+        </div>
         <div class="button-group">
-            <button onclick="tambahNakes()"><i class="fas fa-user-plus"></i> Tambah Nakes</button>
-            <button onclick="hitungHonor()"><i class="fas fa-calculator"></i> Hitung/Simpan</button>
+            <button onclick="hitungHonor()">
+                <i class="fas fa-calculator"></i> Simpan Data </button>
             <button id="batalEdit" onclick="batalEdit()" style="display:none;"><i class="fas fa-times-circle"></i>
                 Batal</button>
-            <button onclick="eksporPDF()"><i class="fas fa-file-pdf"></i> Ekspor PDF</button>
-            <button onclick="eksporExcel()"><i class="fas fa-file-excel"></i>Ekspor Excel</button>
-        </div><br>
+        </div>
+
+        <!-- Spinner -->
+        <div id="loading">
+            <div class="spinner"></div>
+        </div>
 
         <hr>
+        <button onclick="toggleFilter()" id="toggleFilterBtn" style="margin: 10px 0;">
+            <i class="fas fa-chevron-down"></i> Tampilkan Filter
+        </button>
 
-        <div id="formNakes"></div>
-
-        <hr>
-
-        <p id="loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Menghitung Pembagian Data Bpjs, Mohon
-            Tunggu...</p>
-
-        <br>
         <div class="filter-container">
             <h3><i class="fas fa-filter"></i> Filter Cari Data Nakes</h3>
             <div class="filter-row">
@@ -513,9 +638,6 @@
                         <option value="12">Desember</option>
                     </select>
                 </div>
-
-                <hr>
-
                 <div class="form-group">
                     <label for="filterTahun"><i class="fas fa-calendar"></i> Pilih Tahun</label>
                     <select id="filterTahun" onchange="filterBulanTahun()">
@@ -557,7 +679,7 @@
             </main>
             <hr>
             <footer>
-                &copy; 2025 Provinder : Zendi Afrian Saputra,S.H | &copy; 2024 Disigen By : BlackswanPictured | Hak
+                &copy; 2025 Pemilik ; Zendi Afrian Saputra,S.H | &copy; 2024 Disigen By ; BlackswanPictured | Hak
                 Cipta Dilindungi
                 Undang-Undang
             </footer>
@@ -566,18 +688,19 @@
             <script
                 src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </body>
-
 <script>
-    let nakesData = JSON.parse(localStorage.getItem('nakesData')) || [];
+    let nakesData = JSON.parse(localStorage.getItem("nakesData")) || [];
+
+    const loadingEl = document.getElementById("loading");
 
     function handleHonorInput(el) {
         let number = el.value.replace(/[^0-9]/g, '');
-        localStorage.setItem("totalHonorValue", number); // Simpan nilai bersih
+        localStorage.setItem("totalHonorValue", number);
         el.value = new Intl.NumberFormat("id-ID").format(number);
     }
 
     function parseRupiah(str) {
-        return parseInt(str.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+        return parseInt(str.replace(/\D/g, '')) || 0;
     }
 
     function getOrCreateID(nama) {
@@ -589,103 +712,125 @@
         return idMap[nama];
     }
 
-    function tambahNakes() {
-        const div = document.createElement('div');
-        div.className = 'form-group';
-        div.innerHTML = `
-        <div>
-        <label> Fomulir Inputan Data :</label>
-        </div>
-        <div>
-            <label>*Nama Lengkap :</label>
-            <input type="text" placeholder="Nama Nakes" class="nama" required>
-        </div>
-        <div>
-            <label>*Pilih Jadwal Dinas :</label>
-            <select class="status" required>
-                <option value="" disabled selected>Pilih</option>
-                <option value="Pagi">Pagi</option>
-                <option value="Sore">Sore</option>
-                <option value="Malam">Malam</option>
-            </select>
-        </div>
-        <div>
-            <label>*Dari Pukul :</label>
-            <input type="time" class="dari" required>
-        </div>
-        <div>
-            <label>*Sampai Pukul :</label>
-            <input type="time" class="sampai" required>
-        </div>
-    `;
-        document.getElementById('formNakes').appendChild(div);
-    }
-
-    function hitungDurasi(jamAwal, jamAkhir) {
-        const [h1, m1] = jamAwal.split(":").map(Number);
-        const [h2, m2] = jamAkhir.split(":").map(Number);
+    function hitungDurasi(dari, sampai) {
+        const [h1, m1] = dari.split(":").map(Number);
+        const [h2, m2] = sampai.split(":").map(Number);
         let durasi = (h2 + m2 / 60) - (h1 + m1 / 60);
         return durasi > 0 ? durasi : (24 + durasi);
     }
 
+    function tambahNakes() {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.innerHTML = `
+<div><label>Nama:</label><input type="text" class="nama" required></div>
+<div><label>Shift:</label>
+    <select class="status" required>
+        <option value="">Pilih Shift</option>
+        <option>Pagi</option>
+        <option>Sore</option>
+        <option>Malam</option>
+        <option>Pagi/Sore</option>
+        <option>Sore/Malam</option>
+        <option>Pagi/Sore/Malam</option>
+        <option>Tidak Masuk/Libur</option>
+    </select>
+</div>
+<div><label>Dari Pukul:</label><input type="time" class="dari" required></div>
+<div><label>Sampai Pukul:</label><input type="time" class="sampai" required></div>
+<div style="margin-top:10px; text-align:right;">
+    <button onclick="this.closest('.form-group').remove()" style="color:red;">&times; Hapus Form</button>
+    <button onclick="tambahNakes()">+ Tambah Lagi</button>
+</div>`;
+        document.getElementById("formNakes").appendChild(div);
+    }
+
     function hitungHonor() {
-        document.getElementById("loading").style.display = "block";
+        const honorInput = document.getElementById("totalHonor");
+        const tanggal = document.getElementById("tanggalHonor").value;
+        const honorTotal = parseRupiah(honorInput.value);
 
+        const namaEls = document.querySelectorAll(".nama");
+        const statusEls = document.querySelectorAll(".status");
+        const dariEls = document.querySelectorAll(".dari");
+        const sampaiEls = document.querySelectorAll(".sampai");
+
+        if (!honorTotal || !tanggal) {
+            alert("⚠️ Harap isi nominal honor dan tanggal terlebih dahulu.");
+            return;
+        }
+
+        for (let i = 0; i < namaEls.length; i++) {
+            if (!namaEls[i].value || !statusEls[i].value || !dariEls[i].value ||
+                !sampaiEls[i].value) { alert(`⚠️ Form ke-${i + 1} belum lengkap.`); return; }
+        } loadingEl.style.display = "flex";
         setTimeout(() => {
-            const honorInput = document.getElementById("totalHonor");
-            let honorTotal = parseInt(honorInput.value.replace(/\D/g, "")) || 0;
-
-            // Simpan ke localStorage
-            localStorage.setItem("totalHonorValue", honorTotal);
-
-            // Kosongkan input total honor agar tidak muncul lagi di form
-            honorInput.value = "";
-
-            const namaEls = document.querySelectorAll(".nama");
-            const statusEls = document.querySelectorAll(".status");
-            const dariEls = document.querySelectorAll(".dari");
-            const sampaiEls = document.querySelectorAll(".sampai");
-            const tanggal = document.getElementById("tanggalHonor").value;
-
             let totalJam = 0;
             let tempData = [];
 
             for (let i = 0; i < namaEls.length; i++) {
-                const nama = namaEls[i].value.trim();
-                const status = statusEls[i].value;
-                const dari = dariEls[i].value;
-                const sampai = sampaiEls[i].value;
-
-                if (!nama || !status || !dari || !sampai) continue;
-
-                const jam = hitungDurasi(dari, sampai);
-                totalJam += jam;
-
-                const id = getOrCreateID(nama); // Tetap pakai ID unik per nama
-                tempData.push({ id, nama, status, dari, sampai, jam, tanggal, honorTotal });
-            }
-
-            const editId = document.getElementById('formNakes').getAttribute("data-edit-id");
-
-            if (editId) {
-                const index = nakesData.findIndex(n => n.id === editId);
+                const nama = namaEls[i].value.trim(); const status = statusEls[i].value;
+                const dari = dariEls[i].value; const sampai = sampaiEls[i].value; const jam = hitungDurasi(dari, sampai); totalJam
+                    += jam; const id = getOrCreateID(nama); tempData.push({
+                        id, nama, status, dari, sampai, jam, tanggal, honorTotal
+                    });
+            } const editId = document.getElementById("formNakes").getAttribute("data-edit-id"); if (editId) {
+                const
+                    index = nakesData.findIndex(n => n.id === editId);
                 if (index !== -1) nakesData.splice(index, 1);
-                nakesData.push(...tempData);
-                document.getElementById('formNakes').removeAttribute("data-edit-id");
+                document.getElementById("formNakes").removeAttribute("data-edit-id");
                 document.getElementById("batalEdit").style.display = "none";
-            } else {
-                nakesData = [...nakesData, ...tempData];
             }
 
+            nakesData = [...nakesData, ...tempData];
             localStorage.setItem("nakesData", JSON.stringify(nakesData));
+            localStorage.setItem("totalHonorValue", honorTotal);
+            honorInput.value = "";
+            document.getElementById("formNakes").innerHTML = "";
+            tambahNakes();
             tampilkanData(nakesData);
 
-            // Tampilkan honor total di luar form sebagai ringkasan
             document.getElementById("totalHonorText").innerText = `Rp ${honorTotal.toLocaleString("id-ID")}`;
+            loadingEl.style.display = "none";
+            alert("✅ Sukses!. Terimkasih, Fitri Widya Nengsih,Amd.Keb, Data berhasil disimpan!");
+        }, 1500);
+    }
 
-            document.getElementById("loading").style.display = "none";
-            alert("✅ Sukses, Terimakasih Fitri Widya Nengsih, Amd. Keb. Pembagian Insentif berhasil dihitung dan disimpan!");
-        }, 3000); // Tiga detik
+    function tampilkanData(data) {
+        let tbody = document.querySelector("#hasilTable tbody");
+        tbody.innerHTML = "";
+        const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
+        let totalJam = data.reduce((sum, n) => sum + n.jam, 0);
+
+        if (data.length === 0) {
+            document.getElementById("hasilTable").style.display = "none";
+            document.getElementById("totalHonorText").innerText = "Rp0";
+            return;
+        } else {
+            document.getElementById("hasilTable").style.display = "table";
+        }
+
+        data.forEach((n, idx) => {
+            let honor = Math.round((n.jam / totalJam) * totalHonor);
+            let persen = ((n.jam / totalJam) * 100).toFixed(2);
+            tbody.innerHTML += `
+    <tr>
+        <td>${idx + 1}</td>
+        <td>${n.id}</td>
+        <td>${n.nama}</td>
+        <td>${n.status}</td>
+        <td>${n.dari}</td>
+        <td>${n.sampai}</td>
+        <td>${n.jam.toFixed(2)}</td>
+        <td>${persen}%</td>
+        <td>Rp ${honor.toLocaleString("id-ID")}</td>
+        <td>${n.tanggal}</td>
+        <td>
+            <button onclick="editNakes(${idx})">Edit</button>
+            <button onclick="hapusNakes(${idx})">Hapus</button>
+        </td>
+    </tr>`;
+        });
     }
 
     function editNakes(index) {
@@ -693,23 +838,20 @@
         const form = document.getElementById("formNakes");
         form.innerHTML = "";
         tambahNakes();
-
         const inputs = form.querySelectorAll("input, select");
         inputs[0].value = n.nama;
         inputs[1].value = n.status;
         inputs[2].value = n.dari;
         inputs[3].value = n.sampai;
-
         document.getElementById("tanggalHonor").value = n.tanggal || "";
         document.getElementById("totalHonor").value = new Intl.NumberFormat("id-ID").format(n.honorTotal || 0);
-        localStorage.setItem("totalHonorValue", n.honorTotal); // Simpan ulang ke localStorage
-
+        localStorage.setItem("totalHonorValue", n.honorTotal);
         form.setAttribute("data-edit-id", n.id);
         document.getElementById("batalEdit").style.display = "inline-block";
     }
 
     function batalEdit() {
-        document.getElementById('formNakes').removeAttribute("data-edit-id");
+        document.getElementById("formNakes").removeAttribute("data-edit-id");
         document.getElementById("formNakes").innerHTML = "";
         tambahNakes();
         document.getElementById("batalEdit").style.display = "none";
@@ -719,96 +861,68 @@
         if (confirm("Yakin ingin menghapus data ini?")) {
             nakesData.splice(index, 1);
             localStorage.setItem("nakesData", JSON.stringify(nakesData));
-            filterBulanTahun();
-        }
-    }
-
-    function filterBulanTahun() {
-        const bulan = document.getElementById("filterBulan").value;
-        const tahun = document.getElementById("filterTahun").value;
-
-        const hasil = nakesData.filter(n => {
-            const [y, m] = n.tanggal.split("-");
-            return (!bulan || m === bulan) && (!tahun || y === tahun);
-        });
-
-        tampilkanData(hasil);
-    }
-
-    function tampilkanData(data) {
-        let tbody = document.querySelector("#hasilTable tbody");
-        tbody.innerHTML = "";
-
-        const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
-        let totalJam = data.reduce((sum, n) => sum + n.jam, 0);
-
-        if (data.length === 0) {
-            document.getElementById("hasilTable").style.display = "none";
-            document.getElementById("totalHonorText").innerText = "Rp0";
-            // Sembunyikan paragraf total honor juga
-            document.getElementById("totalHonorText").parentElement.style.display = "none";
-            return; // keluar dari fungsi agar tidak lanjut render tabel
-        } else {
-            document.getElementById("hasilTable").style.display = "table";
-            // Tampilkan paragraf total honor jika ada data
-            document.getElementById("totalHonorText").parentElement.style.display = "block";
-        }
-
-        data.forEach((n, idx) => {
-            let persen = (n.jam / totalJam) * 100;
-            let honor = Math.round((n.jam / totalJam) * totalHonor);
-
-            tbody.innerHTML += `
-            <tr>
-                <td>${idx + 1}</td>
-                <td>${n.id}</td>
-                <td>${n.nama}</td>
-                <td>${n.status}</td>
-                <td>${n.dari}</td>
-                <td>${n.sampai}</td>
-                <td>${n.jam.toFixed(2)}</td>
-                <td>${persen.toFixed(2)}%</td>
-                <td>Rp ${honor.toLocaleString("id-ID")}</td>
-                <td>${n.tanggal}</td>
-                <td>
-                   <button class="btn-small" onclick="editNakes(${idx})"><i class="fas fa-edit"></i> Edit</button>
-                   <button class="btn-small" onclick="hapusNakes(${idx})"><i class="fas fa-trash-alt"></i> Hapus</button>
-
-                </td>
-            </tr>
-        `;
-        });
-
-        document.getElementById("totalHonorText").innerText = `Rp ${totalHonor.toLocaleString("id-ID")}`;
-    }
-
-    window.onload = () => {
-        const savedHonor = localStorage.getItem("totalHonorValue");
-        if (savedHonor) {
-            // Jangan tampilkan lagi di input form
-            document.getElementById("totalHonor").value = ""; // dikosongkan
-            document.getElementById("totalHonorText").innerText = `Rp ${parseInt(savedHonor).toLocaleString("id-ID")}`;
-        }
-
-        tambahNakes();
-        if (nakesData.length > 0) {
             tampilkanData(nakesData);
         }
-    };
+    }
+
+    // Inisialisasi awal
+    document.addEventListener("DOMContentLoaded", () => {
+        tambahNakes();
+        tampilkanData(nakesData);
+    });
+
+
+    function toggleTombolSimpan() {
+        const cek = document.getElementById("cekSetuju");
+        const tombol = document.getElementById("btnSimpan");
+        tombol.disabled = !cek.checked;
+    }
+
+    function toggleFormNakes() {
+        const formContainer = document.getElementById("formNakesContainer");
+        const toggleBtn = document.getElementById("toggleFormBtn");
+
+        if (formContainer.style.display === "none" || formContainer.style.display === "") {
+            formContainer.style.display = "block";
+            toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Sembunyikan Formulir';
+        } else {
+            formContainer.style.display = "none";
+            toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Tampilkan Formulir';
+        }
+    }
+
+    function toggleFilter() {
+        const filter = document.querySelector('.filter-container');
+        const btn = document.getElementById('toggleFilterBtn');
+
+        if (filter.style.display === 'none' || filter.style.display === '') {
+            filter.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-chevron-up"></i> Sembunyikan Filter';
+        } else {
+            filter.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-chevron-down"></i> Tampilkan Filter';
+        }
+    }
 
     async function eksporPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        const columns = ["No", "ID", "Nama", "Status", "Dari", "Sampai", "Jam", "Persen", "Honor", "Tanggal"];
+        const columns = [
+            "No", "ID Data", "Nama Lengkap", "Jadwal Dinas",
+            "Dari Pukul (Wib)", "Sampai Pukul (Wib)", "Durasi Jam",
+            "Persentase %", "Total Pembagian (Rp)", "Tanggal Bpjs"
+        ];
         const rows = [];
 
         const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
-        let totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+        const totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+        let totalHonorCalculated = 0;
 
         nakesData.forEach((n, idx) => {
             let persen = (n.jam / totalJam) * 100;
             let honor = Math.round((n.jam / totalJam) * totalHonor);
+            totalHonorCalculated += honor;
             rows.push([
                 idx + 1,
                 n.id,
@@ -823,26 +937,51 @@
             ]);
         });
 
-        doc.text("Data Pembagian Honor Nakes RSUD Tais", 14, 15);
+        // Judul
+        doc.text("Data Pembagian BPJS Nakes RSUD Tais", 14, 15);
+
+        // Tabel
         doc.autoTable({
             head: [columns],
             body: rows,
             startY: 20,
             styles: { fontSize: 8 },
-            headStyles: { fillColor: [41, 128, 185] }
+            headStyles: { fillColor: [41, 128, 185] },
+            didDrawPage: function (data) {
+                // Tambahkan footer di bawah halaman
+                const pageHeight = doc.internal.pageSize.height;
+                doc.setFontSize(8);
+                doc.text("2024 Disigen By ; BlackswanPictured.com | Hak Cipta Dilindungi Undang - Undang", 14, pageHeight - 10);
+            }
         });
 
-        doc.save("data_honor_nakes.pdf");
+        // Tambahkan baris total di bawah tabel
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(10);
+        doc.text("Jumlah Total Jam : " + totalJam.toFixed(2) + " jam", 14, finalY);
+        doc.text("TOTAL Uang Keluar : (Rp) " + totalHonorCalculated.toLocaleString("id-ID"), 14, finalY + 6);
+
+        // Simpan dokumen
+        doc.save("Data_pembagian_Rp_Bpjs_bidan.pdf");
     }
 
+
     function eksporExcel() {
-        const headers = ["No", "ID", "Nama", "Status", "Dari", "Sampai", "Jam", "Persen", "Honor", "Tanggal"];
+        const headers = [
+            "No", "ID Data", "Nama Lengkap", "Jadwal Dinas",
+            "Dari Pukul (Wib)", "Sampai Pukul (Wib)", "Durasi Jam",
+            "Persentase (%)", "Total Pembagian (Rp)", "Tanggal Bpjs"
+        ];
+
         const totalHonor = parseInt(localStorage.getItem("totalHonorValue")) || 0;
-        let totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+        const totalJam = nakesData.reduce((sum, n) => sum + n.jam, 0);
+
+        let totalHonorCalculated = 0;
 
         const rows = nakesData.map((n, idx) => {
             let persen = (n.jam / totalJam) * 100;
             let honor = Math.round((n.jam / totalJam) * totalHonor);
+            totalHonorCalculated += honor;
             return [
                 idx + 1,
                 n.id,
@@ -857,20 +996,51 @@
             ].join(",");
         });
 
-        const csvContent = [headers.join(","), ...rows].join("\n");
+        // Baris tambahan: total jam dan total honor
+        const totalLines = [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "TOTAL JAM",
+            "",
+            totalJam.toFixed(2),
+            ""
+        ].join(",");
+
+        const honorLines = [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "TOTAL Uang Keluar (Rp)",
+            "",
+            totalHonorCalculated,
+            ""
+        ].join(",");
+
+        // Footer teks (misalnya penjelasan sumber file)
+        const footerLine = "\n,2024 Disigen By; BlackswanPictured.com | Hak Cipta Dilindungi Undang-Undang";
+
+        const csvContent = [headers.join(","), ...rows, totalLines, honorLines, footerLine].join("\n");
 
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", "data_honor_nakes.csv");
+        link.setAttribute("download", "Data_pembagian_Rp_Bpjs_bidan.csv");
         link.style.visibility = "hidden";
 
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
+
 </script>
 </body>
 
