@@ -54,7 +54,7 @@
         nav {
             position: sticky;
             top: 0;
-            background-color: #3498db;
+            background-color: #007bff;
             color: white;
             padding: 10px 15px;
             font-size: 18px;
@@ -332,6 +332,7 @@
 
 
         /* Horizontal line */
+        /* Horizontal line */
         hr {
             margin: 2rem 0;
             border: none;
@@ -339,37 +340,43 @@
         }
 
         .container-hasil {
-            margin: 40px auto;
-            padding: 20px;
+            margin: 20px auto;
+            padding: 16px;
             max-width: 100%;
             background-color: #fdfdfd;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
             border-radius: 12px;
             font-family: 'Segoe UI', sans-serif;
+            box-sizing: border-box;
         }
 
         .container-hasil h3 {
             margin-bottom: 20px;
             text-align: center;
             color: #333;
+            font-size: 18px;
             font-weight: 600;
+            line-height: 1.4;
         }
 
         .table-wrapper {
             overflow-x: auto;
+            border-radius: 8px;
         }
 
         #hasilTable {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 13px;
             background-color: white;
+            min-width: 600px;
+            /* agar scroll muncul di layar kecil */
         }
 
         #hasilTable th,
         #hasilTable td {
             border: 1px solid #ddd;
-            padding: 12px 8px;
+            padding: 10px 6px;
             text-align: center;
         }
 
@@ -390,6 +397,27 @@
             background-color: #f1f1f1;
         }
 
+        /* Responsif untuk layar kecil */
+        @media (max-width: 600px) {
+            .container-hasil {
+                padding: 12px;
+                border-radius: 10px;
+            }
+
+            .container-hasil h3 {
+                font-size: 16px;
+            }
+
+            #hasilTable {
+                font-size: 12px;
+                min-width: 500px;
+            }
+
+            #hasilTable th,
+            #hasilTable td {
+                padding: 8px 4px;
+            }
+        }
 
         /* Responsif */
 
@@ -502,17 +530,6 @@
             }
         }
 
-        /* Footer */
-        footer {
-            background: #222;
-            color: #ccc;
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.85rem;
-            user-select: none;
-            width: 100%;
-        }
-
         #formNakesContainer {
             display: none;
         }
@@ -548,39 +565,150 @@
             box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
         }
 
-        /* buat input readonly terlihat seperti disabled tapi tetap fokusable */
+        /* Modern Responsive CSS for Nakes Form */
+        .form {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form div {
+            margin-bottom: 12px;
+        }
+
+        .form label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form input[type="text"],
+        .form input[type="time"],
+        .form select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form input:focus,
+        .form select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
         .time-input-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
-        input[readonly] {
-            padding-right: 40px;
-            /* kasih ruang buat tulisan Wib */
-            background-color: #f0f0f0;
-            border: 2px solid #ccc;
-            cursor: not-allowed;
-        }
-
         .wib-label {
-            position: absolute;
-            right: 8px;
-            pointer-events: none;
-            color: #555;
-            font-size: 0.85em;
-            user-select: none;
+            font-size: 12px;
+            color: #777;
+            margin-left: 4px;
         }
 
-        /* Filter */
-        .filter-container {
-            display: none;
-            /* default tersembunyi */
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f0f0f0;
-            border-radius: 8px;
+        .durasi-info {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .form button:hover {
+            background-color: #0056b3;
+        }
+
+        .form button:first-child {
+            background-color: transparent;
+            color: red;
+            border: 1px solid red;
+        }
+
+        .form button:first-child:hover {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .form {
+                padding: 12px;
+            }
+
+            .form button {
+                display: block;
+                width: 100%;
+                margin: 6px 0 0 0;
+            }
+
+            .time-input-wrapper {
+                flex-direction: column;
+            }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            /* Tinggi footer */
+            background-color: #007bff;
+            color: white;
+            font-size: 10px;
+            font-family: 'Segoe UI', sans-serif;
+            z-index: 100;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            text-align: center;
+            padding: 0 15px;
+
+            display: flex;
+            justify-content: center;
+            /* Pusat horizontal */
+            align-items: center;
+            /* Pusat vertikal */
+            flex-direction: column;
+            /* Susun isi dalam kolom */
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        body {
+            padding-bottom: 100px;
+            /* Tambah ruang agar tidak tertutup footer */
+        }
+
+        @media (max-width: 600px) {
+            footer {
+                font-size: 13px;
+                height: auto;
+                padding: 15px 10px;
+            }
+
+            body {
+                padding-bottom: 120px;
+            }
         }
     </style>
 </head>
@@ -599,119 +727,115 @@
         </h2>
         <hr>
         <p>*Catatan ;</p>
+        <p><i class="fas fa-info-circle"></i><em> 0. Perhatikan baik2 Tanggal dan Nominal Bpjs.</em></p>
         <p><i class="fas fa-info-circle"></i><em> 1. Pembagian berdasarkan jumlah jam kerja.</em></p>
         <p><i class="fas fa-info-circle"></i><em> 2. Pembagian berdasarkan Jadwal Shift Dinas.</em></p>
         <p><i class="fas fa-info-circle"></i><em> 3. Periksa kembali sebelum mengirim data.</em></p>
-        <p><i class="fas fa-info-circle"></i><em> 4. Keterangan Waktu <br> Pagi : 08.00 - 14.00 / Sore : 14.00 - 20.00
-                Malam : 20.00 - 08.00 (WIB)</em></p>
-        <hr>
-        <div class="form-group">
-            <label>*Nominal BPJS (Rp) :</label><br>
-            <label for="totalHonor"></label>
-            <input id="totalHonor" oninput="handleHonorInput(this)" placeholder="Masukkan Hanya Angka..." />
+        <p><i class="fas fa-info-circle"></i><em> 4. Jika ingin Tambah Data harus klik edit data terlebih dahulu.</em>
+        </p>
+        <p><i class="fas fa-info-circle"></i><em> 5. Penting!. simpan data yang sudah dibuat baik di excel ataupun
+                Pdf.</em></p>
+        <p><i class="fas fa-info-circle"></i><em> 6. Keterangan Waktu :<br> Pagi : 08.00 - 14.00 / Sore : 14.00 - 20.00
+                / Malam : 20.00 - 08.00 (WIB)</em></p>
+    </div>
+    </div>
+
+    <div class="form-group">
+        <label>*Nominal BPJS (Rp) :</label><br>
+        <label for="totalHonor"></label>
+        <input id="totalHonor" oninput="handleHonorInput(this)" placeholder="Masukkan Hanya Angka..." />
+    </div>
+    <div class="form-group">
+        <label>*Tanggal Bpjs :</label>
+        <label for="tanggalHonor"></label>
+        <input type="date" id="tanggalHonor" required />
+    </div>
+    <hr>
+    <div class="filter-container">
+        <h3><i class="fas fa-filter"></i> Filter Cari Data Nakes :</h3>
+        <div class="filter-row">
+            <label for="filterBulan"><i class="fas fa-calendar-alt"></i> Pilih Bulan</label>
+            <select id="filterBulan" onchange="filterBulanTahun()">
+                <option value="">Semua Bulan</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+            </select>
         </div>
-        <div class="form-group">
-            <label>*Tanggal Bpjs :</label>
-            <label for="tanggalHonor"></label>
-            <input type="date" id="tanggalHonor" required />
+        <label for="filterTahun"><i class="fas fa-calendar"></i> Pilih Tahun</label>
+        <select id="filterTahun" onchange="filterBulanTahun()">
+            <option value="">Semua Tahun</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+        </select>
+    </div>
+    </div>
+    <hr>
+    <button onclick="toggleFormNakes()" id="toggleFormBtn">
+        <i class="fas fa-eye"></i> | Tampilkan Formulir
+    </button>
+
+    <div class="form-group" id="formNakesContainer">
+        <label>*Formulir Input Data Nakes:</label>
+        <div id="formNakes"></div>
+    </div>
+    <div class="button-group">
+        <button onclick="hitungHonor()">
+            <i class="fas fa-calculator"></i> | Hitung </button>
+        <button id="batalEdit" onclick="batalEdit()" style="display:none;"><i class="fas fa-times-circle"></i>
+            Batal</button>
+    </div>
+    <hr>
+    <!-- Spinner -->
+    <div id="loading" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container-hasil">
+        <h3>📋 Hasil Pembagian Berdasarkan Jam Kerja <br> "Ruangan Kebidanan"</h3>
+        <div class="table-wrapper">
+            <table id="hasilTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>ID Inputan Data </th>
+                        <th>Nama Nakes</th>
+                        <th>Jadwal Dinas</th>
+                        <th>Dari Pukul (Wib)</th>
+                        <th>Sampai Pukul (Wib)</th>
+                        <th>Hitungan Jam</th>
+                        <th>Persentase (%)</th>
+                        <th>Total Pembagian</th>
+                        <th>Tanggal Penerimaan (BPJS)</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <hr>
-        <button onclick="toggleFormNakes()" id="toggleFormBtn">
-            <i class="fas fa-eye"></i> | Tampilkan Formulir
-        </button>
+    </div>
+    </div>
+    <br>
+    <hr>
 
-        <div class="form-group" id="formNakesContainer">
-            <label>*Formulir Input Data Nakes:</label>
-            <div id="formNakes"></div>
-            <hr>
-        </div>
-        <div class="button-group">
-            <button onclick="hitungHonor()">
-                <i class="fas fa-calculator"></i> | Hitung </button>
-            <button id="batalEdit" onclick="batalEdit()" style="display:none;"><i class="fas fa-times-circle"></i>
-                Batal</button>
-        </div>
+    <footer>
+        &copy; 2025 Pemilik : Zendi Afrian Saputra,SH | Hak Cipta Dilindungi Undang-Undang.
+    </footer>
 
-        <!-- Spinner -->
-        <div id="loading" style="display: none;">
-            <div class="spinner"></div>
-        </div>
-
-        <hr>
-        <button onclick="toggleFilter()" id="toggleFilterBtn" style="margin: 10px 0;">
-            <i class="fas fa-chevron-down"></i> | Tampilkan Filter
-        </button>
-
-        <div class="filter-container">
-            <h3><i class="fas fa-filter"></i> Filter Cari Data Nakes</h3>
-            <div class="filter-row">
-                <div class="form-group">
-                    <label for="filterBulan"><i class="fas fa-calendar-alt"></i> Pilih Bulan</label>
-                    <select id="filterBulan" onchange="filterBulanTahun()">
-                        <option value="">Semua Bulan</option>
-                        <option value="01">Januari</option>
-                        <option value="02">Februari</option>
-                        <option value="03">Maret</option>
-                        <option value="04">April</option>
-                        <option value="05">Mei</option>
-                        <option value="06">Juni</option>
-                        <option value="07">Juli</option>
-                        <option value="08">Agustus</option>
-                        <option value="09">September</option>
-                        <option value="10">Oktober</option>
-                        <option value="11">November</option>
-                        <option value="12">Desember</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="filterTahun"><i class="fas fa-calendar"></i> Pilih Tahun</label>
-                    <select id="filterTahun" onchange="filterBulanTahun()">
-                        <option value="">Semua Tahun</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="container-hasil">
-            <h3>📋 Table Data Hasil Pembagian Insentif Rsud Tais "Ruangan Kebidanan"</h3>
-            <div class="table-wrapper">
-                <table id="hasilTable" style="display:none">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>ID Inputan Data </th>
-                            <th>Nama Nakes</th>
-                            <th>Jadwal Dinas</th>
-                            <th>Dari Pukul (Wib)</th>
-                            <th>Sampai Pukul (Wib)</th>
-                            <th>Hitungan Jam</th>
-                            <th>Persentase (%)</th>
-                            <th>Total Pembagian</th>
-                            <th>Tanggal Penerimaan (BPJS)</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            </main>
-            <hr>
-            <footer>
-                &copy; 2025 Pemilik ; Zendi Afrian Saputra,S.H | &copy; 2024 Disigen By ; BlackswanPictured | Hak
-                Cipta Dilindungi
-                Undang-Undang
-            </footer>
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </body>
 <script>
     let nakesData = JSON.parse(localStorage.getItem("nakesData")) || [];
@@ -778,12 +902,12 @@
 
     function tambahNakes() {
         const div = document.createElement('div');
-        div.className = 'form-group';
+        div.className = 'form';
         div.innerHTML = `
 <div><label>Nama Lengkap :</label><input type="text" class="nama" required></div>
 <div><label>Jadwal Shift :</label>
     <select class="status" required>
-        <option value="">Pilih Jadwal Shift</option>
+        <option value="" disabled selected>Pilih Jadwal</option>
         <option>Pagi</option>
         <option>Sore</option>
         <option>Malam</option>
@@ -794,16 +918,15 @@
     </select>
 </div>
 <div class="time-input-wrapper">
-  <label>Dari :</label>
+    <label>Waktu otomatis berdasarkan Shift</label>
+  <label>Dari Pukul :</label>
   <input type="time" class="dari" required readonly>
   <span class="wib-label">(WIB)</span>
-</div>
-<div class="time-input-wrapper">
-  <label>Sampai :</label>
+  <label>Sampai Pukul :</label>
   <input type="time" class="sampai" required readonly>
   <span class="wib-label">(WIB)</span>
 </div>
-<div class="durasi-info" style="margin: 5px 0; font-style: italic; color: #333;">Durasi: -</div>
+<div class="durasi-info" style="margin: 5px 0; font-style: italic; color: #333;">Durasi Waktu Kerja : -</div>
 <div style="margin-top:10px; text-align:right;">
     <button onclick="this.closest('.form-group').remove()" style="color:red;">&times; Hapus Form</button>
     <button onclick="tambahNakes()">+ Tambah Lagi</button>
