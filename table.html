@@ -52,11 +52,11 @@
 
         /* Navbar */
         nav {
-            position: sticky;
+            position: fixed;
             top: 0;
             background-color: #007bff;
             color: white;
-            padding: 10px 15px;
+            padding: 14px 100px;
             font-size: 18px;
             font-weight: bold;
             display: flex;
@@ -66,7 +66,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             flex-wrap: nowrap;
             /* agar tetap sejajar */
-            gap: 10px;
+            gap: 35px;
         }
 
         .title {
@@ -843,6 +843,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </body>
+
 <script>
     let nakesData = JSON.parse(localStorage.getItem("nakesData")) || [];
 
@@ -858,13 +859,35 @@
         return parseInt(str.replace(/\D/g, '')) || 0;
     }
 
+    // Fungsi untuk mendapatkan/menyimpan ID berdasarkan nama
     function getOrCreateID(nama) {
+        nama = nama.toUpperCase(); // konsistensi kapital
         let idMap = JSON.parse(localStorage.getItem("idMap")) || {};
+
         if (!idMap[nama]) {
-            idMap[nama] = "NK." + Date.now() + Math.floor(Math.random() * 1000);
+            const part1 = "070924"
+            const part2 = "1/3";
+            const part3 = String(Math.floor(50 + Math.random() * 30));
+            const part4 = String(Math.floor(Math.random() * 10));
+
+            idMap[nama] = `BDN.${part1}-${part2}.AGK.${part3}.RS.${part4}`;
             localStorage.setItem("idMap", JSON.stringify(idMap));
         }
+
         return idMap[nama];
+    }
+
+    // Fungsi untuk menampilkan ID di bawah input nama
+    function tampilkanID(inputElement) {
+        const nama = inputElement.value.trim();
+        const idContainer = inputElement.nextElementSibling;
+
+        if (nama) {
+            const id = getOrCreateID(nama);
+            idContainer.textContent = ` ${id}`;
+        } else {
+            idContainer.textContent = "";
+        }
     }
 
     function hitungDurasi(dari, sampai) {
@@ -910,7 +933,11 @@
         const div = document.createElement('div');
         div.className = 'form';
         div.innerHTML = `
-<div><label>Nama Lengkap :</label><input type="text" class="nama" required></div>
+<label>Nama Lengkap :</label>
+            <input type="text" class="nama" required
+                   style="text-transform: uppercase;"
+                   oninput="this.value = this.value.toUpperCase(); tampilkanID(this)">
+            <div class="id-nakes" style="font-size: 0.9em; color: #555; margin-top: 4px;"></div>
 <div><label>Jadwal Shift :</label>
     <select class="status" required>
         <option value="" disabled selected>Pilih Jadwal</option>
@@ -935,8 +962,8 @@
 </div>
 <div class="durasi-info" style="margin: 5px 0; font-style: italic; color: #333;">Durasi Waktu Kerja : -</div>
 <div style="margin-top:10px; text-align:right;">
-    <button onclick="this.closest('.form-group').remove()" style="color:red;">&times; Hapus Form</button>
-    <button onclick="tambahNakes()">+ Tambah Lagi</button>
+    <button onclick="this.closest('.form').remove()" style="color:red;">&times; Hapus Form</button>
+    <button onclick="tambahNakes()">+ Tambah Form</button>
 </div>`;
 
         document.getElementById("formNakes").appendChild(div);
@@ -1128,6 +1155,60 @@
         tampilkanData(hasil);
     }
 
+    // Cegah klik kanan
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+    });
+
+    // Cegah F12, Ctrl+Shift+I, Ctrl+U, dll
+    document.addEventListener("keydown", function (e) {
+        if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
+            (e.ctrlKey && (e.key === "U" || e.key === "S"))
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    // Deteksi apakah pengguna menggunakan desktop, tablet, atau HP
+    function isMobileDevice() {
+        const ua = navigator.userAgent;
+        return /Android|iPhone|iPad|iPod/i.test(ua);
+    }
+
+    function blockNonMobile() {
+        if (!isMobileDevice()) {
+            document.body.innerHTML = `
+      <div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
+        <h1 style="color:red;">Mohon Maaf,Akses Anda Ditolak!</h1>
+        <p>Halaman ini hanya dapat diakses melalui perangkat mobile.</p>
+      </div>`;
+            document.body.style.backgroundColor = "#fff";
+        }
+    }
+
+    // Jalankan saat halaman dimuat
+    window.onload = blockNonMobile;
+
+    // Deteksi inspect element terbuka
+    let devtoolsOpen = false;
+    const threshold = 160;
+
+    setInterval(() => {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        if (widthThreshold || heightThreshold) {
+            devtoolsOpen = true;
+            document.body.innerHTML = `
+      <div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
+        <h1 style="color:red;">Inspeksi Terdeteksi</h1>
+        <p>Fitur developer tools telah dibuka. Halaman dinonaktifkan.</p>
+      </div>`;
+            document.body.style.backgroundColor = "#fff";
+        }
+    }, 8000);
+
     async function eksporPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -1186,7 +1267,7 @@
         doc.text("TOTAL Uang Keluar : (Rp) " + totalHonorCalculated.toLocaleString("id-ID"), 14, finalY + 6);
 
         // Simpan dokumen
-        doc.save("Data_pembagian_Rp_Bpjs_bidan.pdf");
+        doc.save("F&Z_Pembagian_Bpjs_Agk.pdf");
     }
 
 
@@ -1257,7 +1338,7 @@
 
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", "Data_pembagian_Rp_Bpjs_bidan.csv");
+        link.setAttribute("download", "F&Z_Pembagian_Bpjs_Agk.csv");
         link.style.visibility = "hidden";
 
         document.body.appendChild(link);
