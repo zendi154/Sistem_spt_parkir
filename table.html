@@ -475,24 +475,23 @@
 
         /* Spinner Wrapper */
         #loading {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(255, 255, 255, 0.7);
-            z-index: 9999;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.3s ease;
+            z-index: 9999;
         }
 
         .spinner {
             width: 60px;
             height: 60px;
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
+            border: 6px solid #ccc;
+            border-top-color: #3498db;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -549,6 +548,31 @@
             box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
         }
 
+        /* buat input readonly terlihat seperti disabled tapi tetap fokusable */
+        .time-input-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[readonly] {
+            padding-right: 40px;
+            /* kasih ruang buat tulisan Wib */
+            background-color: #f0f0f0;
+            border: 2px solid #ccc;
+            cursor: not-allowed;
+        }
+
+        .wib-label {
+            position: absolute;
+            right: 8px;
+            pointer-events: none;
+            color: #555;
+            font-size: 0.85em;
+            user-select: none;
+        }
+
         /* Filter */
         .filter-container {
             display: none;
@@ -578,7 +602,8 @@
         <p><i class="fas fa-info-circle"></i><em> 1. Pembagian berdasarkan jumlah jam kerja.</em></p>
         <p><i class="fas fa-info-circle"></i><em> 2. Pembagian berdasarkan Jadwal Shift Dinas.</em></p>
         <p><i class="fas fa-info-circle"></i><em> 3. Periksa kembali sebelum mengirim data.</em></p>
-        <p><i class="fas fa-info-circle"></i><em> 4. Mohon maaf 🙏, Sistem ini masih dalam proses penembangan.</em></p>
+        <p><i class="fas fa-info-circle"></i><em> 4. Keterangan Waktu <br> Pagi : 08.00 - 14.00 / Sore : 14.00 - 20.00
+                Malam : 20.00 - 08.00 (WIB)</em></p>
         <hr>
         <div class="form-group">
             <label>*Nominal BPJS (Rp) :</label><br>
@@ -592,7 +617,7 @@
         </div>
         <hr>
         <button onclick="toggleFormNakes()" id="toggleFormBtn">
-            <i class="fas fa-eye"></i> Tampilkan Formulir
+            <i class="fas fa-eye"></i> | Tampilkan Formulir
         </button>
 
         <div class="form-group" id="formNakesContainer">
@@ -602,19 +627,19 @@
         </div>
         <div class="button-group">
             <button onclick="hitungHonor()">
-                <i class="fas fa-calculator"></i> Simpan Data </button>
+                <i class="fas fa-calculator"></i> | Hitung </button>
             <button id="batalEdit" onclick="batalEdit()" style="display:none;"><i class="fas fa-times-circle"></i>
                 Batal</button>
         </div>
 
         <!-- Spinner -->
-        <div id="loading">
+        <div id="loading" style="display: none;">
             <div class="spinner"></div>
         </div>
 
         <hr>
         <button onclick="toggleFilter()" id="toggleFilterBtn" style="margin: 10px 0;">
-            <i class="fas fa-chevron-down"></i> Tampilkan Filter
+            <i class="fas fa-chevron-down"></i> | Tampilkan Filter
         </button>
 
         <div class="filter-container">
@@ -719,14 +744,46 @@
         return durasi > 0 ? durasi : (24 + durasi);
     }
 
+    function setJamShift(status, dariInput, sampaiInput, durasiElemen) {
+        let dari = "", sampai = "";
+
+        switch (status) {
+            case "Pagi":
+                dari = "08:00"; sampai = "14:00"; break;
+            case "Sore":
+                dari = "14:00"; sampai = "20:00"; break;
+            case "Malam":
+                dari = "20:00"; sampai = "08:00"; break;
+            case "Pagi/Sore":
+                dari = "08:00"; sampai = "20:00"; break;
+            case "Sore/Malam":
+                dari = "14:00"; sampai = "08:00"; break;
+            case "Pagi/Sore/Malam":
+                dari = "08:00"; sampai = "08:00"; break;
+            case "Tidak Masuk/Libur":
+                dari = ""; sampai = ""; break;
+        }
+
+        dariInput.value = dari;
+        sampaiInput.value = sampai;
+
+        // Tampilkan durasi jika waktu valid
+        if (dari && sampai) {
+            const durasi = hitungDurasi(dari, sampai);
+            durasiElemen.textContent = `Durasi Waktu Kerja : ${durasi.toFixed(1)} (jam)`;
+        } else {
+            durasiElemen.textContent = "";
+        }
+    }
+
     function tambahNakes() {
         const div = document.createElement('div');
         div.className = 'form-group';
         div.innerHTML = `
-<div><label>Nama:</label><input type="text" class="nama" required></div>
-<div><label>Shift:</label>
+<div><label>Nama Lengkap :</label><input type="text" class="nama" required></div>
+<div><label>Jadwal Shift :</label>
     <select class="status" required>
-        <option value="">Pilih Shift</option>
+        <option value="">Pilih Jadwal Shift</option>
         <option>Pagi</option>
         <option>Sore</option>
         <option>Malam</option>
@@ -736,14 +793,34 @@
         <option>Tidak Masuk/Libur</option>
     </select>
 </div>
-<div><label>Dari Pukul:</label><input type="time" class="dari" required></div>
-<div><label>Sampai Pukul:</label><input type="time" class="sampai" required></div>
+<div class="time-input-wrapper">
+  <label>Dari :</label>
+  <input type="time" class="dari" required readonly>
+  <span class="wib-label">(WIB)</span>
+</div>
+<div class="time-input-wrapper">
+  <label>Sampai :</label>
+  <input type="time" class="sampai" required readonly>
+  <span class="wib-label">(WIB)</span>
+</div>
+<div class="durasi-info" style="margin: 5px 0; font-style: italic; color: #333;">Durasi: -</div>
 <div style="margin-top:10px; text-align:right;">
     <button onclick="this.closest('.form-group').remove()" style="color:red;">&times; Hapus Form</button>
     <button onclick="tambahNakes()">+ Tambah Lagi</button>
 </div>`;
+
         document.getElementById("formNakes").appendChild(div);
+
+        const statusSelect = div.querySelector(".status");
+        const dariInput = div.querySelector(".dari");
+        const sampaiInput = div.querySelector(".sampai");
+        const durasiInfo = div.querySelector(".durasi-info");
+
+        statusSelect.addEventListener("change", () => {
+            setJamShift(statusSelect.value, dariInput, sampaiInput, durasiInfo);
+        });
     }
+
 
     function hitungHonor() {
         const honorInput = document.getElementById("totalHonor");
@@ -755,45 +832,62 @@
         const dariEls = document.querySelectorAll(".dari");
         const sampaiEls = document.querySelectorAll(".sampai");
 
+        const loadingEl = document.getElementById("loading"); // ⬅️ PINDAHKAN KE SINI
+
         if (!honorTotal || !tanggal) {
-            alert("⚠️ Harap isi nominal honor dan tanggal terlebih dahulu.");
+            alert("⚠️ Harap isi nominal Bpjs dan tanggal terlebih dahulu.");
             return;
         }
 
         for (let i = 0; i < namaEls.length; i++) {
-            if (!namaEls[i].value || !statusEls[i].value || !dariEls[i].value ||
-                !sampaiEls[i].value) { alert(`⚠️ Form ke-${i + 1} belum lengkap.`); return; }
-        } loadingEl.style.display = "flex";
-        setTimeout(() => {
-            let totalJam = 0;
-            let tempData = [];
-
-            for (let i = 0; i < namaEls.length; i++) {
-                const nama = namaEls[i].value.trim(); const status = statusEls[i].value;
-                const dari = dariEls[i].value; const sampai = sampaiEls[i].value; const jam = hitungDurasi(dari, sampai); totalJam
-                    += jam; const id = getOrCreateID(nama); tempData.push({
-                        id, nama, status, dari, sampai, jam, tanggal, honorTotal
-                    });
-            } const editId = document.getElementById("formNakes").getAttribute("data-edit-id"); if (editId) {
-                const
-                    index = nakesData.findIndex(n => n.id === editId);
-                if (index !== -1) nakesData.splice(index, 1);
-                document.getElementById("formNakes").removeAttribute("data-edit-id");
-                document.getElementById("batalEdit").style.display = "none";
+            if (!namaEls[i].value || !statusEls[i].value || !dariEls[i].value || !sampaiEls[i].value) {
+                alert(`⚠️ Form ke-${i + 1} belum lengkap.`);
+                return;
             }
+        }
 
-            nakesData = [...nakesData, ...tempData];
-            localStorage.setItem("nakesData", JSON.stringify(nakesData));
-            localStorage.setItem("totalHonorValue", honorTotal);
-            honorInput.value = "";
-            document.getElementById("formNakes").innerHTML = "";
-            tambahNakes();
-            tampilkanData(nakesData);
+        loadingEl.style.display = "flex"; // ✅ sekarang tidak error
 
-            document.getElementById("totalHonorText").innerText = `Rp ${honorTotal.toLocaleString("id-ID")}`;
-            loadingEl.style.display = "none";
-            alert("✅ Sukses!. Terimkasih, Fitri Widya Nengsih,Amd.Keb, Data berhasil disimpan!");
-        }, 1500);
+        setTimeout(() => {
+            try {
+                let totalJam = 0;
+                let tempData = [];
+
+                for (let i = 0; i < namaEls.length; i++) {
+                    const nama = namaEls[i].value.trim();
+                    const status = statusEls[i].value;
+                    const dari = dariEls[i].value;
+                    const sampai = sampaiEls[i].value;
+                    const jam = hitungDurasi(dari, sampai);
+                    totalJam += jam;
+                    const id = getOrCreateID(nama);
+
+                    tempData.push({ id, nama, status, dari, sampai, jam, tanggal, honorTotal });
+                }
+
+                const formNakes = document.getElementById("formNakes");
+                const editId = formNakes.getAttribute("data-edit-id");
+                if (editId) {
+                    const index = nakesData.findIndex(n => n.id === editId);
+                    if (index !== -1) nakesData.splice(index, 1);
+                    formNakes.removeAttribute("data-edit-id");
+                    document.getElementById("batalEdit").style.display = "none";
+                }
+
+                nakesData = [...nakesData, ...tempData];
+                localStorage.setItem("nakesData", JSON.stringify(nakesData));
+                localStorage.setItem("totalHonorValue", honorTotal);
+                honorInput.value = "";
+                formNakes.innerHTML = "";
+                tambahNakes();
+                tampilkanData(nakesData);
+
+                document.getElementById("totalHonorText").innerText = `Rp ${honorTotal.toLocaleString("id-ID")}`;
+                alert("✅ Data berhasil disimpan!");
+            } finally {
+                loadingEl.style.display = "none"; // ✅ spinner dimatikan
+            }
+        }, 5000);
     }
 
     function tampilkanData(data) {
@@ -951,7 +1045,7 @@
                 // Tambahkan footer di bawah halaman
                 const pageHeight = doc.internal.pageSize.height;
                 doc.setFontSize(8);
-                doc.text("2024 Disigen By ; BlackswanPictured.com | Hak Cipta Dilindungi Undang - Undang", 14, pageHeight - 10);
+                doc.text("@2024 Disigen By ; BlackswanPictured | Hak Cipta Dilindungi Undang - Undang", 14, pageHeight - 10);
             }
         });
 
@@ -1024,7 +1118,7 @@
         ].join(",");
 
         // Footer teks (misalnya penjelasan sumber file)
-        const footerLine = "\n,2024 Disigen By; BlackswanPictured.com | Hak Cipta Dilindungi Undang-Undang";
+        const footerLine = "\n,@2024 Disigen By; BlackswanPictured | Hak Cipta Dilindungi Undang-Undang";
 
         const csvContent = [headers.join(","), ...rows, totalLines, honorLines, footerLine].join("\n");
 
