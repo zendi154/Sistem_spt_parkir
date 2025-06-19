@@ -1,307 +1,906 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data Parkir</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f7fc;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        form {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-            background-color: white;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .form-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-group>div {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .button-container {
-            text-align: center;
-        }
-
-        .export-button {
-            background-color: #28a745;
-            color: white;
-            font-size: 1rem;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-
-        .export-button:hover {
-            background-color: #218838;
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>https://bapendakotabengkulu.go.id</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Work+Sans:ital,wght@1,500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <section>
+        <section id="from" class="from">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class=col-md-8 class="col-10 text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <form name="LAPORAN NOTARIS 2025">
+                                    <div class="col-12">
+                                        <div class="mb-8">
+                                            <form class="row g-3 needs-validation">
+                                                <div class="alert alert-danger alert-dismissible" role="alert" m="10">
+                                                    <br>
+                                                    <br>
+                                                    <i class="bi bi-exclamation-circle"></i> PERINGATAN
+                                                    Untuk Pengisian Formulir di bawa ini diharpakan
+                                                    menggunakan huruf kapital / Besar "Isi Semua bagian
+                                                    kolom yang
+                                                    tersedia jika satu kolom laporan yang tidak diisi maka
+                                                    laporan tidak
+                                                    bisa di
+                                                    proses
+                                                </div>
+                                                <div class="alert alert-warning alert-dismissible" role="alert" m="10">
+                                                    <br>
+                                                    <i class="bi bi-exclamation-triangle">PERHATIAN
+                                                    </i> <br> Untuk tidak melakukan kesalahan dalam
+                                                    pengiriman laporan mohon diperhatikan <br> baik-baik
+                                                    sebelum ada notifikasi <br>
+                                                    mengirim ulang formulir tidak diperkenanakan
+                                                    mengkelik Dua kali Tombol "Kirim" <br> jika Sudah
+                                                    ada
+                                                    simbol <i class="bi bi-check-square"></i> dan
+                                                    formulir sudah kosong dipersilahkan untuk mengirim
+                                                    laporan kembali...
+                                                    Ini :
+                                                    </h3>
+                                                </div>
+                                        </div>
+                                        <label for="validationCustom02" class="form-label">Nama
+                                            Admin Penginput
+                                            Laporan</label>
+                                        <select class="form-select" id="admin penginput" name="admin penginput"
+                                            required>
+                                            <option selected disabled value>*Pilih Nama Penginput
+                                                Laporan</option>
+                                            <option value="Zendi Afrian Saputra,S.H">Zendi Afrian
+                                                Saputra,S.H
+                                            </option>
+                                        </select>
+                                        <div class="valid-feedback">
+                                            Mohon Pilih Nama Yang Tersedia!
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="mb-8">
+                                            <label for="validationCustom02" class="form-label">Nomor
+                                                Agenda
+                                                Disposisi</label>
+                                            <input type="number" class="form-control" id="nomor agenda"
+                                                name="nomor agenda" value="" required>
+                                            <div class="valid-feedback">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="mb-8">
+                                                <label for="validationCustom02" class="form-label">Input
+                                                    "NPWP"
+                                                    Notaris & PPAT</label>
+                                                <select class="form-select" id="npwp" name="npwp" value="" required>
+                                                    <option selected disabled value>*Pilih Nama
+                                                        Notaris & PPAT
+                                                    </option>
+                                                    <option value="14.468.091.5-311.000">Sari
+                                                        Indra</option>
+                                                    <option value="76.849.171.4-448.000">
+                                                        Ilham Rahmadi
+                                                    </option>
+                                                    <option value="80.086.768.1-311.000">
+                                                        Haritri Grata Johni
+                                                        A.P</option>
+                                                    <option value="00.000.000.0-000.000"> Hj.
+                                                        Tina Haerani
+                                                        Bunggasi</option>
+                                                    <option value="16.321.206.1-311.000">
+                                                        Susanti</option>
+                                                    <option value="94.632.571.9.311-000">
+                                                        Auliyaa Martati
+                                                    </option>
+                                                    <option value="75.953.698.0-311.000">
+                                                        Lydia Arman</option>
+                                                    <option value="14.802.936.6-311.000"> Emy
+                                                        Efrianti Agustin
+                                                    </option>
+                                                    <option value="07.356.817.2-311.000">
+                                                        Noviarti</option>
+                                                    <option value="14.222.493.0-311.000"> Deni
+                                                        Yohanes
+                                                    </option>
+                                                    <option value="70.564.146.2-311.000">
+                                                        Amelia Merdeka Sari
+                                                    </option>
+                                                    <option value="84.123.865.2-018.000"> Deni
+                                                        Kristian
+                                                        Natanael</option>
+                                                    <option value="25.221.927.4-503.000">
+                                                        Helen Sapringga
+                                                    </option>
+                                                    <option value="07.021.792.2-311.000">Is
+                                                        haryani</option>
+                                                    <option value="81.163.794.1-416.000">
+                                                        Randi Wibowo
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000"> Rudi
+                                                        Indra Jaya
+                                                    </option>
+                                                    <option value="07.356.779.4-311.000"> H.
+                                                        Mufti Nokhman
+                                                    </option>
+                                                    <option value="78.412.936.9-311.000">
+                                                        Atmiwijaya Artati
+                                                    </option>
+                                                    <option value="07.357.570.6-311.000"> Dian
+                                                        Rismawati
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Bertha Novelisa
+                                                    </option>
+                                                    <option value="06.708.843.5-311.000">
+                                                        Rizefitriani
+                                                        Alamsyah</option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Angga Prisma Jelita
+                                                    </option>
+                                                    <option value="39.683.016.8-328.000">
+                                                        Christine</option>
+                                                    <option value="14.993.005.9-311.000">
+                                                        Mirza</option>
+                                                    <option value="00.000.000.0-000.000"> H.
+                                                        Epison</option>
+                                                    <option value="15.296.359.1-311.000">
+                                                        Desriano Indra
+                                                        Syahputra</option>
+                                                    <option value="16.801.188.0-311.000">
+                                                        Bjanza Metra
+                                                    </option>
+                                                    <option value="72.311.579.6-411.000">
+                                                        Vinanda Lovita
+                                                    </option>
+                                                    <option value="45.581.427.7-013.000">
+                                                        Annisa Fadila
+                                                        Kartadimaja</option>
+                                                    <option value="08.296.734.9-543.000">
+                                                        Anjar Kristianto
+                                                    </option>
+                                                    <option value="90.458.524.7-311.000">Sari
+                                                        Priyanka
+                                                    </option>
+                                                    <option value="39.695.181.6-532.000"> Dwi
+                                                        Fani Ariskasindi
+                                                    </option>
+                                                    <option value="81.191.587.5-428.000">
+                                                        Sicilia Hendra
+                                                    </option>
+                                                    <option value="81.750.659.5-311.000">
+                                                        Kartini Kusmawaty
+                                                    </option>
+                                                    <option value="07.356.342.1-311.000">
+                                                        Idayanti</option>
+                                                    <option value="06.665.605.9-311.000">
+                                                        Irawan</option>
+                                                    <option value="35.203.265.0-311.000">
+                                                        Juliwati Siagan
+                                                    </option>
+                                                    <option value="94.317.532.3-311.000">
+                                                        Kahirunnisa</option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Lelia Gentjana
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000"> Daud
+                                                        Widya Pranata
+                                                        Septi</option>
+                                                    <option value="00.000.000.0-000.000"> Dora
+                                                        Yulita Agustina
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000"> Vike
+                                                        Dianti Putri
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Indah Arestia
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Kuswari Ahmad
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Linda Oktarina
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Meilani Liman
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Tiara Yunita
+                                                    </option>
+                                                    <option value="00.000.000.0-000.000">
+                                                        Shinta Widyaniati
+                                                    </option>
+                                                </select>
+                                                <div class="valid-feedback">
+                                                    Terimakasih!
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label for="validationCustom02" class="form-label">Pilih
+                                                        Nama
+                                                        Notaris & PPAT</label>
+                                                    <select class="form-select" id="nama notaris & ppat"
+                                                        name="nama notaris & ppat" value="" required>
+                                                        <option selected disabled value>*Pilih Nama
+                                                            Notaris & PPAT
+                                                        </option>
+                                                        <option value="Sari Indra,S.H.,M.Kn">Sari
+                                                            Indra,S.H.,M.Kn
+                                                        </option>
+                                                        <option value="Ilham Rahmadi,S.H.,M.Kn">
+                                                            Ilham
+                                                            Rahmadi,S.H.,M.Kn</option>
+                                                        <option value="Haritri Grata Johni Arifin Putri, S.H.,M.Kn">
+                                                            Haritri Grata Johni Arifin Putri,
+                                                            S.H.,M.Kn</option>
+                                                        <option value="Hj. Tina Haerani Bunggasi,S.H.,M.Kn">
+                                                            Hj. Tina
+                                                            Haerani Bunggasi,S.H.,M.Kn</option>
+                                                        <option value="Susanti,S.H.,M.Kn">
+                                                            Susanti,S.H.,M.Kn</option>
+                                                        <option value="Auliyaa Martati,S.H.,M.Kn">
+                                                            Auliyaa
+                                                            Martati,S.H.,M.Kn</option>
+                                                        <option value="Lydia Arman,S.H.,M.Kn">Lydia
+                                                            Arman,S.H.,M.Kn
+                                                        </option>
+                                                        <option value="Emy Efrianti Agustin,S.H.,M.Kn">
+                                                            Emy Efrianti
+                                                            Agustin,S.H.,M.Kn</option>
+                                                        <option value="Noviarti,S.H">Noviarti,S.H
+                                                        </option>
+                                                        <option value="Deni Yohanes,S.H.,M.Kn">Deni
+                                                            Yohanes,S.H.,M.Kn</option>
+                                                        <option value="Amelia Merdeka Sari,S.H.,M.Kn">
+                                                            Amelia Merdeka
+                                                            Sari,S.H.,M.Kn</option>
+                                                        <option value="Deni Kristian Natanael,S.S,S.S,M.H.,M.Kn">
+                                                            Deni Kristian Natanael,S.S,S.S,M.H.,M.Kn
+                                                        </option>
+                                                        <option value="Helen Sapringga,S.H,M.Kn">
+                                                            Helen
+                                                            Sapringga,S.H,M.Kn</option>
+                                                        <option value="Isharyani,S.H">Isharyani,S.H
+                                                        </option>
+                                                        <option value="Randi Wibowo,S.H.,M.Kn">Randi
+                                                            Wibowo,S.H.,M.Kn</option>
+                                                        <option value="Rudi Indra Jaya,S.H.,S.Tp.,Sp.N">
+                                                            Rudi Indra
+                                                            Jaya,S.H.,S.Tp.,Sp.N</option>
+                                                        <option value="H. Mufti Nokhman,S.H.,M.Kn">
+                                                            H. Mufti
+                                                            Nokhman,S.H.,M.Kn</option>
+                                                        <option value="Atmawijaya Artati,S,H.,M.Kn">
+                                                            Atmiwijaya
+                                                            Artati,S,H.,M.Kn</option>
+                                                        <option value="Dian Rismawati,S.H">Dian
+                                                            Rismawati,S.H
+                                                        </option>
+                                                        <option value="Bertha Novelisa,S.H.,M.Kn">
+                                                            Bertha
+                                                            Novelisa,S.H.,M.Kn</option>
+                                                        <option value="Rizefitriani Alamsyah,S.H">
+                                                            Rizefitriani
+                                                            Alamsyah,S.H</option>
+                                                        <option value="Angga Prisma Jelita,S.H.,M.Kn">
+                                                            Angga Prisma
+                                                            Jelita,S.H.,M.Kn</option>
+                                                        <option value="Christine,S.H.,M.Kn">
+                                                            Christine,S.H.,M.Kn
+                                                        </option>
+                                                        <option value="Mirza,S.H.,M.Kn">
+                                                            Mirza,S.H.,M.Kn</option>
+                                                        <option value="H. Epison,S.H">H. Epison,S.H
+                                                        </option>
+                                                        <option value="Desriano Indra Syahputra,S.H.,M.kn">
+                                                            Desriano
+                                                            Indra Syahputra,S.H.,M.kn</option>
+                                                        <option value="Bjanza Metra,S.H.,M.Kn">
+                                                            Bjanza
+                                                            Metra,S.H.,M.Kn</option>
+                                                        <option value="Vinanda Lovita,S.H.,M.Kn">
+                                                            Vinanda
+                                                            Lovita,S.H.,M.Kn</option>
+                                                        <option value="Annisa Fadila Kartadimaja,S.H.,M.Kn">
+                                                            Annisa
+                                                            Fadila Kartadimaja,S.H.,M.Kn</option>
+                                                        <option value="Anjar Kristianto,S.H,.M.Kn">
+                                                            Anjar
+                                                            Kristianto,S.H,.M.Kn</option>
+                                                        <option value="Sari Priyanka,S,H,M.kn">Sari
+                                                            Priyanka,S,H,M.kn</option>
+                                                        <option value="Dwi Fani Ariskasindi,S.H.,M.Kn">
+                                                            Dwi Fani
+                                                            Ariskasindi,S.H.,M.Kn</option>
+                                                        <option value="Sicilia Hendra,S.H.,M.Kn">
+                                                            Sicilia
+                                                            Hendra,S.H.,M.Kn</option>
+                                                        <option value="Kartini Kusmawaty,S.H,.M.Kn">
+                                                            Kartini
+                                                            Kusmawaty,S.H,.M.Kn</option>
+                                                        <option value="Kahirunnisa,S.H.,M.Kn">
+                                                            Kahirunnisa,S.H.,M.Kn
+                                                        </option>
+                                                        <option value="Idayanti,S.H.,M.Kn">
+                                                            Idayanti,S.H.,M.Kn
+                                                        </option>
+                                                        <option value="Lelia Gentjana,S.H.,M.Kn">
+                                                            Lelia
+                                                            Gentjana,S.H.,M.Kn</option>
+                                                        <option value="Daud Widya Pranata Septi,S.H.,M.Kn">
+                                                            Daud
+                                                            Widya Pranata Septi,S.H.,M.Kn</option>
+                                                        <option value="Dora Yulita Agustina,S.H.,M.Kn">
+                                                            Dora Yulita
+                                                            Agustina,S.H.,M.Kn</option>
+                                                        <option value="Vike Dianti Putri,S.H.,M.Kn">
+                                                            Vike Dianti
+                                                            Putri,S.H.,M.Kn</option>
+                                                        <option value="Indah Arestia,S.H">Indah
+                                                            Arestia,S.H</option>
+                                                        <option value="Irawan,S.H">Irawan,S.H
+                                                        </option>
+                                                        <option value="Juliwati Siagan,S.H">Juliwati
+                                                            Siagan,S.H
+                                                        </option>
+                                                        <option value="Kuswari Ahmad,S.H.,M.Kn">
+                                                            Kuswari
+                                                            Ahmad,S.H.,M.Kn</option>
+                                                        <option value="Linda Oktarina,S.H">Linda
+                                                            Oktarina,S.H
+                                                        </option>
+                                                        <option value="Meilani Liman,S.H.,M.Kn">
+                                                            Meilani
+                                                            Liman,S.H.,M.Kn</option>
+                                                        <option value="Tiara Yunita Ovelia,S.H.,M.Kn">
+                                                            Tiara
+                                                            Yunita,S.H.,M.Kn</option>
+                                                        <option value="Shinta Widyaniati,S.H.,M.Kn">
+                                                            Shinta
+                                                            Widyaniati,S.H.,M.Kn</option>
+                                                    </select>
+                                                    <div class="valid-feedback">
+                                                        Terimakasih!
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-8">
+                                                        <label for="validationCustom02" class="form-label">Alamat
+                                                            Notaris & PPAT</label>
+                                                        <select class="form-select" id="alamat" name="alamat" required>
+                                                            <option selected disabled value>
+                                                                *Silahkan Pilih Alamat
+                                                                Notaris & PPAT </option>
+                                                            <option
+                                                                value="Jl. Dempo 1, Kel. Sawah Lebar Kec. Ratu Agung">
+                                                                AMELIA MERDEKA SARI, S.H.,
+                                                                M.Kn</option>
+                                                            <option
+                                                                value="Jl. Cendrawasih Kel. Kebun Gerand Kec. Ratu Samban">
+                                                                ANJAR KRISTIANTO, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Beringin No. 1 D kel. Padang Jati Kec. Ratu Samban">
+                                                                ATMIWIJAYA ARTATI, S.H., M.Kn
+                                                            </option>
+                                                            <option value="Jl. Karbela Kebun Tebeng Kec. Ratu Agung">
+                                                                DENI YOHANES, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Fatmawati No.11 Penurunan Kec. Ratu Samban">
+                                                                DIAN RISMAWATI, S.H</option>
+                                                            <option
+                                                                value="Jl. Ratu Agung No.23 Kel. Anggut Bawah Kec. Ratu Samban">
+                                                                HARITRI GRATA JOHNI ARIFIN
+                                                                PUTRI, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Salak Bl I No.99 Kel.Dusun Besar Kec. Singaran Pati">
+                                                                IDAYANTI, S.H</option>
+                                                            <option
+                                                                value="Jl. S. Parman No.40 Kel. Kebun Kenanga Kec. Ratu Agung">
+                                                                IS HARIYANI,S.H</option>
+                                                            <option
+                                                                value="Jl. S. Parman No. 20 A. Kel. Padang Jati Kec. Ratu Samban">
+                                                                LEILA GENTJANA, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Sudirman 3 Kel. Pintu Batu Kec. Tlk. Segara">
+                                                                LYDIA ARMAN, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="JL. Prof DR Hazairin SH 11 Bengkulu Kel. Pasar Baru Kec. Teluk Segara">
+                                                                NOVIARTATI, S.H</option>
+                                                            <option
+                                                                value="Jl. S. Parman No. 7 Kel. Kebun Kenanga Kec. Ratu Agung">
+                                                                SARI PRIYANKA, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Fatmawati Kel. Penurunan Kec. Ratu Samban">
+                                                                SUSANTI, S.H., M.Kn</option>
+                                                            <option
+                                                                value="Jl. Mayjen Sutoyo No.36 Kel. Jemb. Kecil Kec. Singaran Pati">
+                                                                TINA HAERANI BUNGGASI, S.H
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Kapuas Raya No.6 Kel. Lkr. Barat Kec. Gading Cemp">
+                                                                ANNISA FADILLA
+                                                                KARTAMADJA,S.H., M.Kn</option>
+                                                            <option
+                                                                value="Jl. Tim. Indah Raya Kel. Tim. Indah Kec. Singaran Pati">
+                                                                ANGGA PRISMA JELITA,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Jl. Meranti II No.4A Kel. Sawah Lebar Kec. Ratu Agung">
+                                                                AULIYYA MARTATI, S.H., M.H
+                                                            </option>
+                                                            <option value="Jl. Bajak, Kec. Teluk Segara Kota Bengkulu">
+                                                                BERTHA NOVELISA, S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Sawah Lebar Kec. Ratu Agung Kota Bengkulu">
+                                                                BJANZA METRA, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Jendral. Sudirman No.10 Kel. Pintu Batu Kec. Tlk. Segara">
+                                                                CHRISTINE, S.H.,M.K.n
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Belibis Kel No.26 Kel. Cemp. Permai Kec. Gading Cempaka">
+                                                                DAUD WIDYA PRANATA SEPTI,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Perum Kapuas Grande Blok B.2 Kel. Padang Harapan Kec. Gading Cempaka">
+                                                                DENI KRISTIAN NATANAEL,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Jl. Air Manjunto No.25 A Kel. Padang Harapan Kec. Gading Cempaka">
+                                                                DESRIANO INDRA SYAHPUTRA,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Jl. Kalimantan Kel. Kp. Kelawi Kec. Sungai Serut">
+                                                                DORA YULIA AGUSTINA,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Jl. Manggis Kel. Panorama Kec. Singaran Pati">
+                                                                DWI FANI ARSIKASINDI,
+                                                                S.H.,M.H</option>
+                                                            <option
+                                                                value="Jl. Kapt. P. Tandean Kel. Jemb. Kecil Kec. Singaran Pati">
+                                                                EMY EFRIANTI AGUSTINI, S.H.,
+                                                                M.Kn</option>
+                                                            <option
+                                                                value="Jl. S. Parman No.62 H Kel. Pasar Melintang Kec. Teluk Segara">
+                                                                H. EPISON, S.H</option>
+                                                            <option
+                                                                value="Perumahan villa indah pesona Blk. B No.20 Kel. Suka Rami Kec. Selebar">
+                                                                HELEN SAPARINGGA,S.H., M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Kalimantan No.2 Kel. Rawa Makmur Permai Kec. Muara Bangka Hulu">
+                                                                ILHAM RAHMADI, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Salak Raya No. 1 A  Kel. Panorama Kec. Singaran Pati">
+                                                                INDAH ARIESTIA, S.H</option>
+                                                            <option
+                                                                value="Jl. LetJend. S. Parman No. 59 Kel. Anggut Bawah Kec. Gading Cempaka">
+                                                                IRAWAN, S.H</option>
+                                                            <option
+                                                                value="Jl. P Natadirja KM 6,5 Kel. Jalan Gedang Kec. Gading Cempaka">
+                                                                JULIWATI SIAGIAN, S.H
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Flamboyan Raya Kel. Kebun Kenanga Kec. Ratu Agung">
+                                                                KARTINI KESUMAWATY,S.H,.M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Letjend Suprapto No.183 Kel. Kebun Gerand Kec. Tlk. Segara">
+                                                                KHAIRUNNISA, S.H., M.Kn
+                                                            </option>
+                                                            <option value="Pengantungan Kec. Ratu Samban Kota Bengkulu">
+                                                                KUSWARI, S.H</option>
+                                                            <option
+                                                                value="Jl. Putri Gading Cempaka Kel. Penurunan Kec. Ratu Samban">
+                                                                LINDA OKTARINA, S.H</option>
+                                                            <option
+                                                                value="JL. Letjen Suprapto No.183 Kel. Kebun Gerand Kec. Ratu Samban">
+                                                                MEILANI LIMAN, S.H</option>
+                                                            <option
+                                                                value="JL. S Parman, No. 115 Kel. Padang Jati Kec. Teluk Segara">
+                                                                MIRZA, S.H.,M.Kn</option>
+                                                            <option
+                                                                value="JL. S. Parman, No.7 B Tanah Patah, Kel.Ratu Agung, Kec. Padang Jati">
+                                                                H. MUFTI NOKHMAN, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. WR. Supratman Kel. Pematang Gubernur Kec. Muara Bangka Hulu">
+                                                                RANDI WIBOWO, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. S. Parman No.26 Kel. Penurunan Kec. Ratu Samban">
+                                                                RIZFITRIANI ALAMSYAH, S.H
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Sentot Alibasyah No.37A Kel. Bajak Kec. Teluk Segara,">
+                                                                RUDI INDRA JAYA,S.H,.M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Air Manjunto No.25 A Kel. Padang Harapan Kec. Gading Cemp">
+                                                                SARI INDRA, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. H. Adam Malik Kel. Cemp Permai Kec. Selebar">
+                                                                SHINTA WIDYANIATI, S.H
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Hibrida 6C  Ke;. Sido Mulyo Kec. Gading Cemp">
+                                                                SICILIA HENDRA, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Kapuas V No.21 Kel. Padang Harapan Kec. Gading Cempaka">
+                                                                TIARA YUNITA OVELIA,
+                                                                S.H.,M.Kn</option>
+                                                            <option
+                                                                value="Jl. Irian No.23 Kel. Suka Merindu Kec. Sungai Serut">
+                                                                VIKE DIANTI PUTRI, S.H.,M.Kn
+                                                            </option>
+                                                            <option
+                                                                value="Jl. Mawar No.15A  Kel. Nusa Indah Kec. Ratu Agung">
+                                                                VINANDA LOVITA, S.H.,M.Kn
+                                                            </option>
+                                                        </select>
+                                                        <div class="valid-feedback">
+                                                            Terimakasih...
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="mb-8">
+                                                            <label for="validationCustom02" class="form-label">Nomor
+                                                                Surat PPAT</label>
+                                                            <input type="text" class="form-control" id="nomor surat"
+                                                                name="nomor surat" value="" required
+                                                                placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                            <div class="valid-feedback">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="mb-8">
+                                                                <label for="validationCustom02"
+                                                                    class="form-label">Tanggal
+                                                                    Surat</label>
+                                                                <input type="date" class="form-control"
+                                                                    id="tanggal surat" name="tanggal surat" value=""
+                                                                    required
+                                                                    placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                                <div class="valid-feedback">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="mb-8">
+                                                                <label for="validationCustom02" class="form-label">
+                                                                    Pilih
+                                                                    Tgl/Bln/Tahun Disposisi
+                                                                    :</label>
+                                                                <input type="date" class="form-control"
+                                                                    pelceholder="dd-mm-yyyy" id="tanggal disposisi"
+                                                                    name="tanggal disposisi" value="input"
+                                                                    min="2023-01-01" max="2030-12-31">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="mb-8">
+                                                                <label for="validationCustom02" class="form-label">Pilih
+                                                                    Bulan Laporan</label>
+                                                                <select class="form-select" id="laporan bulanan"
+                                                                    name="laporan bulanan" required>
+                                                                    <option selected disabled value>
+                                                                        *Pilih Bulan Laporan</option>
+                                                                    <option value="Januari 2024">
+                                                                        Januari 2024</option>
+                                                                    <option value="Februari 2024">
+                                                                        Februari 2024</option>
+                                                                    <option value="Maret 2024">
+                                                                        Maret 2024</option>
+                                                                    <option value="April 2024">
+                                                                        April 2024</option>
+                                                                    <option value="Mei 2024">
+                                                                        Mei 2024</option>
+                                                                    <option value="Juni 2024">
+                                                                        Juni 2024</option>
+                                                                    <option value="Juli 2024">
+                                                                        Juli 2024</option>
+                                                                    <option value="Agustus 2024">
+                                                                        Agustus 2024</option>
+                                                                    <option value="November 2024">
+                                                                        November 2024</option>
+                                                                    <option value="Desember 2024">
+                                                                        Desember 2024</option>
+                                                                    <option selected disabled>
+                                                                    </option>
+                                                                    <option value="Januari 2025">
+                                                                        Januari
+                                                                        2025</option>
+                                                                    <option value="Februari 2025">
+                                                                        Februari 2025</option>
+                                                                    <option value="Maret 2025">Maret
+                                                                        2025</option>
+                                                                    <option value="April 2025">April
+                                                                        2025</option>
+                                                                    <option value="Mei 2025">Mei
+                                                                        2025
+                                                                    </option>
+                                                                    <option value="Juni 2025">Juni
+                                                                        2025
+                                                                    </option>
+                                                                    <option value="Juli 2025">Juli
+                                                                        2025
+                                                                    </option>
+                                                                    <option value="Agustus 2025">
+                                                                        Agustus
+                                                                        2025</option>
+                                                                    <option value="September 2025">
+                                                                        September 2025
+                                                                    </option>
+                                                                    <option value="Oktober 2025">
+                                                                        Oktober
+                                                                        2025</option>
+                                                                    <option value="November 2025">
+                                                                        November 2025</option>
+                                                                </select>
+                                                                <div class="valid-feedback">
+                                                                    Terimakasih!
+                                                                </div>
+                                                                <div class="alert alert-success alert-dismissible fade show d-none my-alret"
+                                                                    role="alert">
+                                                                    <i class="bi bi-info-square"></i>
+                                                                    TERIMAKASIH...
+                                                                    <br> Laporan (NOTARIS dan PPAT)
+                                                                    Kota
+                                                                    Bengkulu Sudah
+                                                                    Terkirim... <i class="bi bi-check-square"></i>
+                                                                    <br>
+                                                                    Silahkan Mengisi Formulir
+                                                                    Laporan
+                                                                    Kembali <i class="bi bi-book-half"></i>
+                                                                    <use xlink:href="#check-circle-fill" />
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="mb-8">
+                                                                    <label for="validationCustom02"
+                                                                        class="form-label">Jumlah
+                                                                        Laporan</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="jumlah laporan" name="jumlah laporan"
+                                                                        value="" required
+                                                                        placeholder="*Cukup Menggunakan Angka (Contoh : 12)">
+                                                                    <div class="valid-feedback">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="mb-8">
+                                                                        <label for="validationCustom02"
+                                                                            class="form-label">Jumlah
+                                                                            Nominal SSP +
+                                                                            SSB</label>
+                                                                        <input type="number" class="form-control"
+                                                                            id="jumlah ssp+ssb" name="jumlah ssp+ssb"
+                                                                            value="" required
+                                                                            placeholder="*Cukup Menggunakan Angka Tanpa '.' dan ','">
+                                                                        <div class="valid-feedback">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <div class="mb-8">
+                                                                            <label for="validationCustom02"
+                                                                                class="form-label">Keterangan</label>
+                                                                            <input type="text" class="form-control"
+                                                                                id="keterangan" name="keterangan"
+                                                                                value="" required
+                                                                                placeholder="*Contoh AJB ; 2 APHT ; BPHTB ; Rp. 15.000.000">
+                                                                            <div class="valid-feedback">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <div class="mb-8">
+                                                                                <div class="form-check">
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox" value=""
+                                                                                        id="invalidCheck" required>
+                                                                                    <label class="form-check-label"
+                                                                                        for="invalidCheck">
+                                                                                        Periksa
+                                                                                        Kembali
+                                                                                        Laporan
+                                                                                        Sebelum
+                                                                                        Melanjutkan*
+                                                                                    </label>
+                                                                                    <div class="invalid-feedback">
+                                                                                        You must
+                                                                                        agree
+                                                                                        before
+                                                                                        submitting.
+                                                                                    </div>
+                                                                                </div>
+                                                                                <center>
+                                                                                    <div class="col-12"
+                                                                                        style="margin-top: 25px;">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-primary btn-kirim">kirim</button>
+                                                                                        <button
+                                                                                            class="btn btn-primary btn-loading d-none"
+                                                                                            type="button" disabled>
+                                                                                            <span
+                                                                                                class="spinner-border spinner-border-sm"
+                                                                                                role="status"
+                                                                                                aria-hidden="true"></span>
+                                                                                            LOADING...
+                                                                                        </button>
+                                                                                </center>
+                                                                            </div>
+                                                                        </div>
+                                </form>
+        </section>
+        <!--Jumbotron-->
+        <section class="jumbotron text-center">
+            <img src="./image/logo.kotabkl.png" alt="logo.Bapenda_kotabkl" width="160" height="160"
+                class="rounded-circle img-thumbnail">
+            <h2>Badan Pendapatan Daerah Kota Bengkulu <br> Bidang Pengendalian Dan Evaluasi</h2>
+        </section>
+        <!--Akhir Jumbotron-->
+        <!--Navbar-->
+        <nav class="navbar navbar-dark bg-primary sahdow-sm fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="">Laporan Notaris Dan PPAT Kota Bengkulu</a>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary sahdow-sm">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                            <a class="nav-link active" aria-current="false" href="parkir.html"><i
+                                    class="bi bi-car-front-fill"></i> LAPORAN PARKIR</a>
+                            <a class="nav-link active" aria-current="false" href="home.html"><i
+                                    class="bi bi-door-closed-fill"></i>KELUAR</a>
+                        </div>
+                    </div>
+            </div>
+        </nav>
+        <!--Akhir Navbar-->
+        <script>
+            const hamburger = document.querySelector('.navbar-toggler');
+            const stikyTop = document.querySelector('.sticky-top');
 
-    <h2>Form Data Juru Parkir</h2>
-    <form id="parkirForm">
-        <div class="form-group">
-            <div>
-                <label>Zona</label>
-                <input type="text" id="zona" required />
-            </div>
-            <div>
-                <label>Nomor</label>
-                <input type="text" id="nomor" required />
-            </div>
-        </div>
-        <label>Nama</label>
-        <input type="text" id="nama" required />
-        <label>Tempat, Tanggal Lahir</label>
-        <input type="text" id="ttl" required />
-        <label>Jenis Kelamin</label>
-        <select id="jk" required>
-            <option value="">Pilih</option>
-            <option value="Laki-laki">Laki-laki</option>
-            <option value="Perempuan">Perempuan</option>
-        </select>
-        <label>Nomor KTP</label>
-        <input type="text" id="ktp" required />
-        <label>Alamat</label>
-        <input type="text" id="alamat" required />
-        <label>Lokasi Parkir</label>
-        <input type="text" id="lokasi" required />
-        <div class="form-group">
-            <div>
-                <label>Jam Mulai (WIB)</label>
-                <input type="time" id="jamMulai" required />
-            </div>
-            <div>
-                <label>Jam Selesai (WIB)</label>
-                <input type="time" id="jamSelesai" required />
-            </div>
-        </div>
-        <label>Retribusi per Bulan (Rp)</label>
-        <input type="text" id="retribusi" required />
-        <button type="submit">Simpan</button>
-    </form>
+            offcanvas.addEventListener('show.bs.offcanvas', function () {
+                stikyTop.style.overflow = 'visible';
+            });
+            offcanvas.addEventListener('hidden.bs.offcanvas', function () {
+                stikyTop.style.overflow = 'hidden';
+            });
+        </script>
 
-    <h2>Data Tersimpan</h2>
-    <div class="button-container">
-        <button class="export-button" onclick="exportToExcel()">Export ke Excel</button>
-    </div>
-    </form>
-
-    <!-- Tabel Data -->
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>Zona</th>
-                <th>Nomor</th>
-                <th>Nama</th>
-                <th>TTL</th>
-                <th>JK</th>
-                <th>No. KTP</th>
-                <th>Alamat</th>
-                <th>Lokasi Parkir</th>
-                <th>Jam WIB</th>
-                <th>Retribusi</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 
     <script>
-        const form = document.getElementById('parkirForm');
-        const tableBody = document.querySelector('#dataTable tbody');
-        const retribusiInput = document.getElementById('retribusi');
-        const submitBtn = document.getElementById('submitBtn');
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx46rSO3ZE8xv_62Ltl8KoIWo9KCls1P_Mwc6cYy_yR_d0hNkyePLD0IPu9auQwZTGi7w/exec';
+        const form = document.forms['LAPORAN NOTARIS 2025']
+        const btnKirim = document.querySelector('.btn-kirim');
+        const btnLoading = document.querySelector('.btn-loading');
+        const myAlert = document.querySelector('.my-alret')
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
 
-        let dataParkir = JSON.parse(localStorage.getItem('dataParkir')) || [];
-        let indexEdit = null; // Nilai index dari data yang sedang diedit
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+            // ketika tombol submit diklik
+            // tamplikan tombol loading, hilangkan tombol kirim
+            // tampilkan alert
+            btnLoading.classList.toggle('d-none');
+            btnKirim.classList.toggle('d-none');
+            myAlert.classList.toggle('d-none');
+            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+                .then(response => {
+                    // tamplikan tombol kirim, hilangkan tombol loading
+                    // hilangkan alert
+                    btnLoading.classList.toggle('d-none');
+                    myAlert.classList.toggle('d-none')
+                    btnKirim.classList.toggle('d-none');
+                    // riset formnya
+                    // kembali kebagian atas
+                    form.reset();
+                    console.log('Success!',
+                        response)
+                })
+                .catch(error => console.error('Error!', error.message))
+        })
 
-        function renderTable() {
-            tableBody.innerHTML = '';
-            dataParkir.forEach((data, index) => {
-                const row = tableBody.insertRow();
-                row.innerHTML = `
-    <td>${data.zona}</td>
-    <td>${data.nomor}</td>
-    <td>${data.nama}</td>
-    <td>${data.ttl}</td>
-    <td>${data.jk}</td>
-    <td>${data.ktp}</td>
-    <td>${data.alamat}</td>
-    <td>${data.lokasi}</td>
-    <td>${data.jamMulai} - ${data.jamSelesai}</td>
-    <td>Rp ${parseInt(data.retribusi).toLocaleString('id-ID')}</td>
-    <td>
-        <button onclick="editData(${index})">Edit</button>
-        <button onclick="deleteData(${index})">Hapus</button>
-    </td>
-`;
+        // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
+        document.body.insertAdjacentHTML("beforeend", `
+    <div id="loadingOverlay" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        text-align: center;
+    ">
+        <div style="
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        "></div>
+        <p style="margin-top: 15px;">Mohon Tunggu... <br> Terima kasih!</p>
+    </div>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+`);
+
+        // Fungsi untuk menampilkan loading sebelum berpindah halaman
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll("a"); // Target semua link di halaman
+            links.forEach(link => {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault(); // Mencegah navigasi langsung
+                    let overlay = document.getElementById("loadingOverlay");
+
+                    overlay.style.visibility = "visible";
+                    overlay.style.opacity = "1";
+
+                    let loadingTime = 10000; // 10 detik sebelum pindah halaman
+                    setTimeout(() => {
+                        window.location.href = this.href; // Pindah halaman setelah 10 detik
+                    }, loadingTime);
+                });
             });
-        }
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const newData = {
-                zona: document.getElementById('zona').value,
-                nomor: document.getElementById('nomor').value,
-                nama: document.getElementById('nama').value,
-                ttl: document.getElementById('ttl').value,
-                jk: document.getElementById('jk').value,
-                ktp: document.getElementById('ktp').value,
-                alamat: document.getElementById('alamat').value,
-                lokasi: document.getElementById('lokasi').value,
-                jamMulai: document.getElementById('jamMulai').value,
-                jamSelesai: document.getElementById('jamSelesai').value,
-                retribusi: getRawNumber(retribusiInput.value)
-            };
-
-            if (indexEdit !== null) {
-                dataParkir[indexEdit] = newData;
-                indexEdit = null;
-                submitBtn.textContent = 'Simpan';
-            } else {
-                dataParkir.push(newData);
-            }
-
-            localStorage.setItem('dataParkir', JSON.stringify(dataParkir));
-            renderTable();
-            form.reset();
         });
 
-        function editData(index) {
-            const data = dataParkir[index];
-            document.getElementById('zona').value = data.zona;
-            document.getElementById('nomor').value = data.nomor;
-            document.getElementById('nama').value = data.nama;
-            document.getElementById('ttl').value = data.ttl;
-            document.getElementById('jk').value = data.jk;
-            document.getElementById('ktp').value = data.ktp;
-            document.getElementById('alamat').value = data.alamat;
-            document.getElementById('lokasi').value = data.lokasi;
-            document.getElementById('jamMulai').value = data.jamMulai;
-            document.getElementById('jamSelesai').value = data.jamSelesai;
-            retribusiInput.value = formatRupiah(data.retribusi);
-
-            indexEdit = index;
-            submitBtn.textContent = 'Update';
-        }
-
-        retribusiInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
-            e.target.value = value ? formatRupiah(value) : '';
+        window.addEventListener("load", function () {
+            let overlay = document.getElementById("loadingOverlay");
+            overlay.style.visibility = "hidden";
+            overlay.style.opacity = "0";
         });
-
-        function getRawNumber(rupiahText) {
-            return rupiahText.replace(/\D/g, '');
-        }
-
-        function formatRupiah(value) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(value);
-        }
-
-        function deleteData(index) {
-            if (confirm("Yakin ingin menghapus data ini?")) {
-                dataParkir.splice(index, 1);
-                localStorage.setItem('dataParkir', JSON.stringify(dataParkir));
-                location.reload(); // reset halaman otomatis
-            }
-        }
-
-        function exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.table_to_sheet(document.getElementById('dataTable'));
-            XLSX.utils.book_append_sheet(wb, ws, 'Data Parkir');
-            XLSX.writeFile(wb, 'Data_Juru_Parkir.xlsx');
-        }
-
-        renderTable();
     </script>
-
 </body>
 
 </html>
