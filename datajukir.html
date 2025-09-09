@@ -799,9 +799,8 @@ const bulan = [
   const tahunSekarang = today.getFullYear();
   const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
 
-  // loop: tahun sebelumnya, sekarang, berikutnya
-  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
-    // buat optgroup untuk tiap tahun
+  // hanya 2 tahun: tahun sebelumnya + tahun sekarang
+  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
     const group = document.createElement("optgroup");
     group.label = `Tahun ${tahun}`;
 
@@ -811,7 +810,7 @@ const bulan = [
       option.value = val;
       option.textContent = val;
 
-      // auto pilih bulan & tahun sekarang
+      // otomatis pilih bulan & tahun saat ini
       if (tahun === tahunSekarang && i === bulanSekarang) {
         option.selected = true;
       }
