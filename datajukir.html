@@ -628,16 +628,16 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                           <div class="col-12">
-                                                              <div class="mb-8">
-                                                                <label for="laporan bulanan" class="form-label">Pilih Bulan Laporan</label>
-                                                                <select class="form-select" id="laporan bulanan" name="laporan bulanan" required>
-                                                                  <option disabled value>*Pilih Bulan Laporan</option>
-                                                                </select>
-                                                              </div>
-                                                            </div>  
-                                                                 <div class="valid-feedback">
-                                                                    Terimakasih!
+                                                                <div class="col-12">
+                                                                  <div class="mb-8">
+                                                                    <label for="laporan_bulanan" class="form-label">Pilih Bulan Laporan</label>
+                                                                    <select class="form-select" id="laporan_bulanan" name="laporan_bulanan" required>
+                                                                      <option disabled value>*Pilih Bulan Laporan</option>
+                                                                    </select>
+                                                                  </div>
+                                                                </div>
+                                                                <div class="valid-feedback">
+                                                                  Terimakasih!
                                                                 </div>
                                                                 <div class="alert alert-success alert-dismissible fade show d-none my-alret"
                                                                     role="alert">
@@ -789,7 +789,7 @@
                 .catch(error => console.error('Error!', error.message))
         })
 
- const bulan = [
+const bulan = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
   ];
@@ -799,8 +799,12 @@
   const tahunSekarang = today.getFullYear();
   const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
 
-  // buat tahun sebelumnya, sekarang, berikutnya
+  // loop: tahun sebelumnya, sekarang, berikutnya
   for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
+    // buat optgroup untuk tiap tahun
+    const group = document.createElement("optgroup");
+    group.label = `Tahun ${tahun}`;
+
     bulan.forEach((b, i) => {
       const val = `${b} ${tahun}`;
       const option = document.createElement("option");
@@ -812,8 +816,10 @@
         option.selected = true;
       }
 
-      select.appendChild(option);
+      group.appendChild(option);
     });
+
+    select.appendChild(group);
   }
 
         // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
