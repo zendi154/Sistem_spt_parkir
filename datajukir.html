@@ -789,7 +789,7 @@
                 .catch(error => console.error('Error!', error.message))
         })
 
-     const bulan = [
+ const bulan = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
   ];
@@ -799,8 +799,8 @@
   const tahunSekarang = today.getFullYear();
   const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
 
-  // loop hanya 2 tahun: tahun sekarang dan tahun sebelumnya
-  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
+  // buat tahun sebelumnya, sekarang, berikutnya
+  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
     bulan.forEach((b, i) => {
       const val = `${b} ${tahun}`;
       const option = document.createElement("option");
