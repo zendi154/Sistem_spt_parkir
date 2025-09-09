@@ -29,7 +29,6 @@
                                             <form class="row g-3 needs-validation">
                                                 <div class="alert alert-danger alert-dismissible" role="alert" m="10">
                                                     <br>
-                                                    <br>
                                                     <i class="bi bi-exclamation-circle"></i> PERINGATAN
                                                     Untuk Pengisian Formulir di bawa ini diharpakan
                                                     menggunakan huruf kapital / Besar "Isi Semua bagian
@@ -41,7 +40,7 @@
                                                 </div>
                                                 <div class="alert alert-warning alert-dismissible" role="alert" m="10">
                                                     <br>
-                                                    <i class="bi bi-exclamation-triangle">PERHATIAN
+                                                    <i class="bi bi-exclamation-triangle"> PERHATIAN
                                                     </i> <br> Untuk tidak melakukan kesalahan dalam
                                                     pengiriman laporan mohon diperhatikan <br> baik-baik
                                                     sebelum ada notifikasi <br>
@@ -628,69 +627,15 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-12">
-                                                            <div class="mb-8">
-                                                                <label for="validationCustom02" class="form-label">Pilih
-                                                                    Bulan Laporan</label>
-                                                                <select class="form-select" id="laporan bulanan"
-                                                                    name="laporan bulanan" required>
-                                                                    <option selected disabled value>
-                                                                        *Pilih Bulan Laporan</option>
-                                                                    <option value="Januari 2024">
-                                                                        Januari 2026</option>
-                                                                    <option value="Februari 2024">
-                                                                        Februari 2026</option>
-                                                                    <option value="Maret 2024">
-                                                                        Maret 2026</option>
-                                                                    <option value="April 2024">
-                                                                        April 2026</option>
-                                                                    <option value="Mei 2024">
-                                                                        Mei 2026</option>
-                                                                    <option value="Juni 2024">
-                                                                        Juni 2026</option>
-                                                                    <option value="Juli 2024">
-                                                                        Juli 2026</option>
-                                                                    <option value="Agustus 2024">
-                                                                        Agustus 2026</option>
-                                                                    <option value="November 2024">
-                                                                        November 2026</option>
-                                                                    <option value="Desember 2024">
-                                                                        Desember 2026</option>
-                                                                    <option selected disabled>
-                                                                    </option>
-                                                                    <option value="Januari 2025">
-                                                                        Januari
-                                                                        2025</option>
-                                                                    <option value="Februari 2025">
-                                                                        Februari 2025</option>
-                                                                    <option value="Maret 2025">Maret
-                                                                        2025</option>
-                                                                    <option value="April 2025">April
-                                                                        2025</option>
-                                                                    <option value="Mei 2025">Mei
-                                                                        2025
-                                                                    </option>
-                                                                    <option value="Juni 2025">Juni
-                                                                        2025
-                                                                    </option>
-                                                                    <option value="Juli 2025">Juli
-                                                                        2025
-                                                                    </option>
-                                                                    <option value="Agustus 2025">
-                                                                        Agustus
-                                                                        2025</option>
-                                                                    <option value="September 2025">
-                                                                        September 2025
-                                                                    </option>
-                                                                    <option value="Oktober 2025">
-                                                                        Oktober
-                                                                        2025</option>
-                                                                    <option value="November 2025">
-                                                                        November 2025</option>
-                                                                    <option value="Desember 2025">
-                                                                        Desember 2025</option>
-                                                                </select>
-                                                                <div class="valid-feedback">
+                                                      <div class="col-12">
+                                                  <div class="mb-8">
+                                                <label for="laporan_bulanan" class="form-label">Pilih Bulan Laporan</label>
+                                                        <select class="form-select" id="laporan_bulanan" name="laporan_bulanan" required>
+                                                                      <option selected disabled value>*Pilih Bulan Laporan</option>
+                                                                                    </select>
+                                                                              </div>
+                                                                     </div>     
+                                                                 <div class="valid-feedback">
                                                                     Terimakasih!
                                                                 </div>
                                                                 <div class="alert alert-success alert-dismissible fade show d-none my-alret"
@@ -842,6 +787,24 @@
                 })
                 .catch(error => console.error('Error!', error.message))
         })
+
+        const bulan = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+
+  const select = document.getElementById("laporan_bulanan");
+  const tahunSekarang = new Date().getFullYear();
+
+  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
+    bulan.forEach(b => {
+      const val = `${b} ${tahun}`;
+      const option = document.createElement("option");
+      option.value = val;
+      option.textContent = val;
+      select.appendChild(option);
+    });
+  }
 
         // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
         document.body.insertAdjacentHTML("beforeend", `
