@@ -627,14 +627,44 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                      <div class="col-12">
-                                                  <div class="mb-8">
+                                                <div class="col-12">
+                                                      <div class="mb-8">
                                                 <label for="laporan_bulanan" class="form-label">Pilih Bulan Laporan</label>
-                                                        <select class="form-select" id="laporan_bulanan" name="laporan_bulanan" required>
-                                                                      <option selected disabled value>*Pilih Bulan Laporan</option>
-                                                                                    </select>
-                                                                              </div>
-                                                                     </div>     
+                                                    <select class="form-select" id="laporan_bulanan" name="laporan_bulanan" required>
+                                                          <option disabled value>*Pilih Bulan Laporan</option>
+                                                            </select>
+                                                          </div>
+                                                        </div>
+
+                                                            <script>
+                                                                  const bulan = [
+                                                        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                                                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                                                                  ];
+
+                                                      const select = document.getElementById("laporan_bulanan");
+                                                          const today = new Date();
+                                                              const tahunSekarang = today.getFullYear();
+                                                                  const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
+
+                                                                          // buat tahun sebelumnya, sekarang, berikutnya
+                                                                          for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
+                                                                            bulan.forEach((b, i) => {
+                                                                              const val = `${b} ${tahun}`;
+                                                                              const option = document.createElement("option");
+                                                                              option.value = val;
+                                                                              option.textContent = val;
+                                                                        
+                                                                              // auto pilih bulan & tahun sekarang
+                                                                              if (tahun === tahunSekarang && i === bulanSekarang) {
+                                                                                option.selected = true;
+                                                                              }
+                                                                        
+                                                                              select.appendChild(option);
+                                                                            });
+                                                                          }
+                                                                        </script>
+
                                                                  <div class="valid-feedback">
                                                                     Terimakasih!
                                                                 </div>
@@ -787,24 +817,6 @@
                 })
                 .catch(error => console.error('Error!', error.message))
         })
-
-        const bulan = [
-    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-  ];
-
-  const select = document.getElementById("laporan_bulanan");
-  const tahunSekarang = new Date().getFullYear();
-
-  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang + 1; tahun++) {
-    bulan.forEach(b => {
-      const val = `${b} ${tahun}`;
-      const option = document.createElement("option");
-      option.value = val;
-      option.textContent = val;
-      select.appendChild(option);
-    });
-  }
 
         // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
         document.body.insertAdjacentHTML("beforeend", `
