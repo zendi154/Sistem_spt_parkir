@@ -414,28 +414,26 @@
                                                                     </svg>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12">
-                                                                <div class="mb-8">
-                                                                    <label for="validationCustom02"
-                                                                        class="form-label"></label>
-                                                                    <input type="number" class="form-control"
-                                                                        id="jumlah laporan" name="jumlah laporan"
-                                                                        value="" required
-                                                                        placeholder="*Jumlah Laporan Hanya Angka">
-                                                                    <div class="valid-feedback">
-                                                                    </div>
+                                                             <form id="form-laporan" class="row g-3" novalidate>
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="jumlah_laporan" class="form-label"></label>
+                                                            <input type="number" class="form-control"
+                                                                id="jumlah_laporan" name="jumlah laporan"
+                                                                placeholder="*Jumlah Laporan Hanya Angka (Contoh : 10)" min="0" required>
+                                                            <div class="invalid-feedback">Masukkan jumlah laporan (0
+                                                                atau lebih).</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="keterangan"
+                                                                class="form-label">Keterangan</label>
+                                                            <textarea class="form-control" id="keterangan"
+                                                                name="keterangan" rows="3" required></textarea>
+                                                            <div id="ketError" class="invalid-feedback"></div>
                                                                 </div>
-                                                                    <div class="col-12">
-                                                                        <div class="mb-8">
-                                                                            <label for="validationCustom02"
-                                                                                class="form-label"></label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="keterangan" name="keterangan"
-                                                                                value="" required
-                                                                                placeholder="*Keterangan (Contoh = 'AJB ; 2 APHT ; BPHTB ; Rp. 15.000.000')">
-                                                                            <div class="valid-feedback">
-                                                                            </div>
-                                                                        </div>
+                                                                    </div>
                                                                         <div class="col-12">
                                                                             <div class="mb-8">
                                                                                 <div class="form-check">
@@ -541,6 +539,7 @@
                     // riset formnya
                     // kembali kebagian atas
                     form.reset();
+                    resetKeterangan();  // panggil fungsi isi ulang template
                     console.log('Success!',
                         response)
                 })
@@ -659,6 +658,77 @@ const bulan = [
             overlay.style.visibility = "hidden";
             overlay.style.opacity = "0";
         });
+
+        (function () {
+            const jumlahEl = document.getElementById('jumlah_laporan');
+            const ketEl = document.getElementById('keterangan');
+            const ketError = document.getElementById('ketError');
+            const form = document.getElementById('form-laporan');
+
+            const templateKeterangan =
+                "AJB ; 0 APHT ; 0 APHB ; 0 SKMHT ; 0 Hibah ; 0 APDP ; 0 ATM ; 0 BPHTB ; Rp. 0";
+
+            // expose fungsi reset agar bisa dipanggil luar
+            window.resetKeterangan = function () {
+                ketEl.value = templateKeterangan;
+            };
+
+            ketEl.value = templateKeterangan;
+
+            function sumFromKeterangan(text) {
+                const tanpaRp = text.split(/Rp/i)[0] || "";
+                const regex = /(\d+)(?=\s*[A-Za-z])/g;
+                const matches = tanpaRp.match(regex);
+                if (!matches) return 0;
+                return matches.map(Number).reduce((a, b) => a + b, 0);
+            }
+
+            function validateKeterangan() {
+                const val = jumlahEl.value.trim();
+                const num = Number(val);
+
+                if (val === '' || isNaN(num) || num < 0) {
+                    ketEl.removeAttribute('readonly');
+                    ketEl.classList.remove('is-invalid');
+                    ketError.textContent = "";
+                    return true;
+                }
+
+                if (num === 0) {
+                    ketEl.value = "Nihil";
+                    ketEl.setAttribute("readonly", "readonly");
+                    ketEl.classList.remove('is-invalid');
+                    ketError.textContent = "";
+                    return true;
+                }
+
+                ketEl.removeAttribute("readonly");
+
+                const totalKet = sumFromKeterangan(ketEl.value);
+                if (totalKet !== num) {
+                    ketError.textContent = `⚠️ Total rincian: ${totalKet}, seharusnya: ${num}`;
+                    ketEl.classList.add('is-invalid');
+                    return false;
+                } else {
+                    ketError.textContent = "";
+                    ketEl.classList.remove('is-invalid');
+                    return true;
+                }
+            }
+
+            jumlahEl.addEventListener('input', validateKeterangan);
+            ketEl.addEventListener('input', validateKeterangan);
+
+            form.addEventListener('submit', function (e) {
+                if (!form.checkValidity() || !validateKeterangan()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                }
+            });
+
+            validateKeterangan();
+        })();
     </script>
 </body>
 
