@@ -43,10 +43,7 @@
                                                     mengirim ulang formulir tidak diperkenanakan
                                                     mengkelik Dua kali Tombol "Kirim" <br> jika Sudah
                                                     ada
-                                                    simbol <i class="bi bi-check-square"></i> dan
-                                                    formulir sudah kosong dipersilahkan membuat
-                                                    laporan kembali...
-                                                    Ini :
+                                                    simbol <i class="bi bi-check-square"></i>
                                                     </h3>
                                                 </div>
                                         </div>
@@ -54,7 +51,7 @@
                                         <select class="form-select" id="admin penginput" name="admin penginput"
                                             required>
                                             <option selected disabled value>Nama Penginput Laporan</option>
-                                            <option value="AGAM REFALDI, STR.IP">AGAM REFALDI, STR.IP
+                                            <option value="AGAM REFALDI, S.Tr.IP">AGAM REFALDI, S.Tr.IP
                                             </option>
                                         </select>
                                         <div class="valid-feedback">
@@ -64,8 +61,9 @@
                                     <div class="col-12">
                                         <div class="mb-8">
                                             <label for="validationCustom02" class="form-label"></label>
-                                            <input type="number" class="form-control" id="nomor agenda"
-                                                name="nomor agenda" value="" required placeholder="Isi Nomor Agenda Disposisi">
+                                            <input type="number" class="form-control" id="nomor_agenda"
+                                                name="nomor_agenda" value="" required
+                                                placeholder="Isi Nomor Agenda Disposisi">
                                             <div class="valid-feedback">
                                             </div>
                                         </div>
@@ -73,7 +71,13 @@
                                             <div class="mb-8">
                                                 <label class="form-label"></label>
                                                 <select class="form-select" id="notaris" name="notaris" required>
-                                                    <option selected disabled value>* Pilih Nama Notaris & PPAT Di Daftar Berikut Ini
+                                                    <option selected disabled value>* Pilih Nama Notaris & PPAT Di
+                                                        Daftar Berikut Ini
+                                                    </option>
+                                                    <option value="AZIZA ADLIEN NABILA, S.H., M.K.n"
+                                                        data-npwp="00.000.000.0-000.000"
+                                                        data-alamat="Jl. Veteran No. 30, Kel. Jitra Kec. Teluk Segara">
+                                                        AZIZA ADLIEN N
                                                     </option>
                                                     <option value="SARI INDRA,S.H.,M.Kn"
                                                         data-npwp="14.468.091.5-311.000"
@@ -356,136 +360,134 @@
                                                 <label class="form-label"></label>
                                                 <input type="text" id="alamat" name="alamat" class="form-control"
                                                     required placeholder="Inputan Alamat Notaris & PPAT" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="mb-8">
+                                                <label for="validationCustom02" class="form-label"></label>
+                                                <input type="text" class="form-control" id="nomor surat"
+                                                    name="nomor surat" value="" required
+                                                    placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                <div class="valid-feedback">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label for="validationCustom02" class="form-label">*Pilih Tanggal
+                                                        Surat :</label>
+                                                    <input type="date" class="form-control" id="tanggal surat"
+                                                        name="tanggal surat" value="" required
+                                                        placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                    <div class="valid-feedback">
                                                     </div>
                                                 </div>
-                                                    <div class="col-12">
-                                                        <div class="mb-8">
-                                                            <label for="validationCustom02" class="form-label"></label>
-                                                            <input type="text" class="form-control" id="nomor surat"
-                                                                name="nomor surat" value="" required
-                                                                placeholder="*Input Nomor Surat Notaris dan PPAT">
-                                                            <div class="valid-feedback">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <div class="mb-8">
-                                                                <label for="validationCustom02"
-                                                                    class="form-label">*Pilih Tanggal
-                                                                    Surat :</label>
-                                                                <input type="date" class="form-control"
-                                                                    id="tanggal surat" name="tanggal surat" value=""
-                                                                    required
-                                                                    placeholder="*Input Nomor Surat Notaris dan PPAT">
-                                                                <div class="valid-feedback">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <div class="mb-8">
-                                                                <label for="validationCustom02" class="form-label">
-                                                                    *Pilih Tanggal Disposisi 
-                                                                    :</label>
-                                                                <input type="date" class="form-control"
-                                                                    pelceholder="dd-mm-yyyy" id="tanggal disposisi"
-                                                                    name="tanggal disposisi" value="input"
-                                                                    min="2023-01-01" max="2030-12-31">
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                                <div class="col-12">
-                                                                  <div class="mb-8">
-                                                                    <label for="laporan_bulanan" class="form-label">Pilih Bulan Laporan</label>
-                                                                    <select class="form-select" id="laporan_bulanan" name="laporan bulanan" required>
-                                                                      <option disabled value>*Pilih Bulan Laporan</option>
-                                                                    </select>
-                                                                  </div>
-                                                                </div>
-                                                                <div class="valid-feedback">
-                                                                  Terimakasih!
-                                                                </div>
-                                                                <div class="alert alert-success alert-dismissible fade show d-none my-alret"
-                                                                    role="alert">
-                                                                    <i class="bi bi-info-square"></i> 
-                                                                    TERIMAKASIH!... "AGAM REFALDI, STR.IP"
-                                                                    <br> LAPORAN NOTARIS DAN PPAT "BERHASIL DIKIRIM"
-                                                                    <i class="bi bi-check-square"></i>
-                                                                    <br> <i class="bi bi-book-half"></i>  SELAMAT BERKERJA!
-                                                                    <use xlink:href="#check-circle-fill" />
-                                                                    </svg>
-                                                                </div>
-                                                            </div>
-                                                             <form id="form-laporan" class="row g-3" novalidate>
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="jumlah_laporan" class="form-label"></label>
-                                                            <input type="number" class="form-control"
-                                                                id="jumlah_laporan" name="jumlah laporan"
-                                                                placeholder="*Jumlah Laporan Hanya Angka (Contoh : 10)" min="0" required>
-                                                            <div class="invalid-feedback">Masukkan jumlah laporan (0
-                                                                atau lebih).</div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label for="validationCustom02" class="form-label">
+                                                        *Tanggal Surat Masuk
+                                                        :</label>
+                                                    <input type="date" class="form-control" pelceholder="dd-mm-yyyy"
+                                                        id="tanggal disposisi" name="tanggal disposisi" value="input"
+                                                        min="2023-01-01" max="2030-12-31">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label for="laporan_bulanan" class="form-label">Pilih Bulan
+                                                        Laporan</label>
+                                                    <select class="form-select" id="laporan_bulanan"
+                                                        name="laporan bulanan" required>
+                                                        <option disabled value>*Pilih Bulan Laporan</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="valid-feedback">
+                                                Terimakasih!
+                                            </div>
+                                            <div class="alert alert-success alert-dismissible fade show d-none my-alret"
+                                                role="alert">
+                                                <i class="bi bi-info-square"></i>
+                                                TERIMAKASIH!... "AGAM REFALDI, S.Tr.IP"
+                                                <br> LAPORAN NOTARIS DAN PPAT "BERHASIL Di Proses"
+                                                <i class="bi bi-check-square"></i>
+                                                <br> <i class="bi bi-book-half"></i> SELAMAT BERKERJA!
+                                                <use xlink:href="#check-circle-fill" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <form id="form-laporan" class="row g-3" novalidate>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="jumlah_laporan" class="form-label"></label>
+                                                    <input type="number" class="form-control" id="jumlah_laporan"
+                                                        name="jumlah laporan"
+                                                        placeholder="*Jumlah Laporan Hanya Angka (Contoh : 10)" min="0"
+                                                        required>
+                                                    <div class="invalid-feedback">Masukkan jumlah laporan (0
+                                                        atau lebih).</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="sspd_bphtb_view" class="form-label">Input Nominal
+                                                        SSB</label>
+
+                                                    <!-- Input tampilan (Rupiah) -->
+                                                    <input type="text" class="form-control" id="sspd_bphtb_view"
+                                                        placeholder="Rp. 0" autocomplete="off" required>
+
+                                                    <!-- Input asli (angka murni untuk dikirim) -->
+                                                    <input type="hidden" id="sspd_bphtb" name="sspd_bphtb">
+
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="keterangan" class="form-label">Keterangan</label>
+                                                    <textarea class="form-control" id="keterangan" name="keterangan"
+                                                        rows="3" required></textarea>
+                                                    <div id="ketError" class="invalid-feedback"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value=""
+                                                            id="invalidCheck" required>
+                                                        <label class="form-check-label" for="invalidCheck">
+                                                            Klik saya untuk melanjutkan*
+                                                        </label>
+                                                        <div class="invalid-feedback">
+                                                            You must
+                                                            agree
+                                                            before
+                                                            submitting.
                                                         </div>
                                                     </div>
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="sspd_bphtb" class="form-label">Input Nominal SSB</label>
-                                                            <input type="number" class="form-control"
-                                                                id="sspd_bphtb" name="sspd_bphtb"
-                                                                placeholder="*Jumlah Laporan Hanya Angka" min="0" required>
-                                                            <div class="invalid-feedback">Masukkan jumlah laporan (0
-                                                                atau lebih).</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="keterangan"
-                                                                class="form-label">Keterangan</label>
-                                                            <textarea class="form-control" id="keterangan"
-                                                                name="keterangan" rows="3" required></textarea>
-                                                            <div id="ketError" class="invalid-feedback"></div>
-                                                                </div>
-                                                                    </div>
-                                                                        <div class="col-12">
-                                                                            <div class="mb-8">
-                                                                                <div class="form-check">
-                                                                                    <input class="form-check-input"
-                                                                                        type="checkbox" value=""
-                                                                                        id="invalidCheck" required>
-                                                                                    <label class="form-check-label"
-                                                                                        for="invalidCheck">
-                                                                                        Klik saya untuk melanjutkan*
-                                                                                    </label>
-                                                                                    <div class="invalid-feedback">
-                                                                                        You must
-                                                                                        agree
-                                                                                        before
-                                                                                        submitting.
-                                                                                    </div>
-                                                                                </div>
-                                                                                <center>
-                                                                                    <div class="col-12"
-                                                                                        style="margin-top: 25px;">
-                                                                                        <button type="submit"
-                                                                                            class="btn btn-primary btn-kirim">kirim</button>
-                                                                                        <button
-                                                                                            class="btn btn-primary btn-loading d-none"
-                                                                                            type="button" disabled>
-                                                                                            <span
-                                                                                                class="spinner-border spinner-border-sm"
-                                                                                                role="status"
-                                                                                                aria-hidden="true"></span>
-                                                                                            LOADING...
-                                                                                        </button>
-                                                                                </center>
-                                                                            </div>
-                                                                        </div>
-                                </form>
+                                                    <center>
+                                                        <div class="col-12" style="margin-top: 25px;">
+                                                            <button type="submit"
+                                                                class="btn btn-primary btn-kirim">kirim</button>
+                                                            <button class="btn btn-primary btn-loading d-none"
+                                                                type="button" disabled>
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                                LOADING...
+                                                            </button>
+                                                    </center>
+                                                </div>
+                                            </div>
+                                        </form>
         </section>
         <!--Jumbotron-->
         <section class="jumbotron text-center">
             <h2>Bidang Pengendalian Dan Evaluasi <br> Laporan Notaris & PPAT Kota Bengkulu</h2>
         </section>
         <!--Akhir Jumbotron-->
-                                                                        
+
         <!--Navbar-->
         <nav class="navbar navbar-dark bg-primary sahdow-sm fixed-top">
             <div class="container">
@@ -556,37 +558,37 @@
                 .catch(error => console.error('Error!', error.message))
         })
 
-const bulan = [
-    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-  ];
+        const bulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
 
-  const select = document.getElementById("laporan_bulanan");
-  const today = new Date();
-  const tahunSekarang = today.getFullYear();
-  const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
+        const select = document.getElementById("laporan_bulanan");
+        const today = new Date();
+        const tahunSekarang = today.getFullYear();
+        const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
 
-  // hanya 2 tahun: tahun sebelumnya + tahun sekarang
-  for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
-    const group = document.createElement("optgroup");
-    group.label = `Tahun ${tahun}`;
+        // hanya 2 tahun: tahun sebelumnya + tahun sekarang
+        for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
+            const group = document.createElement("optgroup");
+            group.label = `Tahun ${tahun}`;
 
-    bulan.forEach((b, i) => {
-      const val = `${b} ${tahun}`;
-      const option = document.createElement("option");
-      option.value = val;
-      option.textContent = val;
+            bulan.forEach((b, i) => {
+                const val = `${b} ${tahun}`;
+                const option = document.createElement("option");
+                option.value = val;
+                option.textContent = val;
 
-      // otomatis pilih bulan & tahun saat ini
-      if (tahun === tahunSekarang && i === bulanSekarang) {
-        option.selected = true;
-      }
+                // otomatis pilih bulan & tahun saat ini
+                if (tahun === tahunSekarang && i === bulanSekarang) {
+                    option.selected = true;
+                }
 
-      group.appendChild(option);
-    });
+                group.appendChild(option);
+            });
 
-    select.appendChild(group);
-  }
+            select.appendChild(group);
+        }
 
         const selectNotaris = document.getElementById("notaris");
         const npwpField = document.getElementById("npwp");
@@ -674,9 +676,41 @@ const bulan = [
             const ketEl = document.getElementById('keterangan');
             const ketError = document.getElementById('ketError');
             const form = document.getElementById('form-laporan');
+            const rupiahInput = document.getElementById('sspd_bphtb_view');
+            const hiddenInput = document.getElementById('sspd_bphtb');
+
+            // Saat mengetik
+            rupiahInput.addEventListener('input', function () {
+                let angka = this.value.replace(/[^0-9]/g, '');
+
+                hiddenInput.value = angka;
+
+                if (angka === '') {
+                    this.value = '';
+                    return;
+                }
+
+                this.value = 'Rp. ' + formatAngka(angka);
+            });
+
+            // Saat keluar input → tambahkan ,00
+            rupiahInput.addEventListener('blur', function () {
+                if (this.value !== '') {
+                    this.value += ',00';
+                }
+            });
+
+            // Saat fokus → hapus ,00 agar nyaman edit
+            rupiahInput.addEventListener('focus', function () {
+                this.value = this.value.replace(',00', '');
+            });
+
+            function formatAngka(angka) {
+                return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
 
             const templateKeterangan =
-                "AJB ; 0 APHT ; 0 APHB ; 0 SKMHT ; 0 Hibah ; 0 APDP ; 0 Akta Tukar Menukar ; 0 .BPHTB : Rp. 0";
+                "AJB ; 0 | APHT ; 0 | APHB ; 0 | SKMHT ; 0 | Hibah ; 0 | APDP ; 0 | Akta Tukar Menukar ; 0";
 
             // expose fungsi reset agar bisa dipanggil luar
             window.resetKeterangan = function () {
@@ -739,6 +773,53 @@ const bulan = [
 
             validateKeterangan();
         })();
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function formatTanggalDMY(inputId, prefix) {
+                const input = document.getElementById(inputId);
+
+                // hidden input untuk dikirim ke server
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = `tanggal_${prefix}_indo`;
+                input.closest('form').appendChild(hidden);
+
+                input.addEventListener('change', function () {
+                    if (!this.value) return;
+
+                    // format asli input date: YYYY-MM-DD
+                    const [yyyy, mm, dd] = this.value.split('-');
+
+                    // hasil Indonesia: DD/MM/YYYY
+                    hidden.value = `${dd}/${mm}/${yyyy}`;
+                });
+            }
+
+            // Tanggal Surat
+            formatTanggalDMY('tanggal_surat', 'surat');
+
+            // Tanggal Disposisi
+            formatTanggalDMY('tanggal_disposisi', 'disposisi');
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('nomor_agenda');
+
+            // blok input non-angka SEBELUM masuk
+            input.addEventListener('beforeinput', function (e) {
+                if (e.data && /\D/.test(e.data)) {
+                    e.preventDefault();
+                }
+            });
+
+            // jaga-jaga jika paste / autofill
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+
     </script>
 </body>
 
