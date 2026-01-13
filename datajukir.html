@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -47,6 +48,7 @@
 
     /* BUTTON */
     .btn-kirim {
+        color: #ddd;
         border-radius: 50px;
         padding: 12px 40px;
         font-size: 1.1rem;
@@ -54,7 +56,7 @@
     }
 
     .btn-kirim:hover {
-        background: #0b5ed7;
+        background: #3e444e;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
@@ -247,6 +249,214 @@
         border-color: #0d6efd;
         box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
     }
+
+    /* Live Chat Box */
+    #liveChatFloating {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        width: 280px;
+        max-height: 60vh;
+        overflow-y: auto;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, .15);
+        padding: 12px;
+        z-index: 9999;
+        font-size: 13px;
+    }
+
+    /* BARIS DATA */
+    .live-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px dashed #ced4da;
+    }
+
+    .live-row:last-child {
+        border-bottom: none;
+    }
+
+    /* TEKS */
+    .live-title {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .live-value {
+        text-align: right;
+        font-weight: 500;
+        color: #212529;
+    }
+
+    .small-agree .form-check-label {
+        font-size: 0.85rem;
+        /* default bootstrap 1rem */
+    }
+
+    .small-agree .invalid-feedback {
+        font-size: 0.8rem;
+    }
+
+    /* WRAPPER */
+    .promo-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    /* Informasi */
+    .promo-ajb {
+        display: inline-block;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        border-left: 4px solid #0d6efd;
+        padding-left: 10px;
+
+        /* animasi dari kanan ke kiri terus-menerus */
+        animation: promoMove 60s linear infinite;
+    }
+
+    /* Informasi */
+    .promo-auto {
+        display: inline-block;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        border-left: 4px solid #841b04;
+        padding-left: 10px;
+
+        /* animasi dari kanan ke kiri terus-menerus */
+        animation: promoMove 120s linear infinite;
+    }
+
+    /* TEKS DALAM */
+    .promo-text {
+        margin-left: 10px;
+    }
+
+    /* ANIMASI KANAN ➜ KIRI */
+    @keyframes promoMove {
+        0% {
+            transform: translateX(100%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    /* Efek glow untuk judul */
+    .glow-title {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 10px;
+        color: #fff;
+        background-color: rgb(13, 110, 253);
+        text-align: center;
+        font-size: 1.8rem;
+        position: relative;
+        animation: glowBorder 2.5s ease-in-out infinite alternate;
+    }
+
+    /* Garis bawah animasi tepat di dekat tulisan */
+    .glow-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        /* mulai dari kiri teks */
+        right: 0;
+        /* sampai kanan teks */
+        bottom: 4px;
+        /* jarak sedikit dari teks */
+        height: 4px;
+        /* ketebalan garis */
+        border-radius: 2px;
+        background: linear-gradient(90deg,
+                rgb(255, 0, 0),
+                rgb(255, 165, 0),
+                rgb(255, 255, 0),
+                rgb(0, 128, 0),
+                rgb(0, 255, 255),
+                rgb(0, 0, 255),
+                rgb(128, 0, 128),
+                rgb(255, 0, 0));
+        animation: glowLine 4s linear infinite;
+        background-size: 200% 100%;
+    }
+
+    /* Animasi glow border utama */
+    @keyframes glowBorder {
+        0% {
+            box-shadow:
+                0 0 5px rgb(255, 0, 0),
+                0 0 10px rgb(255, 165, 0),
+                0 0 15px rgb(255, 255, 0),
+                0 0 20px rgb(0, 128, 0);
+        }
+
+        25% {
+            box-shadow:
+                0 0 5px rgb(0, 128, 0),
+                0 0 10px rgb(0, 255, 255),
+                0 0 15px rgb(0, 0, 255),
+                0 0 20px rgb(128, 0, 128);
+        }
+
+        50% {
+            box-shadow:
+                0 0 5px rgb(0, 0, 255),
+                0 0 10px rgb(255, 0, 255),
+                0 0 15px rgb(255, 0, 0),
+                0 0 20px rgb(255, 165, 0);
+        }
+
+        75% {
+            box-shadow:
+                0 0 5px rgb(255, 255, 0),
+                0 0 10px rgb(0, 128, 0),
+                0 0 15px rgb(0, 255, 255),
+                0 0 20px rgb(0, 0, 255);
+        }
+
+        100% {
+            box-shadow:
+                0 0 5px rgb(255, 0, 0),
+                0 0 10px rgb(255, 165, 0),
+                0 0 15px rgb(255, 255, 0),
+                0 0 20px rgb(0, 128, 0);
+        }
+    }
+
+    /* Animasi garis bawah */
+    @keyframes glowLine {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 200% 50%;
+        }
+    }
+
+    /* Opsional: buat select agar ikut stylish */
+    .form-select {
+        margin-top: 10px;
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+
+    /* RESPONSIVE (HP) */
+    @media (max-width: 576px) {
+        #liveChatFloating {
+            width: 90%;
+            right: 5%;
+            bottom: 10px;
+        }
+    }
 </style>
 
 <body>
@@ -257,460 +467,520 @@
                     <div class=col-md-8 class="col-10 text-center">
                         <div class="row justify-content-center">
                             <div class="col-md-8">
-                                <form name="LAPORAN NOTARIS 2025">
+                                <form name="LAPORAN NOTARIS 2025"><br><br>
                                     <div class="col-12">
                                         <div class="mb-8">
-                                            <form class="row g-3 needs-validation">
-                                                <div id="alertPerhatian" class="alert alert-warning alert-dismissible"
-                                                    role="alert">
-                                                    <br>
-                                                    <i class="bi bi-exclamation-triangle"> PERHATIAN!
-                                                    </i> <br> Isi Semua bagian yang
-                                                    tersedia jika satu kolom laporan yang tidak diisi maka
-                                                    laporan tidak bisa Terkirim supaya tidak melakukan kesalahan
-                                                    saat mengirim laporan mohon diperhatikan <br> baik-baik
-                                                    sebelum ada notifikasi kuhsus dari sistem<br>jika Sudah ada
-                                                    simbol " <i class="bi bi-check-square"></i> "
-                                                    </h3>
+                                            <div class="promo-wrapper">
+                                                <div class="promo-ajb alert alert-info small">
+                                                    <i class="bi bi-megaphone-fill"></i>
+                                                    <strong>Informasi Jenis Akta:</strong>
+                                                    <span class="promo-text">
+                                                        <b>AJB</b> – Akta Jual Beli •
+                                                        <b>APHT</b> – Akta Pemberian Hak Tanggungan •
+                                                        <b>APHB</b> – Akta Pembagian Hak Bersama •
+                                                        <b>SKMHT</b> – Surat Kuasa Membebankan Hak Tanggungan •
+                                                        <b>Hibah</b> – Akta Hibah •
+                                                        <b>APDP</b> – Akta Pembagian Dengan Pemisahan •
+                                                        <b>ATM</b> – Akta Tukar Menukar
+                                                    </span>
                                                 </div>
-                                        </div>
-                                        <label for="validationCustom02" class="form-label"></label>
-                                        <select class="form-select" id="admin penginput" name="admin penginput"
-                                            required>
-                                            <option selected disabled value>Nama Penginput Laporan</option>
-                                            <option value="ZENDI AFRIAN SAPUTRA, S.H">ZENDI AFRIAN SAPUTRA, S.H
-                                            </option>
-                                            <option value="AGAM REFALDI, S.Tr.IP">AGAM REFALDI, S.Tr.IP
-                                            </option>
-                                        </select>
-                                        <div class="valid-feedback">
-                                            Mohon Pilih Nama Yang Tersedia!
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="mb-8">
+                                            </div>
+                                            <div class="promo-wrapper">
+                                                <div class="promo-auto alert alert-info small">
+                                                    <i class="bi bi-megaphone-fill"></i>
+                                                    <strong>Informasi Penting:</strong>
+                                                    <span class="promo-text">
+                                                        <b>Dasar Hukum :</b> – Perda Kota Bengkulu No 01 Tahun 2024
+                                                        tentang
+                                                        Pajak daerah dan retribusi daerah pasal 16 ayat (1)
+                                                        dan (2)" •
+                                                        <b>Dasar Hukum Lainnya :</b> Undang‑Undang Nomor 5
+                                                        Tahun 1960 tentang Peraturan Dasar Pokok‑Pokok Agraria. •
+                                                        <b>Undang‑Undang Nomor 4 Tahun 1996</b> tentang Hak Tanggungan
+                                                        atas Tanah Beserta Benda‑Benda yang Berkaitan dengan
+                                                        Tanah •
+                                                        <b>Peraturan Presiden Nomor 20 Tahun 2015</b> tentang Badan
+                                                        Pertanahan Nasional •
+                                                        <b>Peraturan Pemerintah Nomor 24 Tahun 2016 </b> tentang
+                                                        Perubahan atas Peraturan Pemerintah Nomor 37 Tahun 1998
+                                                        tentang Jabatan PPAT •
+                                                        <b>Peraturan Menteri ATR/BPN Nomor 5 Tahun 2020</b> tentang
+                                                        Pelayanan Hak Tanggungan Terintegrasi Secara
+                                                        Elektronik •
+                                                        <b>Peraturan Menteri ATR/BPN Nomor 3 Tahun 2021</b> tentang
+                                                        Ketentuan Pelaksanaan Pendaftaran Tanah Elektronik •
+                                                        <b>Undang‑Undang Nomor 30 Tahun 2004</b>tentang Jabatan
+                                                        Notaris (jo. UU No. 2 Tahun 2014) — bagi notaris dalam
+                                                        membuat akta umum.
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            </h3>
+                                            <h2 class="glow-title">FORMULIR LAPORAN PPAT</h2>
                                             <label for="validationCustom02" class="form-label"></label>
-                                            <input type="number" class="form-control" id="nomor_agenda"
-                                                name="nomor_agenda" value="" required
-                                                placeholder="Isi Nomor Agenda Disposisi">
+                                            <select class="form-select" id="admin penginput" name="admin penginput"
+                                                required>
+                                                <option selected disabled value>Nama Penginput Laporan</option>
+                                                <option value="ZENDI AFRIAN SAPUTRA, S.H">ZENDI AFRIAN SAPUTRA, S.H
+                                                </option>
+                                                <option value="AGAM REFALDI, S.Tr.IP">AGAM REFALDI, S.Tr.IP
+                                                </option>
+                                            </select>
                                             <div class="valid-feedback">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="mb-8">
-                                                <label class="form-label"></label>
-                                                <select class="form-select" id="notaris" name="notaris" required>
-                                                    <option selected disabled value>Pilih Nama Notaris & PPAT Di
-                                                        Daftar Berikut Ini
-                                                    </option>
-                                                    <option value="AZIZA ADLIEN NABILA, S.H., M.K.n"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Veteran No. 30, Kel. Jitra Kec. Teluk Segara">
-                                                        AZIZA ADLIEN N
-                                                    </option>
-                                                    <option value="SARI INDRA,S.H.,M.Kn"
-                                                        data-npwp="14.468.091.5-311.000"
-                                                        data-alamat="Jl. Dempo 1, Kel. Sawah Lebar Kec. Ratu Agung">
-                                                        SARI INDRA
-                                                    </option>
-                                                    <option value="ILHAM RAHMADI,S.H.,M.Kn"
-                                                        data-npwp="76.849.171.4-448.000"
-                                                        data-alamat="Jl. Semarak 1 Perum Padang Serai Estate B.3 Kel. Padang Serai Kec. Kampung Melayu">
-                                                        ILHAM RAHMADI
-                                                    </option>
-                                                    <option value="WENY ARIMBI CRISTIANI,SST,.Par.,S.H.,M.Kn"
-                                                        data-npwp="88.123.456.7-890.000"
-                                                        data-alamat="Jl. Cendrawasih Kel. Kebun Gerand Kec. Ratu Samban">
-                                                        WENY ARIMBI CRISTIANI
-                                                    </option>
-                                                    <option value="AMELIA MERDEKA SARI, S.H., M.Kn"
-                                                        data-npwp="70.564.146.2-311.000"
-                                                        data-alamat="Jl. Dempo 1, Kel. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu,">
-                                                        AMELIA MERDEKA SARI
-                                                    </option>
-                                                    <option value="ANJAR KRISTIANTO, S.H., M.Kn"
-                                                        data-npwp="08.296.734.9-543.000"
-                                                        data-alamat="Jl. Cendrawasih, Kebun Gerand, Kec. Ratu Samban, Kota Bengkulu">
-                                                        ANJAR KRISTIANTO
-                                                    </option>
-                                                    <option value="ATMIWIJAYA ARTATI, S.H., M.Kn"
-                                                        data-npwp="78.412.936.9-311.000"
-                                                        data-alamat="Jl. Beringin No. 1 D kel. Padang Jati, Kec. Ratu Samban, Kota Bengkulu">
-                                                        ATMIWIJAYA ARTATI
-                                                    </option>
-                                                    <option value="DENI YOHANES, S.H., M.Kn"
-                                                        data-npwp="14.222.493.0-311.000"
-                                                        data-alamat="Jl. Karbela, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu">
-                                                        DENI YOHANES
-                                                    </option>
-                                                    <option value="DIAN RISMAWATI, S.H" data-npwp="07.357.570.6-311.000"
-                                                        data-alamat="Jl. Fatmawati No.11, Penurunan, Kec. Ratu Samban, Kota Bengkulu, ">
-                                                        DIAN RISMAWATI
-                                                    </option>
-                                                    <option value="HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn"
-                                                        data-npwp="80.086.768.1-311.000"
-                                                        data-alamat="Jl. Ratu Agung No.23, Anggut Bawah, Kec. Ratu Samban, Kota Bengkulu">
-                                                        HARITRI GRATA JOHNI ARIFIN PUTRI
-                                                    </option>
-                                                    <option value="IDAYANTI, S.H" data-npwp="07.356.342.1-311.000"
-                                                        data-alamat="Jl. Salak Bl I No.99, Dusun Besar, Kec. Singaran Pati, Kota Bengkulu,">
-                                                        IDAYANTI
-                                                    </option>
-                                                    <option value="IS HARIYANI,S.H" data-npwp="07.021.792.2-311.000"
-                                                        data-alamat="Jl. S. Parman No.40, Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
-                                                        IS HARIYANI
-                                                    </option>
-                                                    <option value="LEILA GENTJANA, S.H., M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. S. Parman No. 20 A. Kel. Padang Jati, Kec. Ratu Samban, Kota Bengkulu">
-                                                        LEILA GENTJANA
-                                                    </option>
-                                                    <option value="LYDIA ARMAN, S.H., M.Kn"
-                                                        data-npwp="75.953.698.0-311.000"
-                                                        data-alamat="Jl. Sudirman III, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu">
-                                                        LYDIA ARMAN
-                                                    </option>
-                                                    <option value="NOVIARTATI, S.H" data-npwp="07.356.817.2-311.000"
-                                                        data-alamat="JL. Prof DR Hazairin SH 11, Bengkulu, Pasar Baru, Teluk Segara, Bengkulu">
-                                                        NOVIARTATI
-                                                    </option>
-                                                    <option value="SARI PRIYANKA, S.H., M.Kn"
-                                                        data-npwp="90.458.524.7-311.000"
-                                                        data-alamat="Jl. S. Parman No. 7 Kel. Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
-                                                        SARI PRIYANKA
-                                                    </option>
-                                                    <option value="SUSANTI, S.H., M.Kn" data-npwp="16.321.206.1-311.000"
-                                                        data-alamat="Jl. Fatmawati Kel. Penurunan Kec. Ratu Samban Kota Bengkulu">
-                                                        SUSANTI
-                                                    </option>
-                                                    <option value="H.TINA HAERANI BUNGGASI, S.H,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Mayjen Sutoyo No.36, RW.001, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu">
-                                                        TINA HAERANI BUNGGASI
-                                                    </option>
-                                                    <option value="ANNISA FADILLA KARTAMADJA,S.H., M.Kn"
-                                                        data-npwp="45.581.427.7-013.000"
-                                                        data-alamat="Jl. Kapuas Raya No.6, Lkr. Barat, Kec. Gading Cemp., Kota Bengkulu">
-                                                        ANNISA FADILLA KARTAMADJA
-                                                    </option>
-                                                    <option value="ANGGA PRISMA JELITA, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Tim. Indah Raya, Tim. Indah, Kec. Singaran Pati, Kota Bengkulu">
-                                                        ANGGA PRISMA JELITA
-                                                    </option>
-                                                    <option value="AULIYYA MARTATI, S.H., M.H"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Meranti II No.4A, Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu">
-                                                        AULIYYA MARTATI
-                                                    </option>
-                                                    <option value="BERTHA NOVELISA, S.H., M.Kn"
-                                                        data-npwp="16.801.188.0-311.000"
-                                                        data-alamat="Jl. Bajak, Kec. Teluk Segara, Kota Bengkulu,">
-                                                        BERTHA NOVELISA
-                                                    </option>
-                                                    <option value="BJANZA METRA, S.H.,M.Kn"
-                                                        data-npwp="39.683.016.8-328.000"
-                                                        data-alamat="Jl. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu">
-                                                        BJANZA METRA
-                                                    </option>
-                                                    <option value="CHRISTINE, S.H.,M.K.n"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Jendral. Sudirman No.10, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu">
-                                                        CHRISTINE
-                                                    </option>
-                                                    <option value="DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Belibis Kel No.26, Cemp. Permai, Kec. Gading Cemp., Kota Bengkulu">
-                                                        DAUD WIDYA PRANATA SEPTI
-                                                    </option>
-                                                    <option value="DENI KRISTIAN NATANAEL, S.H.,M.Kn"
-                                                        data-npwp="84.123.865.2-018.000"
-                                                        data-alamat="Jl. Dempo Raya No.74, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu">
-                                                        DENI KRISTIAN NATANAE
-                                                    </option>
-                                                    <option value="DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn"
-                                                        data-npwp="15.296.359.1-311.000"
-                                                        data-alamat="Jl. Air Manjunto No.25a, Padang Harapan, Kec. Gading Cempaka., Kota Bengkulu">
-                                                        DESRIANO INDRA SYAHPUTRA
-                                                    </option>
-                                                    <option value="DORA YULIA AGUSTINA, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Kalimantan, Kp. Kelawi, Kec. Sungai Serut, Kota Bengkulu">
-                                                        DORA YULIA AGUSTINA
-                                                    </option>
-                                                    <option value="DWI FANI ARSIKASINDI, S.H.,M.H"
-                                                        data-npwp="39.695.181.6-532.000"
-                                                        data-alamat="Jl. Manggis, Panorama, Kec. Singaran Pati, Kota Bengkulu">
-                                                        DWI FANI ARSIKASINDI
-                                                    </option>
-                                                    <option value="EMY EFRIANTI AGUSTINI, S.H., M.Kn"
-                                                        data-npwp="14.802.936.6-311.000"
-                                                        data-alamat="Jl. Kapt. P. Tandean, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu">
-                                                        EMY EFRIANTI AGUSTINI
-                                                    </option>
-                                                    <option value="H. EPISON, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. S.Parman No.62 H Kel. Pasar Melintang, Kec. Teluk Segara, Kota Bengkulu">
-                                                        H. EPISON
-                                                    </option>
-                                                    <option value="HELEN SAPARINGGA,S.H., M.Kn"
-                                                        data-npwp="25.221.927.4-503.000"
-                                                        data-alamat="Perumahan villa indah pesona Blk. B No.20, Suka Rami, Kec. Selebar, Kota Bengkulu">
-                                                        HELEN SAPARINGGA
-                                                    </option>
-                                                    <option value="INDAH ARIESTIA, S.H" data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Salak Raya No. 1 A  Kel. Panorama Kec. Singaran Pati">
-                                                        INDAH ARIESTIA
-                                                    </option>
-                                                    <option value="IRAWAN, S.H.,M.Kn" data-npwp="06.665.605.9-311.000"
-                                                        data-alamat="Jl. LetJend. S. Parman No. 59 Kel. Anggut Bawah Kec. Gading Cempaka">
-                                                        IRAWAN
-                                                    </option>
-                                                    <option value="JULIWATI SIAGIAN, S.H"
-                                                        data-npwp="35.203.265.0-311.000"
-                                                        data-alamat="Jalan Pangeran Natadirja KM 6,5 Kel, Jalan Gedang, Gading Cempaka, Bengkulu">
-                                                        JULIWATI SIAGIAN
-                                                    </option>
-                                                    <option value="KARTINI KESUMAWATY,S.H,.M.Kn"
-                                                        data-npwp="81.750.659.5-311.000"
-                                                        data-alamat="Jl. Flamboyan Raya,Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
-                                                        KARTINI KESUMAWATY
-                                                    </option>
-                                                    <option value="KHAIRUNNISA, S.H., M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Letjend Suprapto No.183, Kebun Gerand, Kec. Tlk. Segara, Kota Bengkulu">
-                                                        KHAIRUNNISA
-                                                    </option>
-                                                    <option value="KUSWARI, S.H.,M.Kn" data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Pengantungan Kec. Ratu Samban Kota Bengkulu">
-                                                        KUSWARI
-                                                    </option>
-                                                    <option value="LINDA OKTARINA, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Putri Gading Cempaka, Kel. Penurunan, Kec. Ratu Samban, Kota Bengkulu">
-                                                        LINDA OKTARINA
-                                                    </option>
-                                                    <option value="MEILANI LIMAN, S.H" data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="JL. Letjen Suprapto No.183, Kebun Gerand, Ratu Samban, Bengkulu">
-                                                        MEILANI LIMAN
-                                                    </option>
-                                                    <option value="MIRZA, S.H.,M.Kn" data-npwp="14.993.005.9-311.000"
-                                                        data-alamat="JL. S Parman, No. 115 Kel. Padang Jati Kec. Teluk Segara Kota Bengkulu">
-                                                        MIRZA
-                                                    </option>
-                                                    <option value="H. MUFTI NOKHMAN, S.H.,M.Kn"
-                                                        data-npwp="07.356.779.4-311.000"
-                                                        data-alamat="JL. S. Parman, No.7 b Rt/Rw 01/01, Tanah Patah, Ratu Agung, Padang Jati, Bengkulu, Kota Bengkulu">
-                                                        H. MUFTI NOKHMAN
-                                                    </option>
-                                                    <option value="RANDI WIBOWO, S.H.,M.Kn"
-                                                        data-npwp="81.163.794.1-416.000"
-                                                        data-alamat="Jl. WR. Supratman, Pematang Gubernur, Kec. Muara Bangka Hulu, Kota Bengkulu">
-                                                        RANDI WIBOWO
-                                                    </option>
-                                                    <option value="RIZFITRIANI ALAMSYAH, S.H.,M.Kn"
-                                                        data-npwp="06.708.843.5-311.000"
-                                                        data-alamat="Jl. S. Parman No.26, Penurunan, Kec. Ratu Samban, Kota Bengkulu">
-                                                        RIZFITRIANI ALAMSYAH
-                                                    </option>
-                                                    <option value="RUDI INDRA JAYA,S.H,.M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Sentot Alibasyah No.37a, Bajak, Kec. Tlk. Segara, Kota Bengkulu">
-                                                        RUDI INDRA JAYA
-                                                    </option>
-                                                    <option value="SHINTA WIDYANIATI, S.H"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. H. Adam Malik, Cemp. Permai, Kec. Selebar, Kota Bengkulu">
-                                                        SHINTA WIDYANIATI
-                                                    </option>
-                                                    <option value="SICILIA HENDRA, S.H.,M.Kn"
-                                                        data-npwp="81.191.587.5-428.000"
-                                                        data-alamat="Hibrida 6C, RT.5/RW.02, Sido Mulyo, Kec. Gading Cemp., Kota Bengkulu">
-                                                        SICILIA HENDRA
-                                                    </option>
-                                                    <option value="TIARA YUNITA OVELIA, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Kapuas V No.21, Padang Harapan, Kec. Gading Cemp., Kota Bengkulu">
-                                                        TIARA YUNITA OVELIA
-                                                    </option>
-                                                    <option value="VIKE DIANTI PUTRI, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Irian No.23, Suka Merindu, Kec. Sungai Serut, Kota Bengkulu">
-                                                        VIKE DIANTI PUTRI
-                                                    </option>
-                                                    <option value="VINANDA LOVITA, S.H.,M.Kn"
-                                                        data-npwp="72.311.579.6-411.000"
-                                                        data-alamat="Jl. Mawar No.15A, RT.001/RW.001, Nusa Indah, Kec. Ratu Agung, Kota Bengkulu">
-                                                        VINANDA LOVITA
-                                                    </option>
-                                                    <option value="BELLA FILDA AGATHA,S.H.,M.,M.Kn"
-                                                        data-npwp="1703166108910001"
-                                                        data-alamat="Jl. Semark 1 Perum Padang Serai Estate 3 Blok C1, Kel. Padang Serai Kec. Kampung Melayu">
-                                                        BELLA FILDA AGATHA
-                                                    </option>
-                                                    <option value="SHABRINA ZHAFIRA, S.H.,M.Kn"
-                                                        data-npwp="90.216.358.3-311.000"
-                                                        data-alamat="Jl. P. Tandean No. 3B Simpang Padang Harapan Kel. Jembatan Kecil Kec. Singaran Pati">
-                                                        SHABRINA ZHAFIRA
-                                                    </option>
-                                                    <option value="SISKA WIDIA ASTUTI, S.H.,M.Kn"
-                                                        data-npwp="61.026.357.6-311.000"
-                                                        data-alamat="Jl. Mahakam Raya No. 19 Kel. Jalan Gedang">SISKA
-                                                        WIDIA ASTUTI
-                                                    </option>
-                                                    <option value="ARDANA RESTIKA, S.H.,M.Kn"
-                                                        data-npwp="00.000.000.0-000.000"
-                                                        data-alamat="Jl. Kapuas Raya No. 25B Kel. Tengah Padang Kec. Gading Cempaka">
-                                                        ARDANA RESTIKA
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="mb-8">
-                                                <label class="form-label"></label>
-                                                <input type="text" id="npwp" name="npwp" class="form-control" required
-                                                    placeholder="NPWP Notaris & PPAT Otomatis" readonly>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="mb-8">
-                                                <label class="form-label"></label>
-                                                <input type="text" id="nama" name="nama notaris & ppat"
-                                                    class="form-control" required
-                                                    placeholder="Nama Notaris & PPAT Otomatis" readonly>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="mb-8">
-                                                <label class="form-label"></label>
-                                                <input type="text" id="alamat" name="alamat" class="form-control"
-                                                    required placeholder="Alamat Notaris & PPAT Otomatis" readonly>
+                                                Mohon Pilih Nama Yang Tersedia!
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="mb-8">
                                                 <label for="validationCustom02" class="form-label"></label>
-                                                <input type="text" class="form-control" id="nomor_surat"
-                                                    name="nomor_surat" placeholder="Input Nomor Surat Notaris dan PPAT">
+                                                <input type="number" class="form-control" id="nomor_agenda"
+                                                    name="nomor_agenda" value="" required
+                                                    placeholder="Isi Nomor Agenda Disposisi">
                                                 <div class="valid-feedback">
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="mb-8">
-                                                    <label for="validationCustom02" class="form-label">Tanggal
-                                                        Surat PPAT</label>
-                                                    <input type="date" class="form-control" id="tanggal_surat"
-                                                        name="tanggal_surat" value="" required
-                                                        placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                    <label class="form-label"></label>
+                                                    <select class="form-select" id="notaris" name="notaris" required>
+                                                        <option selected disabled value>Pilih Nama Notaris & PPAT Di
+                                                            Daftar Berikut Ini
+                                                        </option>
+                                                        <option value="AZIZA ADLIEN NABILA, S.H., M.K.n"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Veteran No. 30, Kel. Jitra Kec. Teluk Segara">
+                                                            AZIZA ADLIEN N
+                                                        </option>
+                                                        <option value="SARI INDRA,S.H.,M.Kn"
+                                                            data-npwp="14.468.091.5-311.000"
+                                                            data-alamat="Jl. Dempo 1, Kel. Sawah Lebar Kec. Ratu Agung">
+                                                            SARI INDRA
+                                                        </option>
+                                                        <option value="ILHAM RAHMADI,S.H.,M.Kn"
+                                                            data-npwp="76.849.171.4-448.000"
+                                                            data-alamat="Jl. Semarak 1 Perum Padang Serai Estate B.3 Kel. Padang Serai Kec. Kampung Melayu">
+                                                            ILHAM RAHMADI
+                                                        </option>
+                                                        <option value="WENY ARIMBI CRISTIANI,SST,.Par.,S.H.,M.Kn"
+                                                            data-npwp="88.123.456.7-890.000"
+                                                            data-alamat="Jl. Cendrawasih Kel. Kebun Gerand Kec. Ratu Samban">
+                                                            WENY ARIMBI CRISTIANI
+                                                        </option>
+                                                        <option value="AMELIA MERDEKA SARI, S.H., M.Kn"
+                                                            data-npwp="70.564.146.2-311.000"
+                                                            data-alamat="Jl. Dempo 1, Kel. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu,">
+                                                            AMELIA MERDEKA SARI
+                                                        </option>
+                                                        <option value="ANJAR KRISTIANTO, S.H., M.Kn"
+                                                            data-npwp="08.296.734.9-543.000"
+                                                            data-alamat="Jl. Cendrawasih, Kebun Gerand, Kec. Ratu Samban, Kota Bengkulu">
+                                                            ANJAR KRISTIANTO
+                                                        </option>
+                                                        <option value="ATMIWIJAYA ARTATI, S.H., M.Kn"
+                                                            data-npwp="78.412.936.9-311.000"
+                                                            data-alamat="Jl. Beringin No. 1 D kel. Padang Jati, Kec. Ratu Samban, Kota Bengkulu">
+                                                            ATMIWIJAYA ARTATI
+                                                        </option>
+                                                        <option value="DENI YOHANES, S.H., M.Kn"
+                                                            data-npwp="14.222.493.0-311.000"
+                                                            data-alamat="Jl. Karbela, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu">
+                                                            DENI YOHANES
+                                                        </option>
+                                                        <option value="DIAN RISMAWATI, S.H"
+                                                            data-npwp="07.357.570.6-311.000"
+                                                            data-alamat="Jl. Fatmawati No.11, Penurunan, Kec. Ratu Samban, Kota Bengkulu, ">
+                                                            DIAN RISMAWATI
+                                                        </option>
+                                                        <option value="HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn"
+                                                            data-npwp="80.086.768.1-311.000"
+                                                            data-alamat="Jl. Ratu Agung No.23, Anggut Bawah, Kec. Ratu Samban, Kota Bengkulu">
+                                                            HARITRI GRATA JOHNI ARIFIN PUTRI
+                                                        </option>
+                                                        <option value="IDAYANTI, S.H" data-npwp="07.356.342.1-311.000"
+                                                            data-alamat="Jl. Salak Bl I No.99, Dusun Besar, Kec. Singaran Pati, Kota Bengkulu,">
+                                                            IDAYANTI
+                                                        </option>
+                                                        <option value="IS HARIYANI,S.H" data-npwp="07.021.792.2-311.000"
+                                                            data-alamat="Jl. S. Parman No.40, Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
+                                                            IS HARIYANI
+                                                        </option>
+                                                        <option value="LEILA GENTJANA, S.H., M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. S. Parman No. 20 A. Kel. Padang Jati, Kec. Ratu Samban, Kota Bengkulu">
+                                                            LEILA GENTJANA
+                                                        </option>
+                                                        <option value="LYDIA ARMAN, S.H., M.Kn"
+                                                            data-npwp="75.953.698.0-311.000"
+                                                            data-alamat="Jl. Sudirman III, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu">
+                                                            LYDIA ARMAN
+                                                        </option>
+                                                        <option value="NOVIARTATI, S.H" data-npwp="07.356.817.2-311.000"
+                                                            data-alamat="JL. Prof DR Hazairin SH 11, Bengkulu, Pasar Baru, Teluk Segara, Bengkulu">
+                                                            NOVIARTATI
+                                                        </option>
+                                                        <option value="SARI PRIYANKA, S.H., M.Kn"
+                                                            data-npwp="90.458.524.7-311.000"
+                                                            data-alamat="Jl. S. Parman No. 7 Kel. Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
+                                                            SARI PRIYANKA
+                                                        </option>
+                                                        <option value="SUSANTI, S.H., M.Kn"
+                                                            data-npwp="16.321.206.1-311.000"
+                                                            data-alamat="Jl. Fatmawati Kel. Penurunan Kec. Ratu Samban Kota Bengkulu">
+                                                            SUSANTI
+                                                        </option>
+                                                        <option value="H.TINA HAERANI BUNGGASI, S.H,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Mayjen Sutoyo No.36, RW.001, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu">
+                                                            TINA HAERANI BUNGGASI
+                                                        </option>
+                                                        <option value="ANNISA FADILLA KARTAMADJA,S.H., M.Kn"
+                                                            data-npwp="45.581.427.7-013.000"
+                                                            data-alamat="Jl. Kapuas Raya No.6, Lkr. Barat, Kec. Gading Cemp., Kota Bengkulu">
+                                                            ANNISA FADILLA KARTAMADJA
+                                                        </option>
+                                                        <option value="ANGGA PRISMA JELITA, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Tim. Indah Raya, Tim. Indah, Kec. Singaran Pati, Kota Bengkulu">
+                                                            ANGGA PRISMA JELITA
+                                                        </option>
+                                                        <option value="AULIYYA MARTATI, S.H., M.H"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Meranti II No.4A, Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu">
+                                                            AULIYYA MARTATI
+                                                        </option>
+                                                        <option value="BERTHA NOVELISA, S.H., M.Kn"
+                                                            data-npwp="16.801.188.0-311.000"
+                                                            data-alamat="Jl. Bajak, Kec. Teluk Segara, Kota Bengkulu,">
+                                                            BERTHA NOVELISA
+                                                        </option>
+                                                        <option value="BJANZA METRA, S.H.,M.Kn"
+                                                            data-npwp="39.683.016.8-328.000"
+                                                            data-alamat="Jl. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu">
+                                                            BJANZA METRA
+                                                        </option>
+                                                        <option value="CHRISTINE, S.H.,M.K.n"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Jendral. Sudirman No.10, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu">
+                                                            CHRISTINE
+                                                        </option>
+                                                        <option value="DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Belibis Kel No.26, Cemp. Permai, Kec. Gading Cemp., Kota Bengkulu">
+                                                            DAUD WIDYA PRANATA SEPTI
+                                                        </option>
+                                                        <option value="DENI KRISTIAN NATANAEL, S.H.,M.Kn"
+                                                            data-npwp="84.123.865.2-018.000"
+                                                            data-alamat="Jl. Dempo Raya No.74, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu">
+                                                            DENI KRISTIAN NATANAE
+                                                        </option>
+                                                        <option value="DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn"
+                                                            data-npwp="15.296.359.1-311.000"
+                                                            data-alamat="Jl. Air Manjunto No.25a, Padang Harapan, Kec. Gading Cempaka., Kota Bengkulu">
+                                                            DESRIANO INDRA SYAHPUTRA
+                                                        </option>
+                                                        <option value="DORA YULIA AGUSTINA, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Kalimantan, Kp. Kelawi, Kec. Sungai Serut, Kota Bengkulu">
+                                                            DORA YULIA AGUSTINA
+                                                        </option>
+                                                        <option value="DWI FANI ARSIKASINDI, S.H.,M.H"
+                                                            data-npwp="39.695.181.6-532.000"
+                                                            data-alamat="Jl. Manggis, Panorama, Kec. Singaran Pati, Kota Bengkulu">
+                                                            DWI FANI ARSIKASINDI
+                                                        </option>
+                                                        <option value="EMY EFRIANTI AGUSTINI, S.H., M.Kn"
+                                                            data-npwp="14.802.936.6-311.000"
+                                                            data-alamat="Jl. Kapt. P. Tandean, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu">
+                                                            EMY EFRIANTI AGUSTINI
+                                                        </option>
+                                                        <option value="H. EPISON, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. S.Parman No.62 H Kel. Pasar Melintang, Kec. Teluk Segara, Kota Bengkulu">
+                                                            H. EPISON
+                                                        </option>
+                                                        <option value="HELEN SAPARINGGA,S.H., M.Kn"
+                                                            data-npwp="25.221.927.4-503.000"
+                                                            data-alamat="Perumahan villa indah pesona Blk. B No.20, Suka Rami, Kec. Selebar, Kota Bengkulu">
+                                                            HELEN SAPARINGGA
+                                                        </option>
+                                                        <option value="INDAH ARIESTIA, S.H"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Salak Raya No. 1 A  Kel. Panorama Kec. Singaran Pati">
+                                                            INDAH ARIESTIA
+                                                        </option>
+                                                        <option value="IRAWAN, S.H.,M.Kn"
+                                                            data-npwp="06.665.605.9-311.000"
+                                                            data-alamat="Jl. LetJend. S. Parman No. 59 Kel. Anggut Bawah Kec. Gading Cempaka">
+                                                            IRAWAN
+                                                        </option>
+                                                        <option value="JULIWATI SIAGIAN, S.H"
+                                                            data-npwp="35.203.265.0-311.000"
+                                                            data-alamat="Jalan Pangeran Natadirja KM 6,5 Kel, Jalan Gedang, Gading Cempaka, Bengkulu">
+                                                            JULIWATI SIAGIAN
+                                                        </option>
+                                                        <option value="KARTINI KESUMAWATY,S.H,.M.Kn"
+                                                            data-npwp="81.750.659.5-311.000"
+                                                            data-alamat="Jl. Flamboyan Raya,Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu">
+                                                            KARTINI KESUMAWATY
+                                                        </option>
+                                                        <option value="KHAIRUNNISA, S.H., M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Letjend Suprapto No.183, Kebun Gerand, Kec. Tlk. Segara, Kota Bengkulu">
+                                                            KHAIRUNNISA
+                                                        </option>
+                                                        <option value="KUSWARI, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Pengantungan Kec. Ratu Samban Kota Bengkulu">
+                                                            KUSWARI
+                                                        </option>
+                                                        <option value="LINDA OKTARINA, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Putri Gading Cempaka, Kel. Penurunan, Kec. Ratu Samban, Kota Bengkulu">
+                                                            LINDA OKTARINA
+                                                        </option>
+                                                        <option value="MEILANI LIMAN, S.H"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="JL. Letjen Suprapto No.183, Kebun Gerand, Ratu Samban, Bengkulu">
+                                                            MEILANI LIMAN
+                                                        </option>
+                                                        <option value="MIRZA, S.H.,M.Kn"
+                                                            data-npwp="14.993.005.9-311.000"
+                                                            data-alamat="JL. S Parman, No. 115 Kel. Padang Jati Kec. Teluk Segara Kota Bengkulu">
+                                                            MIRZA
+                                                        </option>
+                                                        <option value="H. MUFTI NOKHMAN, S.H.,M.Kn"
+                                                            data-npwp="07.356.779.4-311.000"
+                                                            data-alamat="JL. S. Parman, No.7 b Rt/Rw 01/01, Tanah Patah, Ratu Agung, Padang Jati, Bengkulu, Kota Bengkulu">
+                                                            H. MUFTI NOKHMAN
+                                                        </option>
+                                                        <option value="RANDI WIBOWO, S.H.,M.Kn"
+                                                            data-npwp="81.163.794.1-416.000"
+                                                            data-alamat="Jl. WR. Supratman, Pematang Gubernur, Kec. Muara Bangka Hulu, Kota Bengkulu">
+                                                            RANDI WIBOWO
+                                                        </option>
+                                                        <option value="RIZFITRIANI ALAMSYAH, S.H.,M.Kn"
+                                                            data-npwp="06.708.843.5-311.000"
+                                                            data-alamat="Jl. S. Parman No.26, Penurunan, Kec. Ratu Samban, Kota Bengkulu">
+                                                            RIZFITRIANI ALAMSYAH
+                                                        </option>
+                                                        <option value="RUDI INDRA JAYA,S.H,.M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Sentot Alibasyah No.37a, Bajak, Kec. Tlk. Segara, Kota Bengkulu">
+                                                            RUDI INDRA JAYA
+                                                        </option>
+                                                        <option value="SHINTA WIDYANIATI, S.H"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. H. Adam Malik, Cemp. Permai, Kec. Selebar, Kota Bengkulu">
+                                                            SHINTA WIDYANIATI
+                                                        </option>
+                                                        <option value="SICILIA HENDRA, S.H.,M.Kn"
+                                                            data-npwp="81.191.587.5-428.000"
+                                                            data-alamat="Hibrida 6C, RT.5/RW.02, Sido Mulyo, Kec. Gading Cemp., Kota Bengkulu">
+                                                            SICILIA HENDRA
+                                                        </option>
+                                                        <option value="TIARA YUNITA OVELIA, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Kapuas V No.21, Padang Harapan, Kec. Gading Cemp., Kota Bengkulu">
+                                                            TIARA YUNITA OVELIA
+                                                        </option>
+                                                        <option value="VIKE DIANTI PUTRI, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Irian No.23, Suka Merindu, Kec. Sungai Serut, Kota Bengkulu">
+                                                            VIKE DIANTI PUTRI
+                                                        </option>
+                                                        <option value="VINANDA LOVITA, S.H.,M.Kn"
+                                                            data-npwp="72.311.579.6-411.000"
+                                                            data-alamat="Jl. Mawar No.15A, RT.001/RW.001, Nusa Indah, Kec. Ratu Agung, Kota Bengkulu">
+                                                            VINANDA LOVITA
+                                                        </option>
+                                                        <option value="BELLA FILDA AGATHA,S.H.,M.,M.Kn"
+                                                            data-npwp="1703166108910001"
+                                                            data-alamat="Jl. Semark 1 Perum Padang Serai Estate 3 Blok C1, Kel. Padang Serai Kec. Kampung Melayu">
+                                                            BELLA FILDA AGATHA
+                                                        </option>
+                                                        <option value="SHABRINA ZHAFIRA, S.H.,M.Kn"
+                                                            data-npwp="90.216.358.3-311.000"
+                                                            data-alamat="Jl. P. Tandean No. 3B Simpang Padang Harapan Kel. Jembatan Kecil Kec. Singaran Pati">
+                                                            SHABRINA ZHAFIRA
+                                                        </option>
+                                                        <option value="SISKA WIDIA ASTUTI, S.H.,M.Kn"
+                                                            data-npwp="61.026.357.6-311.000"
+                                                            data-alamat="Jl. Mahakam Raya No. 19 Kel. Jalan Gedang">
+                                                            SISKA
+                                                            WIDIA ASTUTI
+                                                        </option>
+                                                        <option value="ARDANA RESTIKA, S.H.,M.Kn"
+                                                            data-npwp="00.000.000.0-000.000"
+                                                            data-alamat="Jl. Kapuas Raya No. 25B Kel. Tengah Padang Kec. Gading Cempaka">
+                                                            ARDANA RESTIKA
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label class="form-label"></label>
+                                                    <input type="text" id="npwp" name="npwp" class="form-control"
+                                                        required placeholder="NPWP Notaris & PPAT Otomatis" readonly>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label class="form-label"></label>
+                                                    <input type="text" id="nama" name="nama notaris & ppat"
+                                                        class="form-control" required
+                                                        placeholder="Nama Notaris & PPAT Otomatis" readonly>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label class="form-label"></label>
+                                                    <input type="text" id="alamat" name="alamat" class="form-control"
+                                                        required placeholder="Alamat Notaris & PPAT Otomatis" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-8">
+                                                    <label for="validationCustom02" class="form-label"></label>
+                                                    <input type="text" class="form-control" id="nomor_surat"
+                                                        name="nomor_surat"
+                                                        placeholder="Input Nomor Surat Notaris dan PPAT">
                                                     <div class="valid-feedback">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-8">
-                                                    <label for="validationCustom02" class="form-label">
-                                                        Tanggal Surat Masuk
-                                                    </label>
-                                                    <input type="date" class="form-control" pelceholder="dd-mm-yyyy"
-                                                        id="tanggal_disposisi" name="tanggal_disposisi" value="input"
-                                                        min="2023-01-01" max="2030-12-31">
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-8">
-                                                    <label for="laporan_bulanan" class="form-label">Pilih Bulan
-                                                        Laporan</label>
-                                                    <select class="form-select" id="laporan_bulanan"
-                                                        name="laporan bulanan" required>
-                                                        <option disabled value>Pilih Bulan Laporan</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="valid-feedback">
-                                                Terimakasih!
-                                            </div>
-                                        </div>
-                                        <form id="form-laporan" class="row g-3" novalidate>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label for="jumlah_laporan" class="form-label"></label>
-                                                    <input type="number" class="form-control" id="jumlah_laporan"
-                                                        name="jumlah laporan"
-                                                        placeholder="Jumlah Laporan Hanya Angka (Contoh : 10)" min="0"
-                                                        required>
-                                                    <div class="invalid-feedback">Masukkan jumlah laporan (0
-                                                        atau lebih).</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label for="sspd_bphtb_view" class="form-label">Input Nominal
-                                                        SSB / Bphtb</label>
-
-                                                    <!-- Input tampilan (Rupiah) -->
-                                                    <input type="text" class="form-control" id="sspd_bphtb_view"
-                                                        placeholder="Rp. 0" autocomplete="off" required>
-
-                                                    <!-- Input asli (angka murni untuk dikirim) -->
-                                                    <input type="hidden" id="sspd_bphtb" name="sspd_bphtb">
-
-                                                    <div class="invalid-feedback"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label for="keterangan" class="form-label">Keterangan</label>
-                                                    <textarea class="form-control" id="keterangan" name="keterangan"
-                                                        rows="3" required></textarea>
-                                                    <div id="ketError" class="invalid-feedback"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="mb-8">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value=""
-                                                            id="invalidCheck" required>
-                                                        <label class="form-check-label" for="invalidCheck">
-                                                            agree before submitting.
-                                                        </label>
-                                                        <div class="invalid-feedback">
+                                                <div class="col-12">
+                                                    <div class="mb-8">
+                                                        <label for="validationCustom02" class="form-label">Tanggal
+                                                            Surat PPAT</label>
+                                                        <input type="date" class="form-control" id="tanggal_surat"
+                                                            name="tanggal_surat" value="" required
+                                                            placeholder="*Input Nomor Surat Notaris dan PPAT">
+                                                        <div class="valid-feedback">
                                                         </div>
-                                                        <center>
-                                                            <div class="col-12" style="margin-top: 19px;">
-                                                                <button type="submit" class="btn btn-primary btn-kirim">
-                                                                    Kirim Laporan
-                                                                </button>
-                                                                <!-- Loading Overlay -->
-                                                                <div class="loading-wrapper d-none">
-                                                                    <div class="loading-box text-center">
-                                                                        <div class="spinner-custom"></div>
-                                                                        <p class="mt-3">Mohon Tunggu...
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Success Overlay -->
-                                                                <div class="success-wrapper d-none">
-                                                                    <div class="success-box text-center">
-                                                                        <i
-                                                                            class="bi bi-check-circle-fill text-success"></i>
-                                                                        <h2 class="mt-3">Terimakasih... <br>Laporan PPAT
-                                                                            Berhasil Terkirim</h2>
-                                                                        <p>Silakan Isi Formulir Kembali...</p>
-                                                                    </div>
-                                                                </div>
-                                                        </center>
-                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-8">
+                                                        <label for="validationCustom02" class="form-label">
+                                                            Tanggal Surat Masuk
+                                                        </label>
+                                                        <input type="date" class="form-control" pelceholder="dd-mm-yyyy"
+                                                            id="tanggal_disposisi" name="tanggal_disposisi"
+                                                            value="input" min="2023-01-01" max="2030-12-31">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="mb-8">
+                                                        <label for="laporan_bulanan" class="form-label">Pilih Bulan
+                                                            Laporan</label>
+                                                        <select class="form-select" id="laporan_bulanan"
+                                                            name="laporan bulanan" required>
+                                                            <option disabled value>Pilih Bulan Laporan</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="valid-feedback">
+                                                    Terimakasih!
+                                                </div>
+                                            </div>
+                                            <form id="form-laporan" class="row g-3" novalidate>
+
+                                                <!-- JUMLAH LAPORAN -->
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label for="jumlah_laporan" class="form-label"></label>
+                                                        <input type="number" class="form-control" id="jumlah_laporan"
+                                                            name="jumlah_laporan"
+                                                            placeholder="Jumlah Laporan Hanya Angka (Contoh : 10)"
+                                                            min="0" required>
+                                                    </div>
+                                                </div>
+
+                                                <!-- SSPD / BPHTB -->
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label for="sspd_bphtb_view" class="form-label">
+                                                            Input Nominal SSB / BPHTB
+                                                        </label>
+
+                                                        <input type="text" class="form-control" id="sspd_bphtb_view"
+                                                            placeholder="Rp. 0" autocomplete="off" required>
+
+                                                        <input type="hidden" id="sspd_bphtb" name="sspd_bphtb">
+
+                                                        <div class="invalid-feedback"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- KETERANGAN -->
+                                                <div class="col-12">
+                                                    <div class="mb-3">
+                                                        <label for="keterangan" class="form-label">
+                                                            Keterangan
+                                                        </label>
+
+                                                        <textarea class="form-control" id="keterangan" name="keterangan"
+                                                            rows="3" required></textarea>
+
+                                                        <small id="ketHint" class="form-text fw-semibold"></small>
+                                                        <div id="ketError" class="invalid-feedback"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- CHECKBOX PERSETUJUAN -->
+                                                <div class="col-12">
+                                                    <div class="mb-3 form-check small-agree">
+                                                        <input class="form-check-input" type="checkbox" id="agreeCheck"
+                                                            required>
+
+                                                        <label class="form-check-label" for="agreeCheck">
+                                                            Saya menyatakan data yang diinput benar dan dapat
+                                                            dipertanggungjawabkan.
+                                                        </label>
+
+                                                        <div class="invalid-feedback">
+                                                            *Anda wajib menyetujui pernyataan ini sebelum mengirim
+                                                            laporan !
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <center>
+                                                    <div class="col-12" style="margin-top: 19px;">
+                                                        <button type="submit" class="btn btn-primary btn-kirim"><i
+                                                                class="bi bi-send-fill text-primary"></i>
+                                                            Kirim Laporan
+                                                        </button>
+                                                        <!-- Loading Overlay -->
+                                                        <div class="loading-wrapper d-none">
+                                                            <div class="loading-box text-center">
+                                                                <div class="spinner-custom"></div>
+                                                                <p class="mt-3">Mohon Tunggu...
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Success Overlay -->
+                                                        <div class="success-wrapper d-none">
+                                                            <div class="success-box text-center">
+                                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                                                <h2 class="mt-3">Terimakasih... <br>Laporan
+                                                                    PPAT
+                                                                    Berhasil Terkirim</h2>
+                                                                <p>Silakan Isi Formulir Kembali...</p>
+                                                            </div>
+                                                        </div>
+                                                </center>
+                                            </form>
         </section><br><br>
 
         <!-- Footer Sticky -->
         <footer class="footer-sticky">
             <p>
-                &copy; <span id="year"></span> All Rights Reserved 2024. Segala hak cipta dilindungi undang-undang
+                &copy; <span id="year"></span>2023 All Rights Reserved. Segala hak cipta dilindungi undang-undang
                 <span class="love">❤️</span>
             </p>
         </footer>
@@ -928,124 +1198,138 @@
             overlay.style.opacity = "0";
         });
 
-        (function () {
-            const jumlahEl = document.getElementById('jumlah_laporan');
-            const ketEl = document.getElementById('keterangan');
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const jumlah = document.getElementById('jumlah_laporan');
+            const ket = document.getElementById('keterangan');
+            const ketHint = document.getElementById('ketHint');
             const ketError = document.getElementById('ketError');
             const form = document.getElementById('form-laporan');
-            const rupiahInput = document.getElementById('sspd_bphtb_view');
-            const hiddenInput = document.getElementById('sspd_bphtb');
 
-            // Saat mengetik
-            rupiahInput.addEventListener('input', function () {
-                let angka = this.value.replace(/[^0-9]/g, '');
+            const rupiahView = document.getElementById('sspd_bphtb_view');
+            const rupiahReal = document.getElementById('sspd_bphtb');
 
-                hiddenInput.value = angka;
+            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0";
 
-                if (angka === '') {
-                    this.value = '';
-                    return;
-                }
-
-                this.value = 'Rp. ' + formatAngka(angka);
-            });
-
-            // Saat keluar input → tambahkan ,00
-            rupiahInput.addEventListener('blur', function () {
-                if (this.value !== '') {
-                    this.value += ',00';
-                }
-            });
-
-            // Saat fokus → hapus ,00 agar nyaman edit
-            rupiahInput.addEventListener('focus', function () {
-                this.value = this.value.replace(',00', '');
-            });
-
+            /* =====================
+               FORMAT RUPIAH
+            ===================== */
             function formatAngka(angka) {
                 return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             }
 
-            const templateKeterangan =
-                "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0";
+            rupiahView.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '');
+                rupiahReal.value = angka;
+                if (angka === '') {
+                    this.value = '';
+                    return;
+                }
+                this.value = 'Rp. ' + formatAngka(angka);
+            });
 
-            // expose fungsi reset agar bisa dipanggil luar
-            window.resetKeterangan = function () {
-                ketEl.value = templateKeterangan;
-            };
+            rupiahView.addEventListener('focus', function () {
+                this.value = this.value.replace(/Rp\.?\s?|\.|,00/g, '');
+            });
 
-            ketEl.value = templateKeterangan;
+            rupiahView.addEventListener('blur', function () {
+                if (this.value !== '') {
+                    this.value = 'Rp. ' + formatAngka(this.value.replace(/\D/g, '')) + ',00';
+                }
+            });
 
-            function sumFromKeterangan(text) {
-                const tanpaRp = text.split(/Rp/i)[0] || "";
-                const regex = /(\d+)(?=\s*[A-Za-z])/g;
-                const matches = tanpaRp.match(regex);
-                if (!matches) return 0;
-                return matches.map(Number).reduce((a, b) => a + b, 0);
+            /* =====================
+               HELPER KETERANGAN
+            ===================== */
+            function lockKet(text, hint) {
+                ket.value = text;
+                ket.readOnly = true;
+                ket.style.pointerEvents = 'none';
+                ket.style.backgroundColor = '#e9ecef';
+                ketHint.textContent = hint;
+                ketHint.className = 'form-text fw-semibold text-secondary';
+                ket.classList.remove('is-valid', 'is-invalid');
+                ketError.textContent = '';
             }
 
-            jumlahEl.addEventListener('input', validateKeterangan);
-            jumlahEl.addEventListener('change', validateKeterangan);
-            ketEl.addEventListener('input', validateKeterangan);
+            function unlockKet(text, hint) {
+                ket.readOnly = false;
+                ket.style.pointerEvents = 'auto';
+                ket.style.backgroundColor = '';
+                ket.value = text;
+                ketHint.textContent = hint;
+                ketHint.className = 'form-text fw-semibold text-info';
+            }
 
-            function validateKeterangan() {
-                const val = jumlahEl.value.trim();
+            function hitungKet(text) {
+                const angka = text.match(/\d+/g);
+                return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
+            }
+
+            /* =====================
+               LOGIKA UTAMA
+            ===================== */
+            function prosesKeterangan() {
+                const val = jumlah.value;
+
+                if (val === '') {
+                    lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                    return false;
+                }
+
                 const num = Number(val);
 
-                // INVALID / KOSONG
-                if (val === '' || isNaN(num) || num < 0) {
-                    ketEl.removeAttribute('readonly');
-                    ketEl.classList.remove('is-invalid');
-                    ketError.textContent = "";
-                    lastJumlah = num;
-                    return true;
-                }
-
-                // JIKA 0
                 if (num === 0) {
-                    ketEl.value = "Nihil";
-                    ketEl.setAttribute("readonly", "readonly");
-                    ketEl.classList.remove('is-invalid');
-                    ketError.textContent = "";
-                    lastJumlah = 0;
+                    lockKet('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
                     return true;
                 }
 
-                // ⬅️ INI KUNCI NYA
-                // DARI 0 → ANGKA LAIN
-                if (lastJumlah === 0 && num > 0) {
-                    ketEl.removeAttribute("readonly");
-                    ketEl.value = templateKeterangan;
+                if (ket.readOnly) {
+                    unlockKet(TEMPLATE, '✏️ Isi rincian sesuai jumlah laporan');
                 }
 
-                lastJumlah = num;
+                const total = hitungKet(ket.value);
 
-                const totalKet = sumFromKeterangan(ketEl.value);
-
-                if (totalKet !== num) {
-                    ketError.textContent = `⚠️ Total rincian: ${totalKet}, seharusnya: ${num}`;
-                    ketEl.classList.add('is-invalid');
+                if (total !== num) {
+                    ket.classList.add('is-invalid');
+                    ket.classList.remove('is-valid');
+                    ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
+                    ketHint.textContent = '❌ Jumlah rincian belum sesuai';
+                    ketHint.className = 'form-text fw-semibold text-danger';
                     return false;
                 } else {
-                    ketError.textContent = "";
-                    ketEl.classList.remove('is-invalid');
+                    ket.classList.remove('is-invalid');
+                    ket.classList.add('is-valid');
+                    ketError.textContent = '';
+                    ketHint.textContent = '✅ Jumlah rincian sesuai';
+                    ketHint.className = 'form-text fw-semibold text-success';
                     return true;
                 }
             }
 
-            jumlahEl.addEventListener('input', validateKeterangan);
-            ketEl.addEventListener('input', validateKeterangan);
+            /* =====================
+               EVENT
+            ===================== */
+            lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+
+            jumlah.addEventListener('input', prosesKeterangan);
+            ket.addEventListener('input', prosesKeterangan);
 
             form.addEventListener('submit', function (e) {
-                if (!form.checkValidity() || !validateKeterangan()) {
+                if (!form.checkValidity() || !prosesKeterangan()) {
                     e.preventDefault();
                     e.stopPropagation();
                     form.classList.add('was-validated');
                 }
             });
 
-            validateKeterangan();
-        })();
+            function resetKeterangan() {
+                lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                ket.classList.remove('is-valid', 'is-invalid');
+                ketError.textContent = '';
+            }
+
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -1108,69 +1392,176 @@
             // lanjutkan loading & submit
         });
 
-        // ELEMENT LIVE CHAT
-        const liveChatContainer = document.createElement('div');
-        liveChatContainer.style.marginTop = '20px';
-        document.forms['LAPORAN NOTARIS 2025'].prepend(liveChatContainer);
+        /* ===============================
+     LIVE CHAT FLOATING (FIX)
+  ================================ */
 
-        // EVENT INPUT
+        // CONTAINER
+        const liveChatContainer = document.createElement('div');
+        liveChatContainer.id = 'liveChatFloating';
+        document.body.appendChild(liveChatContainer);
+
+        // AMBIL ELEMENT FORM (AMAN)
+        const adminInput = document.querySelector('[name="admin penginput"]');
         const notarisSelect = document.getElementById('notaris');
         const npwpInput = document.getElementById('npwp');
         const namaInput = document.getElementById('nama');
         const alamatInput = document.getElementById('alamat');
-        const tanggalSurat = document.getElementById('tanggal surat');
+        const tanggalSurat = document.getElementById('tanggal_surat');
+        const jumlahLaporan = document.getElementById('jumlah_laporan');
+        const keteranganInput = document.getElementById('keterangan');
         const sspdInput = document.getElementById('sspd_bphtb_view');
 
-        // UPDATE LIVE CHAT FUNCTION
-        function addLiveMessage(title, value) {
-            const box = document.createElement('div');
-            box.className = 'live-chat-box';
-            box.innerHTML = `<span>${title}:</span> ${value}`;
-            liveChatContainer.appendChild(box);
-
-            // scroll otomatis ke bawah
-            liveChatContainer.scrollTop = liveChatContainer.scrollHeight;
+        // FORMAT TANGGAL
+        function formatTanggalIndo(val) {
+            if (!val) return '-';
+            const [y, m, d] = val.split('-');
+            return `${d}/${m}/${y}`;
         }
 
-        // NOTARIS CHANGE
-        notarisSelect.addEventListener('change', function () {
+        // UPDATE / BUAT BARIS LIVE CHAT
+        function setLiveMessage(key, title, value) {
+            let row = document.getElementById(`live-${key}`);
+
+            if (!row) {
+                row = document.createElement('div');
+                row.id = `live-${key}`;
+                row.className = 'live-row';
+                liveChatContainer.appendChild(row);
+            }
+
+            row.innerHTML = `
+        <span class="live-title">${title}</span>
+        <span class="live-value">${value || '-'}</span>
+    `;
+        }
+
+        /* ===============================
+           EVENT LISTENER
+        ================================ */
+
+        // ADMIN PENGINPUT
+        adminInput?.addEventListener('change', function () {
+            setLiveMessage('admin', 'Admin Penginput', this.value);
+        });
+
+        // NOTARIS
+        notarisSelect?.addEventListener('change', function () {
             const selected = this.options[this.selectedIndex];
-            npwpInput.value = selected.dataset.npwp;
-            namaInput.value = selected.value;
-            alamatInput.value = selected.dataset.alamat;
 
-            addLiveMessage('Notaris & PPAT', selected.value);
-            addLiveMessage('NPWP', selected.dataset.npwp);
-            addLiveMessage('Alamat', selected.dataset.alamat);
+            npwpInput.value = selected.dataset.npwp || '';
+            namaInput.value = selected.value || '';
+            alamatInput.value = selected.dataset.alamat || '';
+
+            setLiveMessage('notaris', 'Notaris & PPAT', selected.value);
+            setLiveMessage('npwp', 'NPWP', selected.dataset.npwp);
+            setLiveMessage('alamat', 'Alamat', selected.dataset.alamat);
         });
 
-        // NOMINAL INPUT
-        sspdInput.addEventListener('input', function () {
-            addLiveMessage('Nominal SSB', this.value);
-        });
+        function formatRupiahLive(val) {
+            if (!val) return '-';
+            let angka = val.replace(/[^0-9]/g, '');
+            if (angka === '') return '-';
+            return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
 
         // TANGGAL SURAT
-        tanggalSurat.addEventListener('change', function () {
-            addLiveMessage('Tanggal Surat', this.value);
+        tanggalSurat?.addEventListener('input', function () {
+            setLiveMessage(
+                'tanggal_surat',
+                'Tanggal Surat',
+                formatTanggalIndo(this.value)
+            );
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const navbar = document.getElementById("mainNavbar");
+        function resetLiveChat() {
+            liveChatContainer.innerHTML = '';
 
-            window.addEventListener("scroll", function () {
-                if (window.scrollY > 50) {
-                    navbar.classList.add("scrolled");
-                } else {
-                    navbar.classList.remove("scrolled");
-                }
-            });
+            // optional placeholder
+            const empty = document.createElement('div');
+            empty.className = 'live-chat-empty';
+            empty.textContent = 'Belum ada data…';
+            liveChatContainer.appendChild(empty);
+        }
+
+
+        // JUMLAH LAPORAN
+        jumlahLaporan?.addEventListener('input', function () {
+            setLiveMessage('jumlah_laporan', 'Jumlah Laporan', this.value);
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("year").textContent = new Date().getFullYear();
+        // KETERANGAN
+        keteranganInput?.addEventListener('input', function () {
+            setLiveMessage('keterangan', 'Keterangan', this.value);
         });
 
+        // NOMINAL SSB
+        sspdInput.addEventListener('input', function () {
+            let angka = this.value.replace(/\D/g, '');
+
+            if (!angka) {
+                setLiveMessage('ssb', 'Nominal SSB', '-');
+                return;
+            }
+
+            const formatted = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+            setLiveMessage('ssb', 'Nominal SSB', formatted);
+        });
+
+        const agreeCheck = document.getElementById('agreeCheck');
+
+        /* =====================
+           VALIDASI CHECKBOX
+        ===================== */
+        function validateAgree() {
+            if (!agreeCheck.checked) {
+                agreeCheck.classList.add('is-invalid');
+                agreeCheck.classList.remove('is-valid');
+                return false;
+            } else {
+                agreeCheck.classList.remove('is-invalid');
+                agreeCheck.classList.add('is-valid');
+                return true;
+            }
+        }
+
+        /* real-time feedback */
+        agreeCheck.addEventListener('change', validateAgree);
+
+        /* reset bersih */
+        form.addEventListener('reset', function () {
+            setTimeout(() => {
+                agreeCheck.checked = false;
+                agreeCheck.classList.remove('is-valid', 'is-invalid');
+            }, 50);
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (
+                !form.checkValidity() ||
+                !prosesKeterangan() ||
+                !validateAgree()
+            ) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add('was-validated');
+            } else {
+                setTimeout(() => {
+                    form.reset();
+                    resetKeterangan();
+                }, 200);
+            }
+        });
+
+        function scrollToAgree() {
+            agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        if (!validateAgree()) {
+            scrollToAgree();
+        }
     </script>
+
 </body>
 
 </html>
