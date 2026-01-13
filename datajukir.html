@@ -278,6 +278,8 @@
                                         <select class="form-select" id="admin penginput" name="admin penginput"
                                             required>
                                             <option selected disabled value>Nama Penginput Laporan</option>
+                                            <option value="ZENDI AFRIAN SAPUTRA, S.H">ZENDI AFRIAN SAPUTRA, S.H
+                                            </option>
                                             <option value="AGAM REFALDI, S.Tr.IP">AGAM REFALDI, S.Tr.IP
                                             </option>
                                         </select>
@@ -696,9 +698,8 @@
                                                                     <div class="success-box text-center">
                                                                         <i
                                                                             class="bi bi-check-circle-fill text-success"></i>
-                                                                        <h2 class="mt-3">Terimakasih AGAM
-                                                                            REFALDI, S.Tr.IP<br>Laporan
-                                                                            Berhasil Terkirim !!!</h2>
+                                                                        <h2 class="mt-3">Terimakasih... <br>Laporan PPAT
+                                                                            Berhasil Terkirim</h2>
                                                                         <p>Silakan Isi Formulir Kembali...</p>
                                                                     </div>
                                                                 </div>
@@ -761,6 +762,7 @@
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
         const success = document.querySelector('.success-wrapper');
+        let lastJumlah = null;
 
         // Ambil input nomor surat
         const nomorSurat = document.getElementById('nomor_surat');
@@ -982,28 +984,44 @@
                 return matches.map(Number).reduce((a, b) => a + b, 0);
             }
 
+            jumlahEl.addEventListener('input', validateKeterangan);
+            jumlahEl.addEventListener('change', validateKeterangan);
+            ketEl.addEventListener('input', validateKeterangan);
+
             function validateKeterangan() {
                 const val = jumlahEl.value.trim();
                 const num = Number(val);
 
+                // INVALID / KOSONG
                 if (val === '' || isNaN(num) || num < 0) {
                     ketEl.removeAttribute('readonly');
                     ketEl.classList.remove('is-invalid');
                     ketError.textContent = "";
+                    lastJumlah = num;
                     return true;
                 }
 
+                // JIKA 0
                 if (num === 0) {
                     ketEl.value = "Nihil";
                     ketEl.setAttribute("readonly", "readonly");
                     ketEl.classList.remove('is-invalid');
                     ketError.textContent = "";
+                    lastJumlah = 0;
                     return true;
                 }
 
-                ketEl.removeAttribute("readonly");
+                // ⬅️ INI KUNCI NYA
+                // DARI 0 → ANGKA LAIN
+                if (lastJumlah === 0 && num > 0) {
+                    ketEl.removeAttribute("readonly");
+                    ketEl.value = templateKeterangan;
+                }
+
+                lastJumlah = num;
 
                 const totalKet = sumFromKeterangan(ketEl.value);
+
                 if (totalKet !== num) {
                     ketError.textContent = `⚠️ Total rincian: ${totalKet}, seharusnya: ${num}`;
                     ketEl.classList.add('is-invalid');
@@ -1089,6 +1107,7 @@
 
             // lanjutkan loading & submit
         });
+
         // ELEMENT LIVE CHAT
         const liveChatContainer = document.createElement('div');
         liveChatContainer.style.marginTop = '20px';
