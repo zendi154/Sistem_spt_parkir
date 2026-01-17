@@ -4,21 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR & Barcode Scanner</title>
+    <title>Scanner QR & Barcode</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             margin: 0;
             font-family: system-ui, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #020617);
+            background: #020617;
             color: #fff;
-            min-height: 100vh;
+            overflow: hidden;
         }
 
         /* ===== NAVBAR ===== */
@@ -32,51 +33,38 @@
             backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
-            padding: 0 14px;
+            padding: 0 16px;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+            cursor: pointer;
         }
 
-        .back-btn {
-            text-decoration: none;
-            color: #00ffe0;
-            font-size: 18px;
-            margin-right: 12px;
+        .navbar i {
+            color: #00ff4c;
+            font-size: 20px;
+            margin-right: 8px;
+            text-shadow: 0 0 8px #00ff4c;
         }
 
-        .navbar h1 {
+        .navbar span {
             font-size: 15px;
-            margin: 0;
             font-weight: 600;
         }
 
-        /* ===== CONTENT ===== */
-        .container {
-            padding: 80px 16px 20px;
-            display: flex;
-            justify-content: center;
+        /* ===== SCANNER AREA ===== */
+        .scanner-wrapper {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
-        .scanner-box {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(255, 255, 255, .08);
-            backdrop-filter: blur(14px);
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: 0 0 40px rgba(0, 255, 255, .2);
-        }
-
-        /* ===== CAMERA ===== */
         #reader {
-            position: relative;
             width: 100%;
-            height: 260px;
-            border-radius: 14px;
-            overflow: hidden;
+            height: 100%;
+            position: relative;
         }
 
-        /* pastikan video kamera FULL & REAL */
         #reader video {
             width: 100%;
             height: 100%;
@@ -86,43 +74,121 @@
         /* FRAME */
         .scan-frame {
             position: absolute;
-            inset: 20px;
-            border: 2px solid rgba(0, 255, 224, .7);
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 255, 224, .5);
+            width: 70%;
+            height: 40%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(0, 255, 76, .9);
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(0, 255, 76, .7);
             pointer-events: none;
         }
 
-        /* GARIS SCAN FIX TENGAH */
+        /* GARIS HIJAU */
         .scan-line {
             position: absolute;
-            left: 20px;
-            right: 20px;
-            top: 50%;
+            left: 15%;
+            right: 15%;
             height: 3px;
-            transform: translateY(-50%);
-            background: linear-gradient(90deg, transparent, #00ffe0, transparent);
-            box-shadow: 0 0 14px #00ffe0;
-            pointer-events: none;
+            background: linear-gradient(90deg, transparent, #00ff4c, transparent);
+            box-shadow: 0 0 15px #00ff4c;
+            animation: scanMove 2s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% {
+                top: 45%;
+                opacity: 0
+            }
+
+            10% {
+                opacity: 1
+            }
+
+            50% {
+                top: 55%
+            }
+
+            90% {
+                opacity: 1
+            }
+
+            100% {
+                top: 45%;
+                opacity: 0
+            }
+        }
+
+        /* FOCUS DOT */
+        .focus-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00ff4c;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 16px #00ff4c;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1)
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.5)
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1)
+            }
         }
 
         /* RESULT */
-        .result-box {
-            margin-top: 14px;
+        .result {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
         }
 
-        .result-box label {
-            font-size: 12px;
-            opacity: .7;
-        }
-
-        .result-box input {
+        .result input {
             width: 100%;
-            margin-top: 6px;
             padding: 12px;
             border-radius: 12px;
             border: none;
             font-size: 14px;
+        }
+
+        /* LOADING */
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, .95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 64px;
+            height: 64px;
+            border: 6px solid rgba(255, 255, 255, .2);
+            border-top: 6px solid #00ff4c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
         }
     </style>
 </head>
@@ -130,24 +196,28 @@
 <body>
 
     <!-- NAVBAR -->
-    <div class="navbar">
-        <a href="datajukir.html" class="back-btn">←</a>
-        <h1>Laporan Bulanan Notaris & PPAT</h1>
+    <div class="navbar" onclick="goBack()">
+        <i class="bi bi-receipt"></i>
+        <span>Laporan Bulanan PPAT</span>
     </div>
 
-    <!-- CONTENT -->
-    <div class="container">
-        <div class="scanner-box">
-            <div id="reader">
-                <div class="scan-frame"></div>
-                <div class="scan-line"></div>
-            </div>
-
-            <div class="result-box">
-                <label>Hasil Scan</label>
-                <input type="text" id="result" placeholder="Menunggu scan..." readonly>
-            </div>
+    <!-- SCANNER -->
+    <div class="scanner-wrapper">
+        <div id="reader">
+            <div class="scan-frame"></div>
+            <div class="scan-line"></div>
+            <div class="focus-dot"></div>
         </div>
+
+        <div class="result">
+            <input id="result" placeholder="Menunggu scan..." readonly>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div style="margin-top:12px;font-size:14px">MOHON TUNGGU...</div>
     </div>
 
     <audio id="beep">
@@ -155,42 +225,56 @@
     </audio>
 
     <script>
-        let html5QrCode;
-        const resultInput = document.getElementById("result");
+        let scanner;
+        let aktif = true;
+
+        const result = document.getElementById("result");
         const beep = document.getElementById("beep");
 
-        window.addEventListener("load", async () => {
-            html5QrCode = new Html5Qrcode("reader");
+        window.onload = async () => {
+            scanner = new Html5Qrcode("reader");
 
-            try {
-                await html5QrCode.start(
-                    { facingMode: "environment" },
-                    {
-                        fps: 12,
-                        qrbox: { width: 220, height: 220 },
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.QR_CODE,
-                            Html5QrcodeSupportedFormats.CODE_128,
-                            Html5QrcodeSupportedFormats.CODE_39,
-                            Html5QrcodeSupportedFormats.EAN_13,
-                            Html5QrcodeSupportedFormats.EAN_8,
-                            Html5QrcodeSupportedFormats.UPC_A,
-                            Html5QrcodeSupportedFormats.ITF
-                        ]
-                    },
-                    (decodedText) => {
-                        resultInput.value = decodedText;
-                        beep.play();
-                        stopScan();
-                    }
-                );
-            } catch (err) {
-                alert("Kamera tidak dapat diakses");
+            await scanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 12,
+                    qrbox: { width: 260, height: 260 },
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.ITF
+                    ]
+                },
+                onScan
+            );
+        };
+
+        function onScan(text) {
+            if (!aktif) return;
+            aktif = false;
+
+            result.value = text;
+            beep.play();
+
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
             }
-        });
 
-        function stopScan() {
-            html5QrCode.stop().then(() => html5QrCode.clear());
+            setTimeout(() => {
+                result.value = "";
+                aktif = true;
+            }, 2500);
+        }
+
+        function goBack() {
+            document.getElementById("loading").style.display = "flex";
+            setTimeout(() => {
+                window.location.href = "datajukir.html";
+            }, 1500);
         }
     </script>
 
