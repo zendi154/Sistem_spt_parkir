@@ -550,12 +550,23 @@
 
     /* ===============================
    RESPONSIVE
-================================ */
-    @media (max-width: 576px) {
+    ================================ */
+
+    /* ===============================
+   LIVE CHAT RESPONSIVE CONTROL
+    ================================ */
+
+    /* HP & TABLET */
+    @media (max-width: 992px) {
         #liveChatFloating {
-            width: 90%;
-            right: 5%;
-            bottom: 10px;
+            display: none !important;
+        }
+    }
+
+    /* LAPTOP & PC */
+    @media (min-width: 993px) {
+        #liveChatFloating {
+            display: block;
         }
     }
 </style>
@@ -622,7 +633,7 @@
                                             <select class="form-select" id="admin penginput" name="admin penginput"
                                                 required>
                                                 <option selected disabled value>Nama Penginput Laporan</option>
-                                                <option value="BAPENDA-KOTA-BKL">BAPENDA
+                                                <option value="BAPENDA/KOTA">BAPENDA
                                                 </option>
                                             </select>
                                             <div class="col-12">
@@ -632,7 +643,7 @@
                                                         <option selected disabled value>Pilih Nama Di
                                                             Daftar Berikut Ini
                                                         </option>
-                                                        <option value="AZIZA ADLIEN NABILA, S.H., M.K.n"
+                                                        <option value="AZIZA ADLIEN NABILA, S.H., M.Kn"
                                                             data-id="ID01202615P348"
                                                             data-alamat="Jl. Veteran No. 30, Kel. Jitra Kec. Teluk Segara">
                                                             AZIZA ADLIEN N
@@ -949,250 +960,264 @@
                                                     Terimakasih!
                                                 </div>
                                             </div>
+                                        </div>
+                                        <!-- =========================
+                                                 JENIS TRANSAKSI
+                                            ========================= -->
+                                        <h5 class="fw-bold text-primary">JENIS TRANSAKSI :</h5>
 
-                                            <h5 class="fw-bold text-primary">PILIH JENIS TRANSAKSI :</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">
+                                                Apakah ada transaksi AJB ?
+                                            </label>
 
-                                            <div class="mb-3">
-                                                <label class="form-label fw-semibold">
-                                                    Apakah ada transaksi AJB / Hibah ?
-                                                </label>
+                                            <div class="d-flex gap-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="ada_transaksi"
+                                                        id="trx_ya">
+                                                    <label class="form-check-label" for="trx_ya">Ya</label>
+                                                </div>
 
-                                                <div class="d-flex gap-4">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            name="ada_transaksi" id="trx_ya">
-                                                        <label class="form-check-label" for="trx_ya">Ya</label>
-                                                    </div>
-
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            name="ada_transaksi" id="trx_tidak">
-                                                        <label class="form-check-label" for="trx_tidak">Tidak</label>
-                                                    </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="ada_transaksi"
+                                                        id="trx_tidak" checked>
+                                                    <label class="form-check-label" for="trx_tidak">Tidak</label>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <!-- =========================
+                                        <!-- =========================
                                                  BLOK TRANSAKSI
                                             ========================= -->
-                                            <div id="blokTransaksi" class="d-none">
+                                        <div id="blokTransaksi" class="d-none">
 
-                                                <hr class="my-4">
-                                                <h5 class="fw-bold text-primary mb-3">ISI DATA TRANSAKSI :</h5>
+                                            <hr class="my-4">
+                                            <h5 class="fw-bold text-primary mb-3">ISI DATA TRANSAKSI :</h5>
 
-                                                <div class="row g-3">
+                                            <div class="row g-3">
 
-                                                    <!-- TANGGAL -->
-                                                    <div class="col-md-6">
-                                                        <label class="form-label fw-semibold">Tanggal Transaksi</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="bi bi-calendar-event"></i></span>
-                                                            <input type="date" class="form-control"
-                                                                id="tanggal_transaksi">
-                                                        </div>
+                                                <!-- TANGGAL -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i class="bi bi-calendar-event"></i>
+                                                        <input type="date" class="form-control ps-5"
+                                                            id="tanggal_transaksi" placeholder="No. SPPD-BPHTB"
+                                                            inputmode="numeric">
+                                                        <label for="tanggal_transaksi">Tanggal Transaksi</label>
                                                     </div>
-
-                                                    <!-- NO SPPD -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-receipt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5" id="no_sppd"
-                                                                placeholder="No. SPPD-BPHTB" inputmode="numeric">
-                                                            <label for="no_sppd">No. SPPD-BPHTB</label>
-                                                        </div>
+                                                </div>
+                                                <!-- NO SPPD -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-receipt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="no_sppd"
+                                                            placeholder="No. SPPD-BPHTB" inputmode="numeric">
+                                                        <label for="no_sppd">Nomor SPPD/BPHTB</label>
                                                     </div>
+                                                </div>
 
-                                                    <!-- PENJUAL -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-person-badge position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5"
-                                                                id="nama_penjual" placeholder="Nama Penjual">
-                                                            <label for="nama_penjual">Nama Penjual</label>
-                                                        </div>
+                                                <!-- PENJUAL -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-person-badge position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="nama_penjual"
+                                                            placeholder="Nama Penjual">
+                                                        <label for="nama_penjual">Nama Penjual</label>
                                                     </div>
+                                                </div>
 
-                                                    <!-- PEMBELI -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-person-check position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5"
-                                                                id="nama_pembeli" placeholder="Nama Pembeli">
-                                                            <label for="nama_pembeli">Nama Pembeli</label>
-                                                        </div>
+                                                <!-- PEMBELI -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-person-check position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="nama_pembeli"
+                                                            placeholder="Nama Pembeli">
+                                                        <label for="nama_pembeli">Nama Pembeli</label>
                                                     </div>
+                                                </div>
 
-                                                    <!-- NOP -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-geo-alt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5" id="nop_view"
-                                                                placeholder="NOP (18 Digit)">
-                                                            <label for="nop_view">NOP (18 Digit)</label>
-                                                            <input type="hidden" id="nop">
-                                                        </div>
+                                                <!-- NOP -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-geo-alt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="nop_view"
+                                                            placeholder="NOP (18 Digit)">
+                                                        <label for="nop_view">NOP (18 Digit)</label>
+                                                        <input type="hidden" id="nop">
                                                     </div>
+                                                </div>
 
-                                                    <!-- NJOP -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-house-door position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5" id="njop_view"
-                                                                placeholder="NJOP (Rp)">
-                                                            <label for="njop_view">NJOP (Rp)</label>
-                                                            <input type="hidden" id="njop">
-                                                        </div>
+                                                <!-- NJOP -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-house-door position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="njop_view"
+                                                            placeholder="NJOP (Rp)">
+                                                        <label for="njop_view">NJOP (Rp)</label>
+                                                        <input type="hidden" id="njop">
                                                     </div>
+                                                </div>
 
-                                                    <!-- HARGA -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-currency-exchange position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5"
-                                                                id="harga_transaksi_view"
-                                                                placeholder="Harga Transaksi (Rp)">
-                                                            <label for="harga_transaksi_view">Harga Transaksi
-                                                                (Rp)</label>
-                                                            <input type="hidden" id="harga_transaksi">
-                                                        </div>
+                                                <!-- ✅ LUAS TANAH / BANGUNAN -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-arrows-angle-expand position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="luas_tb"
+                                                            placeholder="0000/0000" inputmode="numeric" maxlength="9"
+                                                            autocomplete="off">
+                                                        <label for="luas_tb">Luas Tanah/Bangunan (m²)</label>
                                                     </div>
+                                                </div>
 
-                                                    <!-- SSP -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-cash-coin position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5" id="ssp_view"
-                                                                placeholder="Nominal SSP (Rp)">
-                                                            <label for="ssp_view">Nominal SSP (Rp)</label>
-                                                            <input type="hidden" id="ssp">
-                                                        </div>
+                                                <!-- HARGA -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-currency-exchange position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5"
+                                                            id="harga_transaksi_view"
+                                                            placeholder="Harga Transaksi (Rp)">
+                                                        <label for="harga_transaksi_view">Harga Transaksi
+                                                            (Rp)</label>
+                                                        <input type="hidden" id="harga_transaksi">
                                                     </div>
+                                                </div>
 
-                                                    <!-- SSB -->
-                                                    <div class="col-md-6">
-                                                        <div class="form-floating position-relative">
-                                                            <i
-                                                                class="bi bi-wallet2 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                            <input type="text" class="form-control ps-5" id="ssb_view"
-                                                                placeholder="Nominal SSB (Rp)">
-                                                            <label for="ssb_view">Nominal SSB (Rp)</label>
-                                                            <input type="hidden" id="ssb">
-                                                        </div>
+                                                <!-- SSP -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-cash-coin position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="ssp_view"
+                                                            placeholder="Nominal SSP (Rp)">
+                                                        <label for="ssp_view">Nominal SSP (Rp)</label>
+                                                        <input type="hidden" id="ssp">
                                                     </div>
+                                                </div>
 
-                                                    <!-- ✅ CHECKBOX KONFIRMASI (SUDAH BENAR POSISI) -->
-                                                    <div class="col-12">
-                                                        <div
-                                                            class="form-check form-check-green d-flex align-items-center gap-2 mt-3">
-                                                            <input class="form-check-input mt-0" type="checkbox"
-                                                                id="cekTransaksi">
-                                                            <label class="form-check-label fw-semibold mb-0"
-                                                                for="cekTransaksi">
-                                                                <i class="bi bi-shield-check me-1"></i>
-                                                                Saya menyatakan data transaksi sudah benar
-                                                            </label>
-                                                        </div>
+                                                <!-- SSB -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-wallet2 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="ssb_view"
+                                                            placeholder="Nominal SSB (Rp)">
+                                                        <label for="ssb_view">Nominal SSB (Rp)</label>
+                                                        <input type="hidden" id="ssb">
                                                     </div>
+                                                </div>
 
+                                                <!-- CHECKBOX -->
+                                                <div class="col-12">
+                                                    <div
+                                                        class="form-check form-check-green d-flex align-items-center gap-2 mt-3">
+                                                        <input class="form-check-input mt-0" type="checkbox"
+                                                            id="cekTransaksi">
+                                                        <label class="form-check-label fw-semibold mb-0"
+                                                            for="cekTransaksi">
+                                                            <i class="bi bi-shield-check me-1"></i>
+                                                            Saya menyatakan data transaksi sudah benar
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="data_transaksi" id="data_transaksi">
+
+                                        <form id="form-laporan" class="row g-3" novalidate>
+
+                                            <!-- JUMLAH LAPORAN -->
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="jumlah_laporan" class="form-label"></label>
+                                                    <input type="number" class="form-control" id="jumlah_laporan"
+                                                        name="jumlah_laporan" placeholder="Jumlah Laporan" min="0"
+                                                        required>
                                                 </div>
                                             </div>
 
-                                            <input type="hidden" name="data_transaksi" id="data_transaksi">
+                                            <!-- SSPD / BPHTB -->
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="sspd_bphtb_view" class="form-label">
+                                                        Jumlah Nominal BPHTB :
+                                                    </label>
 
-                                            <form id="form-laporan" class="row g-3" novalidate>
+                                                    <input type="text" class="form-control" id="sspd_bphtb_view"
+                                                        placeholder="Rp. 0" autocomplete="off" required>
 
-                                                <!-- JUMLAH LAPORAN -->
-                                                <div class="col-12">
-                                                    <div class="mb-3">
-                                                        <label for="jumlah_laporan" class="form-label"></label>
-                                                        <input type="number" class="form-control" id="jumlah_laporan"
-                                                            name="jumlah_laporan" placeholder="Jumlah Laporan" min="0"
-                                                            required>
+                                                    <input type="hidden" id="sspd_bphtb" name="sspd_bphtb">
+
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- KETERANGAN -->
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="keterangan" class="form-label">
+                                                        Keterangan Data
+                                                    </label>
+
+                                                    <textarea class="form-control" id="keterangan" name="keterangan"
+                                                        rows="3" required></textarea>
+
+                                                    <small id="ketHint" class="form-text fw-semibold"></small>
+                                                    <div id="ketError" class="invalid-feedback"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- CHECKBOX PERSETUJUAN -->
+                                            <div class="col-12">
+                                                <div class="mb-3 form-check small-agree">
+                                                    <input class="form-check-input" type="checkbox" id="agreeCheck"
+                                                        required>
+
+                                                    <label class="form-check-label" for="agreeCheck">
+                                                        *Saya menyatakan data yang diinput adalah benar.
+                                                    </label>
+
+                                                    <div class="invalid-feedback">
+                                                        *Anda wajib menyetujui pernyataan ini sebelum mengirim
+                                                        laporan !
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                <!-- SSPD / BPHTB -->
-                                                <div class="col-12">
-                                                    <div class="mb-3">
-                                                        <label for="sspd_bphtb_view" class="form-label">
-                                                            Input Nominal BPHTB
-                                                        </label>
-
-                                                        <input type="text" class="form-control" id="sspd_bphtb_view"
-                                                            placeholder="Rp. 0" autocomplete="off" required>
-
-                                                        <input type="hidden" id="sspd_bphtb" name="sspd_bphtb">
-
-                                                        <div class="invalid-feedback"></div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- KETERANGAN -->
-                                                <div class="col-12">
-                                                    <div class="mb-3">
-                                                        <label for="keterangan" class="form-label">
-                                                            Keterangan
-                                                        </label>
-
-                                                        <textarea class="form-control" id="keterangan" name="keterangan"
-                                                            rows="3" required></textarea>
-
-                                                        <small id="ketHint" class="form-text fw-semibold"></small>
-                                                        <div id="ketError" class="invalid-feedback"></div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- CHECKBOX PERSETUJUAN -->
-                                                <div class="col-12">
-                                                    <div class="mb-3 form-check small-agree">
-                                                        <input class="form-check-input" type="checkbox" id="agreeCheck"
-                                                            required>
-
-                                                        <label class="form-check-label" for="agreeCheck">
-                                                            *Saya menyatakan data yang diinput adalah benar.
-                                                        </label>
-
-                                                        <div class="invalid-feedback">
-                                                            *Anda wajib menyetujui pernyataan ini sebelum mengirim
-                                                            laporan !
+                                            <center>
+                                                <div class="col-12" style="margin-top: 19px;">
+                                                    <button type="submit" class="btn btn-primary btn-kirim"><i
+                                                            class="bi bi-send-fill text-primary"></i>
+                                                        Kirim Laporan
+                                                    </button>
+                                                    <!-- Loading Overlay -->
+                                                    <div class="loading-wrapper d-none">
+                                                        <div class="loading-box text-center">
+                                                            <div class="spinner-custom"></div>
+                                                            <p class="mt-3">Mohon Tunggu...
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                <center>
-                                                    <div class="col-12" style="margin-top: 19px;">
-                                                        <button type="submit" class="btn btn-primary btn-kirim"><i
-                                                                class="bi bi-send-fill text-primary"></i>
-                                                            Kirim Laporan
-                                                        </button>
-                                                        <!-- Loading Overlay -->
-                                                        <div class="loading-wrapper d-none">
-                                                            <div class="loading-box text-center">
-                                                                <div class="spinner-custom"></div>
-                                                                <p class="mt-3">Mohon Tunggu...
-                                                                </p>
-                                                            </div>
+                                                    <!-- Success Overlay -->
+                                                    <div class="success-wrapper d-none">
+                                                        <div class="success-box text-center">
+                                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                                            <h2 class="mt-3">Terimakasih... <br>Laporan
+                                                                PPAT
+                                                                Berhasil Terkirim</h2>
+                                                            <p>Silakan Isi Formulir Kembali...</p>
                                                         </div>
-                                                        <!-- Success Overlay -->
-                                                        <div class="success-wrapper d-none">
-                                                            <div class="success-box text-center">
-                                                                <i class="bi bi-check-circle-fill text-success"></i>
-                                                                <h2 class="mt-3">Terimakasih... <br>Laporan
-                                                                    PPAT
-                                                                    Berhasil Terkirim</h2>
-                                                                <p>Silakan Isi Formulir Kembali...</p>
-                                                            </div>
-                                                        </div>
-                                                </center>
-                                            </form>
+                                                    </div>
+                                            </center>
+                                        </form>
         </section><br><br>
 
         <!-- Footer Sticky -->
@@ -1211,33 +1236,19 @@
                     <i class="bi bi-journal-text me-2"></i>
                     Laporan Bulanan Notaris & PPAT
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav ms-auto">
-                        <a class="nav-link active" aria-current="page" href="fomulir.html">
-                            <i class="bi bi-car-front-fill me-1"></i> Buat Laporan Parkir
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-        <!--Akhir Navbar-->
+                <!--Akhir Navbar-->
 
-        <script>
-            const hamburger = document.querySelector('.navbar-toggler');
-            const stikyTop = document.querySelector('.sticky-top');
+                <script>
+                    const hamburger = document.querySelector('.navbar-toggler');
+                    const stikyTop = document.querySelector('.sticky-top');
 
-            offcanvas.addEventListener('show.bs.offcanvas', function () {
-                stikyTop.style.overflow = 'visible';
-            });
-            offcanvas.addEventListener('hidden.bs.offcanvas', function () {
-                stikyTop.style.overflow = 'hidden';
-            });
-        </script>
+                    offcanvas.addEventListener('show.bs.offcanvas', function () {
+                        stikyTop.style.overflow = 'visible';
+                    });
+                    offcanvas.addEventListener('hidden.bs.offcanvas', function () {
+                        stikyTop.style.overflow = 'hidden';
+                    });
+                </script>
 
     </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -1296,6 +1307,23 @@
         }
 
         /* =========================
+           FORMAT LUAS TANAH / BANGUNAN 4/4
+        ========================= */
+        function formatLuasTB(id) {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            input.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '').slice(0, 8);
+                if (angka.length > 4) {
+                    this.value = angka.slice(0, 4) + '/' + angka.slice(4);
+                } else {
+                    this.value = angka;
+                }
+            });
+        }
+
+        /* =========================
            AKTIFKAN FORMAT
         ========================= */
         formatRupiahInput('harga_transaksi_view', 'harga_transaksi');
@@ -1303,68 +1331,97 @@
         formatRupiahInput('ssb_view', 'ssb');
         formatRupiahInput('njop_view', 'njop');
         formatNOPInput('nop_view', 'nop');
+        formatLuasTB('luas_tb');
 
         /* =========================
            TOGGLE BLOK TRANSAKSI
         ========================= */
         document.addEventListener('DOMContentLoaded', function () {
-
             const ya = document.getElementById('trx_ya');
             const tidak = document.getElementById('trx_tidak');
             const blok = document.getElementById('blokTransaksi');
-            const cek = document.getElementById('cekTransaksi');
-            const dataHidden = document.getElementById('data_transaksi');
 
             function toggleTransaksi() {
                 if (ya.checked) {
                     blok.classList.remove('d-none');
                 } else {
                     blok.classList.add('d-none');
-
-                    // reset transaksi
-                    cek.checked = false;
-                    dataHidden.value = '';
+                    document.getElementById('cekTransaksi').checked = false;
                 }
             }
+
+            // default TIDAK
+            tidak.checked = true;
+            toggleTransaksi();
 
             ya.addEventListener('change', toggleTransaksi);
             tidak.addEventListener('change', toggleTransaksi);
         });
 
         /* =========================
-           SUBMIT
+        SUBMIT FORM (FINAL)
         ========================= */
         form.addEventListener('submit', function (e) {
 
-            if (!document.getElementById('trx_ya')?.checked) return;
+            const trxYa = document.getElementById('trx_ya');
+            const trxTidak = document.getElementById('trx_tidak');
 
+            /* =========================
+               JIKA TRANSAKSI = TIDAK / NIHIL
+            ========================= */
+            if (trxTidak && trxTidak.checked) {
+                // boleh submit tanpa validasi transaksi
+                return;
+            }
+
+            /* =========================
+               JIKA TRANSAKSI = YA
+            ========================= */
+
+            // validasi checkbox konfirmasi
             if (!document.getElementById('cekTransaksi').checked) {
                 alert('⚠️ Centang konfirmasi data transaksi');
                 e.preventDefault();
                 return;
             }
 
+            const luasInput = document.getElementById('luas_tb').value.trim();
+
+            if (!luasInput) {
+                alert('⚠️ Luas tanah/bangunan harus diisi');
+                e.preventDefault();
+                return;
+            }
+
+            // split & validasi 1–4 digit / 1–4 digit
+            const parts = luasInput.split('/');
+            if (
+                parts.length !== 2 ||
+                !/^\d{1,4}$/.test(parts[0]) ||
+                !/^\d{1,4}$/.test(parts[1])
+            ) {
+                alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi!');
+                e.preventDefault();
+                return;
+            }
+
+            // tambah leading zero
+            const luasTBFormatted =
+                parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
+
+            // push data transaksi
             const data = {
                 tanggal: tanggal_transaksi.value,
-                no_sppd: no_sppd.value.trim(), // MURNI
+                no_sppd: no_sppd.value.trim(),
                 penjual: nama_penjual.value.trim(),
                 pembeli: nama_pembeli.value.trim(),
-
                 nop: nop_view.value,
                 njop: njop_view.value,
-
+                luas_tb: luasTBFormatted,
                 harga: harga_transaksi_view.value,
                 ssp: ssp_view.value,
                 ssb: ssb_view.value
             };
-
-            for (let key in data) {
-                if (!data[key]) {
-                    alert('⚠️ Data transaksi belum lengkap');
-                    e.preventDefault();
-                    return;
-                }
-            }
 
             transaksiList.push(data);
             document.getElementById('data_transaksi').value =
@@ -1372,36 +1429,14 @@
         });
 
         /* =========================
-           RESET
+           RESET FORM
         ========================= */
         function resetFormTransaksi() {
-
-            // reset radio
-            document.getElementById('trx_ya').checked = false;
-            document.getElementById('trx_tidak').checked = false;
-
-            // sembunyikan blok transaksi
-            document.getElementById('blokTransaksi').classList.add('d-none');
-
-            // reset checklist
-            document.getElementById('cekTransaksi').checked = false;
-
-            // reset semua input transaksi
             const ids = [
-                'tanggal_transaksi',
-                'no_sppd',
-                'nama_penjual',
-                'nama_pembeli',
-                'nop_view',
-                'nop',
-                'njop_view',
-                'njop',
-                'ssp_view',
-                'ssp',
-                'ssb_view',
-                'ssb',
-                'harga_transaksi_view',
-                'harga_transaksi'
+                'tanggal_transaksi', 'no_sppd', 'nama_penjual', 'nama_pembeli',
+                'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
+                'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
+                'luas_tb'
             ];
 
             ids.forEach(id => {
@@ -1409,13 +1444,17 @@
                 if (el) el.value = '';
             });
 
+            // reset radio & blok transaksi
+            document.getElementById('trx_ya').checked = false;
+            document.getElementById('trx_tidak').checked = true;
+            document.getElementById('blokTransaksi').classList.add('d-none');
+
+            // reset checkbox
+            document.getElementById('cekTransaksi').checked = false;
+
             // reset data
             transaksiList = [];
             document.getElementById('data_transaksi').value = '';
-
-            document.getElementById('trx_tidak').checked = true;
-            toggleTransaksi();
-
         }
 
         // Ambil input nomor surat
@@ -1445,22 +1484,15 @@
                 .then(response => {
                     loading.classList.add('d-none');
 
-                    // tampilkan sukses di tengah layar
+                    // tampilkan sukses
                     success.classList.remove('d-none');
 
-                    // reset form
-                    form.reset();
-                    if (window.resetKeterangan) resetKeterangan();
-
-                    // scroll ke atas untuk mengisi formulir berikutnya
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                    // tutup sukses & kembalikan tombol kirim
+                    // TUNGGU SEBENTAR → LALU RELOAD HALAMAN
                     setTimeout(() => {
-                        success.classList.add('d-none');
-                        btnKirim.classList.remove('d-none');
-                    }, 8000);
+                        location.reload(); // 🔄 RESET TOTAL HALAMAN
+                    }, 5000); // 5 detik
                 })
+
                 .catch(error => {
                     loading.classList.add('d-none');
                     btnKirim.classList.remove('d-none');
@@ -1777,13 +1809,33 @@
         });
 
         /* ===============================
-     LIVE CHAT FLOATING (FIX)
-  ================================ */
+     LIVE CHAT RESPONSIVE GUARD
+    ================================ */
+        function isDesktop() {
+            return window.innerWidth >= 993;
+        }
 
-        // CONTAINER
-        const liveChatContainer = document.createElement('div');
-        liveChatContainer.id = 'liveChatFloating';
-        document.body.appendChild(liveChatContainer);
+        let liveChatContainer = null;
+
+        if (isDesktop()) {
+            liveChatContainer = document.createElement('div');
+            liveChatContainer.id = 'liveChatFloating';
+            document.body.appendChild(liveChatContainer);
+        }
+
+        /* Jika layar di-resize */
+        window.addEventListener('resize', function () {
+            if (isDesktop() && !liveChatContainer) {
+                liveChatContainer = document.createElement('div');
+                liveChatContainer.id = 'liveChatFloating';
+                document.body.appendChild(liveChatContainer);
+            }
+
+            if (!isDesktop() && liveChatContainer) {
+                liveChatContainer.remove();
+                liveChatContainer = null;
+            }
+        });
 
         // AMBIL ELEMENT FORM (AMAN)
         const adminInput = document.querySelector('[name="admin penginput"]');
@@ -1805,6 +1857,8 @@
 
         // UPDATE / BUAT BARIS LIVE CHAT
         function setLiveMessage(key, title, value) {
+            if (!liveChatContainer) return; // ⛔ STOP di HP & Tablet
+
             let row = document.getElementById(`live-${key}`);
 
             if (!row) {
