@@ -1229,26 +1229,36 @@
         </footer>
 
 
-        <!--Navbar-->
+        <!-- Navbar -->
         <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
-            <div class="container">
+            <div class="container d-flex justify-content-between align-items-center">
+
+                <!-- Kiri: Judul -->
                 <a class="navbar-brand d-flex align-items-center" href="#">
                     <i class="bi bi-journal-text me-2"></i>
-                    Laporan Bulanan Notaris & PPAT
+                    <span class="fw-semibold">Laporan Bulanan PPAT</span>
                 </a>
-                <!--Akhir Navbar-->
 
-                <script>
-                    const hamburger = document.querySelector('.navbar-toggler');
-                    const stikyTop = document.querySelector('.sticky-top');
+                <!-- Kanan: Icon Scan -->
+                <a href="fomulir.html" class="text-white fs-4 text-decoration-none">
+                    <i class="bi bi-qr-code-scan"></i>
+                </a>
 
-                    offcanvas.addEventListener('show.bs.offcanvas', function () {
-                        stikyTop.style.overflow = 'visible';
-                    });
-                    offcanvas.addEventListener('hidden.bs.offcanvas', function () {
-                        stikyTop.style.overflow = 'hidden';
-                    });
-                </script>
+            </div>
+        </nav>
+        <!-- Akhir Navbar -->
+
+        <script>
+            const hamburger = document.querySelector('.navbar-toggler');
+            const stikyTop = document.querySelector('.sticky-top');
+
+            offcanvas.addEventListener('show.bs.offcanvas', function () {
+                stikyTop.style.overflow = 'visible';
+            });
+            offcanvas.addEventListener('hidden.bs.offcanvas', function () {
+                stikyTop.style.overflow = 'hidden';
+            });
+        </script>
 
     </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
