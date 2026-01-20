@@ -549,6 +549,145 @@
     }
 
     /* ===============================
+   PROMO RADIO TRANSAKSI
+================================ */
+    .trx-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 18px;
+        border-radius: 14px;
+        border: 2px solid #e5e7eb;
+        cursor: pointer;
+        transition: all .25s ease;
+        background: #fff;
+        height: 100%;
+    }
+
+    .trx-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+    }
+
+    /* ikon */
+    .trx-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+    }
+
+    /* YA */
+    .trx-yes .trx-icon {
+        background: #e6fffa;
+        color: #198754;
+    }
+
+    /* TIDAK */
+    .trx-no .trx-icon {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    /* ACTIVE STATE */
+    #trx_ya:checked+.trx-yes {
+        border-color: #198754;
+        background: linear-gradient(135deg, #ecfdf5, #ffffff);
+    }
+
+    #trx_tidak:checked+.trx-no {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #eff6ff, #ffffff);
+    }
+
+    /* ===============================
+   ANIMASI JUDUL & PERTANYAAN
+================================ */
+
+    /* Judul */
+    .animate-title {
+        animation: slideFadeDown .8s ease-out both;
+    }
+
+    /* Pertanyaan */
+    .animate-question {
+        display: inline-block;
+        animation: slideFadeUp .9s ease-out both;
+        animation-delay: .2s;
+    }
+
+    .text-ajb {
+        color: #0d6efd;
+        /* biru modern */
+    }
+
+    /* Keyframes */
+    @keyframes slideFadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .text-ajb {
+        color: #0d6efd;
+        /* biru modern */
+    }
+
+    /* ===============================
+    pulse lembut (opsional)
+    ================================ */
+    .animate-question:hover {
+        animation: pulseSoft 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseSoft {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.03);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 576px) {
+        .trx-card {
+            padding: 14px;
+        }
+
+        .trx-icon {
+            width: 42px;
+            height: 42px;
+        }
+    }
+
+    /* ===============================
    RESPONSIVE
     ================================ */
 
@@ -632,8 +771,8 @@
                                             <label for="validationCustom02" class="form-label"></label>
                                             <select class="form-select" id="admin penginput" name="admin penginput"
                                                 required>
-                                                <option selected disabled value>Nama Penginput Laporan</option>
-                                                <option value="BAPENDA/KOTA">BAPENDA
+                                                <option selected disabled value>Nama Bidang</option>
+                                                <option value="BAPENDA/B3">P3
                                                 </option>
                                             </select>
                                             <div class="col-12">
@@ -961,30 +1100,49 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <!-- =========================
-                                                 JENIS TRANSAKSI
+                                             JENIS TRANSAKSI
                                             ========================= -->
-                                        <h5 class="fw-bold text-primary">JENIS TRANSAKSI :</h5>
+                                        <h5 class="fw-bold text-primary mb-3 animate-title"></h5>
 
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                Apakah ada transaksi AJB ?
-                                            </label>
+                                        <label class="form-label fw-semibold mb-2 animate-question text-ajb">
+                                            *Apakah ada transaksi, silahkan pilih YA / Tidak dibawah ini ;
+                                        </label>
 
-                                            <div class="d-flex gap-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="ada_transaksi"
-                                                        id="trx_ya">
-                                                    <label class="form-check-label" for="trx_ya">Ya</label>
-                                                </div>
+                                        <div class="row g-3" id="jenisTransaksi">
 
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="ada_transaksi"
-                                                        id="trx_tidak" checked>
-                                                    <label class="form-check-label" for="trx_tidak">Tidak</label>
-                                                </div>
+                                            <!-- YA -->
+                                            <div class="col-12 col-md-6">
+                                                <input type="radio" name="ada_transaksi" id="trx_ya" class="d-none">
+                                                <label for="trx_ya" class="trx-card trx-yes">
+                                                    <div class="trx-icon">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold">ADA TRANSAKSI</h6>
+                                                        <small>AJB / Hibah / Tukar Menukar </small>
+                                                    </div>
+                                                </label>
                                             </div>
+
+                                            <!-- TIDAK -->
+                                            <div class="col-12 col-md-6">
+                                                <input type="radio" name="ada_transaksi" id="trx_tidak" class="d-none"
+                                                    checked>
+                                                <label for="trx_tidak" class="trx-card trx-no">
+                                                    <div class="trx-icon">
+                                                        <i class="bi bi-slash-circle"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold">TIDAK ADA</h6>
+                                                        <small>Laporan Nihil / 0</small>
+                                                    </div>
+                                                </label>
+                                            </div>
+
                                         </div>
+
 
                                         <!-- =========================
                                                  BLOK TRANSAKSI
