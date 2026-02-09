@@ -623,6 +623,38 @@
         /* biru modern */
     }
 
+    .auto-sync-card {
+        background: linear-gradient(135deg, #0d6efd22, #19875422);
+        border: 1px solid rgba(255, 255, 255, .15);
+        border-radius: 14px;
+        padding: 14px 16px;
+        backdrop-filter: blur(6px);
+        transition: all .3s ease;
+    }
+
+    .auto-sync-card.off {
+        background: linear-gradient(135deg, #6c757d22, #21252922);
+    }
+
+    .auto-sync-card i {
+        transition: transform .3s ease, color .3s ease;
+    }
+
+    .auto-sync-card.on i {
+        transform: rotate(0deg);
+    }
+
+    .auto-sync-card.off i {
+        transform: rotate(45deg);
+        color: #adb5bd !important;
+    }
+
+    .form-switch .form-check-input {
+        width: 2.8em;
+        height: 1.4em;
+        cursor: pointer;
+    }
+
     /* Keyframes */
     @keyframes slideFadeDown {
         from {
@@ -710,7 +742,7 @@
     }
 </style>
 
-<body>
+<body oncontextmenu="return false" onselectstart="return false">
     <section>
         <section id="from" class="from">
             <div class="container">
@@ -747,7 +779,8 @@
                                                         dan (2)" •
                                                         <b>Dasar Hukum Lainnya :</b> • Undang‑Undang Nomor 5
                                                         Tahun 1960 tentang Peraturan Dasar Pokok‑Pokok Agraria. •
-                                                        <b>Undang‑Undang Nomor 4 Tahun 1996</b> tentang Hak Tanggungan
+                                                        <b>Undang‑Undang Nomor 4 Tahun 1996</b> tentang Hak
+                                                        Tanggungan
                                                         atas Tanah Beserta Benda‑Benda yang Berkaitan dengan
                                                         Tanah •
                                                         <b>Peraturan Presiden Nomor 20 Tahun 2015</b> tentang Badan
@@ -1299,7 +1332,7 @@
                                                         <label class="form-check-label fw-semibold mb-0"
                                                             for="cekTransaksi">
                                                             <i class="bi bi-shield-check me-1"></i>
-                                                            Saya menyatakan data transaksi sudah benar
+                                                            Klik saya untuk melanjutkan
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1318,6 +1351,25 @@
                                                     <input type="number" class="form-control" id="jumlah_laporan"
                                                         name="jumlah_laporan" placeholder="Jumlah Laporan" min="0"
                                                         required>
+                                                </div>
+                                            </div>
+
+                                            <div class="auto-sync-card mb-3">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <i id="syncIcon" class="bi bi-link-45deg fs-5 text-success"></i>
+                                                        <div>
+                                                            <div class="fw-semibold">Sinkron Nominal Transaksi</div>
+                                                            <small id="syncStatus" class="text-success">
+                                                                Mengikuti Nominal Data Transaksi SSB
+                                                            </small>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-check form-switch m-0">
+                                                        <input class="form-check-input" type="checkbox" id="autoBPHTB"
+                                                            checked>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -1411,7 +1463,7 @@
             <div class="container d-flex justify-content-between align-items-center">
 
                 <!-- Kiri: Judul -->
-                <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <a class="navbar-brand d-flex align-items-center" href="#">
                     <i class="bi bi-journal-text me-2"></i>
                     <span class="fw-semibold">Laporan Bulanan PPAT</span>
                 </a>
@@ -2185,6 +2237,127 @@
         if (!validateAgree()) {
             scrollToAgree();
         }
+
+        /* =====================
+             PENGHUBUNG DATA
+          ===================== */
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const ssbView = document.getElementById('ssb_view');
+            const ssbReal = document.getElementById('ssb');
+
+            const bphtbView = document.getElementById('sspd_bphtb_view');
+            const bphtbReal = document.getElementById('sspd_bphtb');
+
+            const toggle = document.getElementById('autoBPHTB');
+
+            if (!ssbView || !bphtbView || !toggle) return;
+
+            function formatRupiah(angka) {
+                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+            }
+
+            function syncBPHTB() {
+                if (!toggle.checked) return;
+
+                let angka = ssbReal.value || ssbView.value.replace(/\D/g, '');
+                bphtbReal.value = angka;
+                bphtbView.value = angka ? formatRupiah(angka) : '';
+            }
+
+            /* =============================
+               SAAT SSB DIKETIK → BPHTB IKUT
+            ============================== */
+            ssbView.addEventListener('input', syncBPHTB);
+
+            /* =============================
+               TOGGLE ON / OFF
+            ============================== */
+            toggle.addEventListener('change', function () {
+
+                if (this.checked) {
+                    // ON → kunci & sinkron
+                    bphtbView.readOnly = true;
+                    bphtbView.classList.add('bg-light');
+                    syncBPHTB();
+                } else {
+                    // OFF → bebas edit manual
+                    bphtbView.readOnly = false;
+                    bphtbView.classList.remove('bg-light');
+                    bphtbView.value = '';
+                    bphtbReal.value = '';
+                }
+            });
+
+            // default ON
+            bphtbView.readOnly = true;
+            bphtbView.classList.add('bg-light');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const toggle = document.getElementById('autoBPHTB');
+            const card = document.querySelector('.auto-sync-card');
+            const icon = document.getElementById('syncIcon');
+            const status = document.getElementById('syncStatus');
+
+            function updateUI() {
+                if (toggle.checked) {
+                    card.classList.remove('off');
+                    card.classList.add('on');
+
+                    icon.className = 'bi bi-link-45deg fs-5 text-success';
+                    status.textContent = '*Mengikuti Nominal Data Transaksi SSB';
+                    status.className = 'text-success';
+                } else {
+                    card.classList.remove('on');
+                    card.classList.add('off');
+
+                    icon.className = 'bi bi-unlink fs-5 text-secondary';
+                    status.textContent = '*Input manual Nilai BPHTB';
+                    status.className = 'text-secondary';
+                }
+            }
+
+            toggle.addEventListener('change', updateUI);
+            updateUI(); // init
+        });
+
+        /* Disable klik kanan */
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        /* Blok shortcut Inspect */
+        document.addEventListener('keydown', function (e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        setInterval(function () {
+            const threshold = 160;
+            if (
+                window.outerWidth - window.innerWidth > threshold ||
+                window.outerHeight - window.innerHeight > threshold
+            ) {
+                document.body.style.filter = 'blur(10px)';
+                document.body.style.pointerEvents = 'none';
+            }
+        }, 500);
+
+        console.log = function () { };
+        console.warn = function () { };
+        console.error = function () { };
+        console.clear();
+
+        setInterval(() => {
+            debugger;
+        }, 1000);
     </script>
 
 </body>
