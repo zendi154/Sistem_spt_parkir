@@ -400,7 +400,12 @@
             <div class="input-group">
                 <i class="fa-solid fa-calendar-days" id="iconTanggal"></i>
                 <input type="date" id="tanggal_surat" required>
-                <label></label>
+                <label>TTanggal Surat</label>
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-calendar-days" id="iconTanggal"></i>
+                <input type="date" id="tanggal_diterima" required>
+                <label>Tanggal Diterima</label>
             </div>
 
             <div class="input-group">
@@ -479,6 +484,7 @@
                         <th>No</th>
                         <th>Nama Notaris / PPAT</th>
                         <th>Tanggal Surat</th>
+                        <th>Tanggal Diterima</th>
                         <th>Judul Surat</th>
                         <th>Jam Diterima</th>
                         <th>Dari Bidang</th>
@@ -515,6 +521,9 @@
         const filterTanggal = document.getElementById("filterTanggal");
 
         const tanggalInput = document.getElementById("tanggal_surat");
+        const iconTanggal = document.getElementById("iconTanggal");
+        
+        const tanggalInput = document.getElementById("tanggal_diterima"");
         const iconTanggal = document.getElementById("iconTanggal");
 
         /* ================== DATA DEFAULT NOTARIS ================== */
@@ -636,6 +645,7 @@
                 const payload = {
                     nama: nama_notaris.value,
                     tanggal: tanggal_surat.value,
+                    tanggal: tanggal_diterima.value,
                     judul: judul_surat.value,
                     jam: new Date().toLocaleTimeString("id-ID"),
                     dari_bidang: dari_bidang.value,
@@ -685,6 +695,7 @@
         <tr>
             <td>${i + 1}</td>
             <td>${d.nama}</td>
+            <td>${d.tanggal}</td>
             <td>${d.tanggal}</td>
             <td>${d.judul}</td>
             <td>${d.jam}</td>
