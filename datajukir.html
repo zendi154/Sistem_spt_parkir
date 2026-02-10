@@ -686,6 +686,106 @@
     }
 
     /* ===============================
+     KECAMATAN & KELURAHAN STYLE
+    ================================ */
+
+    /* wrapper */
+    .form-floating select.form-select {
+        background: linear-gradient(145deg, #da2ee6, #4c81fc);
+        color: #e5e7eb;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 14px;
+        padding-left: 3rem !important;
+        padding-right: 2.5rem;
+        transition: all 0.35s ease;
+    }
+
+    /* option */
+    .form-floating select.form-select option {
+        background: #ffffff;
+        color: #313132;
+    }
+
+    /* icon kiri */
+    .form-floating i {
+        font-size: 1.25rem;
+        color: #38bdf8;
+        pointer-events: none;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* label */
+    .form-floating label {
+        color: #94a3b8;
+        padding-left: 2.8rem;
+        transition: all 0.25s ease;
+    }
+
+    /* focus */
+    .form-floating select:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    }
+
+    /* focus icon */
+    .form-floating select:focus+label,
+    .form-floating select:focus~i {
+        color: #38bdf8;
+    }
+
+    .form-floating select:focus~i {
+        transform: scale(1.1);
+    }
+
+    /* selected */
+    .form-floating select:not([value=""]) {
+        font-weight: 600;
+    }
+
+    /* disabled */
+    .form-floating select:disabled {
+        background: linear-gradient(145deg, #edeef1, #dcdde2);
+        color: #64748b;
+        cursor: not-allowed;
+        border-style: dashed;
+    }
+
+    .form-floating select:disabled~i {
+        color: #475569;
+    }
+
+    /* floating label when selected */
+    .form-floating select:not(:placeholder-shown)~label,
+    .form-floating select:focus~label {
+        transform: scale(0.85) translateY(-1.6rem) translateX(0.2rem);
+        color: #38bdf8;
+    }
+
+    /* hover */
+    .form-floating select:hover:not(:disabled) {
+        border-color: #60a5fa;
+    }
+
+    /* subtle glow */
+    .form-floating select:focus {
+        animation: glowPulse 1.5s infinite alternate;
+    }
+
+    .form-floating select:not(:disabled)~i {
+        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
+    }
+
+    @keyframes glowPulse {
+        from {
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+        }
+
+        to {
+            box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.25);
+        }
+    }
+
+    /* ===============================
     pulse lembut (opsional)
     ================================ */
     .animate-question:hover {
@@ -1202,7 +1302,7 @@
                                         <div id="blokTransaksi" class="d-none">
 
                                             <hr class="my-4">
-                                            <h5 class="fw-bold text-primary mb-3">ISI DATA TRANSAKSI :</h5>
+                                            <h5 class="fw-bold text-primary mb-3">DATA TRANSAKSI :</h5>
 
                                             <div class="row g-3">
 
@@ -1246,6 +1346,30 @@
                                                         <input type="text" class="form-control ps-5" id="nama_pembeli"
                                                             placeholder="Nama Pembeli">
                                                         <label for="nama_pembeli">Nama Pembeli</label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- KECAMATAN -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-diagram-3 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <select class="form-select ps-5" id="kecamatan">
+                                                            <option value="" selected disabled>Pilih Kecamatan</option>
+                                                        </select>
+                                                        <label for="kecamatan">Kecamatan</label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- KELURAHAN -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-geo position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <select class="form-select ps-5" id="kelurahan" disabled>
+                                                            <option value="" selected disabled>Pilih Kelurahan</option>
+                                                        </select>
+                                                        <label for="kelurahan">Kelurahan</label>
                                                     </div>
                                                 </div>
 
@@ -1597,6 +1721,132 @@
             tidak.addEventListener('change', toggleTransaksi);
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const dataWilayah = {
+                "Gading Cempaka": [
+                    "Cempaka Permai",
+                    "Jalan Gedang",
+                    "Lingkar Barat",
+                    "Padang Harapan",
+                    "Sido Mulyo"
+                ],
+                "Kampung Melayu": [
+                    "Kandang",
+                    "Kandang Mas",
+                    "Muara Dua",
+                    "Padang Serai",
+                    "Sumber Jaya",
+                    "Teluk Sepang"
+                ],
+                "Muara Bangkahulu": [
+                    "Bentiring",
+                    "Bentiring Permai",
+                    "Beringin Raya",
+                    "Kandang Limun",
+                    "Pematang Gubernur",
+                    "Rawa Makmur",
+                    "Rawa Makmur Permai"
+                ],
+                "Ratu Agung": [
+                    "Kebun Beler",
+                    "Kebun Kenanga",
+                    "Kebun Tebeng",
+                    "Lempuing",
+                    "Nusa Indah",
+                    "Sawah Lebar",
+                    "Sawah Lebar Baru",
+                    "Tanah Patah"
+                ],
+                "Ratu Samban": [
+                    "Anggut Atas",
+                    "Anggut Bawah",
+                    "Anggut Dalam",
+                    "Belakang Pondok",
+                    "Kebun Dahri",
+                    "Kebun Grean",
+                    "Padang Jati",
+                    "Penggantungan",
+                    "Penurunan"
+                ],
+                "Selebar": [
+                    "Betungan",
+                    "Bumi Ayu",
+                    "Pagar Dewa",
+                    "Pekan Sabtu",
+                    "Sukarami",
+                    "Sumur Dewa"
+                ],
+                "Singaran Pati": [
+                    "Dusun Besar",
+                    "Jembatan Kecil",
+                    "Lingkar Timur",
+                    "Padang Nangka",
+                    "Panorama",
+                    "Timur Indah"
+                ],
+                "Sungai Serut": [
+                    "Kampung Kelawi",
+                    "Pasar Bengkulu",
+                    "Semarang",
+                    "Surabaya",
+                    "Suka Merindu",
+                    "Tanjung Agung",
+                    "Tanjung Jaya"
+                ],
+                "Teluk Segara": [
+                    "Bajak",
+                    "Berkas",
+                    "Jitra",
+                    "Kampung Bali",
+                    "Kebun Keling",
+                    "Kebun Ros",
+                    "Malabero",
+                    "Pasar Baru",
+                    "Pasar Melintang",
+                    "Pintu Batu",
+                    "Pondok Besi",
+                    "Sumur Melele",
+                    "Tengah Padang"
+                ]
+                // Data Kecamatan Dan Kelurahan Kota Bengkulu
+            };
+
+            const kecamatanSelect = document.getElementById('kecamatan');
+            const kelurahanSelect = document.getElementById('kelurahan');
+
+            // isi kecamatan
+            Object.keys(dataWilayah).forEach(kec => {
+                const opt = document.createElement('option');
+                opt.value = kec;
+                opt.textContent = kec;
+                kecamatanSelect.appendChild(opt);
+            });
+
+            // saat kecamatan dipilih
+            kecamatanSelect.addEventListener('change', function () {
+                const kelList = dataWilayah[this.value];
+
+                kelurahanSelect.innerHTML =
+                    '<option value="" disabled selected>Pilih Kelurahan</option>';
+
+                if (!kelList) {
+                    kelurahanSelect.disabled = true;
+                    return;
+                }
+
+                kelList.forEach(kel => {
+                    const opt = document.createElement('option');
+                    opt.value = kel;
+                    opt.textContent = kel;
+                    kelurahanSelect.appendChild(opt);
+                });
+
+                kelurahanSelect.disabled = false;
+            });
+
+        });
+
         /* =========================
         SUBMIT FORM (FINAL)
         ========================= */
@@ -1654,6 +1904,10 @@
                 no_sppd: no_sppd.value.trim(),
                 penjual: nama_penjual.value.trim(),
                 pembeli: nama_pembeli.value.trim(),
+
+                kecamatan: document.getElementById('kecamatan').value,
+                kelurahan: document.getElementById('kelurahan').value,
+
                 nop: nop_view.value,
                 njop: njop_view.value,
                 luas_tb: luasTBFormatted,
@@ -1661,6 +1915,11 @@
                 ssp: ssp_view.value,
                 ssb: ssb_view.value
             };
+
+            if (!data.kecamatan || !data.kelurahan) {
+                alert('❌ Kecamatan dan Kelurahan wajib dipilih');
+                return;
+            }
 
             transaksiList.push(data);
             document.getElementById('data_transaksi').value =
@@ -1677,6 +1936,14 @@
                 'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
                 'luas_tb'
             ];
+
+            ['kecamatan', 'kelurahan'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                    if (id === 'kelurahan') el.disabled = true;
+                }
+            });
 
             ids.forEach(id => {
                 const el = document.getElementById(id);
