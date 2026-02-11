@@ -337,6 +337,41 @@
         margin-left: 10px;
     }
 
+    /* ===============================
+   TARIF SSP – MINI & CLEAN
+================================ */
+
+    .tarif-ssp small {
+        font-size: 0.75rem;
+        /* teks "Tarif SSP" lebih kecil */
+        letter-spacing: 0.3px;
+    }
+
+    .tarif-ssp .btn-group {
+        gap: 4px;
+        /* jarak antar tombol */
+    }
+
+    .tarif-ssp .btn {
+        padding: 2px 8px;
+        /* tombol lebih ramping */
+        font-size: 0.75rem;
+        /* teks tombol lebih kecil */
+        line-height: 1.2;
+        border-radius: 8px;
+    }
+
+    .tarif-ssp .btn-outline-primary,
+    .tarif-ssp .btn-outline-danger {
+        --bs-btn-hover-color: #fff;
+    }
+
+    /* aktif (checked) lebih tegas tapi tetap kecil */
+    .tarif-ssp .btn-check:checked+.btn {
+        font-weight: 600;
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+    }
+
     /* ANIMASI KANAN ➜ KIRI */
     @keyframes promoMove {
         0% {
@@ -1323,7 +1358,7 @@
                                                             class="bi bi-receipt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
                                                         <input type="text" class="form-control ps-5" id="no_sppd"
                                                             placeholder="No. SPPD-BPHTB" inputmode="numeric">
-                                                        <label for="no_sppd">Nomor SPPD/BPHTB</label>
+                                                        <label for="no_sppd">No. Sppd</label>
                                                     </div>
                                                 </div>
 
@@ -1354,112 +1389,151 @@
                                                     <div class="form-floating position-relative">
                                                         <i
                                                             class="bi bi-diagram-3 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <select class="form-select ps-5" id="kecamatan">
-                                                            <option value="" selected disabled>Pilih Kecamatan</option>
+
+                                                        <select class="form-select ps-5" id="kecamatan" disabled>
+                                                            <option value="">Fitur (Auto)</option>
                                                         </select>
+
                                                         <label for="kecamatan">Kecamatan</label>
                                                     </div>
                                                 </div>
+
+                                                <input type="hidden" id="kecamatan_value">
 
                                                 <!-- KELURAHAN -->
                                                 <div class="col-md-6">
                                                     <div class="form-floating position-relative">
                                                         <i
                                                             class="bi bi-geo position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <select class="form-select ps-5" id="kelurahan" disabled>
-                                                            <option value="" selected disabled>Pilih Kelurahan</option>
-                                                        </select>
-                                                        <label for="kelurahan">Kelurahan</label>
+
+                                                        <input type="text" class="form-control ps-5" id="kelurahanInput"
+                                                            placeholder="Ketik Kelurahan">
+
+                                                        <ul class="list-group position-absolute w-100 mt-1 d-none"
+                                                            id="kelurahanList"
+                                                            style="z-index:1000;max-height:200px;overflow-y:auto"></ul>
+
+                                                        <label for="kelurahanInput">Ketik Kelurahan</label>
                                                     </div>
                                                 </div>
 
-                                                <!-- NOP -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-geo-alt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="nop_view"
-                                                            placeholder="NOP (18 Digit)">
-                                                        <label for="nop_view">NOP (18 Digit)</label>
-                                                        <input type="hidden" id="nop">
-                                                    </div>
-                                                </div>
+                                                <input type="hidden" id="kelurahan_value">
 
-                                                <!-- NJOP -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-house-door position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="njop_view"
-                                                            placeholder="NJOP (Rp)">
-                                                        <label for="njop_view">NJOP (Rp)</label>
-                                                        <input type="hidden" id="njop">
-                                                    </div>
-                                                </div>
+                                                <form onsubmit="return validasiWilayah()">
 
-                                                <!-- ✅ LUAS TANAH / BANGUNAN -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-arrows-angle-expand position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="luas_tb"
-                                                            placeholder="0000/0000" inputmode="numeric" maxlength="9"
-                                                            autocomplete="off">
-                                                        <label for="luas_tb">Luas Tanah/Bangunan (m²)</label>
+                                                    <!-- NOP -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-geo-alt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                            <input type="text" class="form-control ps-5" id="nop_view"
+                                                                placeholder="NOP (18 Digit)">
+                                                            <label for="nop_view">NOP (18 Digit)</label>
+                                                            <input type="hidden" id="nop">
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <!-- HARGA -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-currency-exchange position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5"
-                                                            id="harga_transaksi_view"
-                                                            placeholder="Harga Transaksi (Rp)">
-                                                        <label for="harga_transaksi_view">Harga Transaksi
-                                                            (Rp)</label>
-                                                        <input type="hidden" id="harga_transaksi">
+                                                    <!-- NJOP -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-house-door position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                            <input type="text" class="form-control ps-5" id="njop_view"
+                                                                placeholder="NJOP (Rp)">
+                                                            <label for="njop_view">NJOP (Rp)</label>
+                                                            <input type="hidden" id="njop">
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <!-- SSP -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-cash-coin position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="ssp_view"
-                                                            placeholder="Nominal SSP (Rp)">
-                                                        <label for="ssp_view">Nominal SSP (Rp)</label>
-                                                        <input type="hidden" id="ssp">
+                                                    <!-- ✅ LUAS TANAH / BANGUNAN -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-arrows-angle-expand position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                            <input type="text" class="form-control ps-5" id="luas_tb"
+                                                                placeholder="0000/0000" inputmode="numeric"
+                                                                maxlength="9" autocomplete="off">
+                                                            <label for="luas_tb">Luas Tanah/Bangunan (m²)</label>
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <!-- SSB -->
-                                                <div class="col-md-6">
-                                                    <div class="form-floating position-relative">
-                                                        <i
-                                                            class="bi bi-wallet2 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="ssb_view"
-                                                            placeholder="Nominal SSB (Rp)">
-                                                        <label for="ssb_view">Nominal SSB (Rp)</label>
-                                                        <input type="hidden" id="ssb">
+                                                    <!-- HARGA -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-currency-exchange position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                            <input type="text" class="form-control ps-5"
+                                                                id="harga_transaksi_view"
+                                                                placeholder="Harga Transaksi (Rp)">
+                                                            <label for="harga_transaksi_view">Harga Transaksi
+                                                                (Rp)</label>
+                                                            <input type="hidden" id="harga_transaksi">
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <!-- CHECKBOX -->
-                                                <div class="col-12">
-                                                    <div
-                                                        class="form-check form-check-green d-flex align-items-center gap-2 mt-3">
-                                                        <input class="form-check-input mt-0" type="checkbox"
-                                                            id="cekTransaksi">
-                                                        <label class="form-check-label fw-semibold mb-0"
-                                                            for="cekTransaksi">
-                                                            <i class="bi bi-shield-check me-1"></i>
-                                                            Klik saya untuk melanjutkan
-                                                        </label>
+                                                    <!-- TARIF SSP -->
+                                                    <div class="col-md-12 mb-2 tarif-ssp">
+                                                        <small class="text-muted fw-semibold">Tarif SSP :</small>
+                                                        <div class="btn-group btn-group-sm ms-2" role="group">
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t25" value="2.5" checked>
+                                                            <label class="btn btn-outline-primary"
+                                                                for="t25">2.5%</label>
+
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t15" value="1.5">
+                                                            <label class="btn btn-outline-primary"
+                                                                for="t15">1.5%</label>
+
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t10" value="1">
+                                                            <label class="btn btn-outline-primary" for="t10">1%</label>
+
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t0" value="0">
+                                                            <label class="btn btn-outline-danger" for="t0">0%</label>
+                                                        </div>
                                                     </div>
-                                                </div>
+
+                                                    <!-- SSP -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-cash-coin position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+
+                                                            <input type="text" class="form-control ps-5 bg-light"
+                                                                id="ssp_view" placeholder="Nominal SSP (Rp)" readonly>
+
+                                                            <label for="ssp_view">Nominal SSP (Rp)</label>
+                                                            <input type="hidden" id="ssp">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- SSB -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating position-relative">
+                                                            <i
+                                                                class="bi bi-wallet2 position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                            <input type="text" class="form-control ps-5" id="ssb_view"
+                                                                placeholder="Nominal SSB (Rp)">
+                                                            <label for="ssb_view">Nominal SSB (Rp)</label>
+                                                            <input type="hidden" id="ssb">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- CHECKBOX -->
+                                                    <div class="col-12">
+                                                        <div
+                                                            class="form-check form-check-green d-flex align-items-center gap-2 mt-3">
+                                                            <input class="form-check-input mt-0" type="checkbox"
+                                                                id="cekTransaksi">
+                                                            <label class="form-check-label fw-semibold mb-0"
+                                                                for="cekTransaksi">
+                                                                <i class="bi bi-shield-check me-1"></i>
+                                                                Klik saya untuk melanjutkan
+                                                            </label>
+                                                        </div>
+                                                    </div>
 
                                             </div>
                                         </div>
@@ -1587,9 +1661,9 @@
             <div class="container d-flex justify-content-between align-items-center">
 
                 <!-- Kiri: Judul -->
-                <a class="navbar-brand d-flex align-items-center" href="#">
+                <a class="navbar-brand d-flex align-items-center" href="dashbord.html">
                     <i class="bi bi-journal-text me-2"></i>
-                    <span class="fw-semibold">Laporan Bulanan PPAT</span>
+                    <span class="fw-semibold"> Laporan Bulanan </span>
                 </a>
 
                 <!-- Kanan: Icon Scan -->
@@ -1724,126 +1798,85 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             const dataWilayah = {
-                "Gading Cempaka": [
-                    "Cempaka Permai",
-                    "Jalan Gedang",
-                    "Lingkar Barat",
-                    "Padang Harapan",
-                    "Sido Mulyo"
-                ],
-                "Kampung Melayu": [
-                    "Kandang",
-                    "Kandang Mas",
-                    "Muara Dua",
-                    "Padang Serai",
-                    "Sumber Jaya",
-                    "Teluk Sepang"
-                ],
-                "Muara Bangkahulu": [
-                    "Bentiring",
-                    "Bentiring Permai",
-                    "Beringin Raya",
-                    "Kandang Limun",
-                    "Pematang Gubernur",
-                    "Rawa Makmur",
-                    "Rawa Makmur Permai"
-                ],
-                "Ratu Agung": [
-                    "Kebun Beler",
-                    "Kebun Kenanga",
-                    "Kebun Tebeng",
-                    "Lempuing",
-                    "Nusa Indah",
-                    "Sawah Lebar",
-                    "Sawah Lebar Baru",
-                    "Tanah Patah"
-                ],
-                "Ratu Samban": [
-                    "Anggut Atas",
-                    "Anggut Bawah",
-                    "Anggut Dalam",
-                    "Belakang Pondok",
-                    "Kebun Dahri",
-                    "Kebun Grean",
-                    "Padang Jati",
-                    "Penggantungan",
-                    "Penurunan"
-                ],
-                "Selebar": [
-                    "Betungan",
-                    "Bumi Ayu",
-                    "Pagar Dewa",
-                    "Pekan Sabtu",
-                    "Sukarami",
-                    "Sumur Dewa"
-                ],
-                "Singaran Pati": [
-                    "Dusun Besar",
-                    "Jembatan Kecil",
-                    "Lingkar Timur",
-                    "Padang Nangka",
-                    "Panorama",
-                    "Timur Indah"
-                ],
-                "Sungai Serut": [
-                    "Kampung Kelawi",
-                    "Pasar Bengkulu",
-                    "Semarang",
-                    "Surabaya",
-                    "Suka Merindu",
-                    "Tanjung Agung",
-                    "Tanjung Jaya"
-                ],
-                "Teluk Segara": [
-                    "Bajak",
-                    "Berkas",
-                    "Jitra",
-                    "Kampung Bali",
-                    "Kebun Keling",
-                    "Kebun Ros",
-                    "Malabero",
-                    "Pasar Baru",
-                    "Pasar Melintang",
-                    "Pintu Batu",
-                    "Pondok Besi",
-                    "Sumur Melele",
-                    "Tengah Padang"
-                ]
-                // Data Kecamatan Dan Kelurahan Kota Bengkulu
+                "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
+                "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
+                "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
+                "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
+                "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
+                "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
+                "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
+                "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
+                "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
             };
 
             const kecamatanSelect = document.getElementById('kecamatan');
-            const kelurahanSelect = document.getElementById('kelurahan');
+            const kelInput = document.getElementById('kelurahanInput');
+            const kelList = document.getElementById('kelurahanList');
+            const kecHidden = document.getElementById('kecamatan_value');
+            const kelHidden = document.getElementById('kelurahan_value');
 
-            // isi kecamatan
-            Object.keys(dataWilayah).forEach(kec => {
-                const opt = document.createElement('option');
-                opt.value = kec;
-                opt.textContent = kec;
-                kecamatanSelect.appendChild(opt);
+            // map kelurahan → kecamatan
+            const kelurahanMap = {};
+            Object.entries(dataWilayah).forEach(([kec, list]) => {
+                list.forEach(kel => kelurahanMap[kel] = kec);
             });
 
-            // saat kecamatan dipilih
-            kecamatanSelect.addEventListener('change', function () {
-                const kelList = dataWilayah[this.value];
+            kelInput.addEventListener('input', function () {
+                const keyword = this.value.trim().toLowerCase();
+                kelList.innerHTML = '';
 
-                kelurahanSelect.innerHTML =
-                    '<option value="" disabled selected>Pilih Kelurahan</option>';
+                // reset saat diketik ulang
+                kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                kecamatanSelect.disabled = true;
+                kecHidden.value = '';
+                kelHidden.value = '';
 
-                if (!kelList) {
-                    kelurahanSelect.disabled = true;
+                if (!keyword) {
+                    kelList.classList.add('d-none');
                     return;
                 }
 
-                kelList.forEach(kel => {
-                    const opt = document.createElement('option');
-                    opt.value = kel;
-                    opt.textContent = kel;
-                    kelurahanSelect.appendChild(opt);
-                });
+                Object.keys(kelurahanMap)
+                    .filter(kel => kel.toLowerCase().includes(keyword))
+                    .slice(0, 10)
+                    .forEach(kel => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item list-group-item-action';
+                        li.textContent = kel;
 
-                kelurahanSelect.disabled = false;
+                        li.onclick = () => {
+                            kelInput.value = kel;
+                            kelList.classList.add('d-none');
+
+                            kecamatanSelect.innerHTML =
+                                `<option selected>${kelurahanMap[kel]}</option>`;
+                            kecamatanSelect.disabled = true;
+
+                            kecHidden.value = kelurahanMap[kel];
+                            kelHidden.value = kel;
+                        };
+
+                        kelList.appendChild(li);
+                    });
+
+                kelList.classList.remove('d-none');
             });
+
+            document.addEventListener('click', e => {
+                if (!kelInput.contains(e.target)) {
+                    kelList.classList.add('d-none');
+                }
+            });
+
+            // expose validasi ke global
+            window.validasiWilayah = function () {
+                if (!kelHidden.value || !kecHidden.value) {
+                    alert('❌ Kelurahan harus dipilih dari daftar');
+                    kelInput.focus();
+                    return false;
+                }
+                return true;
+            };
 
         });
 
@@ -1905,8 +1938,8 @@
                 penjual: nama_penjual.value.trim(),
                 pembeli: nama_pembeli.value.trim(),
 
-                kecamatan: document.getElementById('kecamatan').value,
-                kelurahan: document.getElementById('kelurahan').value,
+                kecamatan: document.getElementById('kecamatan_value').value,
+                kelurahan: document.getElementById('kelurahan_value').value,
 
                 nop: nop_view.value,
                 njop: njop_view.value,
@@ -1917,7 +1950,7 @@
             };
 
             if (!data.kecamatan || !data.kelurahan) {
-                alert('❌ Kecamatan dan Kelurahan wajib dipilih');
+                alert('❌ Kecamatan & Kelurahan wajib dipilih');
                 return;
             }
 
@@ -2589,6 +2622,73 @@
 
             toggle.addEventListener('change', updateUI);
             updateUI(); // init
+        });
+
+        // FORMAT TRANSAKSI AUTO Dan MANUAL
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const hargaView = document.getElementById('harga_transaksi_view');
+            const hargaReal = document.getElementById('harga_transaksi');
+
+            const sspView = document.getElementById('ssp_view');
+            const sspReal = document.getElementById('ssp');
+
+            const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
+
+            function formatRupiah(angka) {
+                if (!angka || angka === '0') return '';
+                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            function hitungSSP() {
+                const harga = parseInt(hargaReal.value || 0);
+                const tarif = document.querySelector('input[name="tarif_ssp"]:checked').value;
+
+                // MODE MANUAL
+                if (tarif === '0') {
+                    sspView.readOnly = false;
+                    sspView.classList.remove('bg-light');
+                    return;
+                }
+
+                // MODE AUTO
+                const nilai = Math.round(harga * (tarif / 100));
+
+                sspReal.value = nilai;
+                sspView.value = formatRupiah(String(nilai));
+                sspView.readOnly = true;
+                sspView.classList.add('bg-light');
+            }
+
+            // Harga diketik → SSP update
+            hargaView.addEventListener('input', hitungSSP);
+
+            // Tarif diubah → SSP update
+            tarifRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+
+                    if (this.value === '0') {
+                        // manual
+                        sspView.value = '';
+                        sspReal.value = '';
+                        sspView.readOnly = false;
+                        sspView.classList.remove('bg-light');
+                        sspView.focus();
+                    } else {
+                        hitungSSP();
+                    }
+                });
+            });
+
+            // FORMAT SSP MANUAL JIKA 0%
+            sspView.addEventListener('input', function () {
+                if (document.querySelector('input[name="tarif_ssp"]:checked').value !== '0') return;
+
+                let angka = this.value.replace(/\D/g, '');
+                sspReal.value = angka;
+                this.value = formatRupiah(angka);
+            });
+
         });
 
         /* Disable klik kanan */
