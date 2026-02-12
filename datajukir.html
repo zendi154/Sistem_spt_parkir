@@ -18,9 +18,39 @@
 </head>
 
 <style>
+    /* ===============================
+   BACKGROUND HALAMAN – GRADIENT ANIMASI
+================================ */
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(120deg,
+                #0d6efd,
+                #20c997,
+                #f81bcf,
+                #0dcaf0);
+        background-size: 300% 300%;
+        animation: gradientMove 15s ease infinite;
+    }
+
+    /* Animasi transisi warna */
+    @keyframes gradientMove {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
     /* FORM UTAMA */
     form[name="LAPORAN NOTARIS 2025"] {
-        background: #fbfbff;
+        background: #efeff2a3;
         padding: 30px;
         border-radius: 20px;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
@@ -821,6 +851,38 @@
     }
 
     /* ===============================
+   STYLE KHUSUS INPUT READONLY
+================================= */
+    input[readonly],
+    textarea[readonly] {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        color: #38bdf8;
+        /* biru terang */
+        border: 1px solid #334155;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: not-allowed;
+        transition: all 0.3s ease;
+    }
+
+    /* Fokus tetap tidak berubah */
+    input[readonly]:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Status Menyampaikan */
+    .status-menyampaikan {
+        color: #22c55e !important;
+    }
+
+    /* Status Terlambat */
+    .status-terlambat {
+        color: #ef4444 !important;
+    }
+
+
+    /* ===============================
     pulse lembut (opsional)
     ================================ */
     .animate-question:hover {
@@ -935,14 +997,9 @@
                                                 </div>
                                             </div>
                                             </h3>
-                                            <h2 class="glow-title">FORMULIR LAPORAN PPAT</h2>
-                                            <label for="validationCustom02" class="form-label"></label>
-                                            <select class="form-select" id="admin penginput" name="admin penginput"
-                                                required>
-                                                <option selected disabled value>Nama Bidang</option>
-                                                <option value="BAPENDA/B3">P3
-                                                </option>
-                                            </select>
+                                            <div class="sticky-header">
+                                                <h2 class="glow-title mb-0">FORMULIR LAPORAN PPAT</h2>
+                                            </div>
                                             <div class="col-12">
                                                 <div class="mb-8">
                                                     <label class="form-label"></label>
@@ -1268,10 +1325,18 @@
                                                             Tanggal Surat Masuk
                                                         </label>
                                                         <input type="date" class="form-control" pelceholder="dd-mm-yyyy"
-                                                            id="tanggal_disposisi" name="tanggal_disposisi"
-                                                            value="input" min="2023-01-01" max="2030-12-31">
+                                                            id="tanggal_diterima" name="tanggal_diterima" value="input"
+                                                            min="2023-01-01" max="2030-12-31">
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <!-- STATUS SURAT (AUTO) -->
+                                                <div class="col-12 mt-2">
+                                                    <label class="form-label fw-semibold">
+                                                        Status Surat
+                                                    </label>
+                                                    <input type="text" class="form-control bg-light" id="status_surat"
+                                                        name="status_surat" readonly>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="mb-8">
@@ -1295,7 +1360,7 @@
                                         <h5 class="fw-bold text-primary mb-3 animate-title"></h5>
 
                                         <label class="form-label fw-semibold mb-2 animate-question text-ajb">
-                                            Data Transaksi, Pilih Ada / Tidak dibawah ini! ;
+                                            Apakah ada transaksi?
                                         </label>
 
                                         <div class="row g-3" id="jenisTransaksi">
@@ -1309,7 +1374,7 @@
                                                     </div>
                                                     <div>
                                                         <h6 class="mb-1 fw-bold">ADA TRANSAKSI</h6>
-                                                        <small>AJB/Hibah/Tukar-Menukar </small>
+                                                        <small>AJB/Hibah/APHB </small>
                                                     </div>
                                                 </label>
                                             </div>
@@ -1356,11 +1421,33 @@
                                                     <div class="form-floating position-relative">
                                                         <i
                                                             class="bi bi-receipt position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                                                        <input type="text" class="form-control ps-5" id="no_sppd"
+                                                        <input type="number" class="form-control ps-5" id="no_sppd"
                                                             placeholder="No. SPPD-BPHTB" inputmode="numeric">
                                                         <label for="no_sppd">No. Sppd</label>
                                                     </div>
                                                 </div>
+                                                <!-- NOMOR AKTA -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-hash position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="nomor_akta"
+                                                            name="nomor_akta" placeholder="Contoh: 002/2024">
+                                                        <label for="nomor_akta">Nomor Akta</label>
+                                                    </div>
+                                                </div>
+                                                <!-- Nomor Hak -->
+                                                <div class="col-md-6">
+                                                    <div class="form-floating position-relative">
+                                                        <i
+                                                            class="bi bi-file-earmark-text position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                                                        <input type="text" class="form-control ps-5" id="nomor_hak"
+                                                            name="nomor_hak" placeholder="Nomor Hak">
+                                                        <label for="nomor_hak">Nomor Hak/Sartifikat</label>
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" name="data_transaksi" id="data_transaksi">
 
                                                 <!-- PENJUAL -->
                                                 <div class="col-md-6">
@@ -1453,7 +1540,7 @@
                                                             <input type="text" class="form-control ps-5" id="luas_tb"
                                                                 placeholder="0000/0000" inputmode="numeric"
                                                                 maxlength="9" autocomplete="off">
-                                                            <label for="luas_tb">Luas Tanah/Bangunan (m²)</label>
+                                                            <label for="luas_tb">Tanah/Bangunan (m²)</label>
                                                         </div>
                                                     </div>
 
@@ -1476,9 +1563,14 @@
                                                         <small class="text-muted fw-semibold">Tarif SSP :</small>
                                                         <div class="btn-group btn-group-sm ms-2" role="group">
                                                             <input type="radio" class="btn-check" name="tarif_ssp"
-                                                                id="t25" value="2.5" checked>
+                                                                id="t25" value="2.5">
                                                             <label class="btn btn-outline-primary"
                                                                 for="t25">2.5%</label>
+
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t20" value="2.0">
+                                                            <label class="btn btn-outline-primary"
+                                                                for="t20">2.0%</label>
 
                                                             <input type="radio" class="btn-check" name="tarif_ssp"
                                                                 id="t15" value="1.5">
@@ -1486,12 +1578,19 @@
                                                                 for="t15">1.5%</label>
 
                                                             <input type="radio" class="btn-check" name="tarif_ssp"
-                                                                id="t10" value="1">
-                                                            <label class="btn btn-outline-primary" for="t10">1%</label>
+                                                                id="t10" value="1.0">
+                                                            <label class="btn btn-outline-primary"
+                                                                for="t10">1.0%</label>
 
                                                             <input type="radio" class="btn-check" name="tarif_ssp"
-                                                                id="t0" value="0">
+                                                                id="t05" value="0.5">
+                                                            <label class="btn btn-outline-primary"
+                                                                for="t05">0.5%</label>
+
+                                                            <input type="radio" class="btn-check" name="tarif_ssp"
+                                                                id="t0" value="0" checked>
                                                             <label class="btn btn-outline-danger" for="t0">0%</label>
+
                                                         </div>
                                                     </div>
 
@@ -1935,6 +2034,8 @@
             const data = {
                 tanggal: tanggal_transaksi.value,
                 no_sppd: no_sppd.value.trim(),
+                nomor_akta: document.getElementById('nomor_akta').value.trim(),
+                nomor_hak: document.getElementById('nomor_hak').value.trim(),
                 penjual: nama_penjual.value.trim(),
                 pembeli: nama_pembeli.value.trim(),
 
@@ -1959,12 +2060,17 @@
                 JSON.stringify(transaksiList);
         });
 
+        const nomorHakInput = document.getElementById('nomor_hak');
+        if (nomorHakInput) {
+            nomorHakInput.value = nomorHakInput.value.toUpperCase();
+        }
+
         /* =========================
            RESET FORM
         ========================= */
         function resetFormTransaksi() {
             const ids = [
-                'tanggal_transaksi', 'no_sppd', 'nama_penjual', 'nama_pembeli',
+                'tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak', 'nama_penjual', 'nama_pembeli',
                 'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
                 'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
                 'luas_tb'
@@ -1995,6 +2101,33 @@
             transaksiList = [];
             document.getElementById('data_transaksi').value = '';
         }
+
+        const nomorHak = document.getElementById("nomor_hak");
+
+        nomorHak.addEventListener("input", function () {
+
+            let value = this.value.toUpperCase();
+
+            // Hapus spasi berlebih
+            value = value.replace(/\s+/g, " ").trim();
+
+            // Jika format SHM 1234 → ubah jadi SHM No. 1234
+            if (/^SHM\s?\d+$/i.test(value)) {
+                value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
+            }
+
+            // Jika format HGB 1234 → ubah jadi HGB/1234
+            if (/^HGB\s?\d+$/i.test(value)) {
+                value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
+            }
+
+            // Jika format angka saja 123/2024 tetap
+            if (/^\d+\/\d{4}$/.test(value)) {
+                value = value;
+            }
+
+            this.value = value;
+        });
 
         // Ambil input nomor surat
         const nomorSurat = document.getElementById('nomor_surat');
@@ -2164,7 +2297,7 @@
             const rupiahView = document.getElementById('sspd_bphtb_view');
             const rupiahReal = document.getElementById('sspd_bphtb');
 
-            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0";
+            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
 
             /* =====================
                FORMAT RUPIAH
@@ -2319,22 +2452,6 @@
 
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const input = document.getElementById('nomor_agenda');
-
-            // blok input non-angka SEBELUM masuk
-            input.addEventListener('beforeinput', function (e) {
-                if (e.data && /\D/.test(e.data)) {
-                    e.preventDefault();
-                }
-            });
-
-            // jaga-jaga jika paste / autofill
-            input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
-        });
-
         const alertPerhatian = document.getElementById('alertPerhatian');
 
         form.addEventListener('submit', e => {
@@ -2393,6 +2510,28 @@
             const [y, m, d] = val.split('-');
             return `${d}/${m}/${y}`;
         }
+
+        // FUNGSI NOMOR AKTA
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const nomorAkta = document.getElementById('nomor_akta');
+
+            nomorAkta.addEventListener('input', function () {
+
+                let raw = this.value.replace(/\D/g, '');
+
+                // max 8 digit (4 nomor + 4 tahun)
+                raw = raw.slice(0, 8);
+
+                if (raw.length <= 4) {
+                    this.value = raw;
+                } else {
+                    const nomor = raw.slice(0, raw.length - 4);
+                    const tahun = raw.slice(-4);
+                    this.value = `${nomor}/${tahun}`;
+                }
+            });
+        });
 
         // UPDATE / BUAT BARIS LIVE CHAT
         function setLiveMessage(key, title, value) {
@@ -2527,6 +2666,19 @@
                     form.reset();
                     resetKeterangan();
                 }, 200);
+            }
+        });
+
+        form.addEventListener('submit', function (e) {
+            const nomorAktaVal = document.getElementById('nomor_akta').value.trim();
+
+            if (nomorAktaVal !== '') {
+                const polaAkta = /^\d{2,4}\/\d{4}$/;
+                if (!polaAkta.test(nomorAktaVal)) {
+                    alert('⚠️ Nomor Akta harus format 00/2024, 000/2024, atau 0000/2024');
+                    e.preventDefault();
+                    return;
+                }
             }
         });
 
@@ -2689,6 +2841,38 @@
                 this.value = formatRupiah(angka);
             });
 
+        });
+
+        // Status Surat
+        document.addEventListener('DOMContentLoaded', function () {
+            const tanggalInput = document.getElementById('tanggal_diterima');
+            const statusInput = document.getElementById('status_surat');
+
+            if (!tanggalInput || !statusInput) return;
+
+            function updateStatusSurat() {
+                if (!tanggalInput.value) {
+                    statusInput.value = '';
+                    return;
+                }
+
+                const tanggal = new Date(tanggalInput.value);
+                const hari = tanggal.getDate(); // 1–31
+
+                if (hari <= 10) {
+                    statusInput.value = 'Tepat Waktu';
+                    statusInput.classList.remove('status-terlambat');
+                    statusInput.classList.add('status-menyampaikan');
+                } else {
+                    statusInput.value = 'Menyampaikan/Terlambat';
+                    statusInput.classList.remove('status-menyampaikan');
+                    statusInput.classList.add('status-terlambat');
+                }
+
+            }
+
+            tanggalInput.addEventListener('change', updateStatusSurat);
+            tanggalInput.addEventListener('input', updateStatusSurat);
         });
 
         /* Disable klik kanan */
