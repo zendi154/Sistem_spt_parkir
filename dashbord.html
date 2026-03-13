@@ -275,7 +275,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <button class="btn btn-success w-100">
+                        <button class="btn btn-success w-100" onclick="exportExcel()">
                             <i class="bi bi-file-earmark-excel"></i> Export Excel
                         </button>
                     </div>
@@ -306,30 +306,13 @@
 
                         <tbody id="dataNotaris">
 
-                            <tr>
-                                <td>ID01202615P31</td>
-                                <td>AMELIA MERDEKA SARI, S.H., M.Kn</td>
-                                <td>Jl. Dempo 1, Kel. Sawah Lebar, Kota Bengkulu</td>
-                                <td>256/PPAT/2025</td>
-                                <td>01-03-2026</td>
-                                <td>03-03-2026</td>
-                                <td class="status-tepat">Tepat Waktu</td>
-                                <td>Februari 2026</td>
-                                <td>-</td>
-                                <td>0</td>
-                                <td>-</td>
-                                <td>Nihil</td>
-                            </tr>
-
-                        </tbody>
-
                     </table>
 
                     <div class="row mt-3 p-3 bg-light rounded shadow-sm">
 
                         <div class="col-md-6">
                             <h6 class="fw-bold text-primary">
-                                📊 Jumlah Laporan :
+                                📊 Jumlah Laporan Diterima :
                                 <span id="totalLaporan">0</span>
                             </h6>
                         </div>
@@ -439,11 +422,54 @@
 
                     tbody.innerHTML = ""
 
-                    data.reverse().forEach(row => {
+                    data
+                        .sort((a, b) => {
 
-                        let tr = document.createElement("tr")
+                            /* =============================
+                               URUTKAN TANGGAL DITERIMA
+                            ============================== */
 
-                        tr.innerHTML = `
+                            let tglA = new Date(a["tanggal_diterima"] || "")
+                            let tglB = new Date(b["tanggal_diterima"] || "")
+
+                            function formatTanggal(tgl) {
+
+                                if (!tgl) return ""
+
+                                let date = new Date(tgl)
+
+                                let hari = String(date.getDate()).padStart(2, "0")
+                                let bulan = String(date.getMonth() + 1).padStart(2, "0")
+                                let tahun = date.getFullYear()
+
+                                return hari + "/" + bulan + "/" + tahun
+                            }
+
+                            /* =============================
+                               URUTKAN TANGGAL TERBARU
+                            ============================== */
+
+                            if (tglA.getTime() !== tglB.getTime()) {
+                                return tglB - tglA
+                            }
+
+                            /* =============================
+                               JIKA TANGGAL SAMA
+                               URUTKAN NAMA NOTARIS
+                            ============================== */
+
+                            let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase()
+                            let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase()
+
+                            return namaA.localeCompare(namaB)
+
+                        })
+
+                        .forEach(row => {
+
+                            let tr = document.createElement("tr")
+
+                            tr.innerHTML = `
                     <td>${row["id"] || ""}</td>
                         <td>${row["nama_notaris_&_ppat"] || ""}</td>
                             <td>${row["alamat"] || ""}</td>
@@ -458,9 +484,9 @@
         <td>${row["keterangan"] || ""}</td>
     `
 
-                        tbody.appendChild(tr)
+                            tbody.appendChild(tr)
 
-                    })
+                        })
 
                     hitungTotal()
 
@@ -1658,37 +1684,90 @@
 
         function exportExcel() {
 
-            let table = document.getElementById("tableLaporan");
-            let wb = XLSX.utils.book_new();
+            const table = document.getElementById("tableLaporan")
 
-            let data = [];
+            if (!table) {
+                alert("Tabel tidak ditemukan")
+                return
+            }
 
-            let rows = table.querySelectorAll("tbody tr");
+            let data = []
+
+            let rows = table.querySelectorAll("tbody tr")
+
+            /* ================= AMBIL PERIODE BULAN ================= */
+
+            let bulanSet = new Set()
 
             rows.forEach(row => {
-                if (row.style.display !== "none") {
-                    let rowData = [];
-                    row.querySelectorAll("td").forEach(td => {
-                        rowData.push(td.innerText);
-                    });
-                    data.push(rowData);
+
+                if (row.style.display === "none") return
+
+                let bulan = row.cells[7].innerText.trim()
+
+                if (bulan) {
+                    bulanSet.add(bulan)
                 }
-            });
 
-            let header = [];
+            })
+
+            let bulanArray = Array.from(bulanSet)
+
+            let periode = ""
+
+            if (bulanArray.length === 1) {
+                periode = bulanArray[0]
+            }
+            else if (bulanArray.length > 1) {
+                periode = bulanArray[0] + " - " + bulanArray[bulanArray.length - 1]
+            }
+
+            /* ================= JUDUL LAPORAN ================= */
+
+            data.push(["LAPORAN NOTARIS / PPAT"])
+            data.push(["Periode : " + periode])
+            data.push(["Tanggal Export : " + new Date().toLocaleDateString("id-ID")])
+            data.push([])
+
+            /* ================= HEADER ================= */
+
+            let header = []
+
             table.querySelectorAll("thead th").forEach(th => {
-                header.push(th.innerText);
-            });
+                header.push(th.innerText.trim())
+            })
 
-            data.unshift(header);
+            data.push(header)
 
-            let ws = XLSX.utils.aoa_to_sheet(data);
+            /* ================= DATA TABEL ================= */
 
-            XLSX.utils.book_append_sheet(wb, ws, "Laporan Notaris");
+            rows.forEach(row => {
 
-            XLSX.writeFile(wb, "laporan_notaris.xlsx");
+                if (row.style.display === "none") return
+
+                let rowData = []
+
+                row.querySelectorAll("td").forEach(td => {
+                    rowData.push(td.innerText.trim())
+                })
+
+                data.push(rowData)
+
+            })
+
+            /* ================= BUAT FILE EXCEL ================= */
+
+            let ws = XLSX.utils.aoa_to_sheet(data)
+
+            let wb = XLSX.utils.book_new()
+
+            XLSX.utils.book_append_sheet(wb, ws, "Laporan PPAT")
+
+            XLSX.writeFile(wb, "laporan_notaris_ppat.xlsx")
 
         }
+
+        /* ================= GERAFIK MODEREN ================= */
 
         function grafikBulanan() {
 
