@@ -44,6 +44,8 @@
             backdrop-filter: blur(6px);
             background: rgba(255, 255, 255, .95);
             border-radius: 18px;
+            overflow: visible;
+            /* 🔥 penting supaya sticky tidak mati */
         }
 
         .title-table {
@@ -55,7 +57,8 @@
         /* =============================== SEARCH ================================*/
         .search-container {
             position: relative;
-            width: 320px;
+            width: 100%;
+            max-width: 320px;
         }
 
         .search-container input {
@@ -84,11 +87,13 @@
 
         /* =============================== TABLE WRAPPER ================================*/
         .table-wrapper {
-            overflow-x: auto;
-            overflow-y: auto;
-            margin-top: 20px;
             max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            margin-top: 20px;
             border-radius: 12px;
+            position: relative;
+            /* 🔥 wajib untuk sticky */
         }
 
         /* =============================== TABLE ================================*/
@@ -100,24 +105,29 @@
             font-size: 14px;
         }
 
-        /* HEADER */
+        /* =============================== HEADER ================================*/
         #tableLaporan thead {
-            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
-            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 9;
         }
 
         /* HEADER STICKY */
         #tableLaporan thead th {
             position: sticky;
             top: 0;
-            z-index: 2;
+            z-index: 10;
             padding: 14px 16px;
             text-align: center;
             font-weight: 600;
             white-space: nowrap;
+
+            /* 🔥 WAJIB agar tidak transparan */
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            color: white;
         }
 
-        /* CELL */
+        /* =============================== CELL ================================*/
         #tableLaporan td {
             padding: 14px 16px;
             border: 1px solid #e0e0e0;
@@ -156,6 +166,38 @@
         #tableLaporan td:nth-child(11) {
             text-align: right;
             font-weight: 600;
+        }
+
+        /* =============================== SCROLLBAR ================================*/
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #0d6efd;
+            border-radius: 10px;
+        }
+
+        /* ================= STICKY KOLOM ID ================= */
+
+        /* HEADER (ID) */
+        #tableLaporan thead th:first-child {
+            position: sticky;
+            left: 0;
+            top: 0;
+            z-index: 20;
+            /* 🔥 paling atas */
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            color: white;
+        }
+
+        /* ISI (ID) */
+        #tableLaporan tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background: #ffffff;
         }
 
         /* =============================== STATUS ================================*/
@@ -224,6 +266,56 @@
             height: 260px !important;
         }
 
+        #suratSTD {
+            display: none;
+        }
+
+        #suratSTD {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background: white;
+            font-family: Arial;
+            font-size: 14px;
+        }
+
+        #suratSTD table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #suratSTD td,
+        #suratSTD th {
+            border: 1px solid black;
+            padding: 6px;
+        }
+
+        .kop {
+            text-align: center;
+        }
+
+        .logo {
+            width: 70px;
+        }
+
+        .bank-box {
+            border: 1px solid black;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        #formEmail {
+            position: fixed;
+            top: 30%;
+            left: 40%;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
         /* =============================== RESPONSIVE ================================*/
         @media(max-width:768px) {
 
@@ -251,11 +343,40 @@
                     <i class="bi bi-file-earmark-text"></i> Data Laporan Notaris
                 </h4>
 
-                <!-- SEARCH -->
-                <div class="search-container mb-3">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="searchNotaris" placeholder="Cari Nama Notaris / PPAT...">
+                <div class="row g-2 mb-3 align-items-center">
+
+                    <!-- SEARCH -->
+                    <div class="col-md-6">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                            <input type="text" id="searchNotaris" class="form-control ps-5"
+                                placeholder="Cari Nama Notaris / PPAT...">
+                        </div>
+                    </div>
+
+                    <!-- PILIH TAHUN -->
+                    <div class="col-md-3">
+                        <select id="filterTahun" class="form-control">
+                            <option selected disabled value>Pilih Tahun</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030">2030</option>
+                        </select>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-primary w-100" onclick="generateBulan()">
+                            <i class="bi bi-calendar"></i> Tampilkan Bulan
+                        </button>
+                    </div>
+
                 </div>
+
+                <!-- CONTAINER BULAN -->
+                <div id="listBulan" class="row g-2 mb-3"></div>
 
                 <!-- FILTER -->
                 <div class="row g-2 mb-3">
@@ -269,13 +390,13 @@
                     </div>
 
                     <div class="col-md-3">
-                        <button class="btn btn-primary w-100">
+                        <button type="button" class="btn btn-primary w-100" onclick="filterTanggal()">
                             <i class="bi bi-funnel"></i> Filter Tanggal
                         </button>
                     </div>
 
                     <div class="col-md-3">
-                        <button class="btn btn-success w-100" onclick="exportExcel()">
+                        <button type="button" class="btn btn-success w-100" onclick="exportExcel()">
                             <i class="bi bi-file-earmark-excel"></i> Export Excel
                         </button>
                     </div>
@@ -289,18 +410,20 @@
 
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Nomor Unik</th>
                                 <th>Nama Notaris</th>
                                 <th>Alamat Kantor</th>
                                 <th>No Surat</th>
                                 <th>Tgl Surat</th>
                                 <th>Tgl Diterima</th>
-                                <th>Status</th>
+                                <th>Status Surat</th>
                                 <th>Laporan Bulanan</th>
                                 <th>Data Transaksi</th>
                                 <th>Jumlah Laporan</th>
                                 <th>SSPD BPHTB</th>
                                 <th>Keterangan</th>
+                                <th>Cek Status</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
 
@@ -348,6 +471,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     </div> <br><br>
@@ -400,7 +524,7 @@
         crossorigin="anonymous"></script>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzJTsLSS15J0S-6TZ21efLxGxZuBhbTYzmmPsqWXxUOBxFhPL3luu4QEqRrR6Y10yR-QQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzIJqFLNVoGFBI5SP4WambSebqv2xZ0zClM9CDm9NrX6Ek-gXl5kViRqUPhDCt53JXxBQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -410,92 +534,656 @@
 
         /* =========================
        LOAD DATA GOOGLE SHEET
-    ========================= */
+        ========================= */
 
         function loadDataSheet() {
-
             fetch(scriptURL)
                 .then(res => res.json())
                 .then(data => {
+                    const tbody = document.querySelector("#dataNotaris");
+                    tbody.innerHTML = "";
 
-                    const tbody = document.querySelector("#tableLaporan tbody")
+                    data.sort((a, b) => {
+                        // Urutkan berdasarkan tanggal diterima terbaru
+                        let tglA = new Date(a["tanggal_diterima"] || "");
+                        let tglB = new Date(b["tanggal_diterima"] || "");
+                        if (tglA.getTime() !== tglB.getTime()) return tglB - tglA;
 
-                    tbody.innerHTML = ""
+                        // Jika tanggal sama, urutkan nama
+                        let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
+                        let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
+                        return namaA.localeCompare(namaB);
+                    }).forEach(row => {
+                        let tr = document.createElement("tr");
 
-                    data
-                        .sort((a, b) => {
+                        let statusTerlambat = cekTerlambat(row["tanggal_diterima"]); // "TIDAK VALID" / "VALID"
+                        let statusEmail = row["status_email"] || "";
 
-                            /* =============================
-                               URUTKAN TANGGAL DITERIMA
-                            ============================== */
+                        // Warna baris
+                        if (statusTerlambat === "TIDAK VALID") {
+                            tr.style.backgroundColor = "#ff0000"; // merah terang
+                        }
 
-                            let tglA = new Date(a["tanggal_diterima"] || "")
-                            let tglB = new Date(b["tanggal_diterima"] || "")
+                        // Aksi tombol
+                        let actionHTML = "";
+                        if (statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
+                            actionHTML = `
+                        <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>`;
+                        } else {
+                            // Jika valid atau email sudah dikirim
+                            actionHTML = `<div class="text-center">
+                        <i class="bi bi-check-lg text-success" title="Valid / Terkirim"></i>
+                    </div>`;
+                        }
 
-                            function formatTanggal(tgl) {
-
-                                if (!tgl) return ""
-
-                                let date = new Date(tgl)
-
-                                let hari = String(date.getDate()).padStart(2, "0")
-                                let bulan = String(date.getMonth() + 1).padStart(2, "0")
-                                let tahun = date.getFullYear()
-
-                                return hari + "/" + bulan + "/" + tahun
-                            }
-
-                            /* =============================
-                               URUTKAN TANGGAL TERBARU
-                            ============================== */
-
-                            if (tglA.getTime() !== tglB.getTime()) {
-                                return tglB - tglA
-                            }
-
-                            /* =============================
-                               JIKA TANGGAL SAMA
-                               URUTKAN NAMA NOTARIS
-                            ============================== */
-
-                            let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase()
-                            let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase()
-
-                            return namaA.localeCompare(namaB)
-
-                        })
-
-                        .forEach(row => {
-
-                            let tr = document.createElement("tr")
-
-                            tr.innerHTML = `
+                        tr.innerHTML = `
                     <td>${row["id"] || ""}</td>
-                        <td>${row["nama_notaris_&_ppat"] || ""}</td>
-                            <td>${row["alamat"] || ""}</td>
-                                <td>${row["nomor_surat"] || ""}</td>
-                                    <td>${row["tanggal_surat"] || ""}</td>
-                                        <td>${row["tanggal_diterima"] || ""}</td>
-                                    <td>${row["status_surat"] || ""}</td>
-                             <td>${row["laporan_bulanan"] || ""}</td>
-                        <td>${row["data_transaksi"] || ""}</td>
-                <td>${row["jumlah_laporan"] || ""}</td>
-            <td>${row["sspd_bphtb"] || ""}</td>
-        <td>${row["keterangan"] || ""}</td>
-    `
+                    <td>${row["nama_notaris_&_ppat"] || ""}</td>
+                    <td>${row["alamat"] || ""}</td>
+                    <td>${row["nomor_surat"] || ""}</td>
+                    <td>${row["tanggal_surat"] || ""}</td>
+                    <td>${row["tanggal_diterima"] || ""}</td>
+                    <td>${row["status_surat"] || ""}</td>
+                    <td>${row["laporan_bulanan"] || ""}</td>
+                    <td>${row["data_transaksi"] || ""}</td>
+                    <td>${row["jumlah_laporan"] || ""}</td>
+                    <td>${row["sspd_bphtb"] || ""}</td>
+                    <td>${row["keterangan"] || ""}</td>
+                    <td>${statusTerlambat}</td>
+                    <td>${actionHTML}</td>
+                `;
 
-                            tbody.appendChild(tr)
+                        tbody.appendChild(tr);
+                    });
 
-                        })
+                    hitungTotal();
+                    grafikBulanan();
+                    grafikStatus();
+                    grafikTopNotaris();
+                });
+        }
 
-                    hitungTotal()
+        function hapusData(btn) {
 
-                    grafikBulanan()
-                    grafikStatus()
-                    grafikTopNotaris()
+            if (!confirm("Yakin ingin menghapus data ini?")) return
+
+            let row = btn.closest("tr")
+
+            let id = row.cells[0].innerText
+
+            fetch("https://script.google.com/macros/s/AKfycbzIJqFLNVoGFBI5SP4WambSebqv2xZ0zClM9CDm9NrX6Ek-gXl5kViRqUPhDCt53JXxBQ/exec?hapus=" + id)
+                .then(r => r.text())
+                .then(res => {
+
+                    alert("Data berhasil dihapus")
+
+                    row.remove()
 
                 })
 
+        }
+
+        function buatPDF(data) {
+
+            var html = `
+                <html>
+                <head>
+
+                <style>
+
+                body{
+                font-family:"Times New Roman";
+                font-size:12pt;
+                margin:40px;
+                }
+
+                table{
+                width:100%;
+                border-collapse:collapse;
+                }
+
+                td,th{
+                padding:6px;
+                vertical-align:top;
+                }
+
+                .kop{
+                text-align:center;
+                font-weight:bold;
+                font-size:14pt;
+                }
+
+                .kop2{
+                text-align:center;
+                font-size:12pt;
+                }
+
+                .judul{
+                text-align:center;
+                font-weight:bold;
+                margin-top:10px;
+                margin-bottom:10px;
+                }
+
+                .border td, .border th{
+                border:1px solid black;
+                }
+
+                .no-box{
+                border:1px solid black;
+                text-align:center;
+                width:120px;
+                }
+
+                .bank{
+                border:1px solid black;
+                padding:10px;
+                width:350px;
+                }
+
+                </style>
+
+                </head>
+
+                <body>
+
+                <table>
+
+                <tr>
+
+                <td width="90">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Lambang_Kota_Bengkulu.png" width="70">
+                </td>
+
+                <td>
+
+                <div class="kop">
+                PEMERINTAH KOTA BENGKULU
+                </div>
+
+                <div class="kop2">
+                BADAN PENDAPATAN DAERAH<br>
+                Jl. WR Supratman Kelurahan Bentiring Permaitelp.(0736) Kode Pos 38119 <br> Websaite : sibabe.bengkulukota.go.id Email : bengkulubapendakota@gmail.com
+                </div>
+
+                </td>
+
+                <td class="no-box">
+
+                NO URUT<br><br>
+                <b>${data.no}</b>
+
+                </td>
+
+                </tr>
+
+                </table>
+
+                <hr>
+
+                <div class="judul">
+                <b> SURAT TAGIHAN DENDA (STD) <b>
+                </div>
+
+                <table>
+
+                <tr>
+                <td width="200">BULAN</td>
+                <td>: ${data.bulan}</td>
+                </tr>
+
+                <tr>
+                <td>TAHUN</td>
+                <td>:  ${data.tahunSekarang}</td>
+                </tr>
+
+                <tr>
+                <td>NAMA NOTARIS / PPAT</td>
+                <td>: ${data.nama}</td>
+                </tr>
+
+                <tr>
+                <td>ID</td>
+                <td>: ${data.id}</td>
+                </tr>
+
+                <tr>
+                <td>ALAMAT</td>
+                <td>: ${data.alamat}</td>
+                </tr>
+
+                </table>
+
+                <br>
+
+                <b>I. DASAR HUKUM</b>
+
+                <p style="text-align:justify">
+
+                I. Peraturan Daerah Kota Bengkulu Nomor 1 Tahun 2024
+                Tentang Pajak Daerah dan Retribusi Daerah.khususnya Pasal 15 dan 16 Ayat (1) sampai dengan (3). Serta mengacu pada 
+                </p>
+
+                <p style="text-align:justify">
+                II. Undang-undang Nomor 1 Tahun 2022 tentang Hubungan Keuangan antara Pemerintah Pusat dan Pemerintah Daerah.
+                </p>
+
+                <p style="text-align:justify">
+                III. Peraturan Menteri Agraria dan tata Ruang/Kepala Badan Pertanahan Nasional Nomor 2 Tahun 2018 tentang Pembinan dan Pengawasan Pejabat Pembuat Akta Tanah, Sertai sebagai tindak lanjut atas laporan Hasil Pemeriksaan, Sertai sebagai tindak lanjut atas laporan Hasil Pemeriksaan  
+
+                <p style="text-align:justify">
+                IV. Badan Pemeriksa Keuangan Republik Indonesia Perwakilan Provinsi Bengkulu Nomor : 30.B/LHP/XVIII.BKL/05/2024. Setiap Pejabat Pembuat Akta Tanah wajib menyampaikan laporan setiap bulananya.
+                </p>
+
+                <table class="border">
+
+                <tr>
+                <th width="40">NO</th>
+                <th>KETERANGAN</th>
+                <th width="180">JUMLAH</th>
+                </tr>
+
+                <tr>
+                <td align="center">1</td>
+                <td>Jumlah Laporan / Pelanggaran Profesi</td>
+                <td align="center">${data.jumlah}</td>
+                </tr>
+
+                <tr>
+                <td align="center">2</td>
+                <td>Laporan Yang Dilanggar</td>
+                <td>${data.bulan}</td>
+                </tr>
+
+                <tr>
+                <td align="center">3</td>
+                <td>Sanksi Administratif (Denda)</td>
+                <td>Rp ${data.denda}</td>
+                </tr>
+
+                <tr>
+                <td colspan="3">
+
+                <b>TERBILANG : ${data.terbilang} Rupiah</b>
+
+                </td>
+                </tr>
+
+                </table>
+                <br>
+
+                <div class="bank">
+
+                <b>PEMBAYARAN DAPAT MELALUI ;</b>
+
+                <br><br>
+
+                Bank Bengkulu<br>
+                No Rekening : <b>001.01.02.0001523</b><br>
+                Atas Nama : <b>Bapenda Kota Bengkulu</b>
+
+                </div>
+
+                <br><br>
+
+                <table>
+
+                <tr>
+
+                <td width="60%"></td>
+
+                <td style="text-align:center">
+
+                Bengkulu, ${data.tanggal}
+
+                <br><br>
+
+                KEPALA BADAN PENDAPATAN DAERAH<br>
+                KOTA BENGKULU
+
+                <br><br
+
+                <b>Dra. NONI YULIESTI.MM</b>
+
+                </td>
+
+                </tr>
+
+                </table>
+
+                </body>
+                </html>
+                `
+
+            var pdf = Utilities
+                .newBlob(html, "text/html")
+                .getAs("application/pdf")
+                .setName("STD-" + $data.nama + ".pdf")
+
+            return pdf
+
+        }
+
+        // ===============================
+        // Buat spinner tapi tetap tersembunyi
+        // ===============================
+        (function () {
+            const loading = document.createElement("div");
+            loading.id = "globalLoading";
+            loading.style = `
+        display:none; /* tetap tersembunyi */
+        position:fixed;
+        z-index:9999;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.3);
+        align-items:center;
+        justify-content:center;
+    `;
+            loading.innerHTML = `
+        <div style="text-align:center;">
+            <div style="
+                width:40px;height:40px;
+                border:5px solid #ccc;
+                border-top:5px solid #2d89ef;
+                border-radius:50%;
+                animation:spin 1s linear infinite;
+                margin:auto;"></div>
+            <div style="color:#fff;margin-top:10px;">Mengirim email...</div>
+        </div>
+    `;
+            document.body.appendChild(loading);
+
+            const style = document.createElement("style");
+            style.innerHTML = `
+        @keyframes spin {
+            0% {transform:rotate(0deg);}
+            100% {transform:rotate(360deg);}
+        }
+    `;
+            document.head.appendChild(style);
+        })();
+
+        // ===============================
+        // Fungsi buka modal email modern
+        // ===============================
+        function bukaModalEmail(row) {
+            // ambil data dari row
+            var data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText
+            };
+
+            // hapus modal lama jika ada
+            const oldModal = document.getElementById("jsEmailModal");
+            if (oldModal) oldModal.remove();
+
+            // buat overlay modal
+            const modal = document.createElement("div");
+            modal.id = "jsEmailModal";
+            modal.style.cssText = `
+        position: fixed; z-index: 10000;
+        left:0; top:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.4);
+        display:flex; align-items:center; justify-content:center;
+    `;
+
+            // buat konten modal
+            const content = document.createElement("div");
+            content.style.cssText = `
+        background:#fff; padding:20px 30px; border-radius:10px;
+        width:350px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);
+        font-family: Arial, sans-serif;
+    `;
+            content.innerHTML = `
+        <h3>Kirim Email</h3>
+        <input type="email" id="jsModalEmailInput" placeholder="Masukkan Email Notaris/PPAT" style="
+            width:100%; padding:10px 8px; margin:15px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box;
+        " />
+        <div>
+            <button id="jsSendBtn" style="
+                padding:10px 20px; margin:5px; border:none; border-radius:5px;
+                cursor:pointer; background-color:#2d89ef; color:#fff;
+            ">Kirim</button>
+            <button id="jsCancelBtn" style="
+                padding:10px 20px; margin:5px; border:none; border-radius:5px;
+                cursor:pointer; background-color:#ccc; color:#333;
+            ">Batal</button>
+        </div>
+        <div style="font-size:0.85em; color:#555; margin-top:10px;">
+            Email juga otomatis dikirim ke arsip.
+        </div>
+    `;
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // tombol kirim
+            document.getElementById("jsSendBtn").onclick = function () {
+                const emailInput = document.getElementById("jsModalEmailInput").value.trim();
+                if (!emailInput) return alert("Email Wajib diisi!");
+                modal.remove();
+                kirimEmail(row, emailInput);
+            };
+
+            // tombol batal
+            document.getElementById("jsCancelBtn").onclick = function () {
+                modal.remove();
+            };
+        }
+
+        // ===============================
+        // Fungsi kirim email
+        // ===============================
+        function kirimEmail(row, emailUser) {
+            var data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText
+            };
+
+            // tampilkan spinner
+            document.getElementById("globalLoading").style.display = "flex";
+
+            const baseUrl = "https://script.google.com/macros/s/AKfycbyhDm9vSiUWk30fOyvph_UnMLWJIlyolyhpGLxenHYNSdGzBWBoOnc26m4lSff4XAsXBA/exec";
+
+            const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}`;
+
+            const urlArsip = `${baseUrl}?email=${encodeURIComponent("bengkulubapendakota@gmail.com")}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}`;
+
+            fetch(urlUser)
+                .then(() => fetch(urlArsip))
+                .then(() => {
+                    alert("✅ Email berhasil dikirim");
+                })
+                .catch(() => {
+                    alert("❌ Gagal kirim email");
+                })
+                .finally(() => {
+                    document.getElementById("globalLoading").style.display = "none";
+                });
+        }
+
+        // ===============================
+        // Contoh penggunaan tombol di tabel
+        // tombol.onclick = function() { bukaModalEmail(this.closest("tr")); };
+
+        // Buat Nomor Urut //
+
+        function buatNomorUrut() {
+
+            let last = localStorage.getItem("nomorSTD") || 0
+
+            last++
+
+            localStorage.setItem("nomorSTD", last)
+
+            return String(last).padStart(3, "0")
+
+        }
+
+        function terbilang(nilai) {
+
+            nilai = Math.floor(nilai)
+
+            let huruf = [
+                "", "Satu", "Dua", "Tiga", "Empat", "Lima",
+                "Enam", "Tujuh", "Delapan", "Sembilan",
+                "Sepuluh", "Sebelas"
+            ]
+
+            if (nilai < 12)
+                return huruf[nilai]
+
+            if (nilai < 20)
+                return terbilang(nilai - 10) + " Belas"
+
+            if (nilai < 100)
+                return terbilang(Math.floor(nilai / 10)) + " Puluh " + terbilang(nilai % 10)
+
+            if (nilai < 200)
+                return "Seratus " + terbilang(nilai - 100)
+
+            if (nilai < 1000)
+                return terbilang(Math.floor(nilai / 100)) + " Ratus " + terbilang(nilai % 100)
+
+            if (nilai < 2000)
+                return "Seribu " + terbilang(nilai - 1000)
+
+            if (nilai < 1000000)
+                return terbilang(Math.floor(nilai / 1000)) + " Ribu " + terbilang(nilai % 1000)
+
+            if (nilai < 1000000000)
+                return terbilang(Math.floor(nilai / 1000000)) + " Juta " + terbilang(nilai % 1000000)
+
+            return ""
+        }
+
+        function buatSTD(data) {
+
+            document.getElementById("bulan").innerText = data.bulan_laporan
+            document.getElementById("nama").innerText = data.nama
+            document.getElementById("id").innerText = data.id
+            document.getElementById("alamat").innerText = data.alamat
+            document.getElementById("jabatan").innerText = data.jabatan
+            document.getElementById("tempo").innerText = data.jatuh_tempo
+            document.getElementById("jumlah").innerText = data.jumlah_laporan
+            document.getElementById("bulanLanggar").innerText = data.bulan_laporan
+
+            document.getElementById("denda").innerText = data.denda.toLocaleString("id-ID")
+
+            document.getElementById("terbilang").innerText = terbilang(data.denda)
+
+            document.getElementById("noUrut").innerText = buatNomorUrut()
+
+        }
+
+        function cekTerlambat(tanggal) {
+            if (!tanggal) return "";
+
+            let tgl = new Date(tanggal);
+
+            // Cek apakah tanggal valid
+            if (isNaN(tgl)) return "";
+
+            return tgl.getDate() > 10 ? "TIDAK VALID" : "VALID";
+        }
+
+        function cetakSTD(btn) {
+
+            let tr = btn.closest("tr")
+            let td = tr.querySelectorAll("td")
+
+            document.getElementById("id").innerText = td[0].innerText
+            document.getElementById("nama").innerText = td[1].innerText
+            document.getElementById("alamat").innerText = td[2].innerText
+            document.getElementById("bulan").innerText = td[7].innerText
+            document.getElementById("jumlah").innerText = td[9].innerText
+            document.getElementById("bulanLanggar").innerText = td[7].innerText
+
+            let denda = 1000000
+
+            document.getElementById("denda").innerText =
+                denda.toLocaleString("id-ID")
+
+            document.getElementById("terbilang").innerText =
+                terbilang(denda)
+
+            document.getElementById("noUrut").innerText =
+                buatNomorUrut()
+
+            let isi = document.getElementById("suratSTD").innerHTML
+
+            let w = window.open("")
+
+            w.document.write(isi)
+
+            w.print()
+
+        }
+
+        function previewSTD(btn) {
+            let tr = btn.closest("tr");
+            if (!tr) return alert("Tidak menemukan baris!");
+
+            let td = tr.querySelectorAll("td");
+
+            document.getElementById("id").innerText = td[0].innerText;
+            document.getElementById("nama").innerText = td[1].innerText;
+            document.getElementById("alamat").innerText = td[2].innerText;
+            document.getElementById("bulan").innerText = td[7].innerText;
+            document.getElementById("jumlah").innerText = td[9].innerText;
+            document.getElementById("bulanLanggar").innerText = td[7].innerText;
+
+            let denda = 1000000;
+            document.getElementById("denda").innerText = denda.toLocaleString("id-ID");
+            document.getElementById("terbilang").innerText = terbilang(denda);
+            document.getElementById("noUrut").innerText = Math.floor(Math.random() * 100);
+
+            let isi = document.getElementById("suratSTD").innerHTML;
+            if (!isi) return alert("Elemen suratSTD tidak ditemukan!");
+
+            let w = window.open("", "_blank");
+            w.document.write(`
+            <html>
+            <head>
+            <title>Preview Surat</title>
+            <style>
+            body{font-family:Arial;padding:30px}
+            table{width:100%;border-collapse:collapse}
+            td,th{border:1px solid black;padding:6px}
+            </style>
+            </head>
+            <body>
+            ${isi}
+            </body>
+            </html>
+            `);
+            w.document.close();
         }
 
         function hitungTotal() {
@@ -527,12 +1215,11 @@
         document.getElementById("searchNotaris").addEventListener("keyup", function () {
 
             let filter = this.value.toLowerCase()
-
-            let rows = document.querySelectorAll("#tableLaporan tbody tr")
+            let rows = document.querySelectorAll("#dataNotaris tr")
 
             rows.forEach(row => {
 
-                let nama = row.cells[2].textContent.toLowerCase()
+                let nama = row.cells[1].textContent.toLowerCase() // ✅ FIX
 
                 row.style.display = nama.includes(filter) ? "" : "none"
 
@@ -1657,20 +2344,122 @@
             debugger;
         }, 1000);
 
+        // Filter Bulan
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const selectTahun = document.getElementById("filterTahun")
+            const tahunSekarang = new Date().getFullYear()
+
+            for (let i = tahunSekarang - 2; i <= tahunSekarang + 1; i++) {
+                let opt = document.createElement("option")
+                opt.value = i
+                opt.textContent = i
+                selectTahun.appendChild(opt)
+            }
+
+        })
+
+        function generateBulan() {
+
+            const tahun = document.getElementById("filterTahun").value
+            const container = document.getElementById("listBulan")
+
+            if (!tahun) {
+                alert("Pilih tahun dulu!")
+                return
+            }
+
+            const bulanList = [
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            ]
+
+            container.innerHTML = ""
+
+            bulanList.forEach(bulan => {
+
+                let col = document.createElement("div")
+                col.className = "col-md-2"
+
+                col.innerHTML = `
+            <button class="btn btn-outline-primary w-100 btn-bulan"
+                onclick="filterBulan('${bulan} ${tahun}', this)">
+                ${bulan}
+            </button>
+        `
+
+                container.appendChild(col)
+
+            })
+
+        }
+
+        function filterBulan(bulanDipilih, el) {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            rows.forEach(row => {
+
+                let bulan = row.cells[7].innerText.trim()
+
+                if (bulan === bulanDipilih) {
+                    row.style.display = ""
+                } else {
+                    row.style.display = "none"
+                }
+
+            })
+
+            // 🔥 RESET SEMUA TOMBOL
+            document.querySelectorAll(".btn-bulan").forEach(btn => {
+                btn.classList.remove("btn-primary")
+                btn.classList.add("btn-outline-primary")
+            })
+
+            // 🔥 AKTIFKAN YANG DIKLIK
+            el.classList.remove("btn-outline-primary")
+            el.classList.add("btn-primary")
+
+        }
+
+        document.querySelectorAll("#listBulan button").forEach(btn => {
+            btn.classList.remove("btn-primary")
+            btn.classList.add("btn-outline-primary")
+        })
+
+        // Filter Tanggal
+
         function filterTanggal() {
 
             let awal = document.getElementById("tglAwal").value;
             let akhir = document.getElementById("tglAkhir").value;
 
+            if (!awal || !akhir) {
+                alert("Isi tanggal awal & akhir dulu!");
+                return;
+            }
+
+            let tAwal = new Date(awal);
+            let tAkhir = new Date(akhir);
+
             let rows = document.querySelectorAll("#dataNotaris tr");
 
             rows.forEach(row => {
 
-                let tgl = row.cells[5].innerText; // kolom Tgl Diterima
-                let tanggal = new Date(tgl);
+                let tglText = row.cells[5].innerText.trim();
 
-                let tAwal = new Date(awal);
-                let tAkhir = new Date(akhir);
+                if (!tglText) {
+                    row.style.display = "none";
+                    return;
+                }
+
+                let tanggal = new Date(tglText);
+
+                if (isNaN(tanggal)) {
+                    row.style.display = "none";
+                    return;
+                }
 
                 if (tanggal >= tAwal && tanggal <= tAkhir) {
                     row.style.display = "";
@@ -1682,6 +2471,8 @@
 
         }
 
+        // Fungsi Kirim EXCEL
+
         function exportExcel() {
 
             const table = document.getElementById("tableLaporan")
@@ -1691,62 +2482,72 @@
                 return
             }
 
+            let awal = document.getElementById("tglAwal").value;
+            let akhir = document.getElementById("tglAkhir").value;
+
+            let tAwal = awal ? new Date(awal) : null;
+            let tAkhir = akhir ? new Date(akhir) : null;
+
             let data = []
-
             let rows = table.querySelectorAll("tbody tr")
-
-            /* ================= AMBIL PERIODE BULAN ================= */
 
             let bulanSet = new Set()
 
             rows.forEach(row => {
 
-                if (row.style.display === "none") return
-
+                let tglText = row.cells[5].innerText.trim()
                 let bulan = row.cells[7].innerText.trim()
 
-                if (bulan) {
-                    bulanSet.add(bulan)
+                let tanggal = new Date(tglText)
+
+                if (isNaN(tanggal)) return
+
+                // FILTER ULANG DI SINI (INI KUNCINYA)
+                if (tAwal && tAkhir) {
+                    if (tanggal < tAwal || tanggal > tAkhir) return
                 }
 
+                if (bulan) bulanSet.add(bulan)
             })
 
             let bulanArray = Array.from(bulanSet)
-
             let periode = ""
 
             if (bulanArray.length === 1) {
                 periode = bulanArray[0]
-            }
-            else if (bulanArray.length > 1) {
+            } else if (bulanArray.length > 1) {
                 periode = bulanArray[0] + " - " + bulanArray[bulanArray.length - 1]
             }
 
-            /* ================= JUDUL LAPORAN ================= */
+            /* ================= HEADER ================= */
 
             data.push(["LAPORAN NOTARIS / PPAT"])
             data.push(["Periode : " + periode])
             data.push(["Tanggal Export : " + new Date().toLocaleDateString("id-ID")])
             data.push([])
 
-            /* ================= HEADER ================= */
-
             let header = []
-
             table.querySelectorAll("thead th").forEach(th => {
                 header.push(th.innerText.trim())
             })
 
             data.push(header)
 
-            /* ================= DATA TABEL ================= */
+            /* ================= DATA ================= */
 
             rows.forEach(row => {
 
-                if (row.style.display === "none") return
+                let tglText = row.cells[5].innerText.trim()
+                let tanggal = new Date(tglText)
+
+                if (isNaN(tanggal)) return
+
+                // FILTER ULANG LAGI
+                if (tAwal && tAkhir) {
+                    if (tanggal < tAwal || tanggal > tAkhir) return
+                }
 
                 let rowData = []
-
                 row.querySelectorAll("td").forEach(td => {
                     rowData.push(td.innerText.trim())
                 })
@@ -1755,16 +2556,13 @@
 
             })
 
-            /* ================= BUAT FILE EXCEL ================= */
+            /* ================= EXPORT ================= */
 
             let ws = XLSX.utils.aoa_to_sheet(data)
-
             let wb = XLSX.utils.book_new()
-
             XLSX.utils.book_append_sheet(wb, ws, "Laporan PPAT")
 
             XLSX.writeFile(wb, "laporan_notaris_ppat.xlsx")
-
         }
 
         /* ================= GERAFIK MODEREN ================= */
