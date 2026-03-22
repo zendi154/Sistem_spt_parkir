@@ -524,7 +524,7 @@
         crossorigin="anonymous"></script>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzIJqFLNVoGFBI5SP4WambSebqv2xZ0zClM9CDm9NrX6Ek-gXl5kViRqUPhDCt53JXxBQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxSyvIsoCdrTK0muhOuAKvPc9ImeewkV8wxhhV6W2Knyr6zl_v_ZKU7IM5Rf8tRvcZ3vw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -544,45 +544,98 @@
                     tbody.innerHTML = "";
 
                     data.sort((a, b) => {
-                        // Urutkan berdasarkan tanggal diterima terbaru
-                        let tglA = new Date(a["tanggal_diterima"] || "");
-                        let tglB = new Date(b["tanggal_diterima"] || "");
-                        if (tglA.getTime() !== tglB.getTime()) return tglB - tglA;
 
-                        // Jika tanggal sama, urutkan nama
-                        let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
-                        let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
-                        return namaA.localeCompare(namaB);
-                    }).forEach(row => {
-                        let tr = document.createElement("tr");
+                        const urutanBulan = [
+                            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                        ];
 
-                        let statusTerlambat = cekTerlambat(row["tanggal_diterima"]); // "TIDAK VALID" / "VALID"
-                        let statusEmail = row["status_email"] || "";
+                        // ======================
+                        // 1. AMBIL BULAN
+                        // ======================
+                        let bulanA = a["laporan_bulanan"] || "";
+                        let bulanB = b["laporan_bulanan"] || "";
 
-                        // Warna baris
-                        if (statusTerlambat === "TIDAK VALID") {
-                            tr.style.backgroundColor = "#ff0000"; // merah terang
+                        let [namaBulanA, tahunA] = bulanA.split(" ");
+                        let [namaBulanB, tahunB] = bulanB.split(" ");
+
+                        let indexA = urutanBulan.indexOf(namaBulanA);
+                        let indexB = urutanBulan.indexOf(namaBulanB);
+
+                        // ======================
+                        // 2. URUTKAN TAHUN
+                        // ======================
+                        if (tahunA !== tahunB) {
+                            return parseInt(tahunA || 0) - parseInt(tahunB || 0);
                         }
 
-                        // Aksi tombol
-                        let actionHTML = "";
-                        if (statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
-                            actionHTML = `
-                        <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email">
+                        // ======================
+                        // 3. URUTKAN BULAN
+                        // ======================
+                        if (indexA !== indexB) {
+                            return indexA - indexB;
+                        }
+
+                        // ======================
+                        // 4. URUTKAN TANGGAL
+                        // ======================
+                        function parseTanggal(tgl) {
+                            if (!tgl) return new Date(0);
+
+                            if (tgl.includes("/")) {
+                                let [dd, mm, yyyy] = tgl.split("/");
+                                return new Date(`${yyyy}-${mm}-${dd}`);
+                            }
+
+                            return new Date(tgl);
+                        }
+
+                        let tglA = parseTanggal(a["tanggal_diterima"]);
+                        let tglB = parseTanggal(b["tanggal_diterima"]);
+
+                        if (tglA.getTime() !== tglB.getTime()) {
+                            return tglA - tglB;
+                        }
+
+                        // ======================
+                        // 5. JIKA SAMA → NAMA
+                        // ======================
+                        let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
+                        let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
+
+                        return namaA.localeCompare(namaB);
+                    })
+
+                        .forEach(row => {
+                            let tr = document.createElement("tr");
+
+                            let statusTerlambat = cekTerlambat(row["tanggal_diterima"]); // "TIDAK VALID" / "VALID"
+                            let statusEmail = row["status_email"] || "";
+
+                            // Warna baris
+                            if (statusTerlambat === "TIDAK VALID") {
+                                tr.style.backgroundColor = "#ff0000"; // merah terang
+                            }
+
+                            // Aksi tombol
+                            let actionHTML = "";
+                            if (statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
+                                actionHTML = `
+                        <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda">
                             <i class="bi bi-envelope-fill"></i>
                         </button>
                         <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
                                 <i class="bi bi-trash-fill"></i>
                             </button>
                         </div>`;
-                        } else {
-                            // Jika valid atau email sudah dikirim
-                            actionHTML = `<div class="text-center">
+                            } else {
+                                // Jika valid atau email sudah dikirim
+                                actionHTML = `<div class="text-center">
                         <i class="bi bi-check-lg text-success" title="Valid / Terkirim"></i>
                     </div>`;
-                        }
+                            }
 
-                        tr.innerHTML = `
+                            tr.innerHTML = `
                     <td>${row["id"] || ""}</td>
                     <td>${row["nama_notaris_&_ppat"] || ""}</td>
                     <td>${row["alamat"] || ""}</td>
@@ -599,8 +652,8 @@
                     <td>${actionHTML}</td>
                 `;
 
-                        tbody.appendChild(tr);
-                    });
+                            tbody.appendChild(tr);
+                        });
 
                     hitungTotal();
                     grafikBulanan();
@@ -608,6 +661,8 @@
                     grafikTopNotaris();
                 });
         }
+
+        /*Hapus Data*/
 
         function hapusData(btn) {
 
@@ -617,7 +672,7 @@
 
             let id = row.cells[0].innerText
 
-            fetch("https://script.google.com/macros/s/AKfycbzIJqFLNVoGFBI5SP4WambSebqv2xZ0zClM9CDm9NrX6Ek-gXl5kViRqUPhDCt53JXxBQ/exec?hapus=" + id)
+            fetch("https://script.google.com/macros/s/AKfycbxSyvIsoCdrTK0muhOuAKvPc9ImeewkV8wxhhV6W2Knyr6zl_v_ZKU7IM5Rf8tRvcZ3vw/exec?hapus=" + id)
                 .then(r => r.text())
                 .then(res => {
 
@@ -914,7 +969,7 @@
         // Fungsi buka modal email modern
         // ===============================
         function bukaModalEmail(row) {
-            // ambil data dari row
+
             var data = {
                 id: row.cells[0].innerText,
                 nama: row.cells[1].innerText,
@@ -930,11 +985,11 @@
                 keterangan: row.cells[11].innerText
             };
 
-            // hapus modal lama jika ada
+            // hapus modal lama
             const oldModal = document.getElementById("jsEmailModal");
             if (oldModal) oldModal.remove();
 
-            // buat overlay modal
+            // buat modal
             const modal = document.createElement("div");
             modal.id = "jsEmailModal";
             modal.style.cssText = `
@@ -944,41 +999,157 @@
         display:flex; align-items:center; justify-content:center;
     `;
 
-            // buat konten modal
             const content = document.createElement("div");
             content.style.cssText = `
         background:#fff; padding:20px 30px; border-radius:10px;
         width:350px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);
-        font-family: Arial, sans-serif;
+        font-family: Arial;
     `;
+
             content.innerHTML = `
-        <h3>Kirim Email</h3>
-        <input type="email" id="jsModalEmailInput" placeholder="Masukkan Email Notaris/PPAT" style="
-            width:100%; padding:10px 8px; margin:15px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box;
+    <h3 style="margin-bottom:15px;">Kirim Email Denda PPAT</h3>
+
+    <!-- INFO DATA -->
+    <div style="
+        margin-bottom:12px;
+        padding:10px;
+        background:#f5f5f5;
+        border-radius:8px;
+        font-size:12px;
+        text-align:left;
+        line-height:1.5;
+    ">
+        <div style="display:flex; align-items:center; margin-bottom:5px;">
+            <span style="margin-right:6px;">👤</span>
+            <b>Nama:</b>
+        </div>
+        <div style="margin-left:22px;">${data.nama}</div>
+
+        <div style="display:flex; align-items:center; margin-top:8px;">
+            <span style="margin-right:6px;">🆔</span>
+            <b>Nomor Unik:</b>
+        </div>
+        <div style="margin-left:22px;">${data.id}</div>
+    </div>
+
+    <!-- INPUT EMAIL -->
+    <div style="position:relative; margin:10px 0; text-align:left;">
+        
+        <span style="
+            position:absolute;
+            left:10px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#888;
+        ">📧</span>
+
+        <input type="email" id="jsModalEmailInput" placeholder="*Masukkan Email PPAT" style="
+            width:100%;
+            padding:10px 35px 10px 35px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            outline:none;
+            box-sizing:border-box;
+            transition:0.3s;
         " />
-        <div>
-            <button id="jsSendBtn" style="
-                padding:10px 20px; margin:5px; border:none; border-radius:5px;
-                cursor:pointer; background-color:#2d89ef; color:#fff;
-            ">Kirim</button>
-            <button id="jsCancelBtn" style="
-                padding:10px 20px; margin:5px; border:none; border-radius:5px;
-                cursor:pointer; background-color:#ccc; color:#333;
-            ">Batal</button>
-        </div>
-        <div style="font-size:0.85em; color:#555; margin-top:10px;">
-            Email juga otomatis dikirim ke arsip.
-        </div>
+
+        <!-- ICON CEKLIS -->
+        <span id="emailCheckIcon" style="
+            position:absolute;
+            right:10px;
+            top:50%;
+            transform:translateY(-50%);
+            font-size:16px;
+            display:none;
+        ">✔</span>
+    </div>
+
+         <!-- JENIS -->
+    <div style="text-align:left; margin-top:10px;">
+        <label><b>Jenis Pelanggaran:</b></label><br>
+        <select id="jsJenisLanggar" style="
+            width:100%; padding:8px; margin-top:5px;
+            border-radius:5px; border:1px solid #ccc;
+        ">
+            <option value="Terlambat Menyampaikan Laporan">
+                001. Terlambat Menyampaikan
+            </option>
+            <option value="Tidak Menyampaikan Laporan">
+                002. Tidak Menyampaikan
+            </option>
+        </select>
+    </div>
+
+       <div style="margin-top:15px; text-align:center;">
+    
+    <button id="jsSendBtn" style="
+        padding:10px 20px;
+        margin:5px;
+        border:none;
+        border-radius:6px;
+        background:#28a745;
+        color:#fff;
+        cursor:pointer;
+        transition:0.2s;
+    "
+    onmouseover="this.style.background='#218838'"
+    onmouseout="this.style.background='#28a745'">
+        ✔ Kirim
+    </button>
+
+    <button id="jsCancelBtn" style="
+        padding:10px 20px;
+        margin:5px;
+        border:none;
+        border-radius:6px;
+        background:#dc3545;
+        color:#fff;
+        cursor:pointer;
+        transition:0.2s;
+    "
+    onmouseover="this.style.background='#c82333'"
+    onmouseout="this.style.background='#dc3545'">
+        ✖ Batal
+    </button>
+
+    </div>
     `;
+
+            // masukkan ke DOM dulu
             modal.appendChild(content);
             document.body.appendChild(modal);
 
+            // =========================
+            // VALIDASI EMAIL (FIX)
+            // =========================
+            const emailInput = document.getElementById("jsModalEmailInput");
+            const icon = document.getElementById("emailCheckIcon");
+
+            emailInput.addEventListener("input", function () {
+                let value = emailInput.value.trim().toLowerCase();
+
+                if (value.endsWith("@gmail.com")) {
+                    icon.style.display = "block";
+                    icon.style.color = "green";
+                    emailInput.style.border = "1px solid green";
+                } else if (value !== "") {
+                    icon.style.display = "none";
+                    emailInput.style.border = "1px solid red";
+                } else {
+                    icon.style.display = "none";
+                    emailInput.style.border = "1px solid #ccc";
+                }
+            });
+
             // tombol kirim
             document.getElementById("jsSendBtn").onclick = function () {
-                const emailInput = document.getElementById("jsModalEmailInput").value.trim();
-                if (!emailInput) return alert("Email Wajib diisi!");
+                const email = emailInput.value.trim();
+                const jenis = document.getElementById("jsJenisLanggar").value;
+
+                if (!email) return alert("Email wajib diisi!");
+
                 modal.remove();
-                kirimEmail(row, emailInput);
+                kirimEmail(row, email, jenis);
             };
 
             // tombol batal
@@ -990,7 +1161,7 @@
         // ===============================
         // Fungsi kirim email
         // ===============================
-        function kirimEmail(row, emailUser) {
+        function kirimEmail(row, emailUser, jenis) {
             var data = {
                 id: row.cells[0].innerText,
                 nama: row.cells[1].innerText,
@@ -1009,11 +1180,11 @@
             // tampilkan spinner
             document.getElementById("globalLoading").style.display = "flex";
 
-            const baseUrl = "https://script.google.com/macros/s/AKfycbyhDm9vSiUWk30fOyvph_UnMLWJIlyolyhpGLxenHYNSdGzBWBoOnc26m4lSff4XAsXBA/exec";
+            const baseUrl = "https://script.google.com/macros/s/AKfycbxSyvIsoCdrTK0muhOuAKvPc9ImeewkV8wxhhV6W2Knyr6zl_v_ZKU7IM5Rf8tRvcZ3vw/exec";
 
-            const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}`;
+            const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}`;
 
-            const urlArsip = `${baseUrl}?email=${encodeURIComponent("bengkulubapendakota@gmail.com")}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}`;
+            const urlArsip = `${baseUrl}?email=${encodeURIComponent("bengkulubapendakota@gmail.com")}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}`;
 
             fetch(urlUser)
                 .then(() => fetch(urlArsip))
