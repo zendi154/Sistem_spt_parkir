@@ -578,11 +578,8 @@
                 let allData = [];
                 let editRow = null;
 
-                // URL
-                const URL_NOTARIS = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
-                const URL_LOGIN = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+                const URL = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
 
-                // Autocomplete
                 const namaInput = document.getElementById("nama_notaris");
                 const suggestions = document.getElementById("suggestions");
 
@@ -602,10 +599,12 @@
                     hasil.forEach(n => {
                         let div = document.createElement("div");
                         div.textContent = n;
+
                         div.onclick = () => {
                             namaInput.value = n;
                             suggestions.style.display = "none";
                         };
+
                         suggestions.appendChild(div);
                     });
 
@@ -613,34 +612,49 @@
                 });
 
                 document.addEventListener("click", e => {
-                    if (e.target !== namaInput) {
+                    if (!e.target.closest("form")) {
                         suggestions.style.display = "none";
                     }
                 });
 
-                // Login check
+                /* =========================
+                   FUNGSI LOGIN DAN LOGOUT
+                ========================= */
                 function cekLogin() {
                     const token = localStorage.getItem("token");
+
+                    // Jika token tidak ada, redirect ke table.html
                     if (!token) {
+                        console.warn("Token tidak ditemukan, redirect ke table.html");
                         window.location.href = "table.html";
                         return;
                     }
 
-                    fetch(`${URL_LOGIN}?action=check&token=${token}`)
-                        .then(res => res.json())
+                    // Cek token ke server langsung tanpa const URL
+                    fetch("https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec?action=check&token=" + encodeURIComponent(token))
                         .then(res => {
-                            if (res.status !== "valid") {
+                            if (!res.ok) throw new Error("Response tidak OK");
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data.status !== "valid") {
+                                console.warn("Token tidak valid, hapus dan redirect");
                                 localStorage.removeItem("token");
                                 window.location.href = "table.html";
+                            } else {
+                                console.log("Token valid, akses diterima");
                             }
                         })
-                        .catch(() => {
+                        .catch(err => {
+                            console.error("Terjadi error saat cek login:", err);
                             window.location.href = "table.html";
                         });
                 }
-                cekLogin();
 
-                // Logout
+                // Jalankan cekLogin saat halaman dibuka
+                document.addEventListener("DOMContentLoaded", cekLogin);
+
+                // Fungsi LogOut
                 function logout() {
                     localStorage.removeItem("token");
                     window.location.href = "table.html";
