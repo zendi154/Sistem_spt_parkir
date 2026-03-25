@@ -578,8 +578,11 @@
                 let allData = [];
                 let editRow = null;
 
-                const URL = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
+                // URL
+                const URL_NOTARIS = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
+                const URL_LOGIN = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
+                // Autocomplete
                 const namaInput = document.getElementById("nama_notaris");
                 const suggestions = document.getElementById("suggestions");
 
@@ -599,12 +602,10 @@
                     hasil.forEach(n => {
                         let div = document.createElement("div");
                         div.textContent = n;
-
                         div.onclick = () => {
                             namaInput.value = n;
                             suggestions.style.display = "none";
                         };
-
                         suggestions.appendChild(div);
                     });
 
@@ -612,24 +613,20 @@
                 });
 
                 document.addEventListener("click", e => {
-                    if (!e.target.closest("form")) {
+                    if (e.target !== namaInput) {
                         suggestions.style.display = "none";
                     }
                 });
 
-                /* =========================
-                  FUNGSI LOGIN DAN LOGOUT
-                  ========================= */
-                const LOGIN_URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+                // Login check
                 function cekLogin() {
                     const token = localStorage.getItem("token");
-
                     if (!token) {
                         window.location.href = "table.html";
                         return;
                     }
 
-                    fetch(`${URL}?action=check&token=${token}`)
+                    fetch(`${URL_LOGIN}?action=check&token=${token}`)
                         .then(res => res.json())
                         .then(res => {
                             if (res.status !== "valid") {
@@ -641,11 +638,9 @@
                             window.location.href = "table.html";
                         });
                 }
-
-                // jalankan saat halaman dibuka
                 cekLogin();
 
-                // Fungsi LogOut
+                // Logout
                 function logout() {
                     localStorage.removeItem("token");
                     window.location.href = "table.html";
