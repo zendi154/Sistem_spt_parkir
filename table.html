@@ -1,81 +1,154 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Pribadi</title>
+    <title>FORM LOGIN</title>
     <style>
         body {
+            font-family: 'Segoe UI', sans-serif;
+
+            /* BACKGROUND RGB ANIMASI */
+            background: linear-gradient(270deg,
+                    rgb(45, 137, 239),
+                    rgb(110, 198, 255),
+                    rgb(0, 180, 255));
+            background-size: 600% 600%;
+            animation: gradientMove 10s ease infinite;
+
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0;
-            overflow: hidden;
-            background: radial-gradient(circle, #9b4aed, #69f14e, #db21f8);
-            font-family: Arial, sans-serif;
-            color: #fff;
-            text-align: center;
-            transition: background 0.5s;
         }
 
-        body::before {
-            content: '';
+        /* ANIMASI BACKGROUND */
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* BOX LOGIN */
+        .login-box {
+            width: 320px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.6s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        h3 {
+            margin-bottom: 15px;
+        }
+
+        /* INPUT GROUP */
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        /* INPUT */
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: rgb(45, 137, 239);
+            box-shadow: 0 0 5px rgba(45, 137, 239, 0.5);
+        }
+
+        input.error {
+            border-color: red;
+        }
+
+        /* ERROR TEXT */
+        .error-text {
+            color: red;
+            font-size: 12px;
+            text-align: left;
+            margin-top: 3px;
+            display: block;
+        }
+
+        /* PASSWORD TOGGLE */
+        .password-box .toggle {
             position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* BUTTON */
+        button {
+            padding: 10px;
+            width: 100%;
+            background: rgb(45, 137, 239);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: rgb(27, 95, 189);
+            transform: scale(1.03);
+        }
+
+        /* SPINNER */
+        #globalLoading {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(0, 150, 255, 0.2) 10%, rgba(0, 0, 0, 0) 70%);
-            animation: moveBackground 5s infinite alternate;
+            background: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes moveBackground {
-            from {
-                transform: scale(1);
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 5px solid #ccc;
+            border-top: 5px solid rgb(45, 137, 239);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        /* ANIMASI SPINNER */
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
             }
-
-            to {
-                transform: scale(1.2);
-            }
         }
 
-        .navbar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-        }
-
-        .navbar a {
-            color: white;
-            background-color: rgba(0, 150, 255, 0.5);
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 12px;
-            transition: background-color 0.3s;
-        }
-
-        .navbar a:hover {
-            background-color: rgba(0, 150, 255, 0.8);
-        }
-
-        .profile-container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-            text-align: center;
-            opacity: 0;
-            transform: translateY(-20px);
-            animation: fadeIn 1s forwards ease-in-out;
-            max-width: 250px;
-            margin: 15px;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
+        /* FADE IN */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(20px);
             }
 
             to {
@@ -84,310 +157,188 @@
             }
         }
 
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid white;
-            margin-bottom: 10px;
-            animation: pulse 2s infinite alternate ease-in-out;
-        }
-
-        @keyframes pulse {
-            from {
-                transform: scale(1);
+        /* SHAKE ERROR */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
             }
 
-            to {
-                transform: scale(1.1);
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
             }
         }
 
-        .profile-info {
-            text-align: left;
-            margin-top: 10px;
-        }
-
-        .profile-info p {
-            margin: 5px 0;
-        }
-
-        .back-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            color: white;
-            background: rgba(0, 150, 255, 0.5);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-        }
-
-        .back-button:hover {
-            background: rgba(0, 150, 255, 0.8);
-        }
-
-        /* Scrollable container untuk profil */
-        .profiles-wrapper {
-            max-height: 80vh;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        /* Style untuk profil yang dibesarkan di atas */
-        .expanded-profile {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-            text-align: center;
-            opacity: 1;
-            z-index: 1000;
-            animation: fadeIn 0.5s forwards ease-in-out;
-            cursor: pointer;
-        }
-
-        .expanded-profile img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
-
-        .expanded-profile p {
-            font-size: 18px;
-        }
-
-        /* Overlay untuk menutupi halaman saat profil diperbesar */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            display: none;
-            /* Mulai dengan overlay tidak terlihat */
+        .shake {
+            animation: shake 0.3s;
         }
     </style>
-
 </head>
 
 <body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <a href="dashbord.html">Keluar</a>
+
+    <div class="login-box" id="loginBox">
+        <h3>🔐 LOGIN SISTEM PPAT</h3>
+
+        <!-- EMAIL -->
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Email">
+            <small id="emailError" class="error-text"></small>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="input-group password-box">
+            <input type="password" id="password" placeholder="Password">
+            <span class="toggle" onclick="togglePass()">👁️</span>
+            <small id="passError" class="error-text"></small>
+        </div>
+
+        <button onclick="login()">Login</button>
     </div>
 
-    <!-- Profil User -->
-    <div class="profiles-wrapper" id="profiles-wrapper"></div>
+    <!-- SPINNER -->
+    <div id="globalLoading">
+        <div style="text-align:center; color:white;">
+            <div class="spinner"></div>
+            <div style="margin-top:10px;">Memproses login...</div>
+        </div>
+    </div>
 
     <script>
-        let currentProfileIndex = 0;
-
-        const profiles = [
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-            {
-                username: "",
-                nip: "",
-                bio: "",
-            },
-
-        ];
-
-        function loadProfile(index) {
-            const profile = profiles[index];
-            const profileContainer = document.createElement("div");
-            profileContainer.classList.add("profile-container");
-            profileContainer.innerHTML = `
-                <img src="./image/logo.kotabkl.png" alt="Profil" class="profile-pic">
-                <h2>${profile.username}</h2>
-                <div class="profile-info">
-                    <p><strong>Nip:</strong> ${profile.nip}</p>
-                    <p><strong>Jabatan:</strong> ${profile.bio}</p>
-                </div>
-            `;
-            profileContainer.onclick = () => expandProfile(index);
-            document.getElementById("profiles-wrapper").appendChild(profileContainer);
-        }
-
-        function expandProfile(index) {
-            const profile = profiles[index];
-            const overlay = document.createElement("div");
-            overlay.classList.add("overlay");
-            document.body.appendChild(overlay);
-            overlay.style.display = 'block'; // Tampilkan overlay
-
-            const expandedProfile = document.createElement("div");
-            expandedProfile.classList.add("expanded-profile");
-            expandedProfile.innerHTML = `
-                <img src="./image/logo.kotabkl.png" alt="Profil" class="profile-pic">
-                <h2>${profile.username}</h2>
-                <p><strong>Nip:</strong> ${profile.nip}</p>
-                <p><strong>Jabatan:</strong> ${profile.bio}</p>
-                <p><strong>Alamat:</strong> ${profile.address}</p>
-                <p><strong>Telepon:</strong> ${profile.phone}</p>
-            `;
-
-            expandedProfile.onclick = closeExpandedProfile;
-
-            document.body.appendChild(expandedProfile);
-        }
-
-        function closeExpandedProfile() {
-            const overlay = document.querySelector(".overlay");
-            const expandedProfile = document.querySelector(".expanded-profile");
-            overlay.remove();
-            expandedProfile.remove();
-        }
-
+        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+        // auto redirect
         window.onload = function () {
-            profiles.forEach((_, index) => loadProfile(index)); // Memuat semua profil saat halaman dimuat
+            const token = localStorage.getItem("token");
+            if (token) {
+                window.location.href = "tabledata.html";
+            }
         };
-        // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
-        document.body.insertAdjacentHTML("beforeend", `
-    <div id="loadingOverlay" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-        color: white;
-        font-family: Arial, sans-serif;
-        font-size: 18px;
-        text-align: center;
-    ">
-        <div style="
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        "></div>
-        <p style="margin-top: 15px;">Mohon Tunggu... <br> Terima kasih!</p>
-    </div>
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        // toggle password
+        function togglePass() {
+            const pass = document.getElementById("password");
+            pass.type = pass.type === "password" ? "text" : "password";
         }
-    </style>
-`);
 
-        // Fungsi untuk menampilkan loading sebelum berpindah halaman
-        document.addEventListener("DOMContentLoaded", function () {
-            let links = document.querySelectorAll("a"); // Target semua link di halaman
-            links.forEach(link => {
-                link.addEventListener("click", function (event) {
-                    event.preventDefault(); // Mencegah navigasi langsung
-                    let overlay = document.getElementById("loadingOverlay");
+        // validasi email
+        function validasiEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
 
-                    overlay.style.visibility = "visible";
-                    overlay.style.opacity = "1";
+        // enter = login
+        document.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") login();
+        });
 
-                    let loadingTime = 8000; // 8 detik sebelum pindah halaman
-                    setTimeout(() => {
-                        window.location.href = this.href; // Pindah halaman setelah 8 detik
-                    }, loadingTime);
+        function login() {
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const emailError = document.getElementById("emailError");
+            const passError = document.getElementById("passError");
+            const box = document.getElementById("loginBox");
+
+            let valid = true;
+
+            // reset
+            email.classList.remove("error");
+            password.classList.remove("error");
+            emailError.innerText = "";
+            passError.innerText = "";
+
+            // validasi email
+            if (!email.value.trim()) {
+                emailError.innerText = "Email wajib diisi";
+                email.classList.add("error");
+                valid = false;
+            } else if (!validasiEmail(email.value)) {
+                emailError.innerText = "Format email tidak valid";
+                email.classList.add("error");
+                valid = false;
+            }
+
+            // validasi password
+            if (!password.value.trim()) {
+                passError.innerText = "Password wajib diisi";
+                password.classList.add("error");
+                valid = false;
+            }
+
+            if (!valid) return;
+
+            document.getElementById("globalLoading").style.display = "flex";
+
+            fetch(`${URL}?action=login&email=${encodeURIComponent(email.value)}&password=${encodeURIComponent(password.value)}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === "success") {
+                        localStorage.setItem("token", res.token);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        passError.innerText = "Email atau password salah";
+                        password.classList.add("error");
+
+                        // animasi shake
+                        box.classList.add("shake");
+                        setTimeout(() => box.classList.remove("shake"), 300);
+                    }
+                })
+                .catch(() => {
+                    alert("Koneksi gagal!");
+                })
+                .finally(() => {
+                    document.getElementById("globalLoading").style.display = "none";
                 });
-            });
+        }
+
+        // ===============================
+        // ANTI INSPECT (BASIC PROTECTION)
+        // ===============================
+
+        // blok klik kanan
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
         });
 
-        window.addEventListener("load", function () {
-            let overlay = document.getElementById("loadingOverlay");
-            overlay.style.visibility = "hidden";
-            overlay.style.opacity = "0";
+        // blok shortcut inspect
+        document.addEventListener("keydown", function (e) {
+
+            // F12
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+I / Ctrl+Shift+J
+            if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
+                e.preventDefault();
+            }
+
+            // Ctrl+U (view source)
+            if (e.ctrlKey && e.key === "u") {
+                e.preventDefault();
+            }
         });
+
+        // deteksi devtools terbuka
+        setInterval(function () {
+            const threshold = 160;
+
+            if (window.outerWidth - window.innerWidth > threshold ||
+                window.outerHeight - window.innerHeight > threshold) {
+
+                document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px;'>Akses dibatasi!</h1>";
+            }
+        }, 1000);
     </script>
 
 </body>
