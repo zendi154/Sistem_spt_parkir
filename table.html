@@ -328,17 +328,6 @@
                 e.preventDefault();
             }
         });
-
-        // deteksi devtools terbuka
-        setInterval(function () {
-            const threshold = 160;
-
-            if (window.outerWidth - window.innerWidth > threshold ||
-                window.outerHeight - window.innerHeight > threshold) {
-
-                document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px;'>Akses dibatasi!</h1>";
-            }
-        }, 1000);
     </script>
 
 </body>
