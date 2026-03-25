@@ -1,959 +1,2976 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Data Jukir Manual Bulanan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DASHBOARD & TABLE</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
-        /* Base styles */
+        /* =============================== BACKGROUND ================================*/
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            padding: 20px;
-            text-align: center;
-            background-color: #f4f6f8;
-            color: #333;
+            min-height: 100vh;
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #0d6efd, #20c997, #0dcaf0);
+            background-size: 300% 300%;
+            animation: bgMove 12s ease infinite;
         }
 
-        .navbar {
-            background-color: #007BFF;
-            padding: 10px 20px;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: auto;
-            flex-wrap: wrap;
-        }
-
-        .navbar-brand {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .navbar-menu {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            margin: 0;
-            padding: 0;
-        }
-
-        .navbar-menu li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-menu li a:hover {
-            color: #d4e6fb;
-        }
-
-        /* Optional: Responsive for smaller screens */
-        @media (max-width: 768px) {
-            .navbar-container {
-                flex-direction: column;
-                align-items: flex-start;
+        @keyframes bgMove {
+            0% {
+                background-position: 0% 50%
             }
 
-            .navbar-menu {
-                flex-direction: column;
-                width: 100%;
-                margin-top: 10px;
+            50% {
+                background-position: 100% 50%
             }
 
-            .navbar-menu li {
-                margin: 5px 0;
+            100% {
+                background-position: 0% 50%
             }
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #62f265, #133ff0, #f93f8f);
-            margin: 0;
-            padding: 20px;
-            color: #333;
+        /* =============================== CONTAINER LEBAR ================================*/
+        .container {
+            max-width: 95%;
         }
 
-        h2 {
-            text-align: center;
-            color: #0d47a1;
-            margin-bottom: 30px;
-            background-color: #bbdefb;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            font-size: 20px;
+        /* =============================== CARD ================================*/
+        .card {
+            backdrop-filter: blur(6px);
+            background: rgba(255, 255, 255, .95);
+            border-radius: 18px;
+            overflow: visible;
+            /* 🔥 penting supaya sticky tidak mati */
         }
 
-        table {
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto 40px;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            font-size: 13px;
+        .title-table {
+            font-weight: 700;
+            color: #0d6efd;
+            font-size: 1.5rem;
         }
 
-        table th,
-        table td {
-            border: 1px solid #ddd;
-            padding: 8px 6px;
-            text-align: center;
-            font-size: 12px;
-            transition: background-color 0.3s ease;
-        }
-
-        thead th {
-            background-color: #0d47a1;
-            color: #ffffff;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 13px;
-        }
-
-        thead tr:nth-child(2) th {
-            background-color: #1976d2;
-            font-weight: normal;
-            font-size: 12px;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #e3f2fd;
-            /* Lebih lembut dan cerah */
-        }
-
-        tbody tr:hover {
-            background-color: #7fea68;
-            /* Warna biru cerah saat hover */
-            transform: scale(1.01);
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        th[colspan="12"],
-        th[colspan="8"],
-        td[colspan="8"],
-        th[colspan="2"],
-        td[colspan="2"] {
-            background-color: rgb(249, 212, 3);
-            /* Biru lebih terang dengan transparansi */
-            color: rgb(39, 38, 38);
-            /* Menjaga teks tetap kontras */
-            font-weight: bold;
-            /* Menambahkan border untuk tepi yang lebih menonjol */
-        }
-
-        tfoot {
-            background-color: #2f2f30;
-            /* Biru gelap dengan sedikit gradasi */
-            color: white;
-            /* Teks footer yang jelas */
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-
-            table,
-            thead,
-            tbody,
-            th,
-            td,
-            tr {
-                display: block;
-            }
-
-            thead tr {
-                display: none;
-            }
-
-            tbody td {
-                text-align: right;
-                padding-left: 60%;
-                position: relative;
-            }
-
-            tbody td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 10px;
-                width: 45%;
-                padding-left: 10px;
-                font-weight: bold;
-                text-align: left;
-            }
-        }
-
-        /* Styling umum untuk form */
-        .form-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
-        }
-
-        /* Tombol print */
-        .no-print {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .no-print:hover {
-            background-color: #0056b3;
-        }
-
-        .no-print i {
-            margin-right: 8px;
-        }
-
-        /* Styling for the search wrapper */
-        .search-wrapper {
+        /* =============================== SEARCH ================================*/
+        .search-container {
             position: relative;
-            width: 300px;
-            /* Atur lebar sesuai kebutuhan */
-            margin: 20px 0;
+            width: 100%;
+            max-width: 320px;
         }
 
-        /* Icon styling */
+        .search-container input {
+            width: 100%;
+            padding: 10px 12px 10px 38px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5ff;
+            outline: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-container input:focus {
+            background: white;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, .2);
+        }
+
         .search-icon {
             position: absolute;
-            left: 10px;
             top: 50%;
+            left: 12px;
             transform: translateY(-50%);
+            color: #6c757d;
             font-size: 16px;
-            color: #007bff;
         }
 
-        /* Styling input field */
-        .search-input {
+        /* =============================== TABLE WRAPPER ================================*/
+        .table-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 12px;
+            position: relative;
+            /* 🔥 wajib untuk sticky */
+        }
+
+        /* =============================== TABLE ================================*/
+        #tableLaporan {
             width: 100%;
-            padding: 12px 12px 12px 30px;
-            /* Memberikan ruang untuk ikon */
+            min-width: 1800px;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-            transition: padding 0.2s ease, font-size 0.2s ease, transform 0.2s ease;
-            color: #333;
-            /* Pastikan teks input dapat terlihat */
         }
 
-        /* Shrinking placeholder effect when typing */
-        .search-input:focus {
-            padding-left: 30px;
-            /* Memberikan ruang untuk ikon tetap */
-            font-size: 14px;
-            /* Tetap ukuran font normal saat fokus */
+        /* =============================== HEADER ================================*/
+        #tableLaporan thead {
+            position: sticky;
+            top: 0;
+            z-index: 9;
         }
 
-        .search-input:focus::placeholder {
-            transform: translateY(-20px);
-            font-size: 12px;
-            color: #007bff;
-            /* Warna placeholder saat fokus */
-            transition: transform 0.2s ease, font-size 0.2s ease;
+        /* HEADER STICKY */
+        #tableLaporan thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 14px 16px;
+            text-align: center;
+            font-weight: 600;
+            white-space: nowrap;
+
+            /* 🔥 WAJIB agar tidak transparan */
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            color: white;
         }
 
-        /* Styling for placeholder */
-        .search-input::placeholder {
-            color: #888;
-            /* Warna placeholder default */
-            font-size: 14px;
-            /* Ukuran font normal untuk placeholder */
-            transition: transform 0.2s ease, font-size 0.2s ease;
+        /* =============================== CELL ================================*/
+        #tableLaporan td {
+            padding: 14px 16px;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
         }
 
-        /* Placeholder animation */
-        .search-input:focus::placeholder {
-            transform: translateY(-20px);
-            /* Placeholder naik saat fokus */
-            font-size: 12px;
-            /* Ukuran font placeholder saat fokus */
+        /* BORDER HEADER */
+        #tableLaporan th {
+            border: 1px solid #e0e0e0;
         }
 
-        /* Responsif untuk perangkat kecil */
-        @media (max-width: 768px) {
-            .form-toolbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .search-wrapper {
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            .no-print {
-                width: 100%;
-                margin-bottom: 10px;
-            }
+        /* ZEBRA */
+        #tableLaporan tbody tr:nth-child(even) {
+            background: #f8faff;
         }
 
-        /* Tata letak horizontal */
-        .form-toolbar {
+        /* HOVER */
+        #tableLaporan tbody tr:hover {
+            background: #e9f2ff;
+        }
+
+        /* =============================== KOLOM KHUSUS ================================*/
+        #tableLaporan td:nth-child(2) {
+            min-width: 220px;
+        }
+
+        #tableLaporan td:nth-child(3) {
+            min-width: 280px;
+        }
+
+        #tableLaporan td:nth-child(9) {
+            min-width: 300px;
+            white-space: normal;
+        }
+
+        #tableLaporan td:nth-child(11) {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* =============================== SCROLLBAR ================================*/
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #0d6efd;
+            border-radius: 10px;
+        }
+
+        /* ================= STICKY KOLOM ID ================= */
+
+        /* HEADER (ID) */
+        #tableLaporan thead th:first-child {
+            position: sticky;
+            left: 0;
+            top: 0;
+            z-index: 20;
+            /* 🔥 paling atas */
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            color: white;
+        }
+
+        /* ISI (ID) */
+        #tableLaporan tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background: #ffffff;
+        }
+
+        /* =============================== STATUS ================================*/
+        .status-tepat {
+            color: #198754;
+            font-weight: 600;
+        }
+
+        .status-terlambat {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* ================= DASHBOARD GRAFIK ================= */
+
+        .dashboard-grafik {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            /* Supaya tetap rapi di layar kecil */
-            margin-bottom: 20px;
+            justify-content: center;
+            margin-top: 30px;
         }
 
-        /* Tombol cetak */
-        @media print {
-            body * {
-                visibility: hidden;
+        .grafik-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 480px;
+        }
+
+        .judul-grafik {
+            text-align: center;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+
+        .grafik-container {
+            width: 380px;
+            height: 380px;
+            margin: auto;
+        }
+
+        #grafikBulanan {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* ================= DASHBOARD GRAFIK ================= */
+
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .grafik-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .grafik-box canvas {
+            height: 260px !important;
+        }
+
+        #suratSTD {
+            display: none;
+        }
+
+        #suratSTD {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background: white;
+            font-family: Arial;
+            font-size: 14px;
+        }
+
+        #suratSTD table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #suratSTD td,
+        #suratSTD th {
+            border: 1px solid black;
+            padding: 6px;
+        }
+
+        .kop {
+            text-align: center;
+        }
+
+        .logo {
+            width: 70px;
+        }
+
+        .bank-box {
+            border: 1px solid black;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        #formEmail {
+            position: fixed;
+            top: 30%;
+            left: 40%;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        /*----ICON EMAIL PDF----*/
+
+        .icon-btn {
+            margin: 0 4px;
+            font-size: 18px;
+            color: #007bff;
+            transition: 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: #0056b3;
+            transform: scale(1.2);
+        }
+
+        .icon-btn.print {
+            color: #28a745;
+        }
+
+        .icon-btn.print:hover {
+            color: #1e7e34;
+        }
+
+        .tooltip-balon {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* WRAPPER */
+        .tooltip-balon {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* BALON */
+        .tooltip-balon .isi-tooltip {
+            visibility: hidden;
+            opacity: 0;
+
+            position: absolute;
+            bottom: 140%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.9);
+
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 10px;
+
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+            transition: all 0.25s ease;
+            z-index: 999;
+        }
+
+        /* SEGITIGA */
+        .tooltip-balon .isi-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+
+            border-width: 6px;
+            border-style: solid;
+            border-color: #ff9800 transparent transparent transparent;
+        }
+
+        /* ANIMASI SAAT MUNCUL */
+        .tooltip-balon:hover .isi-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0px) scale(1);
+        }
+
+        /* ICON EFFECT */
+        .icon-status {
+            font-size: 18px;
+            transition: 0.2s;
+        }
+
+        /* ICON HOVER (biar ikut hidup) */
+        .tooltip-balon:hover .icon-status {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.8));
+        }
+
+        @keyframes pulseWarning {
+            0% {
+                transform: scale(1);
             }
 
-            #printArea,
-            #printArea * {
-                visibility: visible;
+            50% {
+                transform: scale(1.15);
             }
 
-            #printArea {
-                position: absolute;
-                left: 0;
-                top: 0;
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .icon-status {
+            animation: pulseWarning 1.5s infinite;
+        }
+
+        /* Ukuran Kertas Pdf */
+        @page {
+            size: F4;
+            /* atau legal */
+            margin: 15px;
+        }
+
+        .icon-status {
+            font-size: 18px;
+        }
+
+        /* =============================== RESPONSIVE ================================*/
+        @media(max-width:768px) {
+
+            .search-container {
                 width: 100%;
             }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 11px;
+            #tableLaporan {
+                font-size: 12px;
             }
 
-            th,
-            td {
-                border: 1px solid black;
-                padding: 4px;
-                text-align: center;
-            }
-
-            .no-print {
-                display: none;
-            }
-
-            h2 {
-                font-size: 16px;
-                text-align: center;
-                margin-bottom: 10px;
-            }
         }
     </style>
 </head>
 
-<body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-brand">Sistem Retribusi Parkir Tepi Jalan Umum</div>
-            <ul class="navbar-menu">
-                <li><a href="fomulir.html">Beranda</a></li>
-            </ul>
+<body oncontextmenu="return false" onselectstart="return false">
+
+    <div class="container mt-5">
+
+        <div class="card shadow-lg border-0">
+
+            <div class="card-body">
+
+                <h4 class="title-table mb-3">
+                    <i class="bi bi-file-earmark-text"></i> Data Laporan Notaris
+                </h4>
+
+                <div class="row g-2 mb-3 align-items-center">
+
+                    <!-- SEARCH -->
+                    <div class="col-md-6">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                            <input type="text" id="searchNotaris" class="form-control ps-5"
+                                placeholder="Cari Nama Notaris / PPAT...">
+                        </div>
+                    </div>
+
+                    <!-- PILIH TAHUN -->
+                    <div class="col-md-3">
+                        <select id="filterTahun" class="form-control">
+                            <option selected disabled value>Pilih Tahun</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030">2030</option>
+                        </select>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-primary w-100" onclick="generateBulan()">
+                            <i class="bi bi-calendar"></i> Tampilkan Bulan
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- CONTAINER BULAN -->
+                <div id="listBulan" class="row g-2 mb-3"></div>
+
+                <!-- FILTER -->
+                <div class="row g-2 mb-3">
+
+                    <div class="col-md-3">
+                        <input type="date" id="tglAwal" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <input type="date" id="tglAkhir" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-primary w-100" onclick="filterTanggal()">
+                            <i class="bi bi-funnel"></i> Filter Tanggal
+                        </button>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-success w-100" onclick="exportExcel()">
+                            <i class="bi bi-file-earmark-excel"></i> Export Excel
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-wrapper">
+
+                    <table id="tableLaporan">
+
+                        <thead>
+                            <tr>
+                                <th>Nomor Unik</th>
+                                <th>Nama</th>
+                                <th>Alamat Kantor</th>
+                                <th>Nomor Surat</th>
+                                <th>Tanggal Surat</th>
+                                <th>Tanggal Diterima</th>
+                                <th>Status Surat</th>
+                                <th>Laporan Bulanan</th>
+                                <th>Data Transaksi</th>
+                                <th>Jumlah Laporan</th>
+                                <th>SSPD BPHTB (Rp)</th>
+                                <th>Bentuk Perbuatan Hukum</th>
+                                <th>Nomor STD</th>
+                                <th>PDF STD</th>
+                                <th>System Note</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="dataNotaris">
+
+                    </table>
+
+                    <div class="row mt-3 p-3 bg-light rounded shadow-sm">
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">
+                                📊 Jumlah Laporan Diterima :
+                                <span id="totalLaporan">0</span>
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6 text-end">
+                            <h6 class="fw-bold text-success">
+                                💰 BPHTB :
+                                <span id="totalSSPD">Rp. 0</span>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-wrapper">
+
+                    <div class="grafik-box">
+                        <h6>📊 Notaris Melapor per Bulan</h6>
+                        <canvas id="grafikBulanan"></canvas>
+                    </div>
+
+                    <div class="grafik-box">
+                        <h6>⏱ Status Laporan</h6>
+                        <canvas id="grafikStatus"></canvas>
+                    </div>
+
+                    <div class="grafik-box">
+                        <h6>🏆 Notaris Paling Aktif</h6>
+                        <canvas id="grafikTopNotaris"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    </div> <br><br>
+    <!-- Footer Sticky -->
+    <footer class="footer-sticky">
+        <p>
+            &copy; <span id="year"></span>2023 All Rights Reserved
+            <span class="love">❤️</span>
+        </p>
+    </footer>
+    <br>
+
+    <!-- Navbar -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-2">
+        <div class="container d-flex justify-content-between align-items-center">
+
+            <!-- Kiri: Judul -->
+            <a class="navbar-brand d-flex align-items-center" href="">
+                <i class="bi bi-gear-fill"></i> Table Data PPAT
+            </a>
+
+            <!-- Kanan: Icon Scan -->
+            <a href="fomulir.html" class="text-white fs-4 text-decoration-none">
+                <i class="bi bi-file-earmark-text"></i> Formulir PPAT
+            </a>
+            <!-- Kanan: Icon Scan -->
+            <a href="datajukir.html" class="text-white fs-4 text-decoration-none">
+                <i class="bi bi-send"> Tanda Terima Surat</i>
+            </a>
+            <!-- Kanan: Icon Scan -->
+            <a href="table.html" onclick="logout()" class="text-white fs-4 text-decoration-none">
+                <i class="bi bi-box-arrow-right"></i> LOGOUT
+            </a>
         </div>
     </nav>
+    <!-- Akhir Navbar -->
 
-    <form id="jukirForm" class="form-toolbar">
-        <input type="hidden" id="korlap">
+    <script>
+        const hamburger = document.querySelector('.navbar-toggler');
+        const stikyTop = document.querySelector('.sticky-top');
 
-        <button class="no-print" onclick="printTable()">
-            <i class="fas fa-print"></i> Print
-        </button>
+        offcanvas.addEventListener('show.bs.offcanvas', function () {
+            stikyTop.style.overflow = 'visible';
+        });
+        offcanvas.addEventListener('hidden.bs.offcanvas', function () {
+            stikyTop.style.overflow = 'hidden';
+        });
+    </script>
 
-        <div class="search-wrapper">
-            <i class="search-icon fas fa-search"></i>
-            <input type="text" id="searchInput" class="search-input"
-                placeholder="Cari Data Nama Juru Parkir / Lokasi Parkir" oninput="renderTable()" />
-        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 
-        <h2><i class="fas fa-table"></i>
-            Data Retribusi Parkir Tepi Jalan Umum Kota Bengkulu ZONA 06</h2>
-        <table id="jukirTable">
-            <thead>
+    <script>
+        /* =========================
+           FUNGSI LOGIN DAN LOGOUT
+           ========================= */
+        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+
+        function cekLogin() {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                window.location.href = "table.html";
+                return;
+            }
+
+            fetch(`${URL}?action=check&token=${token}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status !== "valid") {
+                        localStorage.removeItem("token");
+                        window.location.href = "table.html";
+                    }
+                })
+                .catch(() => {
+                    window.location.href = "table.html";
+                });
+        }
+
+        // jalankan saat halaman dibuka
+        cekLogin();
+
+        // Fungsi LogOut
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "table.html";
+        }
+
+        /* =========================
+           FUNGSI UTAMA DASHBOARD & TABLE
+           ========================= */
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzyEbjyPzsVWGcQQL_W_OdOowWeU2oTVUcOL4KztEX_K0Y563dpSQjSbIzT9-FVzA6cHQ/exec';
+        const form = document.forms['LAPORAN NOTARIS'];
+        const btnKirim = document.querySelector('.btn-kirim');
+        const loading = document.querySelector('.loading-wrapper');
+        const success = document.querySelector('.success-wrapper');
+        let lastJumlah = null;
+        let transaksiList = [];
+
+        /* =========================
+       LOAD DATA GOOGLE SHEET
+        ========================= */
+
+        function loadDataSheet() {
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    // ======================
+                    // PENANDA DATA PERTAMA (ANTI DUPLIKAT AKSI)
+                    // ======================
+                    let seen = new Set();
+                    const tbody = document.querySelector("#dataNotaris");
+                    tbody.innerHTML = "";
+
+                    data.sort((a, b) => {
+
+                        const urutanBulan = [
+                            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                        ];
+
+                        // ======================
+                        // 1. AMBIL BULAN
+                        // ======================
+                        let bulanA = a["laporan_bulanan"] || "";
+                        let bulanB = b["laporan_bulanan"] || "";
+
+                        let [namaBulanA, tahunA] = bulanA.split(" ");
+                        let [namaBulanB, tahunB] = bulanB.split(" ");
+
+                        let indexA = urutanBulan.indexOf(namaBulanA);
+                        let indexB = urutanBulan.indexOf(namaBulanB);
+
+                        // ======================
+                        // 2. URUTKAN TAHUN
+                        // ======================
+                        if (tahunA !== tahunB) {
+                            return parseInt(tahunA || 0) - parseInt(tahunB || 0);
+                        }
+
+                        // ======================
+                        // 3. URUTKAN BULAN
+                        // ======================
+                        if (indexA !== indexB) {
+                            return indexA - indexB;
+                        }
+
+                        // ======================
+                        // 4. URUTKAN TANGGAL
+                        // ======================
+                        function parseTanggal(tgl) {
+                            if (!tgl) return new Date(0);
+
+                            if (tgl.includes("/")) {
+                                let [dd, mm, yyyy] = tgl.split("/");
+                                return new Date(`${yyyy}-${mm}-${dd}`);
+                            }
+
+                            return new Date(tgl);
+                        }
+
+                        let tglA = parseTanggal(a["tanggal_diterima"]);
+                        let tglB = parseTanggal(b["tanggal_diterima"]);
+
+                        if (tglA.getTime() !== tglB.getTime()) {
+                            return tglA - tglB;
+                        }
+
+                        // ======================
+                        // 5. JIKA SAMA → NAMA
+                        // ======================
+                        let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
+                        let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
+
+                        return namaA.localeCompare(namaB);
+                    })
+
+                        .forEach(row => {
+                            let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
+                            let isFirst = !seen.has(key);
+
+                            if (isFirst) {
+                                seen.add(key);
+                            }
+
+                            let tr = document.createElement("tr");
+
+                            let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                            let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
+                            let statusEmail = row["status_email"] || "";
+
+                            // Warna baris
+                            if (statusTerlambat === "TIDAK VALID") {
+                                tr.style.backgroundColor = "#ff0000"; // merah terang
+                            }
+
+                            // Aksi tombol
+                            let actionHTML = "";
+
+                            if (isFirst && statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
+                                // tombol hanya untuk data pertama saja
+                                actionHTML = `
+                            <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda">
+                                <i class="bi bi-envelope-fill"></i>
+                            </button>
+                            <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                             `;
+                            } else {
+
+                                if (statusTerlambat === "TIDAK VALID") {
+                                    // SEMUA TERLAMBAT = TANDA SERU KUNING
+                                    actionHTML = `<div class="text-center">
+                                <div class="tooltip-balon">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning icon-status"></i>
+                                    <div class="isi-tooltip">
+                                        Terlambat : (${hariTelat}) hari
+                                    </div>
+                                </div>
+                            </div>`;
+                                } else {
+                                    // ✅ VALID
+                                    actionHTML = `<div class="text-center">
+                        <i class="bi bi-check-lg text-success" title="Valid / Terkirim"></i>
+                    </div>`;
+                                }
+
+                            }
+
+                            /*Fungsi Table*/
+
+                            tr.innerHTML = `
+                    <td>${row["id"] || ""}</td>
+                    <td>
+                        ${row["nama_notaris_&_ppat"] || ""}
+                        ${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}
+                    </td>
+                    <td>${row["alamat"] || ""}</td>
+                    <td>${row["nomor_surat"] || ""}</td>
+                    <td>${row["tanggal_surat"] || ""}</td>
+                    <td>${row["tanggal_diterima"] || ""}</td>
+                    <td>${row["status_surat"] || ""}</td>
+                    <td>${row["laporan_bulanan"] || ""}</td>
+                    <td>${row["data_transaksi"] || ""}</td>
+                    <td>${row["jumlah_laporan"] || ""}</td>
+                    <td>${row["sspd_bphtb"] || ""}</td>
+                    <td>${row["keterangan"] || ""}</td>
+                    <td style="text-align:center;">
+                        ${row["nomor_std"] && row["nomor_std"].trim() !== ""
+                                    ? `<b>${row["nomor_std"]}</b>`
+                                    : `<span style="color:gray;">-</span>`}
+                    </td>
+                    <td style="text-align:center;">
+                        ${row["file_pdf"]
+                                    ? `
+                                    <a href="${row["file_pdf"]}" target="_blank" title="Lihat STD" class="icon-btn">
+                                    <i class="bi bi-eye-fill"></i>
+                                    </a>
+
+                                    <a href="#" onclick="printPDF('${row["file_pdf"]}')" title="Print STD" class="icon-btn print">
+                                    <i class="bi bi-printer-fill"></i>
+                                    </a>
+                                    `
+                                    : "<span style='color:gray'>-</span>"}
+                    </td>
+                    <td>${statusTerlambat}</td>
+                    <td>${actionHTML}</td>
+                `;
+
+                            tbody.appendChild(tr);
+                        });
+
+                    hitungTotal();
+                    grafikBulanan();
+                    grafikStatus();
+                    grafikTopNotaris();
+                });
+        }
+
+        /*Hapus Data*/
+
+        function hapusData(btn) {
+
+            if (!confirm("Yakin ingin menghapus data ini?")) return
+
+            let row = btn.closest("tr")
+
+            let id = row.cells[0].innerText
+
+            fetch("https://script.google.com/macros/s/AKfycbzyEbjyPzsVWGcQQL_W_OdOowWeU2oTVUcOL4KztEX_K0Y563dpSQjSbIzT9-FVzA6cHQ/exec?hapus=" + id)
+                .then(r => r.text())
+                .then(res => {
+
+                    alert("Data berhasil dihapus")
+
+                    row.remove()
+
+                })
+
+        }
+
+        function buatPDF(data) {
+
+            var html = `
+                <html>
+                <head>
+                <div class="kop">
+                PEMERINTAH KOTA BENGKULU
+                </div>
+
+                </td>
+
+                <td class="no-box">
+
+                NO URUT<br><br>
+                <b>${data.no}</b>
+
                 <tr>
-                    <th>No</th>
-                    <th>Nama Jukir</th>
-                    <th>Lokasi Tugas Parkir</th>
-                    <th>Zona<br>Parkir</th>
-                    <th>No. Titik<br>Parkir</th>
-                    <th>Target/Bulan</th>
-                    <th colspan="12">Status Pembayaran Dalam 12 Bulan</th>
-                    <th>Pesan<br>(System)</th>
-                    <th>Total Setoran</th>
+                <td width="200">BULAN</td>
+                <td>: ${data.bulan}</td>
                 </tr>
+
                 <tr>
-                    <td colspan="6"></td>
-                    <th>Jan</th>
-                    <th>Feb</th>
-                    <th>Mar</th>
-                    <th>Apr</th>
-                    <th>Mei</th>
-                    <th>Jun</th>
-                    <th>Jul</th>
-                    <th>Agu</th>
-                    <th>Sep</th>
-                    <th>Okt</th>
-                    <th>Nov</th>
-                    <th>Des</th>
-                    <td colspan="2"></td>
+                <td>TAHUN</td>
+                <td>:  ${data.tahunSekarang}</td>
                 </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <script src="script.js"></script>
 
-        <script>
-            let dataJukir = JSON.parse(localStorage.getItem('dataJukir')) || [];
-            let editIndex = null;
+                <tr>
+                <td>NAMA NOTARIS / PPAT</td>
+                <td>: ${data.nama}</td>
+                </tr>
 
-            function saveToLocalStorage() {
-                localStorage.setItem('dataJukir', JSON.stringify(dataJukir));
-            }
+                <tr>
+                <td>ID</td>
+                <td>: ${data.id}</td>
+                </tr>
 
-            // Format input setoranDisplay menjadi rupiah saat diketik
-            document.addEventListener('DOMContentLoaded', function () {
-                const setoranInput = document.getElementById('setoranDisplay');
+                <tr>
+                <td>ALAMAT</td>
+                <td>: ${data.alamat}</td>
+                </tr>
 
-                setoranInput.addEventListener('input', function (e) {
-                    // Ambil hanya angka
-                    let value = this.value.replace(/[^,\d]/g, '');
-                    // Tampilkan dalam format Rp
-                    this.value = formatRupiah(value, 'Rp ');
-                });
-            });
+                </table>
 
-            function formatRupiah(angka, prefix) {
-                const number_string = angka.replace(/[^,\d]/g, '').toString();
-                const split = number_string.split(',');
-                const sisa = split[0].length % 3;
-                let rupiah = split[0].substr(0, sisa);
-                const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-                if (ribuan) rupiah += (sisa ? '.' : '') + ribuan.join('.');
-                return prefix + rupiah + (split[1] !== undefined ? ',' + split[1] : '');
-            }
+                <tr>
+                <td align="center">1</td>
+                <td>Jumlah Laporan / Pelanggaran Profesi</td>
+                <td align="center">${data.jumlah}</td>
+                </tr>
 
-            // Fungsi untuk format nominal menjadi Rupiah
-            function formatRupiah(angka) {
-                var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                <tr>
+                <td align="center">2</td>
+                <td>Laporan Yang Dilanggar</td>
+                <td>${data.bulan}</td>
+                </tr>
 
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                }
+                <tr>
+                <td align="center">3</td>
+                <td>Sanksi Administratif (Denda)</td>
+                <td>Rp ${data.denda}</td>
+                </tr>
 
-                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-                return 'Rp ' + rupiah;
-            }
+                <tr>
+                <td colspan="3">
 
-            // Fungsi untuk menangani input di setiap bulan
-            function updateRupiahInput() {
-                var inputs = document.querySelectorAll('.rupiah-input');
-                inputs.forEach(input => {
-                    input.addEventListener('input', function () {
-                        var angka = this.value;
-                        this.value = formatRupiah(angka);
-                    });
-                });
-            }
+                <b>TERBILANG : ${data.terbilang} Rupiah</b>
 
-            // Memanggil fungsi updateRupiahInput untuk menangani setiap input
-            updateRupiahInput();
+                Bengkulu, ${data.tanggal}
 
-            function parseRupiahToNumber(rupiah) {
-                return parseInt(rupiah.replace(/[^0-9]/g, ''), 10) || 0;
-            }
+                </table>
 
-            function generateKorlapID() {
-                const today = new Date();
-                const dd = String(today.getDate()).padStart(2, '0');
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const yyyy = today.getFullYear();
-                const kode = Math.floor(100 + Math.random() * 900);
-                return `P.3.KLP.${dd}${mm}${yyyy}.${kode}`;
-            }
+                </body>
+                </html>
+                `
 
-            function hitungKurangBayar(targetPerBulan, setoranBulanan) {
-                return setoranBulanan.map(setor => targetPerBulan - setor);
-            }
+            var pdf = Utilities
+                .newBlob(html, "text/html")
+                .getAs("application/pdf")
+                .setName("STD-" + $data.nama + ".pdf")
 
-            function renderTable() {
-                const tbody = document.querySelector('#jukirTable tbody');
-                tbody.innerHTML = '';  // Clear existing rows
-                let counter = 1;
-                let grandTotalSetoran = 0;
-                let grandTotalPiutang = 0;
+            return pdf
 
-                const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        }
 
-                const filteredData = dataJukir.filter(data =>
-                    data.nama.toLowerCase().includes(keyword) ||
-                    data.lokasi.toLowerCase().includes(keyword) ||
-                    data.zona.toLowerCase().includes(keyword)
-                );
-
-                // Check if no data is found after filtering
-                if (filteredData.length === 0) {
-                    alert('Mohon Maaf Data tidak ditemukan!');
-                }
-
-                filteredData.forEach((data) => {
-                    const indexAsli = dataJukir.indexOf(data); // Index asli di array utama
-
-                    const row1 = tbody.insertRow();
-                    row1.innerHTML = `
-                    <td>${counter}</td>
-                    <td>${data.nama}</td>
-                    <td>${data.lokasi}</td>
-                    <td>${data.zona}</td>
-                    <td>${data.titik}</td>
-                    <td>${data.setoranManual}</td>
-                    `;
-
-                    data.setoran.forEach(setor => {
-                        const cell = row1.insertCell();
-                        cell.textContent = formatRupiah(setor.toString(), 'Rp ');
-                        cell.style.color = (setor === 0) ? 'red' : 'darkgreen';
-                        cell.style.fontWeight = 'medium';
-                    });
-
-                    const targetPerBulan = parseRupiahToNumber(data.setoranManual);
-                    const totalSetoran = data.setoran.reduce((a, b) => a + b, 0);
-                    const kurangBayar = hitungKurangBayar(targetPerBulan, data.setoran);
-                    const totalKurang = kurangBayar.reduce((a, b) => a + b, 0);
-                    const totalTarget = targetPerBulan * data.setoran.length;
-                    const selisih = totalSetoran - totalTarget;
-
-                    const bulanSekarang = new Date().getMonth(); // 0 = Januari
-                    const triwulanSekarang = Math.floor(bulanSekarang / 3) + 1;
-
-                    const namaBulan = [
-                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                    ];
-
-                    // 🔢 Inisialisasi data triwulan
-                    const triwulanData = {
-                        1: [],
-                        2: [],
-                        3: [],
-                        4: []
-                    };
-
-                    // ✅ Kelompokkan bulan yang belum lunas, tapi hanya sampai triwulan sekarang
-                    for (let i = 0; i < 12; i++) {
-                        const triwulanKe = Math.floor(i / 3) + 1;
-                        if (triwulanKe > triwulanSekarang) continue; // Jangan tampilkan triwulan berikutnya
-
-                        const setor = data.setoran[i] || 0;
-                        if (setor < targetPerBulan) {
-                            triwulanData[triwulanKe].push(namaBulan[i]);
-                        }
-                    }
-
-                    // Hapus triwulan 1 jika sudah lunas semua
-                    if (triwulanData[1].length === 0) {
-                        delete triwulanData[1];
-                    }
-
-                    const triwulanBelumLunas = Object.entries(triwulanData)
-                        .filter(([_, bulan]) => bulan.length > 0)
-                        .map(([tw, bulan]) => `Triwulan.${tw}_📌(${bulan.join(', ')})`);
-
-                    // ✅ Tentukan status
-                    let status = '';
-
-                    // Jika ada override lunas dari data lama, tetap anggap lunas
-                    if (data.statusOverride === 'Lunas') {
-                        status = 'Lunas';
-                    } else {
-                        if (totalSetoran === 0) {
-                            status = 'Piutang 😞';
-                        } else if (totalKurang === 0) {
-                            status = 'Lunas 😁';
-                            data.setoran = data.setoran.map(setor => setor === 0 ? targetPerBulan : setor); // pelunasan otomatis
-                        } else if (triwulanBelumLunas.length > 0) {
-                            status = '⚠️';
-                        } else if (data.setoran[bulanSekarang] < targetPerBulan) {
-                            status = 'Proses (Bulan Berjalan)';
-                        } else {
-                            status = 'Proses Bayar';
-                        }
-                    }
-
-                    // 🖨️ Tampilkan ke keterangan
-                    const keteranganCell = row1.insertCell();
-                    keteranganCell.style.fontSize = '13px';
-
-                    let keteranganText = status;
-
-                    // Tambahkan catatan perubahan target jika ada
-                    if (data.setoranManualSebelumnya && data.setoranManual !== data.setoranManualSebelumnya) {
-                        keteranganText += `\n 🔄 Target berubah dari ${data.setoranManualSebelumnya} Menjadi ${data.setoranManual}`;
-                    }
-
-                    // Tambahkan info bulan belum lunas (selain Triwulan 1 yang sudah dihapus)
-                    if (status === '⚠️' && triwulanBelumLunas.length > 0) {
-                        keteranganText += '\n' + triwulanBelumLunas.join('\n');
-                    }
-
-                    keteranganCell.textContent = keteranganText;
-                    keteranganCell.style.whiteSpace = 'pre-line';
-                    keteranganCell.style.color = {
-                        'Lunas 😁': 'green',
-                        'Proses Bayar': 'orange',
-                        'Piutang 😞': 'red',
-                        '⚠️': '#cc3300',
-                        'Proses (Bulan Berjalan)': '#FF9900'
-                    }[status];
-
-                    if (triwulanBelumLunas.length > 0) {
-                        keteranganCell.title = `*Belum lunas ${triwulanBelumLunas.join(', ')}`;
-                    }
-
-                    row1.insertCell().textContent = formatRupiah(totalSetoran.toString(), 'Rp ');
-
-                    grandTotalSetoran += totalSetoran;
-                    grandTotalPiutang += totalKurang;
-                    counter++;
-
-                    // Baris kedua (kurang bayar)
-                    const row2 = tbody.insertRow();
-                    const labelCell = row2.insertCell();
-                    labelCell.colSpan = 6;
-                    labelCell.style.fontStyle = 'italic';
-                    labelCell.textContent = '*Catatan : (🟧) Kurang Bayar / (🔴) Piutang / (🔵) Lebih Bayar / (🟢) Lunas';
-
-                    data.setoran.forEach((setor, bulanIndex) => {
-                        const cell = row2.insertCell();
-                        const kurang = kurangBayar[bulanIndex];
-
-                        if (setor === 0) {
-                            // Piutang = belum setor sama sekali
-                            cell.textContent = `😞 ${formatRupiah(kurang.toString(), 'Rp ')}`;
-                            cell.style.color = 'red';
-                            cell.title = 'Belum Ada setoran sama sekali (Piutang) 😞';
-                        } else if (kurang > 0) {
-                            // Kurang bayar
-                            cell.textContent = `🫤 Kurang ${formatRupiah(kurang.toString(), 'Rp ')}`;
-                            cell.style.color = 'orange';
-                            cell.title = 'Kurang bayar 🫤';
-                        } else if (setor > targetPerBulan) {
-                            // Lebih bayar (WOW!)
-                            const lebihBayar = setor - targetPerBulan;
-                            cell.textContent = `🤯 WOW! ${formatRupiah(lebihBayar.toString(), 'Rp ')}`;
-                            cell.style.color = 'blue';
-                            cell.title = 'Kamu Lebih bayar dari target (Hebat!) 🤯';
-                        } else {
-                            // Lunas
-                            cell.textContent = '😁 LUNAS ';
-                            cell.style.color = 'green';
-                            cell.title = 'Terimakasih, Telah Membayar Pajak 😁 ';
-                        }
-
-                        cell.style.fontWeight = 'bold';
-                    });
-
-                    // Memeriksa apakah bulan sudah lunas
-                    const isLunas = data.status === 'Lunas';  // Misalnya status sudah ada pada data untuk menandai jika bulan sudah lunas
-
-                    const piutangCell = row2.insertCell();
-                    piutangCell.colSpan = 2;
-                    piutangCell.style.textAlign = 'center';
-                    piutangCell.style.fontWeight = 'bold';
-
-                    if (isLunas) {
-                        // Jika sudah lunas, tampilkan status lunas meskipun ada perubahan target
-                        piutangCell.textContent = '🟢 *LUNAS 😁';
-                        piutangCell.style.color = 'green';
-                        piutangCell.title = 'Pembayaran sudah pas';
-                    } else {
-                        if (selisih < 0) {
-                            // Kekurangan (Piutang)
-                            piutangCell.textContent = '😞 *Total Piutang ' + formatRupiah(Math.abs(selisih).toString(), 'Rp ');
-                            piutangCell.style.color = 'red';
-                            piutangCell.title = 'Masih ada kekurangan pembayaran';
-                        } else if (selisih > 0) {
-                            // Kelebihan
-                            piutangCell.textContent = '🔵 *Lebih Bayar 😊 ' + formatRupiah(selisih.toString(), 'Rp ');
-                            piutangCell.style.color = 'blue';
-                            piutangCell.title = 'Pembayaran melebihi target';
-                        } else {
-                            // Lunas pas
-                            piutangCell.textContent = '🟢 *LUNAS 😁';
-                            piutangCell.style.color = 'green';
-                            piutangCell.title = 'Pembayaran sudah pas';
-                        }
-                    }
-                });
-
-                // Total baris
-                const totalPiutangRow = tbody.insertRow();
-                totalPiutangRow.innerHTML = `
-        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Piutang Juru Parkir Zona (06) :</td>
-        <td style="font-weight:bold;">${formatRupiah(grandTotalPiutang.toString(), 'Rp ')}</td>
-        <td></td>
+        // ===============================
+        // Buat spinner tapi tetap tersembunyi
+        // ===============================
+        (function () {
+            const loading = document.createElement("div");
+            loading.id = "globalLoading";
+            loading.style = `
+        display:none; /* tetap tersembunyi */
+        position:fixed;
+        z-index:9999;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.3);
+        align-items:center;
+        justify-content:center;
     `;
-
-                const totalRow = tbody.insertRow();
-                totalRow.innerHTML = `
-        <td colspan="19" style="text-align:right; font-weight:bold;"> Jumlah Setoran Juru Parkir Zona (06) :</td>
-        <td style="font-weight:bold;">${formatRupiah(grandTotalSetoran.toString(), 'Rp ')}</td>
-        <td></td>
-    `;
-
-                const legendaRow = tbody.insertRow();
-                const legendaCell = legendaRow.insertCell();
-                legendaCell.colSpan = 24;
-                legendaCell.innerHTML = `
-        <div style="margin-top:10px; font-size: 14px;">
-            <strong>Makna Warna :</strong><br>
-            <span style="color: red; font-weight: bold;">Warna Merah :</span> Tidak ada setoran (Rp 0)<br>
-            <span style="color: orange; font-weight: bold;">Warna Oranye :</span> Setoran kurang dari target bulan<br>
-            <span style="color: blue; font-weight: bold;">Warna Biru :</span> Lebih bayar (Setoran lebih dari target)<br>
-            <span style="color: green; font-weight: bold;">Warna Hijau :</span> Setoran sesuai atau lunas
+            loading.innerHTML = `
+        <div style="text-align:center;">
+            <div style="
+                width:40px;height:40px;
+                border:5px solid #ccc;
+                border-top:5px solid #2d89ef;
+                border-radius:50%;
+                animation:spin 1s linear infinite;
+                margin:auto;"></div>
+            <div style="color:#fff;margin-top:10px;">Mengirim email...</div>
         </div>
     `;
+            document.body.appendChild(loading);
 
-                // Event listener untuk input pencarian
-                document.addEventListener("DOMContentLoaded", () => {
-                    document.getElementById('searchInput').addEventListener('input', renderTable);
-
-                    // Panggil renderTable pertama kali saat halaman dimuat
-                    renderTable();
-                });
-            }
-
-            function fillFormForEdit(index) {
-                const data = dataJukir[index];
-                editIndex = index;
-
-                document.getElementById('nama').value = data.nama;
-                document.getElementById('lokasi').value = data.lokasi;
-                document.getElementById('zona').value = data.zona;
-                document.getElementById('titik').value = data.titik;
-                document.getElementById('setoranDisplay').value = data.setoranManual;
-                document.getElementById('keterangan').value = data.keterangan;
-
-                ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'].forEach((id, i) => {
-                    document.getElementById(id).value = formatRupiah(data.setoran[i].toString(), 'Rp ');
-                });
-            }
-
-            document.getElementById('jukirForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                const korlapID = editIndex === null ? generateKorlapID() : dataJukir[editIndex].korlapID;
-
-                const nama = document.getElementById('nama').value;
-                const zona = document.getElementById('zona').value;
-                const titik = document.getElementById('titik').value;
-                const lokasi = document.getElementById('lokasi').value;
-                const setoranManual = document.getElementById('setoranDisplay').value;
-                const keterangan = document.getElementById('keterangan').value;
-
-                const bulanIds = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
-                const setoran = bulanIds.map(id => parseRupiahToNumber(document.getElementById(id).value));
-                const totalSetoran = setoran.reduce((total, bulan) => total + bulan, 0);
-
-                const data = {
-                    nama, alamat, zona, titik, lokasi,
-                    setoranManual, setoran, totalSetoran, keterangan
-                };
-
-                // Di dalam handle submit:
-                if (editIndex !== null) {
-                    const oldData = dataJukir[editIndex];
-
-                    // Simpan target lama jika berubah
-                    if (oldData.setoranManual !== setoranManual) {
-                        data.setoranManualSebelumnya = oldData.setoranManual;
-                    }
-
-                    // Jika sebelumnya lunas, simpan statusOverride
-                    const oldTarget = parseRupiahToNumber(oldData.setoranManual);
-                    const oldTotalTarget = oldTarget * 12;
-                    const oldTotalSetoran = oldData.setoran.reduce((a, b) => a + b, 0);
-
-                    if (oldTotalSetoran >= oldTotalTarget) {
-                        data.statusOverride = 'Lunas';
-                    }
-                }
-
-                if (editIndex === null) {
-                    dataJukir.push(data);
-                } else {
-                    dataJukir[editIndex] = data;
-                    editIndex = null;
-                }
-
-                saveToLocalStorage();
-                renderTable();
-                this.reset();
-
-                // Tambahkan setelah renderTable() dan this.reset()
-                const submitButton = document.querySelector('.btn-submit');
-                const btnText = submitButton.querySelector('span') || submitButton;
-
-                // Ubah tombol jadi loading
-                submitButton.disabled = true;
-                btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan Data...';
-
-                // Simulasi delay untuk UX (bisa dihapus kalau tidak perlu)
-                setTimeout(() => {
-                    // Kembalikan tombol ke kondisi semula
-                    btnText.innerHTML = 'Simpan';
-                    submitButton.disabled = false;
-
-                    // Tampilkan alert
-                    alert("Terimkasih, Data berhasil disimpan!");
-                }, 4000);
-
-            });
-
-            function openTab(tabId) {
-                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-                document.getElementById(tabId).style.display = 'block';
-            }
-
-            window.addEventListener('load', renderTable);
-
-            function printTable() {
-                const originalContent = document.body.innerHTML;
-                const printContent = document.getElementById('jukirTable').outerHTML;
-
-                // Mengambil tanggal saat ini
-                const today = new Date();
-                const formattedDate = today.toLocaleDateString('id-ID', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                });
-
-                // Style untuk cetakan
-                const style = `
-    <style>
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 20mm 25mm 20mm 25mm; /* top, right, bottom, left */
-            }
+            const style = document.createElement("style");
+            style.innerHTML = `
+        @keyframes spin {
+            0% {transform:rotate(0deg);}
+            100% {transform:rotate(360deg);}
         }
+    `;
+            document.head.appendChild(style);
+        })();
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
+        // ===============================
+        // Fungsi buka modal email modern
+        // ===============================
+        function bukaModalEmail(row) {
 
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 12px; 
-        }
+            var data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText
+            };
 
-        th, td { 
-            border: 1px solid black; 
-            padding: 6px; 
-            text-align: center; 
-        }
+            // hapus modal lama
+            const oldModal = document.getElementById("jsEmailModal");
+            if (oldModal) oldModal.remove();
 
-        h2 { 
-            text-align: center; 
-            font-size: 16px; 
-            margin-bottom: 20px; 
-        }
+            // buat modal
+            const modal = document.createElement("div");
+            modal.id = "jsEmailModal";
+            modal.style.cssText = `
+        position: fixed; z-index: 10000;
+        left:0; top:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.4);
+        display:flex; align-items:center; justify-content:center;
+    `;
 
-        .header, .footer { 
-            text-align: center; 
-            font-size: 14px; 
-            margin-top: 10px; 
-        }
+            const content = document.createElement("div");
+            content.style.cssText = `
+        background:#fff; padding:20px 30px; border-radius:10px;
+        width:350px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);
+        font-family: Arial;
+    `;
 
-         table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        margin-bottom: 60px; /* agar footer tidak menindih tabel */
-    }
+            content.innerHTML = `
+    <h3 style="margin-bottom:15px;">Kirim Email Denda PPAT</h3>
 
-    .footer {
-        text-align: center;
-        font-size: 12px;
-        margin-top: 20px;
-    }
-
-        .signature {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
-        }
-    </style>
-`;
-
-                // Membuka jendela baru untuk cetakan
-                const printWindow = window.open('', '', 'width=1000,height=800');
-                printWindow.document.write(`<html><head><title>Cetak Tabel</title>${style}</head><body>`);
-
-                // Menambahkan Header
-                printWindow.document.write(`
-        <div class="header">
-            <h2>Pemerintah Kota Bengkulu <br> Badan Pendaparan Daerah <br> Laporan Retribusi Parkir ZONA 06</h2>
-            <p>Tanggal Cetak: ${formattedDate}</p>
+    <!-- INFO DATA -->
+    <div style="
+        margin-bottom:12px;
+        padding:10px;
+        background:#f5f5f5;
+        border-radius:8px;
+        font-size:12px;
+        text-align:left;
+        line-height:1.5;
+    ">
+        <div style="display:flex; align-items:center; margin-bottom:5px;">
+            <span style="margin-right:6px;">👤</span>
+            <b>Nama:</b>
         </div>
-    `);
+        <div style="margin-left:22px;">${data.nama}</div>
 
-                // Menambahkan Tabel
-                printWindow.document.write(printContent);
-
-                // Menambahkan Footer
-                printWindow.document.write(`
-    <div class="footer">
-        <p>Powered by Sistem : &copy; 2025 BlackSwanPictured.Com_Semua hak dilindungi undang-undang.</p>
+        <div style="display:flex; align-items:center; margin-top:8px;">
+            <span style="margin-right:6px;">🆔</span>
+            <b>Nomor Unik:</b>
+        </div>
+        <div style="margin-left:22px;">${data.id}</div>
     </div>
-`);
 
-                // Menambahkan Tanda Tangan
-                printWindow.document.write(`
-        <div class="signature">
-            <p>Koordinator, <br>
-             Parkir Zona 6 </p>
-            <br><br><br>
-            <p>Kiki Andriyanto | Zendi Afrian Saputra, S.H</p>
-        </div>
-    `);
+    <!-- INPUT EMAIL -->
+    <div style="position:relative; margin:10px 0; text-align:left;">
+        
+        <span style="
+            position:absolute;
+            left:10px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#888;
+        ">📧</span>
 
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
+        <input type="email" id="jsModalEmailInput" placeholder="*Masukkan Email PPAT" style="
+            width:100%;
+            padding:10px 35px 10px 35px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            outline:none;
+            box-sizing:border-box;
+            transition:0.3s;
+        " />
 
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
+        <!-- ICON CEKLIS -->
+        <span id="emailCheckIcon" style="
+            position:absolute;
+            right:10px;
+            top:50%;
+            transform:translateY(-50%);
+            font-size:16px;
+            display:none;
+        ">✔</span>
+    </div>
+
+         <!-- JENIS -->
+    <div style="text-align:left; margin-top:10px;">
+        <label><b>Jenis Pelanggaran:</b></label><br>
+        <select id="jsJenisLanggar" style="
+            width:100%; padding:8px; margin-top:5px;
+            border-radius:5px; border:1px solid #ccc;
+        ">
+            <option value="Terlambat Menyampaikan Laporan">
+                001. Terlambat Menyampaikan
+            </option>
+            <option value="Tidak Menyampaikan Laporan">
+                002. Tidak Menyampaikan
+            </option>
+        </select>
+    </div>
+
+       <div style="margin-top:15px; text-align:center;">
+    
+    <button id="jsSendBtn" style="
+        padding:10px 20px;
+        margin:5px;
+        border:none;
+        border-radius:6px;
+        background:#28a745;
+        color:#fff;
+        cursor:pointer;
+        transition:0.2s;
+    "
+    onmouseover="this.style.background='#218838'"
+    onmouseout="this.style.background='#28a745'">
+        ✔ Kirim
+    </button>
+
+    <button id="jsCancelBtn" style="
+        padding:10px 20px;
+        margin:5px;
+        border:none;
+        border-radius:6px;
+        background:#dc3545;
+        color:#fff;
+        cursor:pointer;
+        transition:0.2s;
+    "
+    onmouseover="this.style.background='#c82333'"
+    onmouseout="this.style.background='#dc3545'">
+        ✖ Batal
+    </button>
+
+    </div>
+    `;
+
+            // masukkan ke DOM dulu
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // =========================
+            // VALIDASI EMAIL (FIX)
+            // =========================
+            const emailInput = document.getElementById("jsModalEmailInput");
+            const icon = document.getElementById("emailCheckIcon");
+
+            emailInput.addEventListener("input", function () {
+                let value = emailInput.value.trim().toLowerCase();
+
+                if (value.endsWith("@gmail.com")) {
+                    icon.style.display = "block";
+                    icon.style.color = "green";
+                    emailInput.style.border = "1px solid green";
+                } else if (value !== "") {
+                    icon.style.display = "none";
+                    emailInput.style.border = "1px solid red";
+                } else {
+                    icon.style.display = "none";
+                    emailInput.style.border = "1px solid #ccc";
+                }
+            });
+
+            // tombol kirim
+            document.getElementById("jsSendBtn").onclick = function () {
+                const email = emailInput.value.trim();
+                const jenis = document.getElementById("jsJenisLanggar").value;
+
+                if (!email) return alert("Email wajib diisi!");
+
+                modal.remove();
+                kirimEmail(row, email, jenis);
+            };
+
+            // tombol batal
+            document.getElementById("jsCancelBtn").onclick = function () {
+                modal.remove();
+            };
+        }
+
+        // ===============================
+        // Fungsi kirim email
+        // ===============================
+        let isSending = false;
+        function kirimEmail(row, emailUser, jenis) {
+            var data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText
+            };
+
+            // tampilkan spinner
+            document.getElementById("globalLoading").style.display = "flex";
+
+            const baseUrl = "https://script.google.com/macros/s/AKfycbzyEbjyPzsVWGcQQL_W_OdOowWeU2oTVUcOL4KztEX_K0Y563dpSQjSbIzT9-FVzA6cHQ/exec";
+
+            const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std || "")}`;
+
+            const urlArsip = `${baseUrl}?email=${encodeURIComponent("bengkulubapendakota@gmail.com")}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std || "")}`;
+
+            // 🔥 cegah klik dobel
+            if (isSending) return;
+            isSending = true;
+
+            fetch(urlUser)
+                .then(() => {
+                    return fetch(urlArsip); // tetap kirim arsip
+                })
+                .then(() => {
+                    alert("✅ Email berhasil dikirim (User + Arsip)");
+                })
+                .catch(() => {
+                    alert("❌ Gagal kirim email");
+                })
+                .finally(() => {
+                    isSending = false; // reset
+                    document.getElementById("globalLoading").style.display = "none";
+                });
+        }
+
+
+        // ===============================
+        // Contoh penggunaan tombol di tabel
+        // tombol.onclick = function() { bukaModalEmail(this.closest("tr")); };
+
+        // Buat Nomor Urut //
+
+        function buatNomorUrut() {
+
+            let last = localStorage.getItem("nomorSTD") || 0
+
+            last++
+
+            localStorage.setItem("nomorSTD", last)
+
+            return String(last).padStart(3, "0")
+
+        }
+
+        function terbilang(nilai) {
+
+            nilai = Math.floor(nilai)
+
+            let huruf = [
+                "", "Satu", "Dua", "Tiga", "Empat", "Lima",
+                "Enam", "Tujuh", "Delapan", "Sembilan",
+                "Sepuluh", "Sebelas"
+            ]
+
+            if (nilai < 12)
+                return huruf[nilai]
+
+            if (nilai < 20)
+                return terbilang(nilai - 10) + " Belas"
+
+            if (nilai < 100)
+                return terbilang(Math.floor(nilai / 10)) + " Puluh " + terbilang(nilai % 10)
+
+            if (nilai < 200)
+                return "Seratus " + terbilang(nilai - 100)
+
+            if (nilai < 1000)
+                return terbilang(Math.floor(nilai / 100)) + " Ratus " + terbilang(nilai % 100)
+
+            if (nilai < 2000)
+                return "Seribu " + terbilang(nilai - 1000)
+
+            if (nilai < 1000000)
+                return terbilang(Math.floor(nilai / 1000)) + " Ribu " + terbilang(nilai % 1000)
+
+            if (nilai < 1000000000)
+                return terbilang(Math.floor(nilai / 1000000)) + " Juta " + terbilang(nilai % 1000000)
+
+            return ""
+        }
+
+        function buatSTD(data) {
+
+            document.getElementById("bulan").innerText = data.bulan_laporan
+            document.getElementById("nama").innerText = data.nama
+            document.getElementById("id").innerText = data.id
+            document.getElementById("alamat").innerText = data.alamat
+            document.getElementById("jabatan").innerText = data.jabatan
+            document.getElementById("tempo").innerText = data.jatuh_tempo
+            document.getElementById("jumlah").innerText = data.jumlah_laporan
+            document.getElementById("bulanLanggar").innerText = data.bulan_laporan
+
+            document.getElementById("denda").innerText = data.denda.toLocaleString("id-ID")
+
+            document.getElementById("terbilang").innerText = terbilang(data.denda)
+
+            document.getElementById("noUrut").innerText = buatNomorUrut()
+
+        }
+
+        function cekTerlambat(tanggal) {
+            if (!tanggal) return "";
+
+            let tgl = new Date(tanggal);
+
+            // Cek apakah tanggal valid
+            if (isNaN(tgl)) return "";
+
+            return tgl.getDate() > 10 ? "TIDAK VALID" : "VALID";
+        }
+
+        function cetakSTD(btn) {
+
+            let tr = btn.closest("tr")
+            let td = tr.querySelectorAll("td")
+
+            document.getElementById("id").innerText = td[0].innerText
+            document.getElementById("nama").innerText = td[1].innerText
+            document.getElementById("alamat").innerText = td[2].innerText
+            document.getElementById("bulan").innerText = td[7].innerText
+            document.getElementById("jumlah").innerText = td[9].innerText
+            document.getElementById("bulanLanggar").innerText = td[7].innerText
+
+            let denda = 1000000
+
+            document.getElementById("denda").innerText =
+                denda.toLocaleString("id-ID")
+
+            document.getElementById("terbilang").innerText =
+                terbilang(denda)
+
+            document.getElementById("noUrut").innerText =
+                buatNomorUrut()
+
+            let isi = document.getElementById("suratSTD").innerHTML
+
+            let w = window.open("")
+
+            w.document.write(isi)
+
+            w.print()
+
+        }
+
+        function previewSTD(btn) {
+            let tr = btn.closest("tr");
+            if (!tr) return alert("Tidak menemukan baris!");
+
+            let td = tr.querySelectorAll("td");
+
+            document.getElementById("id").innerText = td[0].innerText;
+            document.getElementById("nama").innerText = td[1].innerText;
+            document.getElementById("alamat").innerText = td[2].innerText;
+            document.getElementById("bulan").innerText = td[7].innerText;
+            document.getElementById("jumlah").innerText = td[9].innerText;
+            document.getElementById("bulanLanggar").innerText = td[7].innerText;
+
+            let denda = 1000000;
+            document.getElementById("denda").innerText = denda.toLocaleString("id-ID");
+            document.getElementById("terbilang").innerText = terbilang(denda);
+            document.getElementById("noUrut").innerText = Math.floor(Math.random() * 100);
+
+            let isi = document.getElementById("suratSTD").innerHTML;
+            if (!isi) return alert("Elemen suratSTD tidak ditemukan!");
+
+            let w = window.open("", "_blank");
+            w.document.write(`
+            <html>
+            <head>
+            <title>Preview Surat</title>
+            <style>
+            body{font-family:Arial;padding:30px}
+            table{width:100%;border-collapse:collapse}
+            td,th{border:1px solid black;padding:6px}
+            </style>
+            </head>
+            <body>
+            ${isi}
+            </body>
+            </html>
+            `);
+            w.document.close();
+        }
+
+        function hitungTotal() {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            let totalLaporan = 0
+            let totalSSPD = 0
+
+            rows.forEach(row => {
+
+                let jumlah = row.cells[9].innerText.replace(/\D/g, '')
+                let sspd = row.cells[10].innerText.replace(/\D/g, '')
+
+                if (jumlah) totalLaporan += parseInt(jumlah)
+                if (sspd) totalSSPD += parseInt(sspd)
+
+            })
+
+            document.getElementById("totalLaporan").innerText = totalLaporan
+
+            document.getElementById("totalSSPD").innerText =
+                "Rp. " + totalSSPD.toLocaleString("id-ID")
+
+        }
+
+        document.addEventListener("DOMContentLoaded", loadDataSheet)
+
+        document.getElementById("searchNotaris").addEventListener("keyup", function () {
+
+            let filter = this.value.toLowerCase()
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            rows.forEach(row => {
+
+                let nama = row.cells[1].textContent.toLowerCase() // ✅ FIX
+
+                row.style.display = nama.includes(filter) ? "" : "none"
+
+            })
+
+        })
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(angka);
+        }
+
+        /* =========================
+           FORMAT RUPIAH
+        ========================= */
+        function formatRupiahInput(viewId, realId) {
+            const view = document.getElementById(viewId);
+            const real = document.getElementById(realId);
+            if (!view || !real) return;
+
+            view.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '');
+                real.value = angka;
+                this.value = angka
+                    ? 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                    : '';
+            });
+        }
+
+        /* =========================
+           FORMAT NOP 18 DIGIT
+        ========================= */
+        function formatNOPInput(viewId, realId) {
+            const view = document.getElementById(viewId);
+            const real = document.getElementById(realId);
+            if (!view || !real) return;
+
+            view.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '').slice(0, 18);
+                real.value = angka;
+
+                let f = '';
+                if (angka.length > 0) f += angka.substring(0, 2);
+                if (angka.length > 2) f += '.' + angka.substring(2, 4);
+                if (angka.length > 4) f += '.' + angka.substring(4, 7);
+                if (angka.length > 7) f += '.' + angka.substring(7, 10);
+                if (angka.length > 10) f += '.' + angka.substring(10, 13);
+                if (angka.length > 13) f += '.' + angka.substring(13, 17);
+                if (angka.length > 17) f += '.' + angka.substring(17, 18);
+
+                this.value = f;
+            });
+        }
+
+        /* =========================
+           FORMAT LUAS TANAH / BANGUNAN 4/4
+        ========================= */
+        function formatLuasTB(id) {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            input.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '').slice(0, 8);
+                if (angka.length > 4) {
+                    this.value = angka.slice(0, 4) + '/' + angka.slice(4);
+                } else {
+                    this.value = angka;
+                }
+            });
+        }
+
+        /* =========================
+           AKTIFKAN FORMAT
+        ========================= */
+        formatRupiahInput('harga_transaksi_view', 'harga_transaksi');
+        formatRupiahInput('ssp_view', 'ssp');
+        formatRupiahInput('ssb_view', 'ssb');
+        formatRupiahInput('njop_view', 'njop');
+        formatNOPInput('nop_view', 'nop');
+        formatLuasTB('luas_tb');
+
+        /* =========================
+           TOGGLE BLOK TRANSAKSI
+        ========================= */
+        document.addEventListener('DOMContentLoaded', function () {
+            const ya = document.getElementById('trx_ya');
+            const tidak = document.getElementById('trx_tidak');
+            const blok = document.getElementById('blokTransaksi');
+
+            function toggleTransaksi() {
+                if (ya.checked) {
+                    blok.classList.remove('d-none');
+                } else {
+                    blok.classList.add('d-none');
+                    document.getElementById('cekTransaksi').checked = false;
+                }
             }
 
-        </script>
+            // default TIDAK
+            tidak.checked = true;
+            toggleTransaksi();
+
+            ya.addEventListener('change', toggleTransaksi);
+            tidak.addEventListener('change', toggleTransaksi);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const dataWilayah = {
+                "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
+                "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
+                "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
+                "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
+                "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
+                "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
+                "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
+                "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
+                "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
+            };
+
+            const kecamatanSelect = document.getElementById('kecamatan');
+            const kelInput = document.getElementById('kelurahanInput');
+            const kelList = document.getElementById('kelurahanList');
+            const kecHidden = document.getElementById('kecamatan_value');
+            const kelHidden = document.getElementById('kelurahan_value');
+
+            // map kelurahan → kecamatan
+            const kelurahanMap = {};
+            Object.entries(dataWilayah).forEach(([kec, list]) => {
+                list.forEach(kel => kelurahanMap[kel] = kec);
+            });
+
+            kelInput.addEventListener('input', function () {
+                const keyword = this.value.trim().toLowerCase();
+                kelList.innerHTML = '';
+
+                // reset saat diketik ulang
+                kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                kecamatanSelect.disabled = true;
+                kecHidden.value = '';
+                kelHidden.value = '';
+
+                if (!keyword) {
+                    kelList.classList.add('d-none');
+                    return;
+                }
+
+                Object.keys(kelurahanMap)
+                    .filter(kel => kel.toLowerCase().includes(keyword))
+                    .slice(0, 10)
+                    .forEach(kel => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item list-group-item-action';
+                        li.textContent = kel;
+
+                        li.onclick = () => {
+                            kelInput.value = kel;
+                            kelList.classList.add('d-none');
+
+                            kecamatanSelect.innerHTML =
+                                `<option selected>${kelurahanMap[kel]}</option>`;
+                            kecamatanSelect.disabled = true;
+
+                            kecHidden.value = kelurahanMap[kel];
+                            kelHidden.value = kel;
+                        };
+
+                        kelList.appendChild(li);
+                    });
+
+                kelList.classList.remove('d-none');
+            });
+
+            document.addEventListener('click', e => {
+                if (!kelInput.contains(e.target)) {
+                    kelList.classList.add('d-none');
+                }
+            });
+
+            // expose validasi ke global
+            window.validasiWilayah = function () {
+                if (!kelHidden.value || !kecHidden.value) {
+                    alert('❌ Kelurahan harus dipilih dari daftar');
+                    kelInput.focus();
+                    return false;
+                }
+                return true;
+            };
+
+        });
+
+        /* =========================
+        SUBMIT FORM (FINAL)
+        ========================= */
+        form.addEventListener('submit', function (e) {
+
+            const trxYa = document.getElementById('trx_ya');
+            const trxTidak = document.getElementById('trx_tidak');
+
+            /* =========================
+               JIKA TRANSAKSI = TIDAK / NIHIL
+            ========================= */
+            if (trxTidak && trxTidak.checked) {
+                // boleh submit tanpa validasi transaksi
+                return;
+            }
+
+            /* =========================
+               JIKA TRANSAKSI = YA
+            ========================= */
+
+            // validasi checkbox konfirmasi
+            if (!document.getElementById('cekTransaksi').checked) {
+                alert('⚠️ Centang konfirmasi data transaksi');
+                e.preventDefault();
+                return;
+            }
+
+            const luasInput = document.getElementById('luas_tb').value.trim();
+
+            if (!luasInput) {
+                alert('⚠️ Luas tanah/bangunan harus diisi');
+                e.preventDefault();
+                return;
+            }
+
+            // split & validasi 1–4 digit / 1–4 digit
+            const parts = luasInput.split('/');
+            if (
+                parts.length !== 2 ||
+                !/^\d{1,4}$/.test(parts[0]) ||
+                !/^\d{1,4}$/.test(parts[1])
+            ) {
+                alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi!');
+                e.preventDefault();
+                return;
+            }
+
+            // tambah leading zero
+            const luasTBFormatted =
+                parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
+
+            // push data transaksi
+            const data = {
+                tanggal: tanggal_transaksi.value,
+                no_sppd: no_sppd.value.trim(),
+                nomor_akta: document.getElementById('nomor_akta').value.trim(),
+                nomor_hak: document.getElementById('nomor_hak').value.trim(),
+                penjual: nama_penjual.value.trim(),
+                pembeli: nama_pembeli.value.trim(),
+
+                kecamatan: document.getElementById('kecamatan_value').value,
+                kelurahan: document.getElementById('kelurahan_value').value,
+
+                nop: nop_view.value,
+                njop: njop_view.value,
+                luas_tb: luasTBFormatted,
+                harga: harga_transaksi_view.value,
+                ssp: ssp_view.value,
+                ssb: ssb_view.value
+            };
+
+            if (!data.kecamatan || !data.kelurahan) {
+                alert('❌ Kecamatan & Kelurahan wajib dipilih');
+                return;
+            }
+
+            transaksiList.push(data);
+            document.getElementById('data_transaksi').value =
+                JSON.stringify(transaksiList);
+        });
+
+        const nomorHakInput = document.getElementById('nomor_hak');
+        if (nomorHakInput) {
+            nomorHakInput.value = nomorHakInput.value.toUpperCase();
+        }
+
+        /* =========================
+           RESET FORM
+        ========================= */
+        function resetFormTransaksi() {
+            const ids = [
+                'tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak', 'nama_penjual', 'nama_pembeli',
+                'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
+                'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
+                'luas_tb'
+            ];
+
+            ['kecamatan', 'kelurahan'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                    if (id === 'kelurahan') el.disabled = true;
+                }
+            });
+
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // reset radio & blok transaksi
+            document.getElementById('trx_ya').checked = false;
+            document.getElementById('trx_tidak').checked = true;
+            document.getElementById('blokTransaksi').classList.add('d-none');
+
+            // reset checkbox
+            document.getElementById('cekTransaksi').checked = false;
+
+            // reset data
+            transaksiList = [];
+            document.getElementById('data_transaksi').value = '';
+        }
+
+        const nomorHak = document.getElementById("nomor_hak");
+
+        nomorHak.addEventListener("input", function () {
+
+            let value = this.value.toUpperCase();
+
+            // Hapus spasi berlebih
+            value = value.replace(/\s+/g, " ").trim();
+
+            // Jika format SHM 1234 → ubah jadi SHM No. 1234
+            if (/^SHM\s?\d+$/i.test(value)) {
+                value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
+            }
+
+            // Jika format HGB 1234 → ubah jadi HGB/1234
+            if (/^HGB\s?\d+$/i.test(value)) {
+                value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
+            }
+
+            // Jika format angka saja 123/2024 tetap
+            if (/^\d+\/\d{4}$/.test(value)) {
+                value = value;
+            }
+
+            this.value = value;
+        });
+
+        // Ambil input nomor surat
+        const nomorSurat = document.getElementById('nomor_surat');
+
+        // Saat mengetik langsung di input → semua huruf kapital
+        nomorSurat.addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Saat submit → pastikan yang dikirim juga huruf kapital
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            // ubah nomor surat ke huruf kapital sebelum dikirim
+            nomorSurat.value = nomorSurat.value.toUpperCase();
+
+            // tampilkan loading
+            success.classList.add('d-none');
+            btnKirim.classList.add('d-none');
+            loading.classList.remove('d-none');
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+                .then(response => {
+                    loading.classList.add('d-none');
+
+                    // tampilkan sukses
+                    success.classList.remove('d-none');
+
+                    // TUNGGU SEBENTAR → LALU RELOAD HALAMAN
+                    setTimeout(() => {
+                        location.reload(); // 🔄 RESET TOTAL HALAMAN
+                    }, 5000); // 5 detik
+                })
+
+                .catch(error => {
+                    loading.classList.add('d-none');
+                    btnKirim.classList.remove('d-none');
+                    alert('Gagal mengirim laporan!');
+                    console.error(error);
+                });
+        });
+
+        const bulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        const select = document.getElementById("laporan_bulanan");
+        const today = new Date();
+        const tahunSekarang = today.getFullYear();
+        const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
+
+        // hanya 2 tahun: tahun sebelumnya + tahun sekarang
+        for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
+            const group = document.createElement("optgroup");
+            group.label = `Tahun ${tahun}`;
+
+            bulan.forEach((b, i) => {
+                const val = `${b} ${tahun}`;
+                const option = document.createElement("option");
+                option.value = val;
+                option.textContent = val;
+
+                // otomatis pilih bulan & tahun saat ini
+                if (tahun === tahunSekarang && i === bulanSekarang) {
+                    option.selected = true;
+                }
+
+                group.appendChild(option);
+            });
+
+            select.appendChild(group);
+        }
+
+        const selectNotaris = document.getElementById("notaris");
+        const npwpField = document.getElementById("id");
+        const namaField = document.getElementById("nama");
+        const alamatField = document.getElementById("alamat");
+
+        selectNotaris.addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const npwp = selectedOption.getAttribute("data-id");
+            const alamat = selectedOption.getAttribute("data-alamat");
+            const nama = selectedOption.value;
+
+            npwpField.value = npwp || "";
+            namaField.value = nama || "";
+            alamatField.value = alamat || "";
+        });
+
+        // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
+        document.body.insertAdjacentHTML("beforeend", `
+                                                <div id="loadingOverlay" style="
+                                                    position: fixed;
+                                                    top: 0;
+                                                    left: 0;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: rgba(0, 0, 0, 0.8);
+                                                    display: flex;
+                                                    flex-direction: column;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    z-index: 9999;
+                                                    visibility: hidden;
+                                                    opacity: 0;
+                                                    transition: opacity 0.3s ease-in-out;
+                                                    color: white;
+                                                    font-family: Arial, sans-serif;
+                                                    font-size: 18px;
+                                                    text-align: center;
+                                                ">
+                                                    <div style="
+                                                        width: 60px;
+                                                        height: 60px;
+                                                        border: 6px solid #f3f3f3;
+                                                        border-top: 6px solid #3498db;
+                                                        border-radius: 50%;
+                                                        animation: spin 1s linear infinite;
+                                                    "></div>
+                                                    <p style="margin-top: 15px;">Mohon Tunggu... <br> Terima kasih!</p>
+                                                </div>
+                                                <style>
+                                                    @keyframes spin {
+                                                        0% { transform: rotate(0deg); }
+                                                        100% { transform: rotate(360deg); }
+                                                    }
+                                                </style>
+                                            `);
+
+        // Fungsi untuk menampilkan loading sebelum berpindah halaman
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll("a"); // Target semua link di halaman
+            links.forEach(link => {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault(); // Mencegah navigasi langsung
+                    let overlay = document.getElementById("loadingOverlay");
+
+                    overlay.style.visibility = "visible";
+                    overlay.style.opacity = "1";
+
+                    let loadingTime = 10000; // 10 detik sebelum pindah halaman
+                    setTimeout(() => {
+                        window.location.href = this.href; // Pindah halaman setelah 10 detik
+                    }, loadingTime);
+                });
+            });
+        });
+
+        window.addEventListener("load", function () {
+            let overlay = document.getElementById("loadingOverlay");
+            overlay.style.visibility = "hidden";
+            overlay.style.opacity = "0";
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const jumlah = document.getElementById('jumlah_laporan');
+            const ket = document.getElementById('keterangan');
+            const ketHint = document.getElementById('ketHint');
+            const ketError = document.getElementById('ketError');
+            const form = document.getElementById('form-laporan');
+
+            const rupiahView = document.getElementById('sspd_bphtb_view');
+            const rupiahReal = document.getElementById('sspd_bphtb');
+
+            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
+
+            /* =====================
+               FORMAT RUPIAH
+            ===================== */
+            function formatAngka(angka) {
+                return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            rupiahView.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '');
+                rupiahReal.value = angka;
+                if (angka === '') {
+                    this.value = '';
+                    return;
+                }
+                this.value = 'Rp. ' + formatAngka(angka);
+            });
+
+            rupiahView.addEventListener('focus', function () {
+                this.value = this.value.replace(/Rp\.?\s?|\.|,00/g, '');
+            });
+
+            rupiahView.addEventListener('blur', function () {
+                if (this.value !== '') {
+                    this.value = 'Rp. ' + formatAngka(this.value.replace(/\D/g, '')) + ',00';
+                }
+            });
+
+            /* =====================
+               HELPER KETERANGAN
+            ===================== */
+            function lockKet(text, hint) {
+                ket.value = text;
+                ket.readOnly = true;
+                ket.style.pointerEvents = 'none';
+                ket.style.backgroundColor = '#e9ecef';
+                ketHint.textContent = hint;
+                ketHint.className = 'form-text fw-semibold text-secondary';
+                ket.classList.remove('is-valid', 'is-invalid');
+                ketError.textContent = '';
+            }
+
+            function unlockKet(text, hint) {
+                ket.readOnly = false;
+                ket.style.pointerEvents = 'auto';
+                ket.style.backgroundColor = '';
+                ket.value = text;
+                ketHint.textContent = hint;
+                ketHint.className = 'form-text fw-semibold text-info';
+            }
+
+            function hitungKet(text) {
+                const angka = text.match(/\d+/g);
+                return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
+            }
+
+            /* =====================
+               LOGIKA UTAMA
+            ===================== */
+            function prosesKeterangan() {
+                const val = jumlah.value;
+
+                if (val === '') {
+                    lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                    return false;
+                }
+
+                const num = Number(val);
+
+                if (num === 0) {
+                    lockKet('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
+                    return true;
+                }
+
+                if (ket.readOnly) {
+                    unlockKet(TEMPLATE, '✏️ Isi rincian sesuai jumlah laporan');
+                }
+
+                const total = hitungKet(ket.value);
+
+                if (total !== num) {
+                    ket.classList.add('is-invalid');
+                    ket.classList.remove('is-valid');
+                    ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
+                    ketHint.textContent = '❌ Jumlah rincian belum sesuai';
+                    ketHint.className = 'form-text fw-semibold text-danger';
+                    return false;
+                } else {
+                    ket.classList.remove('is-invalid');
+                    ket.classList.add('is-valid');
+                    ketError.textContent = '';
+                    ketHint.textContent = '✅ Jumlah rincian sesuai';
+                    ketHint.className = 'form-text fw-semibold text-success';
+                    return true;
+                }
+            }
+
+            /* =====================
+               EVENT
+            ===================== */
+            lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+
+            jumlah.addEventListener('input', prosesKeterangan);
+            ket.addEventListener('input', prosesKeterangan);
+
+            form.addEventListener('submit', function (e) {
+                if (!form.checkValidity() || !prosesKeterangan()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                }
+            });
+
+            function resetKeterangan() {
+                lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                ket.classList.remove('is-valid', 'is-invalid');
+                ketError.textContent = '';
+            }
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function formatTanggalDMY(inputId, prefix) {
+                const input = document.getElementById(inputId);
+
+                // hidden input untuk dikirim ke server
+                let hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = `tanggal_${prefix}_indo`;
+                input.closest('form').appendChild(hidden);
+
+                function updateHidden() {
+                    if (!input.value) return;
+                    const [yyyy, mm, dd] = input.value.split('-');
+                    hidden.value = `${dd}/${mm}/${yyyy}`;
+                }
+
+                // update saat input berubah atau diketik langsung
+                input.addEventListener('change', updateHidden);
+                input.addEventListener('input', updateHidden);
+
+                // pastikan saat submit juga terupdate
+                input.closest('form').addEventListener('submit', updateHidden);
+            }
+
+            // Tanggal Surat
+            formatTanggalDMY('tanggal_surat', 'surat');
+
+            // Tanggal Disposisi
+            formatTanggalDMY('tanggal_disposisi', 'disposisi');
+
+        });
+
+        const alertPerhatian = document.getElementById('alertPerhatian');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            if (alertPerhatian) {
+                alertPerhatian.classList.add('d-none');
+            }
+
+            // lanjutkan loading & submit
+        });
+
+        /* ===============================
+     LIVE CHAT RESPONSIVE GUARD
+    ================================ */
+        function isDesktop() {
+            return window.innerWidth >= 993;
+        }
+
+        let liveChatContainer = null;
+
+        if (isDesktop()) {
+            liveChatContainer = document.createElement('div');
+            liveChatContainer.id = 'liveChatFloating';
+            document.body.appendChild(liveChatContainer);
+        }
+
+        /* Jika layar di-resize */
+        window.addEventListener('resize', function () {
+            if (isDesktop() && !liveChatContainer) {
+                liveChatContainer = document.createElement('div');
+                liveChatContainer.id = 'liveChatFloating';
+                document.body.appendChild(liveChatContainer);
+            }
+
+            if (!isDesktop() && liveChatContainer) {
+                liveChatContainer.remove();
+                liveChatContainer = null;
+            }
+        });
+
+        // AMBIL ELEMENT FORM (AMAN)
+        const adminInput = document.querySelector('[name="admin penginput"]');
+        const notarisSelect = document.getElementById('notaris');
+        const idInput = document.getElementById('id');
+        const namaInput = document.getElementById('nama');
+        const alamatInput = document.getElementById('alamat');
+        const tanggalSurat = document.getElementById('tanggal_surat');
+        const jumlahLaporan = document.getElementById('jumlah_laporan');
+        const keteranganInput = document.getElementById('keterangan');
+        const sspdInput = document.getElementById('sspd_bphtb_view');
+
+        // FORMAT TANGGAL
+        function formatTanggalIndo(val) {
+            if (!val) return '-';
+            const [y, m, d] = val.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        // FUNGSI NOMOR AKTA
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const nomorAkta = document.getElementById('nomor_akta');
+
+            nomorAkta.addEventListener('input', function () {
+
+                let raw = this.value.replace(/\D/g, '');
+
+                // max 8 digit (4 nomor + 4 tahun)
+                raw = raw.slice(0, 8);
+
+                if (raw.length <= 4) {
+                    this.value = raw;
+                } else {
+                    const nomor = raw.slice(0, raw.length - 4);
+                    const tahun = raw.slice(-4);
+                    this.value = `${nomor}/${tahun}`;
+                }
+            });
+        });
+
+        // UPDATE / BUAT BARIS LIVE CHAT
+        function setLiveMessage(key, title, value) {
+            if (!liveChatContainer) return; // ⛔ STOP di HP & Tablet
+
+            let row = document.getElementById(`live-${key}`);
+
+            if (!row) {
+                row = document.createElement('div');
+                row.id = `live-${key}`;
+                row.className = 'live-row';
+                liveChatContainer.appendChild(row);
+            }
+
+            row.innerHTML = `
+                                                    <span class="live-title">${title}</span>
+                                                    <span class="live-value">${value || '-'}</span>
+                                                `;
+        }
+
+        /* ===============================
+           EVENT LISTENER
+        ================================ */
+
+        // ADMIN PENGINPUT
+        adminInput?.addEventListener('change', function () {
+            setLiveMessage('admin', 'Admin Penginput', this.value);
+        });
+
+        // NOTARIS
+        notarisSelect?.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+
+            idInput.value = selected.dataset.id || '';
+            namaInput.value = selected.value || '';
+            alamatInput.value = selected.dataset.alamat || '';
+
+            setLiveMessage('notaris', 'Notaris & PPAT', selected.value);
+            setLiveMessage('id', 'Nomor Unik', selected.dataset.id);
+            setLiveMessage('alamat', 'Alamat', selected.dataset.alamat);
+        });
+
+        function formatRupiahLive(val) {
+            if (!val) return '-';
+            let angka = val.replace(/[^0-9]/g, '');
+            if (angka === '') return '-';
+            return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // TANGGAL SURAT
+        tanggalSurat?.addEventListener('input', function () {
+            setLiveMessage(
+                'tanggal_surat',
+                'Tanggal Surat',
+                formatTanggalIndo(this.value)
+            );
+        });
+
+        function resetLiveChat() {
+            liveChatContainer.innerHTML = '';
+
+            // optional placeholder
+            const empty = document.createElement('div');
+            empty.className = 'live-chat-empty';
+            empty.textContent = 'Belum ada data…';
+            liveChatContainer.appendChild(empty);
+        }
+
+
+        // JUMLAH LAPORAN
+        jumlahLaporan?.addEventListener('input', function () {
+            setLiveMessage('jumlah_laporan', 'Jumlah Laporan', this.value);
+        });
+
+        // KETERANGAN
+        keteranganInput?.addEventListener('input', function () {
+            setLiveMessage('keterangan', 'Keterangan', this.value);
+        });
+
+        // NOMINAL SSB
+        sspdInput.addEventListener('input', function () {
+            let angka = this.value.replace(/\D/g, '');
+
+            if (!angka) {
+                setLiveMessage('ssb', 'Nominal SSB', '-');
+                return;
+            }
+
+            const formatted = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+            setLiveMessage('ssb', 'Nominal SSB', formatted);
+        });
+
+        const agreeCheck = document.getElementById('agreeCheck');
+
+        /* =====================
+           VALIDASI CHECKBOX
+        ===================== */
+        function validateAgree() {
+            if (!agreeCheck.checked) {
+                agreeCheck.classList.add('is-invalid');
+                agreeCheck.classList.remove('is-valid');
+                return false;
+            } else {
+                agreeCheck.classList.remove('is-invalid');
+                agreeCheck.classList.add('is-valid');
+                return true;
+            }
+        }
+
+        /* real-time feedback */
+        agreeCheck.addEventListener('change', validateAgree);
+
+        /* reset bersih */
+        form.addEventListener('reset', function () {
+            setTimeout(() => {
+                agreeCheck.checked = false;
+                agreeCheck.classList.remove('is-valid', 'is-invalid');
+            }, 50);
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (
+                !form.checkValidity() ||
+                !prosesKeterangan() ||
+                !validateAgree()
+            ) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add('was-validated');
+            } else {
+                setTimeout(() => {
+                    form.reset();
+                    resetKeterangan();
+                }, 200);
+            }
+        });
+
+        form.addEventListener('submit', function (e) {
+            const nomorAktaVal = document.getElementById('nomor_akta').value.trim();
+
+            if (nomorAktaVal !== '') {
+                const polaAkta = /^\d{2,4}\/\d{4}$/;
+                if (!polaAkta.test(nomorAktaVal)) {
+                    alert('⚠️ Nomor Akta harus format 00/2024, 000/2024, atau 0000/2024');
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+
+        function scrollToAgree() {
+            agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        if (!validateAgree()) {
+            scrollToAgree();
+        }
+
+        /* =====================
+             PENGHUBUNG DATA
+          ===================== */
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const ssbView = document.getElementById('ssb_view');
+            const ssbReal = document.getElementById('ssb');
+
+            const bphtbView = document.getElementById('sspd_bphtb_view');
+            const bphtbReal = document.getElementById('sspd_bphtb');
+
+            const toggle = document.getElementById('autoBPHTB');
+
+            if (!ssbView || !bphtbView || !toggle) return;
+
+            function formatRupiah(angka) {
+                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+            }
+
+            function syncBPHTB() {
+                if (!toggle.checked) return;
+
+                let angka = ssbReal.value || ssbView.value.replace(/\D/g, '');
+                bphtbReal.value = angka;
+                bphtbView.value = angka ? formatRupiah(angka) : '';
+            }
+
+            /* =============================
+               SAAT SSB DIKETIK → BPHTB IKUT
+            ============================== */
+            ssbView.addEventListener('input', syncBPHTB);
+
+            /* =============================
+               TOGGLE ON / OFF
+            ============================== */
+            toggle.addEventListener('change', function () {
+
+                if (this.checked) {
+                    // ON → kunci & sinkron
+                    bphtbView.readOnly = true;
+                    bphtbView.classList.add('bg-light');
+                    syncBPHTB();
+                } else {
+                    // OFF → bebas edit manual
+                    bphtbView.readOnly = false;
+                    bphtbView.classList.remove('bg-light');
+                    bphtbView.value = '';
+                    bphtbReal.value = '';
+                }
+            });
+
+            // default ON
+            bphtbView.readOnly = true;
+            bphtbView.classList.add('bg-light');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const toggle = document.getElementById('autoBPHTB');
+            const card = document.querySelector('.auto-sync-card');
+            const icon = document.getElementById('syncIcon');
+            const status = document.getElementById('syncStatus');
+
+            function updateUI() {
+                if (toggle.checked) {
+                    card.classList.remove('off');
+                    card.classList.add('on');
+
+                    icon.className = 'bi bi-link-45deg fs-5 text-success';
+                    status.textContent = '*Mengikuti Nominal Data Transaksi SSB';
+                    status.className = 'text-success';
+                } else {
+                    card.classList.remove('on');
+                    card.classList.add('off');
+
+                    icon.className = 'bi bi-unlink fs-5 text-secondary';
+                    status.textContent = '*Input manual Nilai BPHTB';
+                    status.className = 'text-secondary';
+                }
+            }
+
+            toggle.addEventListener('change', updateUI);
+            updateUI(); // init
+        });
+
+        // FORMAT TRANSAKSI AUTO Dan MANUAL
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const hargaView = document.getElementById('harga_transaksi_view');
+            const hargaReal = document.getElementById('harga_transaksi');
+
+            const sspView = document.getElementById('ssp_view');
+            const sspReal = document.getElementById('ssp');
+
+            const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
+
+            function formatRupiah(angka) {
+                if (!angka || angka === '0') return '';
+                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            function hitungSSP() {
+                const harga = parseInt(hargaReal.value || 0);
+                const tarif = document.querySelector('input[name="tarif_ssp"]:checked').value;
+
+                // MODE MANUAL
+                if (tarif === '0') {
+                    sspView.readOnly = false;
+                    sspView.classList.remove('bg-light');
+                    return;
+                }
+
+                // MODE AUTO
+                const nilai = Math.round(harga * (tarif / 100));
+
+                sspReal.value = nilai;
+                sspView.value = formatRupiah(String(nilai));
+                sspView.readOnly = true;
+                sspView.classList.add('bg-light');
+            }
+
+            // Harga diketik → SSP update
+            hargaView.addEventListener('input', hitungSSP);
+
+            // Tarif diubah → SSP update
+            tarifRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+
+                    if (this.value === '0') {
+                        // manual
+                        sspView.value = '';
+                        sspReal.value = '';
+                        sspView.readOnly = false;
+                        sspView.classList.remove('bg-light');
+                        sspView.focus();
+                    } else {
+                        hitungSSP();
+                    }
+                });
+            });
+
+            // FORMAT SSP MANUAL JIKA 0%
+            sspView.addEventListener('input', function () {
+                if (document.querySelector('input[name="tarif_ssp"]:checked').value !== '0') return;
+
+                let angka = this.value.replace(/\D/g, '');
+                sspReal.value = angka;
+                this.value = formatRupiah(angka);
+            });
+
+        });
+
+        // Status Surat
+        document.addEventListener('DOMContentLoaded', function () {
+            const tanggalInput = document.getElementById('tanggal_diterima');
+            const statusInput = document.getElementById('status_surat');
+
+            if (!tanggalInput || !statusInput) return;
+
+            function updateStatusSurat() {
+                if (!tanggalInput.value) {
+                    statusInput.value = '';
+                    return;
+                }
+
+                const tanggal = new Date(tanggalInput.value);
+                const hari = tanggal.getDate(); // 1–31
+
+                if (hari <= 10) {
+                    statusInput.value = 'Tepat Waktu';
+                    statusInput.classList.remove('status-terlambat');
+                    statusInput.classList.add('status-menyampaikan');
+                } else {
+                    statusInput.value = 'Menyampaikan/Terlambat';
+                    statusInput.classList.remove('status-menyampaikan');
+                    statusInput.classList.add('status-terlambat');
+                }
+
+            }
+
+            tanggalInput.addEventListener('change', updateStatusSurat);
+            tanggalInput.addEventListener('input', updateStatusSurat);
+        });
+
+        /* Disable klik kanan */
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        /* Blok shortcut Inspect */
+        document.addEventListener('keydown', function (e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        setInterval(function () {
+            const threshold = 160;
+            if (
+                window.outerWidth - window.innerWidth > threshold ||
+                window.outerHeight - window.innerHeight > threshold
+            ) {
+                document.body.style.filter = 'blur(10px)';
+                document.body.style.pointerEvents = 'none';
+            }
+        }, 500);
+
+        console.log = function () { };
+        console.warn = function () { };
+        console.error = function () { };
+        console.clear();
+
+        setInterval(() => {
+            debugger;
+        }, 1000);
+
+        // Filter Bulan
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const selectTahun = document.getElementById("filterTahun")
+            const tahunSekarang = new Date().getFullYear()
+
+            for (let i = tahunSekarang - 2; i <= tahunSekarang + 1; i++) {
+                let opt = document.createElement("option")
+                opt.value = i
+                opt.textContent = i
+                selectTahun.appendChild(opt)
+            }
+
+        })
+
+        function generateBulan() {
+
+            const tahun = document.getElementById("filterTahun").value
+            const container = document.getElementById("listBulan")
+
+            if (!tahun) {
+                alert("Pilih tahun dulu!")
+                return
+            }
+
+            const bulanList = [
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            ]
+
+            container.innerHTML = ""
+
+            bulanList.forEach(bulan => {
+
+                let col = document.createElement("div")
+                col.className = "col-md-2"
+
+                col.innerHTML = `
+            <button class="btn btn-outline-primary w-100 btn-bulan"
+                onclick="filterBulan('${bulan} ${tahun}', this)">
+                ${bulan}
+            </button>
+        `
+
+                container.appendChild(col)
+
+            })
+
+        }
+
+        function filterBulan(bulanDipilih, el) {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            rows.forEach(row => {
+
+                let bulan = row.cells[7].innerText.trim()
+
+                if (bulan === bulanDipilih) {
+                    row.style.display = ""
+                } else {
+                    row.style.display = "none"
+                }
+
+            })
+
+            // 🔥 RESET SEMUA TOMBOL
+            document.querySelectorAll(".btn-bulan").forEach(btn => {
+                btn.classList.remove("btn-primary")
+                btn.classList.add("btn-outline-primary")
+            })
+
+            // 🔥 AKTIFKAN YANG DIKLIK
+            el.classList.remove("btn-outline-primary")
+            el.classList.add("btn-primary")
+
+        }
+
+        document.querySelectorAll("#listBulan button").forEach(btn => {
+            btn.classList.remove("btn-primary")
+            btn.classList.add("btn-outline-primary")
+        })
+
+        // Filter Tanggal
+
+        function filterTanggal() {
+
+            let awal = document.getElementById("tglAwal").value;
+            let akhir = document.getElementById("tglAkhir").value;
+
+            if (!awal || !akhir) {
+                alert("Isi tanggal awal & akhir dulu!");
+                return;
+            }
+
+            let tAwal = new Date(awal);
+            let tAkhir = new Date(akhir);
+
+            let rows = document.querySelectorAll("#dataNotaris tr");
+
+            rows.forEach(row => {
+
+                let tglText = row.cells[5].innerText.trim();
+
+                if (!tglText) {
+                    row.style.display = "none";
+                    return;
+                }
+
+                let tanggal = new Date(tglText);
+
+                if (isNaN(tanggal)) {
+                    row.style.display = "none";
+                    return;
+                }
+
+                if (tanggal >= tAwal && tanggal <= tAkhir) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+
+            });
+
+        }
+
+        // Fungsi Kirim EXCEL
+
+        function exportExcel() {
+
+            const table = document.getElementById("tableLaporan")
+
+            if (!table) {
+                alert("Tabel tidak ditemukan")
+                return
+            }
+
+            let awal = document.getElementById("tglAwal").value;
+            let akhir = document.getElementById("tglAkhir").value;
+
+            let tAwal = awal ? new Date(awal) : null;
+            let tAkhir = akhir ? new Date(akhir) : null;
+
+            let data = []
+            let rows = table.querySelectorAll("tbody tr")
+
+            let bulanSet = new Set()
+
+            rows.forEach(row => {
+
+                let tglText = row.cells[5].innerText.trim()
+                let bulan = row.cells[7].innerText.trim()
+
+                let tanggal = new Date(tglText)
+
+                if (isNaN(tanggal)) return
+
+                // FILTER ULANG DI SINI (INI KUNCINYA)
+                if (tAwal && tAkhir) {
+                    if (tanggal < tAwal || tanggal > tAkhir) return
+                }
+
+                if (bulan) bulanSet.add(bulan)
+            })
+
+            let bulanArray = Array.from(bulanSet)
+            let periode = ""
+
+            if (bulanArray.length === 1) {
+                periode = bulanArray[0]
+            } else if (bulanArray.length > 1) {
+                periode = bulanArray[0] + " - " + bulanArray[bulanArray.length - 1]
+            }
+
+            /* ================= HEADER ================= */
+
+            data.push(["LAPORAN NOTARIS / PPAT"])
+            data.push(["Periode : " + periode])
+            data.push(["Tanggal Export : " + new Date().toLocaleDateString("id-ID")])
+            data.push([])
+
+            let header = []
+            table.querySelectorAll("thead th").forEach(th => {
+                header.push(th.innerText.trim())
+            })
+
+            data.push(header)
+
+            /* ================= DATA ================= */
+
+            rows.forEach(row => {
+
+                let tglText = row.cells[5].innerText.trim()
+                let tanggal = new Date(tglText)
+
+                if (isNaN(tanggal)) return
+
+                // FILTER ULANG LAGI
+                if (tAwal && tAkhir) {
+                    if (tanggal < tAwal || tanggal > tAkhir) return
+                }
+
+                let rowData = []
+                row.querySelectorAll("td").forEach(td => {
+                    rowData.push(td.innerText.trim())
+                })
+
+                data.push(rowData)
+
+            })
+
+            /* ================= EXPORT ================= */
+
+            let ws = XLSX.utils.aoa_to_sheet(data)
+            let wb = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(wb, ws, "Laporan PPAT")
+
+            XLSX.writeFile(wb, "laporan_notaris_ppat.xlsx")
+        }
+
+        /* ================= PRINT PDF STD================= */
+
+        function printPDF(url) {
+
+            let win = window.open(url, "_blank");
+
+            // tunggu file load
+            win.onload = function () {
+
+                win.focus();
+
+                // print otomatis
+                win.print();
+
+            };
+        }
+
+        /* ================= HITUNG HARI ================= */
+
+        function hitungHariTerlambat(tanggalDiterima) {
+            if (!tanggalDiterima) return 0;
+
+            let hari = 0;
+
+            // format: 12/03/2025
+            if (tanggalDiterima.includes("/")) {
+                let [dd, mm, yyyy] = tanggalDiterima.split("/");
+                hari = parseInt(dd);
+            }
+            // format: 2025-03-12
+            else if (tanggalDiterima.includes("-")) {
+                let parts = tanggalDiterima.split("-");
+                hari = parseInt(parts[2]);
+            }
+            else {
+                let tgl = new Date(tanggalDiterima);
+                hari = tgl.getDate();
+            }
+
+            let telat = hari - 10;
+
+            return telat > 0 ? telat : 0;
+        }
+
+        /* ================= GERAFIK MODEREN ================= */
+
+        function grafikBulanan() {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+            let dataBulan = {}
+
+            rows.forEach(row => {
+
+                let nama = row.cells[1].innerText.trim()
+                let bulan = row.cells[7].innerText.trim()
+
+                if (!nama || !bulan) return
+
+                if (!dataBulan[bulan]) {
+                    dataBulan[bulan] = new Set()
+                }
+
+                dataBulan[bulan].add(nama)
+
+            })
+
+            let labels = []
+            let values = []
+
+            for (let b in dataBulan) {
+                labels.push(b)
+                values.push(dataBulan[b].size)
+            }
+
+            new Chart(document.getElementById("grafikBulanan"), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values
+                    }]
+                }
+            })
+
+        }
+
+        function grafikStatus() {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            let tepat = 0
+            let terlambat = 0
+
+            rows.forEach(row => {
+
+                let status = row.cells[6].innerText.toLowerCase()
+
+                if (status.includes("tepat")) tepat++
+                if (status.includes("terlambat")) terlambat++
+
+            })
+
+            new Chart(document.getElementById("grafikStatus"), {
+
+                type: 'bar',
+
+                data: {
+                    labels: ["Tepat Waktu", "Terlambat"],
+                    datasets: [{
+                        data: [tepat, terlambat]
+                    }]
+                },
+
+                options: {
+                    responsive: true
+                }
+
+            })
+
+        }
+
+        function grafikTopNotaris() {
+
+            let rows = document.querySelectorAll("#dataNotaris tr")
+
+            let dataNotaris = {}
+
+            rows.forEach(row => {
+
+                let nama = row.cells[1].innerText.trim()
+
+                if (!nama) return
+
+                if (!dataNotaris[nama]) {
+                    dataNotaris[nama] = 0
+                }
+
+                dataNotaris[nama]++
+
+            })
+
+            let sorted = Object.entries(dataNotaris)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+
+            let labels = sorted.map(x => x[0])
+            let values = sorted.map(x => x[1])
+
+            new Chart(document.getElementById("grafikTopNotaris"), {
+
+                type: 'bar',
+
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values
+                    }]
+                },
+
+                options: {
+                    indexAxis: 'y'
+                }
+
+            })
+
+        }
+
+    </script>
 
 </body>
 
