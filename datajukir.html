@@ -3,308 +3,345 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Arsip Surat Notaris / PPAT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Arsip Surat Masuk</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        /* ================= GLOBAL ================= */
         body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #020617);
+            color: #ffffff;
             margin: 0;
-            font-family: system-ui, Arial, sans-serif;
-            background: #0f172a;
-            color: #fff;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            padding: 10px 16px;
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-
-        .navbar i {
-            font-size: 20px;
-        }
-
-        .navbar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
-        }
-
-        .navbar:active {
-            transform: scale(0.97);
-        }
-
-        /* ===== HEADER STICKY ===== */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: #020617;
-            padding: 20px;
-            border-bottom: 1px solid #1e293b;
+            padding: 25px;
         }
 
         h2 {
-            margin: 0 0 15px;
             text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
-        /* ===== CONTENT ===== */
-        .content {
-            padding: 20px;
+        /* ================= CONTAINER ================= */
+        .container {
+            max-width: 1200px;
+            /* nyaman di layar besar dan sedang */
+            margin: auto;
+            padding: 0 15px;
         }
 
-        /* ===== FORM ===== */
-        form {
-            background: #020617;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+        /* ================= CARD ================= */
+        .card {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 24px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* ================= FORM ================= */
+        #formSurat {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        /* INPUT GROUP */
         .input-group {
             position: relative;
-            margin-top: 18px;
         }
 
-        .input-group input {
-            width: 100%;
-            padding: 12px 40px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: transparent;
-            color: #fff;
-            outline: none;
-        }
-
+        /* ICON */
         .input-group i {
             position: absolute;
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
-        }
-
-        .input-group label {
-            position: absolute;
-            left: 40px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: #94a3b8;
-            background: #020617;
-            padding: 0 6px;
+            color: #64748b;
+            font-size: 13px;
             pointer-events: none;
-            transition: .25s;
         }
 
-        .input-group input:focus+label,
-        .input-group input:not(:placeholder-shown)+label {
-            top: -8px;
-            font-size: 12px;
-            color: #22c55e;
-        }
-
+        /* INPUT */
+        .input-group input,
         .input-group select {
             width: 100%;
-            padding: 12px 40px;
+            max-width: 100%;
+            height: 42px;
+            padding: 0 12px 0 35px;
             border-radius: 8px;
             border: 1px solid #334155;
-            background: #020617;
-            color: #fff;
-            outline: none;
-            appearance: none;
-            cursor: pointer;
+            background: rgba(2, 6, 23, 0.8);
+            color: #e2e8f0;
+            font-size: 13px;
+            transition: 0.25s;
+            box-sizing: border-box;
         }
 
+        /* HOVER INPUT */
+        .input-group input:hover,
+        .input-group select:hover {
+            border-color: #475569;
+        }
+
+        /* FOCUS */
+        .input-group input:focus,
         .input-group select:focus {
             border-color: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+            outline: none;
         }
 
-        .input-group select:focus+label,
-        .input-group select:not([value=""])+label {
-            top: -8px;
-            font-size: 12px;
-            color: #22c55e;
-        }
-
-        /* ===== AUTOCOMPLETE ===== */
-        .autocomplete {
-            position: absolute;
-            width: 100%;
-            background: #020617;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            margin-top: 6px;
-            z-index: 999;
-            max-height: 220px;
-            overflow-y: auto;
-        }
-
-        .autocomplete div {
-            padding: 10px;
+        /* DATE FIX */
+        input[type="date"] {
             cursor: pointer;
-            border-bottom: 1px solid #1e293b;
         }
 
-        .autocomplete div:hover {
-            background: #1e293b;
-        }
-
-        .autocomplete span {
-            color: #22c55e;
-            font-weight: bold;
-        }
-
-        /* ===== BUTTON ===== */
+        /* ================= BUTTON ================= */
         button {
-            margin-top: 15px;
-            padding: 10px 16px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
             font-weight: 600;
+            transition: 0.25s;
         }
 
+        /* SAVE BUTTON */
         .btn-save {
-            background: #22c55e;
-            color: #020617;
+            grid-column: 1 / -1;
+            width: 100%;
+            height: 45px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #000;
+            letter-spacing: 0.5px;
         }
 
-        .btn-delete {
-            background: #ef4444;
-            color: #fff;
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
         }
 
-        .btn-print {
-            background: #38bdf8;
-            color: #020617;
-        }
-
-        /* ===== FILTER ===== */
+        /* ================= FILTER ================= */
         .filter-box {
             display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .filter-box input {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #020617;
-            color: #fff;
+            flex: 1;
+            min-width: 220px;
         }
 
-        /* ===== TABLE ===== */
+        /* ================= TABLE ================= */
         .table-wrapper {
-            max-height: 60vh;
-            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 12px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background: #020617;
-        }
-
-        th,
-        td {
-            border: 1px solid #1e293b;
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
+            min-width: 100%;
+            color: #edeef0;
         }
 
         th {
-            background: #1e293b;
-            position: sticky;
-            top: 0;
-            z-index: 5;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 14px;
+            border: 1px solid #334155;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #edf0f4;
         }
 
+        td {
+            padding: 12px;
+            border: 1px solid #334155;
+            font-size: 13px;
+        }
+
+        /* STRIPED ROW */
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* HOVER ROW */
+        tr:hover {
+            background: rgba(56, 189, 248, 0.15);
+            transition: 0.2s;
+        }
+
+        /* ================= BUTTON TABLE ================= */
         .btn-edit {
             background: #38bdf8;
             color: #000;
-            border: none;
             padding: 6px 10px;
             border-radius: 6px;
-            cursor: pointer;
-            margin-right: 4px;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
         }
 
         .btn-edit:hover {
             background: #0ea5e9;
         }
 
-        /* ===== BUTTON LOADING ===== */
-        .btn-loading {
-            display: none;
+        .btn-delete:hover {
+            background: #dc2626;
         }
 
-        .btn-save.loading .btn-text {
-            display: none;
-        }
-
-        .btn-save.loading .btn-loading {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ===== ALERT SUCCESS ===== */
-        .alert-success {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #16a34a;
-            color: white;
-            padding: 12px 18px;
+        /* ================= AUTOCOMPLETE ================= */
+        .autocomplete {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #020617;
+            border: 1px solid #334155;
             border-radius: 8px;
-            font-weight: 600;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .3);
-            animation: slideIn .4s ease;
-            z-index: 9999;
+            overflow: hidden;
+            z-index: 999;
         }
 
-        .loading-overlay {
+        .autocomplete div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .autocomplete div:hover {
+            background: #1e293b;
+        }
+
+        /* ================= LOADING ================= */
+        #loading {
+            display: none;
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
             justify-content: center;
-            flex-direction: column;
-            z-index: 9999;
+            align-items: center;
+            z-index: 999;
         }
 
         .loader {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border: 4px solid #fff;
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            margin: 0 2px;
+            transition: transform 0.2s;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.2);
+        }
+
+        #mainNavbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 0.8rem 1rem;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            /* gradasi biru */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        #mainNavbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        #mainNavbar .navbar-brand i {
+            margin-right: 8px;
+            font-size: 1.4rem;
+            color: #22c55e;
+            /* hijau neon */
+            transition: 0.3s;
+        }
+
+        #mainNavbar .navbar-brand:hover i {
+            transform: rotate(20deg);
+        }
+
+        #mainNavbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #mainNavbar .nav-link {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        #mainNavbar .nav-link i {
+            margin-right: 6px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        #mainNavbar .nav-link:hover {
+            background: rgba(34, 197, 94, 0.2);
+            /* efek hover hijau */
+            color: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            #mainNavbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0.6rem 1rem;
+            }
+
+            #mainNavbar .nav-links {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            #mainNavbar .nav-link {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 8px 12px;
+            }
         }
 
         @keyframes spin {
@@ -313,507 +350,517 @@
             }
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 1024px) {
+            #formSurat {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             }
         }
 
-        /* ===== PRINT MODE ===== */
+        @media (max-width: 768px) {
+            #formSurat {
+                grid-template-columns: 1fr;
+                /* kolom tunggal di mobile */
+            }
+
+            .btn-save {
+                grid-column: 1 / -1;
+            }
+
+            table {
+                min-width: 600px;
+                /* scroll table lebih ringan */
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .filter-box {
+                flex-direction: column;
+            }
+
+            .filter-box input {
+                min-width: 100%;
+            }
+        }
+
+        /* Tombol Print & Export */
+        .btn-action {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .btn-action i {
+            margin-right: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ================= PRINT ================= */
         @media print {
 
-            body {
-                background: #fff;
-                color: #000;
+            /* Sembunyikan kolom aksi sepenuhnya */
+            .col-aksi {
+                display: none !important;
             }
 
-            /* sembunyikan semua */
-            body * {
-                visibility: hidden;
-            }
-
-            /* tampilkan tabel saja */
-            table,
-            table * {
-                visibility: visible;
-            }
-
-            /* posisikan tabel ke atas */
+            /* Tabel full width */
             table {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: #fff;
-                color: #000;
+                width: 100% !important;
+                border-collapse: collapse;
             }
 
-            /* sembunyikan kolom aksi */
-            th:last-child,
-            td:last-child {
-                display: none;
-            }
-
-            /* border hitam saat print */
             th,
             td {
-                border: 1px solid #000;
+                border: 1px solid #333;
+                padding: 6px;
+                font-size: 12px;
                 color: #000;
+                background: #fff !important;
             }
 
-            th {
-                background: #f0f0f0;
+            body {
+                color: #000;
+                background: #fff;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: economy;
             }
         }
     </style>
 </head>
 
 <body>
-    <header class="app-header">
-        <h2>TANDA TERIMA LAPORAN BULAN NOTARIS DAN PPAT KOTA BENGKULU</h2>
+    <h2 class="page-title">ARSIP SURAT MASUK</h2>
 
-        <div id="loading" class="loading-overlay">
-            <div class="loader"></div>
-            <p>Memuat...</p>
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="mainNavbar" class="navbar fixed-top shadow-sm py-2">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Judul -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-gear-fill me-2"></i> Arsip Surat Bidang P3
+            </a>
+
+            <!-- Menu Navigasi -->
+            <div class="nav-links d-flex align-items-center">
+                <a href="formulir.html" class="nav-link" title="Formulir PPAT">
+                    <i class="bi bi-file-earmark-text me-1"></i> Formulir PPAT
+                </a>
+                <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
+                    <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
+                </a>
+            </div>
         </div>
+    </nav>
 
-        <!-- NAVBAR -->
-        <div class="navbar" onclick="goBack()">
-            <i class="bi bi-receipt-cutoff"></i>
-            <span>Fomulir Laporan Bulanan PPAT</span>
-        </div>
+    <!-- Spacer agar konten tidak tertutup navbar -->
+    <div style="height: 80px;"></div>
 
-        <form id="formSurat">
+    <div class="container">
+
+        <!-- FORM -->
+        <form id="formSurat" class="card">
+
             <div class="input-group">
                 <i class="fa-solid fa-user-tie"></i>
-                <input type="text" id="nama_notaris" autocomplete="off" placeholder=" ">
-                <label>Nama Notaris / PPAT</label>
+                <input type="text" id="nama_notaris" placeholder="Ketik Nama Notaris" required>
                 <div id="suggestions" class="autocomplete"></div>
             </div>
 
             <div class="input-group">
-                <i class="fa-solid fa-calendar-days" id="iconTanggal"></i>
+                <i class="fa-solid fa-calendar-days"></i>
                 <input type="date" id="tanggal_surat" required>
-                <label>Tanggal Surat</label>
             </div>
+
             <div class="input-group">
-                <i class="fa-solid fa-calendar-days" id="iconTanggal"></i>
+                <i class="fa-solid fa-calendar-check"></i>
                 <input type="date" id="tanggal_diterima" required>
-                <label>Tanggal Diterima</label>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-file-lines"></i>
-
                 <select id="judul_surat" required>
-                    <option value="" disabled selected hidden>Pilih Judul Surat</option>
-
-                    <option value="Surat Permohonan">Surat Permohonan</option>
-                    <option value="Surat Kuasa">Surat Kuasa</option>
-                    <option value="Surat Pernyataan">Surat Pernyataan</option>
-                    <option value="Surat Keterangan">Surat Keterangan</option>
-                    <option value="Surat Undangan">Surat Undangan</option>
-                    <option value="Surat Pemberitahuan">Surat Pemberitahuan</option>
-                    <option value="Surat Pengantar">Surat Pengantar</option>
-                    <option value="Laporan Bulanan PPAT">Laporan Bulanan PPAT</option>
+                    <option value="">Pilih Judul</option>
+                    <option>Laporan Bulanan PPAT</option>
+                    <option>Surat Permohonan</option>
                 </select>
-
-                <label></label>
             </div>
+
             <div class="input-group">
-                <i class="fa-solid fa-file-lines"></i>
-
+                <i class="fa-solid fa-building"></i>
                 <select id="dari_bidang" required>
-                    <option value="" disabled selected hidden>Pilih Bidang Dibawah ini</option>
-
-                    <option value="Sekretariat">Sekre</option>
-                    <option value="Bidang Perencanan dan Pengembangan Pendapatan Daerah"> Bidang P1</option>
-                    <option value="Bidang Pengelolan dan Pendapatan Daerah"> Bidang P2</option>
-                    <option value="Bidang Pengendalian dan Evaluasi Daerah"> Bidang P3</option>
+                    <option value="">Pilih Bidang</option>
+                    <option>Sekretariat</option>
+                    <option>Bidang P1</option>
+                    <option>Bidang P2</option>
                 </select>
-
-                <label></label>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-user"></i>
-                <input type="text" id="nama_penerima" placeholder=" ">
-                <label>Nama Pengantar</label>
+                <input type="text" id="nama_penerima" placeholder="Nama Pengantar">
             </div>
 
-            <button class="btn-save" id="btnSave">
-                <span class="btn-text">
-                    <i class="fa-solid fa-paper-plane"></i> Simpan Data
-                </span>
-                <span class="btn-loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...
-                </span>
+            <button class="btn-save">
+                <i class="fa-solid fa-paper-plane"></i> Simpan Data
             </button>
 
-            <div id="alertSuccess" class="alert-success">
-                <i class="fa-solid fa-circle-check"></i>
-                Data berhasil disimpan
+        </form>
+
+        <div class="filter-box card">
+
+            <div class="input-group">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="filterNama" placeholder="Cari Nama">
             </div>
 
-            <div class="filter-box">
-                <i class="fa-solid fa-filter"></i>
-
-                <input type="text" id="filterNama" placeholder="Filter Nama Notaris / PPAT">
-
+            <div class="input-group">
+                <i class="fa-solid fa-calendar"></i>
                 <input type="date" id="filterTanggal">
-
-                <button class="btn-print" onclick="printData()">
-                    <i class="fa-solid fa-print"></i> Print
-                </button>
             </div>
 
-            </div>
-    </header>
-
-    <main class="content">
-        <div class="table-wrapper">
-            <table id="tabelSurat">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Notaris / PPAT</th>
-                        <th>Tanggal Diterima</th>
-                        <th>Tanggal Surat</th>
-                        <th>Judul Surat</th>
-                        <th>Jam Diterima</th>
-                        <th>Dari Bidang</th>
-                        <th>Nama Pengantar</th>
-                        <th>Paraf</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
         </div>
-    </main>
 
-    <script>
-        let editIndex = null;
+        <!-- TOMBOL PRINT & EXPORT -->
+        <td class="col-aksi">
+            <div class="d-flex mb-3 gap-2">
+                <button class="btn-action" onclick="printTable()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn-action" onclick="exportExcel()">
+                    <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Export Excel
+                </button>
+            </div>
 
-        // hapus otomatis data lama
-        localStorage.removeItem("list_notaris");
+            <!-- TABLE -->
+            <div class="card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Notaris/PPAT</th>
+                                <th>Tgl Terima</th>
+                                <th>Tgl Surat</th>
+                                <th>Judul</th>
+                                <th>Jam</th>
+                                <th>Bidang</th>
+                                <th>Pengantar</th>
+                                <th>Paraf</th>
+                                <th class="col-aksi">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-        function getNotaris() {
-            return JSON.parse(localStorage.getItem(NOTARIS_KEY)) || defaultNotaris;
-        }
+            <script>
+                let allData = [];
+                let editRow = null;
 
-        /* ================== KONSTANTA ================== */
-        const STORAGE_KEY = "arsip_surat";
-        const NOTARIS_KEY = "list_notaris";
-        const filterNama = document.getElementById("filterNama") || { value: "" };
+                const URL = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
+                const namaInput = document.getElementById("nama_notaris");
+                const suggestions = document.getElementById("suggestions");
 
-        /* ================== ELEMENT ================== */
-        const namaInput = document.getElementById("nama_notaris");
-        const suggestions = document.getElementById("suggestions");
-        const tbody = document.querySelector("#tabelSurat tbody");
-        const form = document.getElementById("formSurat");
-        const filterTanggal = document.getElementById("filterTanggal");
+                namaInput.addEventListener("input", () => {
+                    let keyword = namaInput.value.toLowerCase();
+                    suggestions.innerHTML = "";
 
-        const tanggalSurat = document.getElementById("tanggal_surat");
-        const tanggalDiterima = document.getElementById("tanggal_diterima");
-        const iconTanggalSurat = document.getElementById("iconTanggalSurat");
-        const iconTanggalDiterima = document.getElementById("iconTanggalDiterima");
+                    if (!keyword) {
+                        suggestions.style.display = "none";
+                        return;
+                    }
 
-        /* ================== DATA DEFAULT NOTARIS ================== */
-        const defaultNotaris = [
-            "AMELIA MERDEKA SARI, S.H., M.Kn",
-            "ANJAR KRISTIANTO, S.H., M.Kn",
-            "ATMIWIJAYA ARTATI, S.H., M.Kn",
-            "ANGGA PRISMA JELITA, S.H.,M.Kn",
-            "ANNISA FADILLA KARTAMADJA,S.H., M.Kn",
-            "AULIYYA MARTATI, S.H., M.H",
-            "ARDANA RESTIKA, S.H.,M.Kn",
-            "AZIZA ADLIEN NABILA, S.H.,M.Kn",
-            "BERTHA NOVELISA, S.H., M.Kn",
-            "BJANZA METRA, S.H.,M.Kn",
-            "BELLA FILDA AGATHA,S.H.,M.Kn",
-            "CHRISTINE, S.H.,M.Kn",
-            "DENI YOHANES, S.H., M.Kn",
-            "DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn",
-            "DENI KRISTIAN NATANAEL, S.H,.M.Kn",
-            "DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn",
-            "DORA YULIA AGUSTINA, S.H.,M.Kn",
-            "DWI FANI ARSIKASINDI, S.H.,M.H",
-            "EMY EFRIANTI AGUSTINI, S.H., M.Kn",
-            "HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn",
-            "HELEN SAPARINGGA,S.H., M.Kn",
-            "H. EPISON, S.H",
-            "H. MUFTI NOKHMAN, S.H.,M.Kn",
-            "IDAYANTI, S.H",
-            "IS HARIYANI,S.H",
-            "ILHAM RAHMADI, SH",
-            "INDAH ARIESTIA, S.H",
-            "IRAWAN, S.H",
-            "JULIWATI SIAGIAN, S.H,M.Kn",
-            "KARTINI KESUMAWATY,S.H,.M.Kn",
-            "KHAIRUNNISA, S.H., M.Kn",
-            "KUSWARI, S.H",
-            "LYDIA ARMAN, S.H., M.Kn",
-            "LINDA OKTARINA, S.H",
-            "MIRZA, S.H.,M.Kn",
-            "NOVIARTATI, S.H",
-            "RANDI WIBOWO, S.H.,M.Kn",
-            "RIZFITRIANI ALAMSYAH, S.H.,M.Kn",
-            "SARI PRIYANKA, S.H., M.Kn",
-            "SUSANTI, S.H., M.Kn",
-            "SARI INDRA, S.H.,M.Kn",
-            "SHINTA WIDYANIATI, S.H.,M.Kn",
-            "SICILIA HENDRA, S.H.,M.Kn",
-            "SHABRINA ZHAFIRA,S.H.,M.Kn",
-            "SISKA WIDIA ASTUTI, S.H.,M.Kn",
-            "TINA HAERANI BUNGGASI, S.H.,M.Kn",
-            "TIARA YUNITA OVELIA, S.H.,M.Kn",
-            "VIKE DIANTI PUTRI, S.H.,M.Kn",
-            "VINANDA LOVITA, S.H.,M.Kn",
-            "WENY ARIMBI CRISTIANI,SST,Par.,S.H.,M.Kn"
-        ];
+                    let hasil = defaultNotaris.filter(n =>
+                        n.toLowerCase().includes(keyword)
+                    );
 
-        /* ================== STORAGE ================== */
-        function getNotaris() {
-            return JSON.parse(localStorage.getItem(NOTARIS_KEY)) || defaultNotaris;
-        }
+                    hasil.forEach(n => {
+                        let div = document.createElement("div");
+                        div.textContent = n;
 
-        function getData() {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        }
+                        div.onclick = () => {
+                            namaInput.value = n;
+                            suggestions.style.display = "none";
+                        };
 
-        function saveData(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
+                        suggestions.appendChild(div);
+                    });
 
-        /* ================== AUTOCOMPLETE NOTARIS ================== */
-        namaInput.addEventListener("input", () => {
-            const keyword = namaInput.value.trim().toLowerCase();
-            suggestions.innerHTML = "";
+                    suggestions.style.display = hasil.length ? "block" : "none";
+                });
 
-            if (!keyword) {
-                suggestions.style.display = "none";
-                return;
-            }
+                document.addEventListener("click", e => {
+                    if (!e.target.closest("form")) {
+                        suggestions.style.display = "none";
+                    }
+                });
 
-            const hasil = getNotaris().filter(nama =>
-                nama.toLowerCase().includes(keyword)
-            );
+                /* =========================
+                  FUNGSI LOGIN DAN LOGOUT
+                  ========================= */
+                function cekLogin() {
+                    const token = localStorage.getItem("token");
 
-            hasil.forEach(nama => {
-                const div = document.createElement("div");
+                    if (!token) {
+                        window.location.href = "table.html";
+                        return;
+                    }
 
-                const regex = new RegExp(`(${keyword})`, "gi");
-                div.innerHTML = nama.replace(regex, "<span>$1</span>");
-
-                div.onclick = () => {
-                    namaInput.value = nama;
-                    suggestions.style.display = "none";
-                };
-
-                suggestions.appendChild(div);
-            });
-
-            suggestions.style.display = hasil.length ? "block" : "none";
-        });
-
-        /* Tutup autocomplete saat klik luar */
-        document.addEventListener("click", e => {
-            if (!e.target.closest(".input-group")) {
-                suggestions.style.display = "none";
-            }
-        });
-
-        /* ================== SUBMIT FORM ================== */
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-
-            // LOADING ON
-            btnSave.classList.add("loading");
-            btnSave.disabled = true;
-
-            setTimeout(() => {
-                const data = getData();
-
-                const payload = {
-                    nama: nama_notaris.value,
-                    tanggal_surat: tanggalSurat.value,
-                    tanggal_diterima: tanggalDiterima.value,
-                    judul: judul_surat.value,
-                    jam: new Date().toLocaleTimeString("id-ID"),
-                    dari_bidang: dari_bidang.value,
-                    penerima: nama_penerima.value
-                };
-
-                if (editIndex !== null) {
-                    data[editIndex] = payload;
-                    editIndex = null;
-                } else {
-                    data.push(payload);
+                    fetch(`${URL}?action=check&token=${token}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.status !== "valid") {
+                                localStorage.removeItem("token");
+                                window.location.href = "table.html";
+                            }
+                        })
+                        .catch(() => {
+                            window.location.href = "table.html";
+                        });
                 }
 
-                saveData(data);
-                form.reset();
-                setTanggalHariIni();
-                render();
+                // jalankan saat halaman dibuka
+                cekLogin();
 
-                // LOADING OFF
-                btnSave.classList.remove("loading");
-                btnSave.disabled = false;
-
-                // ALERT SUCCESS
-                alertSuccess.style.display = "flex";
-
-                setTimeout(() => {
-                    alertSuccess.style.display = "none";
-                }, 2000);
-
-            }, 900);
-        });
-
-
-        /* ================== RENDER TABLE ================== */
-        function render() {
-            tbody.innerHTML = "";
-
-            const filterTgl = filterTanggal.value;
-            const filterNm = filterNama ? filterNama.value.toLowerCase() : "";
-
-            getData().forEach((d, i) => {
-
-                if (filterTgl && d.tanggal_surat !== filterTgl) return;
-                if (filterNm && !d.nama.toLowerCase().includes(filterNm)) return;
-
-                tbody.innerHTML += `
-        <tr>
-            <td>${i + 1}</td>
-            <td>${d.nama}</td>
-            <td>${d.tanggal_surat}</td>
-            <td>${d.tanggal_diterima}</td>
-            <td>${d.judul}</td>
-            <td>${d.jam}</td>
-            <td>${d.dari_bidang}</td>
-            <td>${d.penerima}</td>
-            <td></td>
-            <td>
-                <button class="btn-edit" onclick="editData(${i})">
-                    <i class="fa-solid fa-pen"></i>
-                </button>
-                <button class="btn-delete" onclick="hapus(${i})">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </td>
-        </tr>`;
-            });
-        }
-
-        function editData(index) {
-            const data = getData()[index];
-
-            nama_notaris.value = data.nama;
-            tanggalSurat.value = data.tanggal_surat;
-            tanggalDiterima.value = data.tanggal_diterima;
-            judul_surat.value = data.judul;
-            dari_bidang.value = data.dari_bidang;
-            nama_penerima.value = data.penerima;
-
-            editIndex = index;
-
-            document.querySelector(".btn-text").innerHTML =
-                `<i class="fa-solid fa-floppy-disk"></i> Update Data`;
-        }
-
-        filterTanggal.addEventListener("change", render);
-        filterNama.addEventListener("input", render);
-
-        /* ================== HAPUS DATA ================== */
-        function hapus(index) {
-            if (!confirm("Yakin ingin menghapus data ini?")) return;
-            const data = getData();
-            data.splice(index, 1);
-            saveData(data);
-            render();
-        }
-
-        /* ================== FILTER TANGGAL ================== */
-        filterTanggal.addEventListener("change", render);
-
-        /* ================== PRINT ================== */
-        function printData() {
-            window.print();
-        }
-
-        /* ================== TANGGAL OTOMATIS ================== */
-        function setTanggalHariIni() {
-            const today = new Date().toISOString().split("T")[0];
-
-            if (!tanggalSurat.value) tanggalSurat.value = today;
-            if (!tanggalDiterima.value) tanggalDiterima.value = today;
-        }
-
-        setTanggalHariIni();
-
-        /* klik icon = buka kalender */
-        iconTanggal.addEventListener("click", () => {
-            tanggalInput.showPicker();
-        });
-
-
-        /* Klik icon / input buka date picker */
-        iconTanggalSurat.addEventListener("click", () => tanggalSurat.showPicker());
-        iconTanggalDiterima.addEventListener("click", () => tanggalDiterima.showPicker());
-
-        /* ================== INIT ================== */
-        render();
-
-        function goBack() {
-            const loading = document.getElementById("loading");
-
-            if (loading) {
-                loading.style.display = "flex";
-            }
-
-            setTimeout(() => {
-                window.location.href = "fomulir.html";
-            }, 1200);
-        }
-
-        document.addEventListener("contextmenu", e => e.preventDefault());
-
-        (function () {
-            const threshold = 160;
-            setInterval(() => {
-                const widthDiff = window.outerWidth - window.innerWidth;
-                const heightDiff = window.outerHeight - window.innerHeight;
-
-                if (widthDiff > threshold || heightDiff > threshold) {
-                    document.body.innerHTML = `
-                    <div style="
-                        display:flex;
-                        justify-content:center;
-                        align-items:center;
-                        height:100vh;
-                        background:#020617;
-                        color:#fff;
-                        font-size:22px;
-                        font-family:Arial;
-                        text-align:center;
-                    ">
-                        🚫 Akses Diblokir <br>
-                        Developer Tools terdeteksi
-                    </div>
-                `;
+                // Fungsi LogOut
+                function logout() {
+                    localStorage.removeItem("token");
+                    window.location.href = "table.html";
                 }
-            }, 1000);
-        })();
-    </script>
 
+                /* ================= LOAD DATA ================= */
+                function loadData() {
+                    document.getElementById("loading").style.display = "flex";
+
+                    fetch(URL) // ⬅️ GET, bukan POST
+                        .then(res => res.json())
+                        .then(data => {
+                            allData = data; // simpan data
+                            render();       // tampilkan ke tabel
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("Gagal load data!");
+                        })
+                        .finally(() => {
+                            document.getElementById("loading").style.display = "none";
+                        });
+                }
+
+                /* ================= RENDER ================= */
+                function render() {
+                    let html = "";
+                    const filterNama = document.getElementById("filterNama").value.toLowerCase();
+                    const filterTanggal = document.getElementById("filterTanggal").value;
+
+                    allData.forEach(d => {
+
+                        if (filterNama && !d.nama.toLowerCase().includes(filterNama)) return;
+                        if (filterTanggal && d.tgl_surat != filterTanggal) return;
+
+                        html += `
+                <tr>
+                <td>${d.no}</td>
+                <td>${d.nama}</td>
+                <td>${d.tgl_terima}</td>
+                <td>${d.tgl_surat}</td>
+                <td>${d.judul}</td>
+                <td>${d.jam}</td>
+                <td>${d.bidang}</td>
+                <td>${d.pengantar}</td>
+                <td>${d.paraf || ""}</td>
+                <td class="col-aksi">
+                <!-- ICON EDIT -->
+                            <button class="btn-icon" onclick="editData(${d.row})" title="Edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#38bdf8" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1.439 1.439-2.121-2.121L13.38.525a.5.5 0 0 1 .706 0l1.416 1.415zm-2.561 2.561L2 15H0v-2L10.941 2.501l2.121 2.121z" />
+                                </svg>
+                            </button>
+                <!-- ICON DELETE -->
+                            <button class="btn-icon" onclick="hapus(${d.row})" title="Hapus">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ef4444" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-8zM4.118 4 4 4.059V4.5A.5.5 0 0 0 4.5 5h7a.5.5 0 0 0 .5-.5V4.059L11.882 4H4.118zM2.5 3h11a.5.5 0 0 1 .5.5V4h-12v-.5a.5.5 0 0 1 .5-.5z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>              
+                </tr >
+                            `;
+                    });
+
+                    document.getElementById("dataTable").innerHTML = html;
+                }
+
+                const defaultNotaris = [
+                    "AMELIA MERDEKA SARI, S.H., M.Kn",
+                    "ANJAR KRISTIANTO, S.H., M.Kn",
+                    "ATMIWIJAYA ARTATI, S.H., M.Kn",
+                    "ANGGA PRISMA JELITA, S.H.,M.Kn",
+                    "ANNISA FADILLA KARTAMADJA,S.H., M.Kn",
+                    "AULIYYA MARTATI, S.H., M.H",
+                    "ARDANA RESTIKA, S.H.,M.Kn",
+                    "AZIZA ADLIEN NABILA, S.H.,M.Kn",
+                    "BERTHA NOVELISA, S.H., M.Kn",
+                    "BJANZA METRA, S.H.,M.Kn",
+                    "BELLA FILDA AGATHA,S.H.,M.Kn",
+                    "CHRISTINE, S.H.,M.Kn",
+                    "DENI YOHANES, S.H., M.Kn",
+                    "DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn",
+                    "DENI KRISTIAN NATANAEL, S.H,.M.Kn",
+                    "DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn",
+                    "DORA YULIA AGUSTINA, S.H.,M.Kn",
+                    "DWI FANI ARSIKASINDI, S.H.,M.H",
+                    "EMY EFRIANTI AGUSTINI, S.H., M.Kn",
+                    "HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn",
+                    "HELEN SAPARINGGA,S.H., M.Kn",
+                    "H. EPISON, S.H",
+                    "H. MUFTI NOKHMAN, S.H.,M.Kn",
+                    "IDAYANTI, S.H",
+                    "IS HARIYANI,S.H",
+                    "ILHAM RAHMADI, SH",
+                    "INDAH ARIESTIA, S.H",
+                    "IRAWAN, S.H",
+                    "JULIWATI SIAGIAN, S.H,M.Kn"
+                ];
+
+                /* ================= SUBMIT ================= */
+                document.getElementById("formSurat").addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    document.getElementById("loading").style.display = "flex";
+
+                    let payload = {
+                        nama: nama_notaris.value,
+                        tgl_surat: tanggal_surat.value,
+                        tgl_terima: tanggal_diterima.value,
+                        judul: judul_surat.value,
+                        bidang: dari_bidang.value,
+                        pengantar: nama_penerima.value,
+                        paraf: ""
+                    };
+
+                    if (editRow) {
+                        payload.action = "update";
+                        payload.row = editRow;
+                    }
+
+                    fetch(URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    })
+                        .then(() => {
+                            formSurat.reset();
+                            editRow = null;
+                            loadData();
+                        })
+                        .catch(err => {
+                            alert("Gagal kirim data!");
+                            console.error(err);
+                        })
+                        .finally(() => {
+                            document.getElementById("loading").style.display = "none";
+                        });
+                });
+
+                /* ================= EDIT ================= */
+                function editData(row) {
+                    let d = allData.find(x => x.row == row);
+
+                    nama_notaris.value = d.nama;
+                    tanggal_surat.value = d.tgl_surat;
+                    tanggal_diterima.value = d.tgl_terima;
+                    judul_surat.value = d.judul;
+                    dari_bidang.value = d.bidang;
+                    nama_penerima.value = d.pengantar;
+
+                    editRow = row;
+                }
+
+                /* ================= HAPUS ================= */
+                function hapus(row) {
+                    if (!confirm("Yakin hapus?")) return;
+
+                    fetch(URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            action: "delete",
+                            row: row
+                        })
+                    })
+                        .then(() => loadData());
+                }
+
+                /* ================= FILTER ================= */
+                document.getElementById("filterNama").addEventListener("input", render);
+                document.getElementById("filterTanggal").addEventListener("change", render);
+
+                /* ================= INIT ================= */
+                loadData();
+
+                /* ================= PRINT TABLE ================= */
+                function printTable() {
+                    // Ambil table asli
+                    let table = document.querySelector('.table-wrapper table');
+                    // Clone table supaya aman
+                    let tableClone = table.cloneNode(true);
+
+                    // Hapus kolom aksi
+                    tableClone.querySelectorAll('.col-aksi').forEach(el => el.remove());
+
+                    // Buat jendela baru untuk print
+                    let newWin = window.open('', '', 'width=900,height=700');
+                    newWin.document.write(`
+                            <html>
+                        <head>
+                            <title>Print Table</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff; }
+                                h2 { text-align: center; margin-bottom: 20px; }
+                                table { border-collapse: collapse; width: 100%; }
+                                th, td { border: 1px solid #333; padding: 8px; text-align: left; font-size: 12px; }
+                                th { background: #2563eb; color: #fff; }
+                                tr:nth-child(even) { background: #f2f2f2; }
+                            </style>
+                        </head>
+                        <body>
+            <h2>Arsip Surat Masuk</h2>
+            ${tableClone.outerHTML}
+        </body>
+        </html>
+    `);
+                    newWin.document.close();
+                    newWin.print();
+                }
+
+                /* ================= EXPORT EXCEL ================= */
+                function exportExcel() {
+                    let table = document.querySelector('table');
+                    let wb = XLSX.utils.table_to_book(table, { sheet: "Arsip Surat" });
+                    XLSX.writeFile(wb, 'Arsip_Surat.xlsx');
+                }
+
+            </script>
 
 </body>
 
