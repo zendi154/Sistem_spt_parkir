@@ -283,7 +283,7 @@
                 .then(res => {
                     if (res.status === "success") {
                         localStorage.setItem("token", res.token);
-                        window.location.href = "dashboard.html";
+                        window.location.href = "Table.html";
                     } else {
                         passError.innerText = "Email atau password salah";
                         password.classList.add("error");
@@ -308,25 +308,6 @@
         // blok klik kanan
         document.addEventListener("contextmenu", function (e) {
             e.preventDefault();
-        });
-
-        // blok shortcut inspect
-        document.addEventListener("keydown", function (e) {
-
-            // F12
-            if (e.key === "F12") {
-                e.preventDefault();
-            }
-
-            // Ctrl+Shift+I / Ctrl+Shift+J
-            if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) {
-                e.preventDefault();
-            }
-
-            // Ctrl+U (view source)
-            if (e.ctrlKey && e.key === "u") {
-                e.preventDefault();
-            }
         });
     </script>
 
