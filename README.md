@@ -87,10 +87,10 @@
 <body>
 
     <div class="dashboard-box">
-        <h1>Selamat Datang di Dashboard SPT Parkir</h1>
+        <h1>Selamat Datang di Dashbord SPT Parkir</h1>
         <p>Silakan pilih menu di bawah untuk mengelola data parkir Anda.</p>
 
-        <a href="table.html" class="menu-link">📊 Lihat Data Pembayaran Zona 6</a>
+        <a href="dashbord.html" class="menu-link">📊 Lihat Data Pembayaran Zona 6</a>
     </div>
 
 </body>
