@@ -624,7 +624,10 @@
             <a href="datajukir.html" class="text-white fs-4 text-decoration-none">
                 <i class="bi bi-send"> Tanda Terima Surat</i>
             </a>
-
+            <!-- Kanan: Icon Scan -->
+            <a href="table.html" onclick="logout()" class="text-white fs-4 text-decoration-none">
+                <i class="bi bi-box-arrow-right"></i> LOGOUT
+            </a>
         </div>
     </nav>
     <!-- Akhir Navbar -->
@@ -647,6 +650,45 @@
         crossorigin="anonymous"></script>
 
     <script>
+        /* =========================
+           FUNGSI LOGIN DAN LOGOUT
+           ========================= */
+        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+
+        function cekLogin() {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                window.location.href = "table.html";
+                return;
+            }
+
+            fetch(`${URL}?action=check&token=${token}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status !== "valid") {
+                        localStorage.removeItem("token");
+                        window.location.href = "table.html";
+                    }
+                })
+                .catch(() => {
+                    window.location.href = "table.html";
+                });
+        }
+
+        // jalankan saat halaman dibuka
+        cekLogin();
+
+        // Fungsi LogOut
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "table.html";
+        }
+
+        /* =========================
+           FUNGSI UTAMA DASHBOARD & TABLE
+           ========================= */
+
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzyEbjyPzsVWGcQQL_W_OdOowWeU2oTVUcOL4KztEX_K0Y563dpSQjSbIzT9-FVzA6cHQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
