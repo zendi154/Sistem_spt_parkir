@@ -689,7 +689,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
            ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxhbhmoIElVdjxezBwe-zj6ujRwZ5eUvacYltTD2f7cT1TswoUi-gLlcMhj871CFpqb2Q/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwT1gWg1Z16WJ_FfNX9SKnEy6VMMeZO1TtBM6PM53aS6S03Agzx1HN_JUk4s4n5HPM2kA/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -888,7 +888,7 @@
 
             let id = row.cells[0].innerText
 
-            fetch("https://script.google.com/macros/s/AKfycbxhbhmoIElVdjxezBwe-zj6ujRwZ5eUvacYltTD2f7cT1TswoUi-gLlcMhj871CFpqb2Q/exec?hapus=" + id)
+            fetch("https://script.google.com/macros/s/AKfycbwT1gWg1Z16WJ_FfNX9SKnEy6VMMeZO1TtBM6PM53aS6S03Agzx1HN_JUk4s4n5HPM2kA/exec?hapus=" + id)
                 .then(r => r.text())
                 .then(res => {
 
@@ -1239,7 +1239,7 @@
             // tampilkan spinner
             document.getElementById("globalLoading").style.display = "flex";
 
-            const baseUrl = "https://script.google.com/macros/s/AKfycbxhbhmoIElVdjxezBwe-zj6ujRwZ5eUvacYltTD2f7cT1TswoUi-gLlcMhj871CFpqb2Q/exec";
+            const baseUrl = "https://script.google.com/macros/s/AKfycbwT1gWg1Z16WJ_FfNX9SKnEy6VMMeZO1TtBM6PM53aS6S03Agzx1HN_JUk4s4n5HPM2kA/exec";
 
             const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std || "")}`;
 
