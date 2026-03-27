@@ -543,10 +543,11 @@
                                 <th>Jumlah Laporan</th>
                                 <th>SSPD BPHTB (Rp)</th>
                                 <th>Bentuk Perbuatan Hukum</th>
-                                <th>Nomor STD</th>
-                                <th>PDF STD</th>
-                                <th>System Note</th>
-                                <th>Aksi</th>
+                                <th>Nomor Surat Denda</th>
+                                <th>Lihat PDF Denda</th>
+                                <th>Bukti Surat</th>
+                                <th>Note For You</th>
+                                <th>Aksi Data</th>
                             </tr>
                         </thead>
 
@@ -651,8 +652,8 @@
 
     <script>
         /* =========================
-           FUNGSI LOGIN DAN LOGOUT
-           ========================= */
+                     FUNGSI LOGIN DAN LOGOUT
+                     ========================= */
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
         function cekLogin() {
@@ -689,7 +690,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
            ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxK_HSRemZ7WrksOXNcn7T3RX5Hyk6lDJlBJzX6siMeSbZHbhy6OEq8zhbIT0o4rDGP2w/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwcjs08GFSjVQ1wgzuF50ZJf7X2_melHBDcKyghwwiqfBz6UtlxppTJiDH3QHVC9H6LgQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -698,7 +699,7 @@
         let transaksiList = [];
 
         /* =========================
-       LOAD DATA GOOGLE SHEET
+        LOAD DATA GOOGLE SHEET
         ========================= */
 
         function loadDataSheet() {
@@ -708,6 +709,7 @@
                     // ======================
                     // PENANDA DATA PERTAMA (ANTI DUPLIKAT AKSI)
                     // ======================
+                    lastData = JSON.stringify(data);
                     let seen = new Set();
                     const tbody = document.querySelector("#dataNotaris");
                     tbody.innerHTML = "";
@@ -800,7 +802,7 @@
                             if (isFirst && statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
                                 // tombol hanya untuk data pertama saja
                                 actionHTML = `
-                            <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda">
+                            <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda PPAT">
                                 <i class="bi bi-envelope-fill"></i>
                             </button>
                             <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
@@ -829,7 +831,6 @@
                             }
 
                             /*Fungsi Table*/
-
                             tr.innerHTML = `
                     <td>${row["id"] || ""}</td>
                     <td>
@@ -863,10 +864,60 @@
                                     </a>
                                     `
                                     : "<span style='color:gray'>-</span>"}
-                    </td>
-                    <td>${statusTerlambat}</td>
-                    <td>${actionHTML}</td>
-                `;
+
+                                <td style="text-align:center;">
+                ${row["file_surat_upload"]
+                                    ? `
+                        <a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" 
+                        style="
+                            display:inline-flex;
+                            align-items:center;
+                            gap:5px;
+                            padding:6px 10px;
+                            background:#17a2b8;
+                            color:#fff;
+                            border-radius:6px;
+                            text-decoration:none;
+                            font-size:12px;
+                            transition:0.3s;
+                        "
+                        onmouseover="this.style.background='#138496'"
+                        onmouseout="this.style.background='#17a2b8'">
+                        
+                        <i class="bi bi-eye-fill"></i> Preview
+                        </a>
+                    `
+                                    : `
+                        <label 
+                            onclick="this.style.transform='scale(0.95)'; setTimeout(()=>this.style.transform='scale(1)',150)"
+                            style="
+                                display:inline-flex;
+                                align-items:center;
+                                gap:6px;
+                                padding:6px 12px;
+                                background:linear-gradient(135deg,#28a745,#218838);
+                                color:#fff;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-size:12px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.2);
+                                transition:0.3s;
+                            "
+                            onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'"
+                        >
+                            <i class="bi bi-cloud-upload-fill"></i> Upload
+
+                            <input type="file" accept="application/pdf"
+                                onchange="uploadPDF(this, '${row["id"]}')"
+                                style="display:none;">
+                        </label>
+                    `}
+                </td>
+                                
+                                <td>${statusTerlambat}</td>
+                                <td>${actionHTML}</td>
+                            `;
 
                             tbody.appendChild(tr);
                         });
@@ -876,6 +927,213 @@
                     grafikStatus();
                     grafikTopNotaris();
                 });
+        }
+
+        function autoUpdateTable() {
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+
+                    let current = JSON.stringify(data);
+
+                    // 🔥 kalau data berubah → update table
+                    if (current !== lastData) {
+                        console.log("🔥 Data berubah → reload table");
+
+                        lastData = current;
+                        loadDataSheet();
+                    } else {
+                        console.log("⏳ Tidak ada perubahan");
+                    }
+
+                })
+                .catch(err => console.error("Auto update error:", err));
+        }
+
+        setInterval(autoUpdateTable, 3000); // tiap 3 detik
+
+        function previewPDF(url) {
+
+            // hapus modal lama kalau ada
+            let old = document.getElementById("pdfModal");
+            if (old) old.remove();
+
+            let modal = document.createElement("div");
+            modal.id = "pdfModal";
+
+            modal.style = `
+                position:fixed;
+                top:0; left:0;
+                width:100%; height:100%;
+                background:rgba(0,0,0,0.7);
+                z-index:9999;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            `;
+
+            modal.innerHTML = `
+                <div style="
+                    width:90%;
+                    height:90%;
+                    background:#fff;
+                    border-radius:10px;
+                    overflow:hidden;
+                    position:relative;
+                ">
+
+                    <button onclick="this.closest('#pdfModal').remove()" 
+                        style="
+                        position:absolute;
+                        top:10px;
+                        right:10px;
+                        z-index:10;
+                        background:red;
+                        color:#fff;
+                        border:none;
+                        padding:5px 10px;
+                        border-radius:5px;
+                        cursor:pointer;
+                    ">✖</button>
+
+                    <iframe src="${url}" width="100%" height="100%"></iframe>
+
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        /*Upload Data*/
+
+        function uploadPDF(input, id) {
+
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.type !== "application/pdf") {
+                alert("❌ Hanya PDF!");
+                return;
+            }
+
+            // ======================
+            // PROGRESS UPLOAD
+            // ======================
+            let progress = 0;
+
+            let progressBox = document.createElement("div");
+            progressBox.innerHTML = `
+                <div style="position:fixed;top:20px;right:20px;
+                background:#fff;padding:10px;border-radius:8px;
+                box-shadow:0 0 10px rgba(0,0,0,0.2);z-index:9999;">
+                
+                Upload PDF...
+                <div style="background:#ddd;height:10px;margin-top:5px;">
+                    <div id="progressBar" style="
+                        width:0%;
+                        height:100%;
+                        background:#28a745;"></div>
+                </div>
+                </div>
+            `;
+            document.body.appendChild(progressBox);
+
+            let interval = setInterval(() => {
+                progress += 10;
+                document.getElementById("progressBar").style.width = progress + "%";
+
+                if (progress >= 90) clearInterval(interval);
+            }, 200);
+
+            // ======================
+            // BASE64
+            // ======================
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                const base64 = e.target.result.split(",")[1];
+
+                fetch(scriptURL, {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        action: "upload_pdf",
+                        id: id,
+                        file: base64,
+                        filename: file.name
+                    })
+                })
+                    .then(res => res.json())
+                    .then(res => {
+
+                        clearInterval(interval);
+                        document.getElementById("progressBar").style.width = "100%";
+
+                        setTimeout(() => {
+                            progressBox.remove();
+                        }, 500);
+
+                        if (res.result === "success") {
+                            alert("✅ Upload berhasil");
+                            loadDataSheet();
+                        } else {
+                            alert("❌ Upload gagal");
+                        }
+
+                        fetch(scriptURL, {
+                            method: "POST",
+                            body: new URLSearchParams({
+                                action: "upload_pdf",
+                                id: id,
+                                file: base64,
+                                filename: file.name
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(res => {
+
+                                clearInterval(interval);
+                                document.getElementById("progressBar").style.width = "100%";
+
+                                setTimeout(() => {
+                                    progressBox.remove();
+                                }, 500);
+
+                                if (res.result === "success") {
+                                    alert("✅ Upload berhasil");
+                                    loadDataSheet();
+                                } else {
+                                    alert("❌ Upload gagal");
+                                }
+
+                            })
+
+                            .then(text => {
+                                console.log("Response:", text);
+
+                                let res;
+                                try {
+                                    res = JSON.parse(text);
+                                } catch (e) {
+                                    // anggap sukses saja
+                                    res = { result: "success" };
+                                }
+
+                                clearInterval(interval);
+                                document.getElementById("progressBar").style.width = "100%";
+
+                                setTimeout(() => progressBox.remove(), 500);
+
+                                if (res.result === "success") {
+                                    alert("✅ Upload berhasil");
+                                    loadDataSheet();
+                                }
+
+                            });
+                    });
+            };
+
+            reader.readAsDataURL(file);
         }
 
         /*Hapus Data*/
@@ -888,7 +1146,7 @@
 
             let id = row.cells[0].innerText
 
-            fetch("https://script.google.com/macros/s/AKfycbxK_HSRemZ7WrksOXNcn7T3RX5Hyk6lDJlBJzX6siMeSbZHbhy6OEq8zhbIT0o4rDGP2w/exec?hapus=" + id)
+            fetch("https://script.google.com/macros/s/AKfycbwcjs08GFSjVQ1wgzuF50ZJf7X2_melHBDcKyghwwiqfBz6UtlxppTJiDH3QHVC9H6LgQ/exec?hapus=" + id)
                 .then(r => r.text())
                 .then(res => {
 
@@ -1239,7 +1497,7 @@
             // tampilkan spinner
             document.getElementById("globalLoading").style.display = "flex";
 
-            const baseUrl = "https://script.google.com/macros/s/AKfycbxK_HSRemZ7WrksOXNcn7T3RX5Hyk6lDJlBJzX6siMeSbZHbhy6OEq8zhbIT0o4rDGP2w/exec";
+            const baseUrl = "https://script.google.com/macros/s/AKfycbwcjs08GFSjVQ1wgzuF50ZJf7X2_melHBDcKyghwwiqfBz6UtlxppTJiDH3QHVC9H6LgQ/exec";
 
             const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std || "")}`;
 
