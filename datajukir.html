@@ -11,38 +11,43 @@
 
     <style>
         /* ================= GLOBAL ================= */
+        /* ================= GLOBAL ================= */
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #020617);
-            color: #ffffff;
+            background: radial-gradient(circle at top, #0f172a, #020617 70%);
+            color: #e5e7eb;
             margin: 0;
             padding: 25px;
         }
 
+        /* JUDUL */
         h2 {
             text-align: center;
             margin-bottom: 30px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 1px;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+            -webkit-text-fill-color: transparent;
         }
 
         /* ================= CONTAINER ================= */
         .container {
             max-width: 1200px;
-            /* nyaman di layar besar dan sedang */
             margin: auto;
             padding: 0 15px;
         }
 
         /* ================= CARD ================= */
         .card {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.7);
             padding: 24px;
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 18px;
+            backdrop-filter: blur(14px);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.7),
+                0 0 15px rgba(59, 130, 246, 0.15);
             margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         /* ================= FORM ================= */
@@ -65,26 +70,23 @@
             transform: translateY(-50%);
             color: #64748b;
             font-size: 13px;
-            pointer-events: none;
         }
 
         /* INPUT */
         .input-group input,
         .input-group select {
             width: 100%;
-            max-width: 100%;
             height: 42px;
             padding: 0 12px 0 35px;
             border-radius: 8px;
             border: 1px solid #334155;
-            background: rgba(2, 6, 23, 0.8);
-            color: #e2e8f0;
+            background: rgba(2, 6, 23, 0.9);
+            color: #f1f5f9;
             font-size: 13px;
-            transition: 0.25s;
-            box-sizing: border-box;
+            transition: all 0.25s ease;
         }
 
-        /* HOVER INPUT */
+        /* HOVER */
         .input-group input:hover,
         .input-group select:hover {
             border-color: #475569;
@@ -93,12 +95,14 @@
         /* FOCUS */
         .input-group input:focus,
         .input-group select:focus {
-            border-color: #22c55e;
-            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+            border-color: #3b82f6;
+            box-shadow:
+                0 0 0 2px rgba(59, 130, 246, 0.2),
+                0 0 12px rgba(59, 130, 246, 0.4);
             outline: none;
         }
 
-        /* DATE FIX */
+        /* DATE */
         input[type="date"] {
             cursor: pointer;
         }
@@ -112,19 +116,19 @@
             transition: 0.25s;
         }
 
-        /* SAVE BUTTON */
+        /* SAVE */
         .btn-save {
             grid-column: 1 / -1;
-            width: 100%;
             height: 45px;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #000;
-            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: #fff;
         }
 
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+            box-shadow:
+                0 8px 25px rgba(59, 130, 246, 0.4),
+                0 0 15px rgba(34, 197, 94, 0.4);
         }
 
         /* ================= FILTER ================= */
@@ -148,57 +152,56 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 100%;
             color: #edeef0;
         }
 
+        /* HEADER */
         th {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
+            background: linear-gradient(135deg, #1e293b, #020617);
             padding: 14px;
             border: 1px solid #334155;
             font-size: 12px;
             text-transform: uppercase;
-            color: #edf0f4;
+            color: #38bdf8;
         }
 
+        /* CELL */
         td {
             padding: 12px;
             border: 1px solid #334155;
             font-size: 13px;
         }
 
-        /* STRIPED ROW */
+        /* STRIPED */
         tr:nth-child(even) {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* HOVER ROW */
+        /* HOVER */
         tr:hover {
-            background: rgba(56, 189, 248, 0.15);
-            transition: 0.2s;
+            background: linear-gradient(135deg,
+                    rgba(59, 130, 246, 0.2),
+                    rgba(168, 85, 247, 0.15));
         }
 
         /* ================= BUTTON TABLE ================= */
         .btn-edit {
-            background: #38bdf8;
-            color: #000;
-            padding: 6px 10px;
-            border-radius: 6px;
-        }
-
-        .btn-delete {
-            background: #ef4444;
+            background: linear-gradient(135deg, #38bdf8, #3b82f6);
             color: #fff;
             padding: 6px 10px;
             border-radius: 6px;
         }
 
-        .btn-edit:hover {
-            background: #0ea5e9;
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
         }
 
+        .btn-edit:hover,
         .btn-delete:hover {
-            background: #dc2626;
+            transform: scale(1.05);
         }
 
         /* ================= AUTOCOMPLETE ================= */
@@ -243,107 +246,66 @@
             animation: spin 1s linear infinite;
         }
 
-        .btn-icon {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            margin: 0 2px;
-            transition: transform 0.2s;
-        }
-
-        .btn-icon:hover {
-            transform: scale(1.2);
-        }
-
+        /* ================= NAVBAR ================= */
         #mainNavbar {
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
             padding: 0.8rem 1rem;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            /* gradasi biru */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.6),
+                0 0 10px rgba(59, 130, 246, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
         }
 
         #mainNavbar .navbar-brand {
             font-weight: 700;
             font-size: 1.25rem;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
+            color: #fff;
             text-decoration: none;
         }
 
         #mainNavbar .navbar-brand i {
             margin-right: 8px;
-            font-size: 1.4rem;
             color: #22c55e;
-            /* hijau neon */
-            transition: 0.3s;
-        }
-
-        #mainNavbar .navbar-brand:hover i {
-            transform: rotate(20deg);
         }
 
         #mainNavbar .nav-links {
             display: flex;
-            align-items: center;
             gap: 1rem;
         }
 
         #mainNavbar .nav-link {
-            color: #ffffff;
-            font-weight: 500;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
+            color: #fff;
             padding: 6px 10px;
             border-radius: 6px;
             transition: 0.3s;
         }
 
-        #mainNavbar .nav-link i {
-            margin-right: 6px;
-            font-size: 1.1rem;
-            transition: 0.3s;
-        }
-
         #mainNavbar .nav-link:hover {
-            background: rgba(34, 197, 94, 0.2);
-            /* efek hover hijau */
+            background: rgba(255, 255, 255, 0.08);
             color: #22c55e;
+        }
+
+        /* ================= BUTTON ACTION ================= */
+        .btn-action {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #000;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 600;
+        }
+
+        .btn-action:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
         }
 
-        /* ================= RESPONSIVE ================= */
-        @media (max-width: 768px) {
-            #mainNavbar {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 0.6rem 1rem;
-            }
-
-            #mainNavbar .nav-links {
-                flex-direction: column;
-                width: 100%;
-                margin-top: 0.5rem;
-            }
-
-            #mainNavbar .nav-link {
-                width: 100%;
-                justify-content: flex-start;
-                padding: 8px 12px;
-            }
-        }
-
+        /* ================= ANIMATION ================= */
         @keyframes spin {
             to {
                 transform: rotate(360deg);
@@ -351,25 +313,13 @@
         }
 
         /* ================= RESPONSIVE ================= */
-        @media (max-width: 1024px) {
-            #formSurat {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
             #formSurat {
                 grid-template-columns: 1fr;
-                /* kolom tunggal di mobile */
-            }
-
-            .btn-save {
-                grid-column: 1 / -1;
             }
 
             table {
                 min-width: 600px;
-                /* scroll table lebih ringan */
             }
         }
 
@@ -381,34 +331,25 @@
             .filter-box {
                 flex-direction: column;
             }
+        }
 
-            .filter-box input {
-                min-width: 100%;
+        /* ================= PRINT ================= */
+        @media print {
+            .col-aksi {
+                display: none !important;
             }
-        }
 
-        /* Tombol Print & Export */
-        .btn-action {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-        }
+            body {
+                background: #fff;
+                color: #000;
+            }
 
-        .btn-action i {
-            margin-right: 6px;
-            font-size: 1rem;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+            th,
+            td {
+                border: 1px solid #000;
+                color: #000;
+                background: #fff !important;
+            }
         }
 
         /* ================= PRINT ================= */
@@ -476,7 +417,7 @@
 
     <div class="container">
 
-        <!-- FORM -->
+        <!-- FORMULIR -->
         <form id="formSurat" class="card">
 
             <div class="input-group">
@@ -488,11 +429,13 @@
             <div class="input-group">
                 <i class="fa-solid fa-calendar-days"></i>
                 <input type="date" id="tanggal_surat" required>
+                <labal>TANGGAL SURAT</labal>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-calendar-check"></i>
                 <input type="date" id="tanggal_diterima" required>
+                <labal>TANGGAL DITERIMA</labal>
             </div>
 
             <div class="input-group">
@@ -501,6 +444,7 @@
                     <option value="">Pilih Judul</option>
                     <option>Laporan Bulanan PPAT</option>
                     <option>Surat Permohonan</option>
+                    <option>Surat Klarfikasi</option>
                 </select>
             </div>
 
@@ -517,6 +461,7 @@
             <div class="input-group">
                 <i class="fa-solid fa-user"></i>
                 <input type="text" id="nama_penerima" placeholder="Nama Pengantar">
+                <labal>NAMA PENGANTAR</labal>
             </div>
 
             <button class="btn-save">
@@ -752,7 +697,28 @@
                     "ILHAM RAHMADI, SH",
                     "INDAH ARIESTIA, S.H",
                     "IRAWAN, S.H",
-                    "JULIWATI SIAGIAN, S.H,M.Kn"
+                    "JULIWATI SIAGIAN, S.H,M.Kn",
+                    "KARTINI KESUMAWATY,S.H.,M.Kn",
+                    "KAHIRUNNISA,S.H.,M.Kn",
+                    "KUSWARI AHMAD,S.H",
+                    "LYDIA ARMAN, S.H.,M.Kn",
+                    "LINDA OKTARINA,S.H",
+                    "MIRZA,S.H.,M.Kn",
+                    "NOVIARTATI,S.H",
+                    "RANDI WIBOWO,S.H.,M.Kn",
+                    "RIZFITRIANI ALAMSYAH, S.H.,M.Kn",
+                    "SARI PRIYANIKA,S.H.,M.Kn",
+                    "SUSANTI,S.H.,M.Kn",
+                    "SARI INDRA,S.H.,M.Kn",
+                    "SHINTA WIDYANTI,S.H.,M.Kn",
+                    "SICILIA HENDRA,S.H.,M.Kn",
+                    "SHABRINA ZHAFIRA,S.H.,M.Kn",
+                    "SISKA WIDIA ASTUTI, S.H.,M.Kn",
+                    "TINA HAREANI, BUGGASI, S.H.,M.Kn",
+                    "TIARA YUNITA OVELIA,S.H.,M.Kn",
+                    "VIKE DIANTI PUTRI,S.H.,M.Kn",
+                    "VINANDIA LOVITA,S.H.,M.Kn",
+                    "WENY ARIAMBI CRISTIANI,SST.Par.,S.H.,M.Kn"
                 ];
 
                 /* ================= SUBMIT ================= */
