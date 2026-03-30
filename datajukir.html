@@ -522,7 +522,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Notaris/PPAT</th>
-                                <th>Tanggal Terima</th>
+                                <th>Tanggal Teriama</th>
                                 <th>Tanggal Surat</th>
                                 <th>Judul</th>
                                 <th>Jam</th>
@@ -766,18 +766,21 @@
                         method: "POST",
                         body: JSON.stringify(payload)
                     })
-                        .then(() => {
+                        .then(res => res.text())
+                        .then(data => {
+                            console.log(data);
+
                             formSurat.reset();
                             editRow = null;
-                            loadData();
-                        })
 
+                            return fetch(URL); // Ambil ulang data
+                        })
+                        .then(res => res.json())
                         .then(data => {
                             allData = data;
-                            initFilterTahun(); // 🔥 isi tahun otomatis
+                            initFilterTahun();
                             render();
                         })
-
                         .catch(err => {
                             alert("Gagal kirim data!");
                             console.error(err);
