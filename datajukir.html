@@ -304,6 +304,47 @@
             box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
         }
 
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            padding: 14px 18px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            background: #fff;
+            color: #16a34a;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .toast-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         /* ================= ANIMATION ================= */
         @keyframes spin {
             to {
@@ -492,6 +533,11 @@
                 <button class="btn-action" onclick="exportExcel()">
                     <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Export Excel
                 </button>
+            </div>
+
+            <div id="toast" class="toast">
+                <div class="toast-icon">✔</div>
+                <div class="toast-text">DATA BERHASIL DITAMBAHKAN</div>
             </div>
 
             <select id="filterBulan">
@@ -766,15 +812,32 @@
                         method: "POST",
                         body: JSON.stringify(payload)
                     })
-                        .then(res => res.text())
                         .then(data => {
                             console.log(data);
 
                             formSurat.reset();
                             editRow = null;
 
-                            return fetch(URL); // Ambil ulang data
+                            showToast("DATA BERHASIL DITAMBAHKAN", "success");
+
+                            return fetch(URL);
                         })
+
+                        .then(data => {
+                            console.log(data);
+
+                            if (editRow) {
+                                showToast("DATA BERHASIL DIUPDATE", "info");
+                            } else {
+                                showToast("DATA BERHASIL DITAMBAHKAN", "success");
+                            }
+
+                            formSurat.reset();
+                            editRow = null;
+
+                            return fetch(URL);
+                        })
+
                         .then(res => res.json())
                         .then(data => {
                             allData = data;
@@ -789,6 +852,34 @@
                             document.getElementById("loading").style.display = "none";
                         });
                 });
+
+                function showToast(pesan, tipe = "success") {
+                    const toast = document.getElementById("toast");
+                    const icon = toast.querySelector(".toast-icon");
+                    const text = toast.querySelector(".toast-text");
+
+                    text.textContent = pesan;
+
+                    // Reset class warna
+                    toast.classList.remove("success", "error", "info");
+
+                    if (tipe === "success") {
+                        toast.classList.add("success");
+                        icon.textContent = "✔";
+                    } else if (tipe === "error") {
+                        toast.classList.add("error");
+                        icon.textContent = "✖";
+                    } else if (tipe === "info") {
+                        toast.classList.add("info");
+                        icon.textContent = "✎";
+                    }
+
+                    toast.classList.add("show");
+
+                    setTimeout(() => {
+                        toast.classList.remove("show");
+                    }, 3000);
+                }
 
                 /* ================= EDIT ================= */
                 function editData(row) {
@@ -815,7 +906,13 @@
                             row: row
                         })
                     })
-                        .then(() => loadData());
+                        .then(() => {
+                            showToast("DATA BERHASIL DIHAPUS", "error");
+                            loadData();
+                        })
+                        .catch(() => {
+                            showToast("GAGAL MENGHAPUS DATA", "error");
+                        });
                 }
 
                 /* ================= FILTER ================= */
