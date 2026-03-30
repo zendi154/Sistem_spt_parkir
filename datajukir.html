@@ -14,7 +14,7 @@
         /* ================= GLOBAL ================= */
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at top, #0f172a, #020617 70%);
+            background: radial-gradient(circle at top, #5b5c5f, #06186b 70%);
             color: #e5e7eb;
             margin: 0;
             padding: 25px;
@@ -80,7 +80,7 @@
             padding: 0 12px 0 35px;
             border-radius: 8px;
             border: 1px solid #334155;
-            background: rgba(2, 6, 23, 0.9);
+            background: rgba(176, 190, 248, 0.9);
             color: #f1f5f9;
             font-size: 13px;
             transition: all 0.25s ease;
@@ -495,6 +495,26 @@
                 </button>
             </div>
 
+            <select id="filterBulan">
+                <option value="">Semua Bulan</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+            </select>
+
+            <select id="filterTahun">
+                <option value="">Semua Tahun</option>
+            </select>
+
             <!-- TABLE -->
             <div class="card">
                 <div class="table-wrapper">
@@ -627,45 +647,46 @@
                 /* ================= RENDER ================= */
                 function render() {
                     let html = "";
+
                     const filterNama = document.getElementById("filterNama").value.toLowerCase();
                     const filterTanggal = document.getElementById("filterTanggal").value;
+                    const filterBulan = document.getElementById("filterBulan").value;
+                    const filterTahun = document.getElementById("filterTahun").value;
 
                     allData.forEach(d => {
 
                         if (filterNama && !d.nama.toLowerCase().includes(filterNama)) return;
+
                         if (filterTanggal && d.tgl_surat != filterTanggal) return;
 
+                        // 🔥 FILTER BULAN
+                        if (filterBulan && d.tgl_surat.substring(5, 7) !== filterBulan) return;
+
+                        // 🔥 FILTER TAHUN
+                        if (filterTahun && d.tgl_surat.substring(0, 4) !== filterTahun) return;
+
                         html += `
-                <tr>
-                <td>${d.no}</td>
-                <td>${d.nama}</td>
-                <td>${d.tgl_terima}</td>
-                <td>${d.tgl_surat}</td>
-                <td>${d.judul}</td>
-                <td>${d.jam}</td>
-                <td>${d.bidang}</td>
-                <td>${d.pengantar}</td>
-                <td>${d.paraf || ""}</td>
-                <td class="col-aksi">
-                <!-- ICON EDIT -->
-                            <button class="btn-icon" onclick="editData(${d.row})" title="Edit">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#38bdf8" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1.439 1.439-2.121-2.121L13.38.525a.5.5 0 0 1 .706 0l1.416 1.415zm-2.561 2.561L2 15H0v-2L10.941 2.501l2.121 2.121z" />
-                                </svg>
-                            </button>
-                <!-- ICON DELETE -->
-                            <button class="btn-icon" onclick="hapus(${d.row})" title="Hapus">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ef4444" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-8zM4.118 4 4 4.059V4.5A.5.5 0 0 0 4.5 5h7a.5.5 0 0 0 .5-.5V4.059L11.882 4H4.118zM2.5 3h11a.5.5 0 0 1 .5.5V4h-12v-.5a.5.5 0 0 1 .5-.5z" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>              
-                </tr >
-                            `;
+                        <tr>
+                            <td>${d.no}</td>
+                            <td>${d.nama}</td>
+                            <td>${d.tgl_terima}</td>
+                            <td>${d.tgl_surat}</td>
+                            <td>${d.judul}</td>
+                            <td>${d.jam}</td>
+                            <td>${d.bidang}</td>
+                            <td>${d.pengantar}</td>
+                            <td>${d.paraf || ""}</td>
+                            <td class="col-aksi">
+                                <button onclick="editData(${d.row})">Edit</button>
+                                <button onclick="hapus(${d.row})">Hapus</button>
+                            </td>
+                        </tr>
+                        `;
                     });
 
                     document.getElementById("dataTable").innerHTML = html;
+                    document.getElementById("filterBulan").addEventListener("change", render);
+                    document.getElementById("filterTahun").addEventListener("change", render);
                 }
 
                 const defaultNotaris = [
@@ -751,6 +772,13 @@
                             editRow = null;
                             loadData();
                         })
+
+                        .then(data => {
+                            allData = data;
+                            initFilterTahun(); // 🔥 isi tahun otomatis
+                            render();
+                        })
+
                         .catch(err => {
                             alert("Gagal kirim data!");
                             console.error(err);
@@ -835,6 +863,27 @@
                     let table = document.querySelector('table');
                     let wb = XLSX.utils.table_to_book(table, { sheet: "Arsip Surat" });
                     XLSX.writeFile(wb, 'Arsip_Surat.xlsx');
+                }
+
+                function initFilterTahun() {
+                    let tahunSet = new Set();
+
+                    allData.forEach(d => {
+                        if (d.tgl_surat) {
+                            let tahun = d.tgl_surat.substring(0, 4);
+                            tahunSet.add(tahun);
+                        }
+                    });
+
+                    let select = document.getElementById("filterTahun");
+                    select.innerHTML = '<option value="">Semua Tahun</option>';
+
+                    [...tahunSet].sort().forEach(t => {
+                        let opt = document.createElement("option");
+                        opt.value = t;
+                        opt.textContent = t;
+                        select.appendChild(opt);
+                    });
                 }
 
             </script>
