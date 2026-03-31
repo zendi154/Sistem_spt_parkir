@@ -221,7 +221,7 @@
         window.onload = function () {
             const token = localStorage.getItem("token");
             if (token) {
-                window.location.href = "Table.html";
+                window.location.href = "dashbord.html";
             }
         };
 
@@ -283,7 +283,7 @@
                 .then(res => {
                     if (res.status === "success") {
                         localStorage.setItem("token", res.token);
-                        window.location.href = "Table.html";
+                        window.location.href = "dashbord.html";
                     } else {
                         passError.innerText = "Email atau password salah";
                         password.classList.add("error");
@@ -300,10 +300,6 @@
                     document.getElementById("globalLoading").style.display = "none";
                 });
         }
-
-        // ===============================
-        // ANTI INSPECT (BASIC PROTECTION)
-        // ===============================
 
         // blok klik kanan
         document.addEventListener("contextmenu", function (e) {
