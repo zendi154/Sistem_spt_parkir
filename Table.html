@@ -263,7 +263,7 @@
 
             <!-- Menu Navigasi -->
             <div class="nav-links d-flex align-items-center">
-                <a href="dashbord.html" class="nav-link" title="Formulir PPAT">
+                <a href="dashbord.html" class="nav-link" title="Dashbord">
                     <i class="bi bi-buildings"></i> Dashbord
                 </a>
                 <a href="fomulir.html" class="nav-link" title="Formulir PPAT">
@@ -349,11 +349,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const URL = "https://script.google.com/macros/s/AKfycbwRoiwRJo9bgYeN7AoPuaoARfeGT3LLw9HEpZB-sXiXsvR7B_dcJLlPj6NSHX0KEYL03g/exec";
-
         /* =========================
-                           FUNGSI LOGIN DAN LOGOUT
-                        ========================= */
+             FUNGSI LOGIN DAN LOGOUT
+         ========================= */
         function cekLogin() {
             const token = localStorage.getItem("token");
 
@@ -384,6 +382,8 @@
                     window.location.href = "table.html";
                 });
         }
+
+        const URL = "https://script.google.com/macros/s/AKfycbwRoiwRJo9bgYeN7AoPuaoARfeGT3LLw9HEpZB-sXiXsvR7B_dcJLlPj6NSHX0KEYL03g/exec";
 
         /* =========================
            SHOW LOADING
