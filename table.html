@@ -192,10 +192,11 @@
         <h3>🔐 LOGIN SISTEM PPAT</h3>
 
         <!-- EMAIL -->
-        <div class="input-group">
-            <input type="email" id="email" placeholder="Email">
-            <small id="emailError" class="error-text"></small>
+        <div class="input-group" style="display:flex; align-items:center; gap:5px;">
+            <input type="text" id="emailName" placeholder="Nama" style="flex:1; padding:10px;">
+            <span style="padding:10px 5px; background:#eee; border-radius:6px;">@mail.com</span>
         </div>
+        <small id="emailError" class="error-text"></small>
 
         <!-- PASSWORD -->
         <div class="input-group password-box">
@@ -217,6 +218,7 @@
 
     <script>
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+
         // auto redirect
         window.onload = function () {
             const token = localStorage.getItem("token");
@@ -242,7 +244,7 @@
         });
 
         function login() {
-            const email = document.getElementById("email");
+            const nameInput = document.getElementById("emailName");
             const password = document.getElementById("password");
             const emailError = document.getElementById("emailError");
             const passError = document.getElementById("passError");
@@ -251,34 +253,30 @@
             let valid = true;
 
             // reset
-            email.classList.remove("error");
+            nameInput.classList.remove("error");
             password.classList.remove("error");
             emailError.innerText = "";
             passError.innerText = "";
 
-            // validasi email
-            if (!email.value.trim()) {
-                emailError.innerText = "Email wajib diisi";
-                email.classList.add("error");
+            // validasi nama
+            const nameVal = nameInput.value.trim();
+            if (!nameVal) {
+                emailError.innerText = "Nama wajib diisi";
+                nameInput.classList.add("error");
                 valid = false;
-            } else if (!validasiEmail(email.value)) {
-                emailError.innerText = "Format email tidak valid";
-                email.classList.add("error");
-                valid = false;
-            }
-
-            // validasi password
-            if (!password.value.trim()) {
-                passError.innerText = "Password wajib diisi";
-                password.classList.add("error");
+            } else if (/[^a-zA-Z0-9._-]/.test(nameVal)) {
+                emailError.innerText = "Hanya huruf, angka, titik, underscore, atau strip";
+                nameInput.classList.add("error");
                 valid = false;
             }
 
             if (!valid) return;
 
+            const fullEmail = nameVal + "@mail.com"; // buat email lengkap
+
             document.getElementById("globalLoading").style.display = "flex";
 
-            fetch(`${URL}?action=login&email=${encodeURIComponent(email.value)}&password=${encodeURIComponent(password.value)}`)
+            fetch(`${URL}?action=login&email=${encodeURIComponent(fullEmail)}&password=${encodeURIComponent(password.value)}`)
                 .then(res => res.json())
                 .then(res => {
                     if (res.status === "success") {
@@ -288,7 +286,6 @@
                         passError.innerText = "Email atau password salah";
                         password.classList.add("error");
 
-                        // animasi shake
                         box.classList.add("shake");
                         setTimeout(() => box.classList.remove("shake"), 300);
                     }
