@@ -1,119 +1,293 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
-    <title>FORM LOGIN</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login Modern | PPAT System</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            /* BACKGROUND RGB ANIMASI */
-            background: linear-gradient(270deg,
-                    rgb(45, 137, 239),
-                    rgb(110, 198, 255),
-                    rgb(0, 180, 255));
-            background-size: 600% 600%;
-            animation: gradientMove 10s ease infinite;
+        body {
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+            /* Gradient background animasi yang lebih smooth & modern */
+            background: linear-gradient(135deg,
+                    #0f0c29,
+                    #302b63,
+                    #24243e,
+                    #1a1a2e,
+                    #16213e);
+            background-size: 400% 400%;
+            animation: gradientFlow 12s ease infinite;
 
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ANIMASI BACKGROUND */
-        @keyframes gradientMove {
+        /* Efek partikel/bubble background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        @keyframes gradientFlow {
             0% {
-                background-position: 0% 50%;
+                background-position: 0% 0%;
             }
 
-            50% {
+            25% {
                 background-position: 100% 50%;
             }
 
-            100% {
+            50% {
+                background-position: 100% 100%;
+            }
+
+            75% {
                 background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 0% 0%;
             }
         }
 
-        /* BOX LOGIN */
+        /* GLASSMORPHISM BOX - Modern & Elegant */
         .login-box {
-            width: 320px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
+            width: 380px;
+            padding: 40px 35px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-            animation: fadeIn 0.6s ease;
-            backdrop-filter: blur(5px);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 35px 55px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Judul modern dengan icon */
+        h3 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, #fff, #a0c4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         h3 {
-            margin-bottom: 15px;
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, #fff, #a0c4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
-        /* INPUT GROUP */
+        h3::before {
+            content: '⚡';
+            font-size: 1.8rem;
+            background: none;
+            color: #ffd966;
+            -webkit-background-clip: unset;
+            /* ← HAPUS BARIS INI */
+            background-clip: unset;
+            /* ← TAMBAHKAN INI untuk konsistensi */
+        }
+
+        /* Input group modern */
         .input-group {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 22px;
+            text-align: left;
         }
 
-        /* INPUT */
+        /* Label floating modern */
+        .input-group label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            pointer-events: none;
+            transition: 0.2s ease;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        /* Input field dengan efek neon */
         input {
             width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 18px;
             outline: none;
-            transition: 0.3s;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
         input:focus {
-            border-color: rgb(45, 137, 239);
-            box-shadow: 0 0 5px rgba(45, 137, 239, 0.5);
+            border-color: #4facfe;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
         }
 
         input.error {
-            border-color: red;
+            border-color: #ff4d4d;
+            animation: shake 0.4s ease;
+            box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
         }
 
-        /* ERROR TEXT */
-        .error-text {
-            color: red;
-            font-size: 12px;
-            text-align: left;
-            margin-top: 3px;
-            display: block;
-        }
-
-        /* PASSWORD TOGGLE */
-        .password-box .toggle {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* BUTTON */
-        button {
-            padding: 10px;
-            width: 100%;
-            background: rgb(45, 137, 239);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        /* Custom group email dengan badge modern */
+        .email-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 0 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             transition: 0.3s;
         }
 
-        button:hover {
-            background: rgb(27, 95, 189);
-            transform: scale(1.03);
+        .email-group:focus-within {
+            border-color: #4facfe;
+            box-shadow: 0 0 12px rgba(79, 172, 254, 0.3);
         }
 
-        /* SPINNER */
+        .email-group input {
+            border: none;
+            padding: 14px 0 14px 8px;
+            background: transparent;
+            flex: 1;
+        }
+
+        .email-group input:focus {
+            box-shadow: none;
+        }
+
+        .email-badge {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        /* Password toggle modern */
+        .password-box {
+            position: relative;
+        }
+
+        .toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: 0.2s;
+            background: rgba(0, 0, 0, 0.2);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .toggle:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Error text modern */
+        .error-text {
+            color: #ffb3b3;
+            font-size: 0.7rem;
+            margin-top: 6px;
+            margin-left: 12px;
+            display: block;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Button futuristic */
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 40px;
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+            background: linear-gradient(90deg, #3b9eff, #00e0fe);
+            color: #0a0a1a;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Spinner modern */
         #globalLoading {
             display: none;
             position: fixed;
@@ -122,33 +296,43 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
 
         .spinner {
-            width: 45px;
-            height: 45px;
-            border: 5px solid #ccc;
-            border-top: 5px solid rgb(45, 137, 239);
+            width: 55px;
+            height: 55px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #4facfe;
+            border-right: 4px solid #00f2fe;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: auto;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
         }
 
-        /* ANIMASI SPINNER */
         @keyframes spin {
             100% {
                 transform: rotate(360deg);
             }
         }
 
-        /* FADE IN */
-        @keyframes fadeIn {
+        .loading-text {
+            margin-top: 16px;
+            color: white;
+            font-weight: 500;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(40px);
             }
 
             to {
@@ -157,153 +341,186 @@
             }
         }
 
-        /* SHAKE ERROR */
         @keyframes shake {
-            0% {
-                transform: translateX(0);
-            }
 
-            25% {
-                transform: translateX(-5px);
-            }
-
-            50% {
-                transform: translateX(5px);
-            }
-
-            75% {
-                transform: translateX(-5px);
-            }
-
+            0%,
             100% {
                 transform: translateX(0);
             }
+
+            20% {
+                transform: translateX(-6px);
+            }
+
+            40% {
+                transform: translateX(6px);
+            }
+
+            60% {
+                transform: translateX(-3px);
+            }
+
+            80% {
+                transform: translateX(3px);
+            }
         }
 
-        .shake {
-            animation: shake 0.3s;
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-box {
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            .email-badge {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+        }
+
+        /* floating shapes */
+        .floating-shape {
+            position: absolute;
+            background: radial-gradient(circle, rgba(79, 172, 254, 0.2), transparent);
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
         }
     </style>
 </head>
 
 <body>
+    <div class="floating-shape" style="width: 300px; height: 300px; top: -100px; left: -100px;"></div>
+    <div class="floating-shape"
+        style="width: 400px; height: 400px; bottom: -150px; right: -100px; background: radial-gradient(circle, rgba(0,242,254,0.15), transparent);">
+    </div>
 
     <div class="login-box" id="loginBox">
-        <h3>🔐 LOGIN SISTEM PPAT</h3>
+        <h3>LOGIN PPAT</h3>
 
-        <!-- EMAIL -->
-        <div class="input-group" style="display:flex; align-items:center; gap:5px;">
-            <input type="text" id="emailName" placeholder="Nama" style="flex:1; padding:10px;">
-            <span style="padding:10px 5px; background:#eee; border-radius:6px;">@mail.com</span>
+        <!-- EMAIL dengan style modern -->
+        <div class="input-group">
+            <div class="email-group">
+                <input type="text" id="emailName" placeholder="username" autocomplete="off">
+                <span class="email-badge">@mail.com</span>
+            </div>
+            <small id="emailError" class="error-text"></small>
         </div>
-        <small id="emailError" class="error-text"></small>
 
-        <!-- PASSWORD -->
+        <!-- PASSWORD modern -->
         <div class="input-group password-box">
-            <input type="password" id="password" placeholder="Password">
+            <input type="password" id="password" placeholder="Kata Sandi">
             <span class="toggle" onclick="togglePass()">👁️</span>
             <small id="passError" class="error-text"></small>
         </div>
 
-        <button onclick="login()">Login</button>
+        <button onclick="login()">➤ MASUK</button>
     </div>
 
-    <!-- SPINNER -->
+    <!-- LOADING MODERN -->
     <div id="globalLoading">
-        <div style="text-align:center; color:white;">
-            <div class="spinner"></div>
-            <div style="margin-top:10px;">Memproses login...</div>
-        </div>
+        <div class="spinner"></div>
+        <div class="loading-text">Memverifikasi kredensial...</div>
     </div>
 
     <script>
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
-        // auto redirect
         window.onload = function () {
             const token = localStorage.getItem("token");
             if (token) {
                 window.location.href = "dashbord.html";
             }
+            // efek modern: focus awal
+            document.getElementById("emailName").focus();
         };
 
-        // toggle password
         function togglePass() {
             const pass = document.getElementById("password");
-            pass.type = pass.type === "password" ? "text" : "password";
+            const type = pass.type === "password" ? "text" : "password";
+            pass.type = type;
+            const toggleIcon = document.querySelector(".toggle");
+            toggleIcon.textContent = type === "password" ? "👁️" : "🙈";
         }
 
-        // validasi email
-        function validasiEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        function validasiNama(nama) {
+            return /^[a-zA-Z0-9._-]+$/.test(nama);
         }
 
-        // enter = login
         document.addEventListener("keypress", function (e) {
             if (e.key === "Enter") login();
         });
 
         function login() {
             const nameInput = document.getElementById("emailName");
-            const password = document.getElementById("password");
+            const passwordInput = document.getElementById("password");
             const emailError = document.getElementById("emailError");
             const passError = document.getElementById("passError");
             const box = document.getElementById("loginBox");
 
-            let valid = true;
-
-            // reset
+            // Reset error visual
             nameInput.classList.remove("error");
-            password.classList.remove("error");
+            passwordInput.classList.remove("error");
             emailError.innerText = "";
             passError.innerText = "";
 
-            // validasi nama
+            let valid = true;
             const nameVal = nameInput.value.trim();
+
             if (!nameVal) {
-                emailError.innerText = "Nama wajib diisi";
+                emailError.innerText = "✖ Nama pengguna wajib diisi";
                 nameInput.classList.add("error");
                 valid = false;
-            } else if (/[^a-zA-Z0-9._-]/.test(nameVal)) {
-                emailError.innerText = "Hanya huruf, angka, titik, underscore, atau strip";
+            } else if (!validasiNama(nameVal)) {
+                emailError.innerText = "✖ Hanya huruf, angka, titik, underscore atau strip";
                 nameInput.classList.add("error");
                 valid = false;
             }
 
-            if (!valid) return;
+            if (!valid) {
+                box.classList.add("shake");
+                setTimeout(() => box.classList.remove("shake"), 400);
+                return;
+            }
 
-            const fullEmail = nameVal + "@mail.com"; // buat email lengkap
+            const fullEmail = nameVal + "@mail.com";
+            const password = passwordInput.value;
 
             document.getElementById("globalLoading").style.display = "flex";
 
-            fetch(`${URL}?action=login&email=${encodeURIComponent(fullEmail)}&password=${encodeURIComponent(password.value)}`)
+            fetch(`${URL}?action=login&email=${encodeURIComponent(fullEmail)}&password=${encodeURIComponent(password)}`)
                 .then(res => res.json())
                 .then(res => {
                     if (res.status === "success") {
                         localStorage.setItem("token", res.token);
                         window.location.href = "dashbord.html";
                     } else {
-                        passError.innerText = "Email atau password salah";
-                        password.classList.add("error");
-
+                        passError.innerText = "⚠ Email atau kata sandi salah";
+                        passwordInput.classList.add("error");
                         box.classList.add("shake");
-                        setTimeout(() => box.classList.remove("shake"), 300);
+                        setTimeout(() => box.classList.remove("shake"), 400);
                     }
                 })
                 .catch(() => {
-                    alert("Koneksi gagal!");
+                    passError.innerText = "❌ Gagal terhubung ke server";
+                    passwordInput.classList.add("error");
+                    box.classList.add("shake");
+                    setTimeout(() => box.classList.remove("shake"), 400);
                 })
                 .finally(() => {
                     document.getElementById("globalLoading").style.display = "none";
                 });
         }
 
-        // blok klik kanan
+        // Proteksi klik kanan (tetap dipertahankan)
         document.addEventListener("contextmenu", function (e) {
             e.preventDefault();
         });
     </script>
-
 </body>
 
 </html>
