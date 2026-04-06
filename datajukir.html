@@ -3,35 +3,47 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <title>Arsip Surat Masuk</title>
 
     <style>
         /* ================= GLOBAL ================= */
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at top, #264a2c, #161821 70%);
-            color: #e5e7eb;
+        * {
             margin: 0;
-            padding: 25px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #0a0f1e, #03050b);
+            color: #eef2ff;
+            margin: 0;
+            padding: 20px;
+            scroll-behavior: smooth;
         }
 
         /* JUDUL */
-        h2 {
+        .page-title {
             text-align: center;
             margin-bottom: 30px;
             font-weight: 700;
             letter-spacing: 1px;
-            background: linear-gradient(90deg, #3b82f6, #22c55e);
-            -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #3b82f6, #22c55e, #2dd4bf);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.8rem;
         }
 
         /* ================= CONTAINER ================= */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: auto;
             padding: 0 15px;
         }
@@ -39,21 +51,25 @@
         /* ================= CARD ================= */
         .card {
             background: rgba(15, 23, 42, 0.7);
-            padding: 24px;
-            border-radius: 18px;
             backdrop-filter: blur(14px);
-            box-shadow:
-                0 10px 40px rgba(0, 0, 0, 0.7),
-                0 0 15px rgba(59, 130, 246, 0.15);
+            border-radius: 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 15px rgba(59, 130, 246, 0.15);
             margin-bottom: 25px;
             border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 197, 94, 0.2);
         }
 
         /* ================= FORM ================= */
         #formSurat {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 25px;
         }
 
         /* INPUT GROUP */
@@ -64,143 +80,167 @@
         /* ICON */
         .input-group i {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #64748b;
-            font-size: 13px;
+            color: #22c55e;
+            font-size: 14px;
+            z-index: 1;
         }
 
-        /* INPUT */
+        /* INPUT & SELECT */
         .input-group input,
         .input-group select {
             width: 100%;
-            height: 42px;
-            padding: 0 12px 0 35px;
-            border-radius: 8px;
+            height: 46px;
+            padding: 0 12px 0 42px;
+            border-radius: 12px;
             border: 1px solid #334155;
-            background: rgba(176, 190, 248, 0.9);
+            background: rgba(176, 190, 248, 0.08);
             color: #f1f5f9;
-            font-size: 13px;
+            font-size: 14px;
             transition: all 0.25s ease;
+            font-family: 'Work Sans', sans-serif;
         }
 
-        /* HOVER */
+        .input-group label {
+            position: absolute;
+            left: 42px;
+            top: -10px;
+            background: #1e293b;
+            padding: 0 6px;
+            font-size: 10px;
+            color: #22c55e;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
         .input-group input:hover,
         .input-group select:hover {
-            border-color: #475569;
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
         }
 
-        /* FOCUS */
         .input-group input:focus,
         .input-group select:focus {
             border-color: #3b82f6;
-            box-shadow:
-                0 0 0 2px rgba(59, 130, 246, 0.2),
-                0 0 12px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
             outline: none;
+            background: rgba(34, 197, 94, 0.1);
         }
 
-        /* DATE */
         input[type="date"] {
             cursor: pointer;
         }
 
-        /* ================= BUTTON ================= */
-        button {
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.25s;
-        }
-
-        /* SAVE */
+        /* ================= BUTTON SAVE ================= */
         .btn-save {
             grid-column: 1 / -1;
-            height: 45px;
+            height: 50px;
             background: linear-gradient(135deg, #3b82f6, #22c55e);
             color: #fff;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow:
-                0 8px 25px rgba(59, 130, 246, 0.4),
-                0 0 15px rgba(34, 197, 94, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5), 0 0 20px rgba(34, 197, 94, 0.4);
         }
 
         /* ================= FILTER ================= */
         .filter-box {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            padding: 20px 25px;
         }
 
-        .filter-box input {
+        .filter-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-grid .input-group {
             flex: 1;
-            min-width: 220px;
+            min-width: 180px;
         }
 
         /* ================= TABLE ================= */
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 12px;
+            border-radius: 16px;
+            padding: 0 10px 10px 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             color: #edeef0;
-        }
-
-        /* HEADER */
-        th {
-            background: linear-gradient(135deg, #1e293b, #020617);
-            padding: 14px;
-            border: 1px solid #334155;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #38bdf8;
-        }
-
-        /* CELL */
-        td {
-            padding: 12px;
-            border: 1px solid #334155;
             font-size: 13px;
         }
 
-        /* STRIPED */
+        th {
+            background: linear-gradient(135deg, #1e293b, #020617);
+            padding: 14px 12px;
+            border: 1px solid #334155;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #38bdf8;
+            font-size: 12px;
+        }
+
+        td {
+            padding: 12px 10px;
+            border: 1px solid #334155;
+            vertical-align: middle;
+        }
+
         tr:nth-child(even) {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* HOVER */
         tr:hover {
-            background: linear-gradient(135deg,
-                    rgba(59, 130, 246, 0.2),
-                    rgba(168, 85, 247, 0.15));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(34, 197, 94, 0.1));
+            transition: 0.2s;
         }
 
         /* ================= BUTTON TABLE ================= */
-        .btn-edit {
-            background: linear-gradient(135deg, #38bdf8, #3b82f6);
-            color: #fff;
+        .btn-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
             padding: 6px 10px;
-            border-radius: 6px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin: 0 3px;
         }
 
-        .btn-delete {
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
+        .btn-icon.edit {
+            color: #38bdf8;
         }
 
-        .btn-edit:hover,
-        .btn-delete:hover {
-            transform: scale(1.05);
+        .btn-icon.edit:hover {
+            background: #38bdf8;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .btn-icon.delete {
+            color: #ef4444;
+        }
+
+        .btn-icon.delete:hover {
+            background: #ef4444;
+            color: #fff;
+            transform: scale(1.1);
         }
 
         /* ================= AUTOCOMPLETE ================= */
@@ -209,20 +249,25 @@
             top: 100%;
             left: 0;
             width: 100%;
-            background: #1860f0;
-            border: 1px solid #ffffff;
-            border-radius: 8px;
+            background: #1e293b;
+            border: 1px solid #22c55e;
+            border-radius: 12px;
             overflow: hidden;
             z-index: 999;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         .autocomplete div {
-            padding: 10px;
+            padding: 12px 16px;
             cursor: pointer;
+            color: #e2e8f0;
+            transition: 0.2s;
         }
 
         .autocomplete div:hover {
-            background: #1e293b;
+            background: #22c55e;
+            color: #0f172a;
         }
 
         /* ================= LOADING ================= */
@@ -230,19 +275,26 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             justify-content: center;
             align-items: center;
-            z-index: 999;
+            z-index: 9999;
         }
 
         .loader {
-            width: 45px;
-            height: 45px;
-            border: 4px solid #fff;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #22c55e;
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ================= NAVBAR ================= */
@@ -251,11 +303,10 @@
             top: 0;
             width: 100%;
             z-index: 1000;
-            padding: 0.8rem 1rem;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.6),
-                0 0 10px rgba(59, 130, 246, 0.3);
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #0f172ae6, #1e293be6);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -276,46 +327,56 @@
         #mainNavbar .nav-links {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         #mainNavbar .nav-link {
             color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
             transition: 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
         }
 
         #mainNavbar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(34, 197, 94, 0.2);
             color: #22c55e;
         }
 
         /* ================= BUTTON ACTION ================= */
         .btn-action {
             background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #000;
-            border-radius: 8px;
-            padding: 8px 14px;
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.5);
         }
 
+        /* ================= TOAST ================= */
         .toast {
             position: fixed;
-            top: 20px;
+            top: 90px;
             right: 20px;
             background: linear-gradient(135deg, #22c55e, #16a34a);
             color: #fff;
-            padding: 14px 18px;
-            border-radius: 10px;
+            padding: 14px 22px;
+            border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             transform: translateX(120%);
             opacity: 0;
             transition: all 0.4s ease;
@@ -327,687 +388,682 @@
             opacity: 1;
         }
 
+        .toast.success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
         .toast-icon {
             background: #fff;
-            color: #16a34a;
-            font-weight: bold;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            font-weight: bold;
         }
 
-        .toast-text {
-            font-size: 14px;
-            font-weight: 600;
+        .toast.success .toast-icon {
+            color: #16a34a;
         }
 
-        /* ================= ANIMATION ================= */
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        .toast.error .toast-icon {
+            color: #b91c1c;
+        }
+
+        .toast.info .toast-icon {
+            color: #2563eb;
+        }
+
+        /* ================= SPACER ================= */
+        .nav-spacer {
+            height: 85px;
         }
 
         /* ================= RESPONSIVE ================= */
-        @media (max-width: 768px) {
-            #formSurat {
-                grid-template-columns: 1fr;
+        @media (max-width: 992px) {
+            .filter-grid {
+                flex-direction: column;
             }
 
-            table {
-                min-width: 600px;
+            .filter-grid .input-group {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            #formSurat {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .table-wrapper {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+            }
+
+            #mainNavbar {
+                padding: 0.6rem 1rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-spacer {
+                height: 110px;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
             }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 15px;
+            .btn-action {
+                padding: 6px 12px;
+                font-size: 12px;
             }
 
-            .filter-box {
-                flex-direction: column;
+            .toast {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                padding: 10px 16px;
             }
         }
 
         /* ================= PRINT ================= */
         @media print {
-            .col-aksi {
+
+            #mainNavbar,
+            .btn-save,
+            .filter-box,
+            .btn-action,
+            .col-aksi,
+            .toast,
+            #loading {
                 display: none !important;
             }
 
             body {
                 background: #fff;
                 color: #000;
+                padding: 0;
+            }
+
+            .card {
+                background: #fff;
+                box-shadow: none;
+                border: 1px solid #ccc;
             }
 
             th,
             td {
                 border: 1px solid #000;
                 color: #000;
-                background: #fff !important;
-            }
-        }
-
-        /* ================= PRINT ================= */
-        @media print {
-
-            /* Sembunyikan kolom aksi sepenuhnya */
-            .col-aksi {
-                display: none !important;
             }
 
-            /* Tabel full width */
-            table {
-                width: 100% !important;
-                border-collapse: collapse;
-            }
-
-            th,
-            td {
-                border: 1px solid #333;
-                padding: 6px;
-                font-size: 12px;
-                color: #000;
-                background: #fff !important;
-            }
-
-            body {
-                color: #000;
-                background: #fff;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: economy;
+            .nav-spacer {
+                display: none;
             }
         }
     </style>
 </head>
 
 <body>
-    <h2 class="page-title">ARSIP SURAT MASUK</h2>
+    <!-- Navbar -->
+    <nav id="mainNavbar">
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-archive-fill"></i> Arsip Surat Bidang P3
+        </a>
+        <div class="nav-links">
+            <a href="#" class="nav-link" onclick="showToast('Logout (simulasi)', 'info')">
+                <i class="bi bi-box-arrow-right"></i> LOG OUT
+            </a>
+            <a href="#" class="nav-link" onclick="showToast('Dashboard (simulasi)', 'info')">
+                <i class="bi bi-speedometer2"></i>
+            </a>
+            <a href="#" class="nav-link" onclick="showToast('Formulir PPAT', 'info')">
+                <i class="bi bi-file-earmark-text"></i>
+            </a>
+            <a href="#" class="nav-link" onclick="showToast('Kirim Email', 'info')">
+                <i class="bi bi-envelope"></i>
+            </a>
+        </div>
+    </nav>
+
+    <div class="nav-spacer"></div>
 
     <div id="loading">
         <div class="loader"></div>
     </div>
 
-    <!-- Navbar -->
-    <nav id="mainNavbar" class="navbar fixed-top shadow-sm py-2">
-        <div class="container d-flex justify-content-between align-items-center">
-            <!-- Judul -->
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-gear-fill me-2"></i> Arsip Surat PPAT
-            </a>
-
-            <!-- Menu Navigasi -->
-            <div class="nav-links d-flex align-items-center">
-                <a href="dashbord.html" class="nav-link" title="Formulir PPAT">
-                    <i class="bi bi-buildings"></i> Dashbord
-                </a>
-                <a href="fomulir.html" class="nav-link" title="Formulir PPAT">
-                    <i class="bi bi-file-earmark-text me-1"></i> Formulir PPAT
-                </a>
-                <a href="Table.html" class="nav-link" title="Formulir PPAT">
-                    <i class="bi bi-envelope"></i> Email PPAT
-                </a>
-                  <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
-                    <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Spacer agar konten tidak tertutup navbar -->
-    <div style="height: 80px;"></div>
-
     <div class="container">
+        <h2 class="page-title">
+            <i class="bi bi-envelope-open-heart"></i> SURAT MASUK NOTARIS & PPAT
+        </h2>
 
         <!-- FORMULIR -->
-        <form id="formSurat" class="card">
+        <div class="card">
+            <form id="formSurat">
+                <div class="input-group">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <input type="text" id="nama_notaris" placeholder="Ketik Nama Notaris" autocomplete="off" required>
+                    <div id="suggestions" class="autocomplete" style="display: none;"></div>
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-user-tie"></i>
-                <input type="text" id="nama_notaris" placeholder="Ketik Nama Notaris" required>
-                <div id="suggestions" class="autocomplete"></div>
-            </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <input type="date" id="tanggal_surat" required>
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-calendar-days"></i>
-                <input type="date" id="tanggal_surat" required>
-                <labal>TANGGAL SURAT</labal>
-            </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <input type="date" id="tanggal_diterima" required>
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-calendar-check"></i>
-                <input type="date" id="tanggal_diterima" required>
-                <labal>TANGGAL DITERIMA</labal>
-            </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <select id="judul_surat" required>
+                        <option value="">Pilih Judul</option>
+                        <option>Laporan Bulanan PPAT</option>
+                        <option>Surat Permohonan</option>
+                        <option>Surat Klarifikasi</option>
+                        <option>Nota Dinas</option>
+                        <option>Surat Keterangan</option>
+                    </select>
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-file-lines"></i>
-                <select id="judul_surat" required>
-                    <option value="">Pilih Judul</option>
-                    <option>Laporan Bulanan PPAT</option>
-                    <option>Surat Permohonan</option>
-                    <option>Surat Klarfikasi</option>
-                </select>
-            </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-building"></i>
+                    <select id="dari_bidang" required>
+                        <option value="">Pilih Bidang</option>
+                        <option>Sekretariat</option>
+                        <option>Bidang P1</option>
+                        <option>Bidang P2</option>
+                        <option>Bidang P3</option>
+                    </select>
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-building"></i>
-                <select id="dari_bidang" required>
-                    <option value="">Pilih Bidang</option>
-                    <option>Sekretariat</option>
-                    <option>Bidang P1</option>
-                    <option>Bidang P2</option>
-                </select>
-            </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="nama_penerima" placeholder="Nama Pengantar">
+                </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-user"></i>
-                <input type="text" id="nama_penerima" placeholder="Nama Pengantar">
-                <labal>NAMA PENGANTAR</labal>
-            </div>
-
-            <button class="btn-save">
-                <i class="fa-solid fa-paper-plane"></i> Simpan Data
-            </button>
-
-        </form>
-
-        <div class="filter-box card">
-
-            <div class="input-group">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="filterNama" placeholder="Cari Nama">
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-calendar"></i>
-                <input type="date" id="filterTanggal">
-            </div>
-
+                <button type="submit" class="btn-save">
+                    <i class="fa-solid fa-paper-plane"></i> Simpan Data
+                </button>
+            </form>
         </div>
 
-        <!-- TOMBOL PRINT & EXPORT -->
-        <td class="col-aksi">
-            <div class="d-flex mb-3 gap-2">
+        <!-- FILTER & ACTION -->
+        <div class="card filter-box">
+            <div class="filter-grid">
+                <div class="input-group">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="filterNama" placeholder="Cari Nama Notaris / Pengantar">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-calendar"></i>
+                    <input type="date" id="filterTanggal" placeholder="Filter Tanggal">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-calendar-alt"></i>
+                    <select id="filterBulan">
+                        <option value="">Semua Bulan</option>
+                        <option value="01">Januari</option>
+                        <option value="02">Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-calendar"></i>
+                    <select id="filterTahun">
+                        <option value="">Semua Tahun</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3" style="display: flex; gap: 12px; flex-wrap: wrap;">
                 <button class="btn-action" onclick="printTable()">
                     <i class="bi bi-printer"></i> Print
                 </button>
                 <button class="btn-action" onclick="exportExcel()">
-                    <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Export Excel
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
                 </button>
             </div>
+        </div>
 
-            <div id="toast" class="toast">
-                <div class="toast-icon">✔</div>
-                <div class="toast-text">DATA BERHASIL DITAMBAHKAN</div>
-            </div>
-
-            <select id="filterBulan">
-                <option value="">Semua Bulan</option>
-                <option value="01">Januari</option>
-                <option value="02">Februari</option>
-                <option value="03">Maret</option>
-                <option value="04">April</option>
-                <option value="05">Mei</option>
-                <option value="06">Juni</option>
-                <option value="07">Juli</option>
-                <option value="08">Agustus</option>
-                <option value="09">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-            </select>
-
-            <select id="filterTahun">
-                <option value="">Semua Tahun</option>
-            </select>
-
-            <!-- TABLE -->
-            <div class="card">
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Notaris/PPAT</th>
-                                <th>Tanggal Teriama</th>
-                                <th>Tanggal Surat</th>
-                                <th>Judul</th>
-                                <th>Jam</th>
-                                <th>Bidang</th>
-                                <th>Pengantar</th>
-                                <th>Paraf</th>
-                                <th class="col-aksi">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataTable"></tbody>
-                    </table>
-                </div>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-            <script>
-                let allData = [];
-                let editRow = null;
-
-                const URL = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
-
-                const namaInput = document.getElementById("nama_notaris");
-                const suggestions = document.getElementById("suggestions");
-
-                namaInput.addEventListener("input", () => {
-                    let keyword = namaInput.value.toLowerCase();
-                    suggestions.innerHTML = "";
-
-                    if (!keyword) {
-                        suggestions.style.display = "none";
-                        return;
-                    }
-
-                    let hasil = defaultNotaris.filter(n =>
-                        n.toLowerCase().includes(keyword)
-                    );
-
-                    hasil.forEach(n => {
-                        let div = document.createElement("div");
-                        div.textContent = n;
-
-                        div.onclick = () => {
-                            namaInput.value = n;
-                            suggestions.style.display = "none";
-                        };
-
-                        suggestions.appendChild(div);
-                    });
-
-                    suggestions.style.display = hasil.length ? "block" : "none";
-                });
-
-                document.addEventListener("click", e => {
-                    if (!e.target.closest("form")) {
-                        suggestions.style.display = "none";
-                    }
-                });
-
-                /* =========================
-                   FUNGSI LOGIN DAN LOGOUT
-                ========================= */
-                function cekLogin() {
-                    const token = localStorage.getItem("token");
-
-                    // Jika token tidak ada, redirect ke table.html
-                    if (!token) {
-                        console.warn("Token tidak ditemukan, redirect ke table.html");
-                        window.location.href = "table.html";
-                        return;
-                    }
-
-                    // Cek token ke server langsung tanpa const URL
-                    fetch("https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec?action=check&token=" + encodeURIComponent(token))
-                        .then(res => {
-                            if (!res.ok) throw new Error("Response tidak OK");
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (data.status !== "valid") {
-                                console.warn("Token tidak valid, hapus dan redirect");
-                                localStorage.removeItem("token");
-                                window.location.href = "table.html";
-                            } else {
-                                console.log("Token valid, akses diterima");
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Terjadi error saat cek login:", err);
-                            window.location.href = "table.html";
-                        });
-                }
-
-                // Jalankan cekLogin saat halaman dibuka
-                document.addEventListener("DOMContentLoaded", cekLogin);
-
-                // Fungsi LogOut
-                function logout() {
-                    localStorage.removeItem("token");
-                    window.location.href = "table.html";
-                }
-
-                /* ================= LOAD DATA ================= */
-                function loadData() {
-                    document.getElementById("loading").style.display = "flex";
-
-                    fetch(URL) // ⬅️ GET, bukan POST
-                        .then(res => res.json())
-                        .then(data => {
-                            allData = data; // simpan data
-                            render();       // tampilkan ke tabel
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert("Gagal load data!");
-                        })
-                        .finally(() => {
-                            document.getElementById("loading").style.display = "none";
-                        });
-                }
-
-                /* ================= RENDER ================= */
-                function render() {
-                    let html = "";
-
-                    const filterNama = document.getElementById("filterNama").value.toLowerCase();
-                    const filterTanggal = document.getElementById("filterTanggal").value;
-                    const filterBulan = document.getElementById("filterBulan").value;
-                    const filterTahun = document.getElementById("filterTahun").value;
-
-                    allData.forEach(d => {
-
-                        if (filterNama && !d.nama.toLowerCase().includes(filterNama)) return;
-
-                        if (filterTanggal && d.tgl_surat != filterTanggal) return;
-
-                        // 🔥 FILTER BULAN
-                        if (filterBulan && d.tgl_surat.substring(5, 7) !== filterBulan) return;
-
-                        // 🔥 FILTER TAHUN
-                        if (filterTahun && d.tgl_surat.substring(0, 4) !== filterTahun) return;
-
-                        html += `
+        <!-- TABLE -->
+        <div class="card">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
                         <tr>
-                            <td>${d.no}</td>
-                            <td>${d.nama}</td>
-                            <td>${d.tgl_terima}</td>
-                            <td>${d.tgl_surat}</td>
-                            <td>${d.judul}</td>
-                            <td>${d.jam}</td>
-                            <td>${d.bidang}</td>
-                            <td>${d.pengantar}</td>
-                            <td>${d.paraf || ""}</td>
-                            <td class="col-aksi">
-                        <button class="btn-icon edit" onclick="editData(${d.row})" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1.439 1.439-2.121-2.121L13.38.525a.5.5 0 0 1 .706 0l1.416 1.415zM13.06 4.439L4 13.5V16h2.5l9.06-9.06-2.5-2.5z"/>
-                            </svg>
-                        </button>
-
-                        <button class="btn-icon delete" onclick="hapus(${d.row})" title="Hapus">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-8z"/>
-                                <path d="M4.118 4 4 4.059V4.5A.5.5 0 0 0 4.5 5h7a.5.5 0 0 0 .5-.5V4.059L11.882 4H4.118zM2.5 3h11a.5.5 0 0 1 .5.5V4h-12v-.5a.5.5 0 0 1 .5-.5z"/>
-                            </svg>
-                        </button>
-                    </td>
+                            <th>No</th>
+                            <th>Nama Notaris/PPAT</th>
+                            <th>Tanggal Terima</th>
+                            <th>Tanggal Surat</th>
+                            <th>Judul</th>
+                            <th>Jam</th>
+                            <th>Bidang</th>
+                            <th>Pengantar</th>
+                            <th>Paraf</th>
+                            <th class="col-aksi">Aksi</th>
                         </tr>
-                        `;
-                    });
+                    </thead>
+                    <tbody id="dataTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-                    document.getElementById("dataTable").innerHTML = html;
-                    document.getElementById("filterBulan").addEventListener("change", render);
-                    document.getElementById("filterTahun").addEventListener("change", render);
-                }
+    <div id="toast" class="toast">
+        <div class="toast-icon">✔</div>
+        <div class="toast-text">DATA BERHASIL DITAMBAHKAN</div>
+    </div>
 
-                const defaultNotaris = [
-                    "AMELIA MERDEKA SARI, S.H., M.Kn",
-                    "ANJAR KRISTIANTO, S.H., M.Kn",
-                    "ATMIWIJAYA ARTATI, S.H., M.Kn",
-                    "ANGGA PRISMA JELITA, S.H.,M.Kn",
-                    "ANNISA FADILLA KARTAMADJA,S.H., M.Kn",
-                    "AULIYYA MARTATI, S.H., M.H",
-                    "ARDANA RESTIKA, S.H.,M.Kn",
-                    "AZIZA ADLIEN NABILA, S.H.,M.Kn",
-                    "BERTHA NOVELISA, S.H., M.Kn",
-                    "BJANZA METRA, S.H.,M.Kn",
-                    "BELLA FILDA AGATHA,S.H.,M.Kn",
-                    "CHRISTINE, S.H.,M.Kn",
-                    "DENI YOHANES, S.H., M.Kn",
-                    "DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn",
-                    "DENI KRISTIAN NATANAEL, S.H,.M.Kn",
-                    "DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn",
-                    "DORA YULIA AGUSTINA, S.H.,M.Kn",
-                    "DWI FANI ARSIKASINDI, S.H.,M.H",
-                    "EMY EFRIANTI AGUSTINI, S.H., M.Kn",
-                    "HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn",
-                    "HELEN SAPARINGGA,S.H., M.Kn",
-                    "H. EPISON, S.H",
-                    "H. MUFTI NOKHMAN, S.H.,M.Kn",
-                    "IDAYANTI, S.H",
-                    "IS HARIYANI,S.H",
-                    "ILHAM RAHMADI, SH",
-                    "INDAH ARIESTIA, S.H",
-                    "IRAWAN, S.H",
-                    "JULIWATI SIAGIAN, S.H,M.Kn",
-                    "KARTINI KESUMAWATY,S.H.,M.Kn",
-                    "KAHIRUNNISA,S.H.,M.Kn",
-                    "KUSWARI AHMAD,S.H",
-                    "LYDIA ARMAN, S.H.,M.Kn",
-                    "LINDA OKTARINA,S.H",
-                    "MIRZA,S.H.,M.Kn",
-                    "NOVIARTATI,S.H",
-                    "RANDI WIBOWO,S.H.,M.Kn",
-                    "RIZFITRIANI ALAMSYAH, S.H.,M.Kn",
-                    "SARI PRIYANIKA,S.H.,M.Kn",
-                    "SUSANTI,S.H.,M.Kn",
-                    "SARI INDRA,S.H.,M.Kn",
-                    "SHINTA WIDYANTI,S.H.,M.Kn",
-                    "SICILIA HENDRA,S.H.,M.Kn",
-                    "SHABRINA ZHAFIRA,S.H.,M.Kn",
-                    "SISKA WIDIA ASTUTI, S.H.,M.Kn",
-                    "TINA HAREANI, BUGGASI, S.H.,M.Kn",
-                    "TIARA YUNITA OVELIA,S.H.,M.Kn",
-                    "VIKE DIANTI PUTRI,S.H.,M.Kn",
-                    "VINANDIA LOVITA,S.H.,M.Kn",
-                    "WENY ARIAMBI CRISTIANI,SST.Par.,S.H.,M.Kn"
-                ];
+    <script>
+        let allData = [];
+        let editRow = null;
 
-                /* ================= SUBMIT ================= */
-                document.getElementById("formSurat").addEventListener("submit", function (e) {
-                    e.preventDefault();
+        const URL = "https://script.google.com/macros/s/AKfycbxBPk35mPtrfjM2NByQIPH0h94qINdx0pG9LfGhIFE1UcSKb1YBod4Db6HTbaKiAwyf4g/exec";
 
-                    document.getElementById("loading").style.display = "flex";
+        // Daftar notaris untuk autocomplete
+        const defaultNotaris = [
+            "AMELIA MERDEKA SARI, S.H., M.Kn", "ANJAR KRISTIANTO, S.H., M.Kn",
+            "ATMIWIJAYA ARTATI, S.H., M.Kn", "ANGGA PRISMA JELITA, S.H.,M.Kn",
+            "ANNISA FADILLA KARTAMADJA,S.H., M.Kn", "AULIYYA MARTATI, S.H., M.H",
+            "ARDANA RESTIKA, S.H.,M.Kn", "AZIZA ADLIEN NABILA, S.H.,M.Kn",
+            "BERTHA NOVELISA, S.H., M.Kn", "BJANZA METRA, S.H.,M.Kn",
+            "BELLA FILDA AGATHA,S.H.,M.Kn", "CHRISTINE, S.H.,M.Kn",
+            "DENI YOHANES, S.H., M.Kn", "DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn",
+            "DENI KRISTIAN NATANAEL, S.H,.M.Kn", "DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn",
+            "DORA YULIA AGUSTINA, S.H.,M.Kn", "DWI FANI ARSIKASINDI, S.H.,M.H",
+            "EMY EFRIANTI AGUSTINI, S.H., M.Kn", "HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn",
+            "HELEN SAPARINGGA,S.H., M.Kn", "H. EPISON, S.H", "H. MUFTI NOKHMAN, S.H.,M.Kn",
+            "IDAYANTI, S.H", "IS HARIYANI,S.H", "ILHAM RAHMADI, SH",
+            "INDAH ARIESTIA, S.H", "IRAWAN, S.H", "JULIWATI SIAGIAN, S.H,M.Kn",
+            "KARTINI KESUMAWATY,S.H.,M.Kn", "KAHIRUNNISA,S.H.,M.Kn", "KUSWARI AHMAD,S.H",
+            "LYDIA ARMAN, S.H.,M.Kn", "LINDA OKTARINA,S.H", "MIRZA,S.H.,M.Kn",
+            "NOVIARTATI,S.H", "RANDI WIBOWO,S.H.,M.Kn", "RIZFITRIANI ALAMSYAH, S.H.,M.Kn",
+            "SARI PRIYANIKA,S.H.,M.Kn", "SUSANTI,S.H.,M.Kn", "SARI INDRA,S.H.,M.Kn",
+            "SHINTA WIDYANTI,S.H.,M.Kn", "SICILIA HENDRA,S.H.,M.Kn", "SHABRINA ZHAFIRA,S.H.,M.Kn",
+            "SISKA WIDIA ASTUTI, S.H.,M.Kn", "TINA HAREANI, BUGGASI, S.H.,M.Kn",
+            "TIARA YUNITA OVELIA,S.H.,M.Kn", "VIKE DIANTI PUTRI,S.H.,M.Kn",
+            "VINANDIA LOVITA,S.H.,M.Kn", "WENY ARIAMBI CRISTIANI,SST.Par.,S.H.,M.Kn"
+        ];
 
-                    let payload = {
-                        nama: nama_notaris.value,
-                        tgl_surat: tanggal_surat.value,
-                        tgl_terima: tanggal_diterima.value,
-                        judul: judul_surat.value,
-                        bidang: dari_bidang.value,
-                        pengantar: nama_penerima.value,
-                        paraf: ""
-                    };
+        // ================= AUTOCOMPLETE =================
+        const namaInput = document.getElementById("nama_notaris");
+        const suggestions = document.getElementById("suggestions");
 
+        namaInput.addEventListener("input", () => {
+            let keyword = namaInput.value.toLowerCase();
+            suggestions.innerHTML = "";
+
+            if (!keyword) {
+                suggestions.style.display = "none";
+                return;
+            }
+
+            let hasil = defaultNotaris.filter(n => n.toLowerCase().includes(keyword));
+
+            hasil.forEach(n => {
+                let div = document.createElement("div");
+                div.textContent = n;
+                div.onclick = () => {
+                    namaInput.value = n;
+                    suggestions.style.display = "none";
+                };
+                suggestions.appendChild(div);
+            });
+
+            suggestions.style.display = hasil.length ? "block" : "none";
+        });
+
+        document.addEventListener("click", e => {
+            if (!e.target.closest("#formSurat")) {
+                suggestions.style.display = "none";
+            }
+        });
+
+        /* =========================
+             FUNGSI LOGIN DAN LOGOUT
+          ========================= */
+        function cekLogin() {
+            const token = localStorage.getItem("token");
+
+            // Jika token tidak ada, redirect ke table.html
+            if (!token) {
+                console.warn("Token tidak ditemukan, redirect ke table.html");
+                window.location.href = "table.html";
+                return;
+            }
+
+            // Cek token ke server langsung tanpa const URL
+            fetch("https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec?action=check&token=" + encodeURIComponent(token))
+                .then(res => {
+                    if (!res.ok) throw new Error("Response tidak OK");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.status !== "valid") {
+                        console.warn("Token tidak valid, hapus dan redirect");
+                        localStorage.removeItem("token");
+                        window.location.href = "table.html";
+                    } else {
+                        console.log("Token valid, akses diterima");
+                    }
+                })
+                .catch(err => {
+                    console.error("Terjadi error saat cek login:", err);
+                    window.location.href = "table.html";
+                });
+        }
+
+        // ================= LOAD DATA =================
+        function loadData() {
+            document.getElementById("loading").style.display = "flex";
+
+            fetch(URL)
+                .then(res => res.json())
+                .then(data => {
+                    allData = data;
+                    initFilterTahun();
+                    render();
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast("Gagal load data!", "error");
+                })
+                .finally(() => {
+                    document.getElementById("loading").style.display = "none";
+                });
+        }
+
+        // ================= RENDER TABLE =================
+        function render() {
+            let html = "";
+            let counter = 1;
+
+            const filterNama = document.getElementById("filterNama").value.toLowerCase();
+            const filterTanggal = document.getElementById("filterTanggal").value;
+            const filterBulan = document.getElementById("filterBulan").value;
+            const filterTahun = document.getElementById("filterTahun").value;
+
+            const filtered = allData.filter(d => {
+                if (filterNama && !d.nama.toLowerCase().includes(filterNama) && !d.pengantar.toLowerCase().includes(filterNama)) return false;
+                if (filterTanggal && d.tgl_terima !== filterTanggal) return false;
+                if (filterBulan && d.tgl_surat.substring(5, 7) !== filterBulan) return false;
+                if (filterTahun && d.tgl_surat.substring(0, 4) !== filterTahun) return false;
+                return true;
+            });
+
+            filtered.forEach(d => {
+                html += `
+                    <tr>
+                        <td>${counter++}</td>
+                        <td>${d.nama || ""}</td>
+                        <td>${d.tgl_terima || ""}</td>
+                        <td>${d.tgl_surat || ""}</td>
+                        <td>${d.judul || ""}</td>
+                        <td>${d.jam || ""}</td>
+                        <td>${d.bidang || ""}</td>
+                        <td>${d.pengantar || ""}</td>
+                        <td>${d.paraf || ""}</td>
+                        <td class="col-aksi">
+                            <button class="btn-icon edit" onclick="editData(${d.row})" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="hapus(${d.row})" title="Hapus">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if (filtered.length === 0) {
+                html = `<tr><td colspan="10" style="text-align: center;">Tidak ada data</td></tr>`;
+            }
+
+            document.getElementById("dataTable").innerHTML = html;
+        }
+
+        // ================= SUBMIT FORM =================
+        document.getElementById("formSurat").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            document.getElementById("loading").style.display = "flex";
+
+            const now = new Date();
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const paraf = document.getElementById("nama_penerima").value ?
+                document.getElementById("nama_penerima").value.substring(0, 2).toUpperCase() : "";
+
+            let payload = {
+                nama: document.getElementById("nama_notaris").value,
+                tgl_surat: document.getElementById("tanggal_surat").value,
+                tgl_terima: document.getElementById("tanggal_diterima").value,
+                judul: document.getElementById("judul_surat").value,
+                bidang: document.getElementById("dari_bidang").value,
+                pengantar: document.getElementById("nama_penerima").value,
+                jam: jam,
+                paraf: paraf
+            };
+
+            if (editRow) {
+                payload.action = "update";
+                payload.row = editRow;
+            }
+
+            fetch(URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+                .then(() => {
                     if (editRow) {
-                        payload.action = "update";
-                        payload.row = editRow;
+                        showToast("DATA BERHASIL DIUPDATE", "info");
+                    } else {
+                        showToast("DATA BERHASIL DITAMBAHKAN", "success");
                     }
 
-                    fetch(URL, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    })
-                        .then(data => {
-                            console.log(data);
+                    document.getElementById("formSurat").reset();
+                    editRow = null;
 
-                            formSurat.reset();
-                            editRow = null;
-
-                            showToast("DATA BERHASIL DITAMBAHKAN", "success");
-
-                            return fetch(URL);
-                        })
-
-                        .then(data => {
-                            console.log(data);
-
-                            if (editRow) {
-                                showToast("DATA BERHASIL DIUPDATE", "info");
-                            } else {
-                                showToast("DATA BERHASIL DITAMBAHKAN", "success");
-                            }
-
-                            formSurat.reset();
-                            editRow = null;
-
-                            return fetch(URL);
-                        })
-
-                        .then(res => res.json())
-                        .then(data => {
-                            allData = data;
-                            initFilterTahun();
-                            render();
-                        })
-                        .catch(err => {
-                            alert("Gagal kirim data!");
-                            console.error(err);
-                        })
-                        .finally(() => {
-                            document.getElementById("loading").style.display = "none";
-                        });
+                    return fetch(URL);
+                })
+                .then(res => res.json())
+                .then(data => {
+                    allData = data;
+                    initFilterTahun();
+                    render();
+                })
+                .catch(err => {
+                    showToast("Gagal menyimpan data!", "error");
+                    console.error(err);
+                })
+                .finally(() => {
+                    document.getElementById("loading").style.display = "none";
                 });
+        });
 
-                function showToast(pesan, tipe = "success") {
-                    const toast = document.getElementById("toast");
-                    const icon = toast.querySelector(".toast-icon");
-                    const text = toast.querySelector(".toast-text");
+        // ================= EDIT DATA =================
+        function editData(row) {
+            let d = allData.find(x => x.row == row);
+            if (d) {
+                document.getElementById("nama_notaris").value = d.nama;
+                document.getElementById("tanggal_surat").value = d.tgl_surat;
+                document.getElementById("tanggal_diterima").value = d.tgl_terima;
+                document.getElementById("judul_surat").value = d.judul;
+                document.getElementById("dari_bidang").value = d.bidang;
+                document.getElementById("nama_penerima").value = d.pengantar;
+                editRow = row;
 
-                    text.textContent = pesan;
+                document.querySelector(".btn-save").innerHTML = '<i class="fa-solid fa-pen"></i> Update Data';
 
-                    // Reset class warna
-                    toast.classList.remove("success", "error", "info");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        }
 
-                    if (tipe === "success") {
-                        toast.classList.add("success");
-                        icon.textContent = "✔";
-                    } else if (tipe === "error") {
-                        toast.classList.add("error");
-                        icon.textContent = "✖";
-                    } else if (tipe === "info") {
-                        toast.classList.add("info");
-                        icon.textContent = "✎";
-                    }
+        // ================= HAPUS DATA =================
+        function hapus(row) {
+            if (!confirm("Yakin ingin menghapus data ini?")) return;
 
-                    toast.classList.add("show");
+            document.getElementById("loading").style.display = "flex";
 
-                    setTimeout(() => {
-                        toast.classList.remove("show");
-                    }, 3000);
-                }
-
-                /* ================= EDIT ================= */
-                function editData(row) {
-                    let d = allData.find(x => x.row == row);
-
-                    nama_notaris.value = d.nama;
-                    tanggal_surat.value = d.tgl_surat;
-                    tanggal_diterima.value = d.tgl_terima;
-                    judul_surat.value = d.judul;
-                    dari_bidang.value = d.bidang;
-                    nama_penerima.value = d.pengantar;
-
-                    editRow = row;
-                }
-
-                /* ================= HAPUS ================= */
-                function hapus(row) {
-                    if (!confirm("Yakin hapus?")) return;
-
-                    fetch(URL, {
-                        method: "POST",
-                        body: JSON.stringify({
-                            action: "delete",
-                            row: row
-                        })
-                    })
-                        .then(() => {
-                            showToast("DATA BERHASIL DIHAPUS", "error");
-                            loadData();
-                        })
-                        .catch(() => {
-                            showToast("GAGAL MENGHAPUS DATA", "error");
-                        });
-                }
-
-                /* ================= FILTER ================= */
-                document.getElementById("filterNama").addEventListener("input", render);
-                document.getElementById("filterTanggal").addEventListener("change", render);
-
-                /* ================= INIT ================= */
-                loadData();
-
-                /* ================= PRINT TABLE ================= */
-                function printTable() {
-                    // Ambil table asli
-                    let table = document.querySelector('.table-wrapper table');
-                    // Clone table supaya aman
-                    let tableClone = table.cloneNode(true);
-
-                    // Hapus kolom aksi
-                    tableClone.querySelectorAll('.col-aksi').forEach(el => el.remove());
-
-                    // Buat jendela baru untuk print
-                    let newWin = window.open('', '', 'width=900,height=700');
-                    newWin.document.write(`
-                            <html>
-                        <head>
-                            <title>Print Table</title>
-                            <style>
-                                body { font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff; }
-                                h2 { text-align: center; margin-bottom: 20px; }
-                                table { border-collapse: collapse; width: 100%; }
-                                th, td { border: 1px solid #333; padding: 8px; text-align: left; font-size: 12px; }
-                                th { background: #2563eb; color: #fff; }
-                                tr:nth-child(even) { background: #f2f2f2; }
-                            </style>
-                        </head>
-                        <body>
-            <h2>Arsip Surat Masuk</h2>
-            ${tableClone.outerHTML}
-        </body>
-        </html>
-    `);
-                    newWin.document.close();
-                    newWin.print();
-                }
-
-                /* ================= EXPORT EXCEL ================= */
-                function exportExcel() {
-                    let table = document.querySelector('table');
-                    let wb = XLSX.utils.table_to_book(table, { sheet: "Arsip Surat" });
-                    XLSX.writeFile(wb, 'Arsip_Surat.xlsx');
-                }
-
-                function initFilterTahun() {
-                    let tahunSet = new Set();
-
-                    allData.forEach(d => {
-                        if (d.tgl_surat) {
-                            let tahun = d.tgl_surat.substring(0, 4);
-                            tahunSet.add(tahun);
-                        }
-                    });
-
-                    let select = document.getElementById("filterTahun");
-                    select.innerHTML = '<option value="">Semua Tahun</option>';
-
-                    [...tahunSet].sort().forEach(t => {
-                        let opt = document.createElement("option");
-                        opt.value = t;
-                        opt.textContent = t;
-                        select.appendChild(opt);
-                    });
-                }
-
-                // blok klik kanan
-                document.addEventListener("contextmenu", function (e) {
-                    e.preventDefault();
+            fetch(URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "delete",
+                    row: row
+                })
+            })
+                .then(() => {
+                    showToast("DATA BERHASIL DIHAPUS", "error");
+                    return fetch(URL);
+                })
+                .then(res => res.json())
+                .then(data => {
+                    allData = data;
+                    initFilterTahun();
+                    render();
+                })
+                .catch(() => {
+                    showToast("GAGAL MENGHAPUS DATA", "error");
+                })
+                .finally(() => {
+                    document.getElementById("loading").style.display = "none";
                 });
+        }
 
-            </script>
+        // ================= INIT FILTER TAHUN =================
+        function initFilterTahun() {
+            let tahunSet = new Set();
+            allData.forEach(d => {
+                if (d.tgl_surat) {
+                    let tahun = d.tgl_surat.substring(0, 4);
+                    tahunSet.add(tahun);
+                }
+            });
 
+            let select = document.getElementById("filterTahun");
+            let currentValue = select.value;
+            select.innerHTML = '<option value="">Semua Tahun</option>';
+
+            [...tahunSet].sort().reverse().forEach(t => {
+                let opt = document.createElement("option");
+                opt.value = t;
+                opt.textContent = t;
+                select.appendChild(opt);
+            });
+
+            select.value = currentValue;
+        }
+
+        // ================= TOAST NOTIFICATION =================
+        function showToast(pesan, tipe = "success") {
+            const toast = document.getElementById("toast");
+            const icon = toast.querySelector(".toast-icon");
+            const text = toast.querySelector(".toast-text");
+
+            text.textContent = pesan;
+            toast.className = "toast " + tipe;
+
+            if (tipe === "success") icon.textContent = "✔";
+            else if (tipe === "error") icon.textContent = "✖";
+            else if (tipe === "info") icon.textContent = "✎";
+
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        // ================= PRINT TABLE =================
+        function printTable() {
+            let table = document.querySelector('.table-wrapper table');
+            let tableClone = table.cloneNode(true);
+
+            tableClone.querySelectorAll('.col-aksi').forEach(el => el.remove());
+
+            let newWin = window.open('', '', 'width=1000,height=800');
+            newWin.document.write(`
+                <html>
+                    <head>
+                        <title>Cetak Arsip Surat</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            h2 { text-align: center; color: #2563eb; }
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                            th { background: #2563eb; color: #fff; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Arsip Surat Masuk</h2>
+                        ${tableClone.outerHTML}
+                        <p style="margin-top: 20px; text-align: center;">Dicetak pada: ${new Date().toLocaleString()}</p>
+                    </body>
+                </html>
+            `);
+            newWin.document.close();
+            newWin.print();
+        }
+
+        // ================= EXPORT EXCEL =================
+        function exportExcel() {
+            let table = document.querySelector('.table-wrapper table');
+            let tableClone = table.cloneNode(true);
+            tableClone.querySelectorAll('.col-aksi').forEach(el => el.remove());
+
+            let wb = XLSX.utils.book_new();
+            let ws = XLSX.utils.table_to_sheet(tableClone, { sheet: "Arsip Surat" });
+            XLSX.utils.book_append_sheet(wb, ws, "Arsip Surat");
+            XLSX.writeFile(wb, `Arsip_Surat_${new Date().toISOString().slice(0, 19)}.xlsx`);
+            showToast("Export Excel berhasil!", "success");
+        }
+
+        // ================= EVENT LISTENER FILTER =================
+        document.getElementById("filterNama").addEventListener("input", render);
+        document.getElementById("filterTanggal").addEventListener("change", render);
+        document.getElementById("filterBulan").addEventListener("change", render);
+        document.getElementById("filterTahun").addEventListener("change", render);
+
+        // ================= INITIAL LOAD =================
+        loadData();
+    </script>
 </body>
 
 </html>
