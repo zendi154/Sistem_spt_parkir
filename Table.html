@@ -195,8 +195,8 @@
         }
 
         /* =========================
-       EMAIL BADGE
-    ========================= */
+           EMAIL BADGE
+        ========================= */
         .email-badge {
             background: linear-gradient(135deg, #e3f2fd, #bbdefb);
             padding: 4px 10px;
@@ -205,8 +205,60 @@
         }
 
         /* =========================
-       STATUS
-    ========================= */
+           SEARCH 
+         ========================= */
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            color: #6c757d;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 280px;
+            padding: 10px 35px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2d89ef;
+            box-shadow: 0 0 0 3px rgba(45, 137, 239, 0.1);
+            width: 320px;
+        }
+
+        .clear-icon {
+            position: absolute;
+            right: 12px;
+            color: #6c757d;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .clear-icon:hover {
+            color: #dc3545;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
         .status {
             padding: 4px 8px;
             border-radius: 20px;
@@ -225,16 +277,400 @@
         }
 
         /* =========================
-       BUTTON DALAM TABLE
-    ========================= */
+             ACTION CONTAINER
+           ========================= */
+        /* ========================================
+   ACTION CONTAINER MODERN
+   ======================================== */
+
+        .action-container {
+            background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+            border-radius: 28px;
+            padding: 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        /* ========================================
+   SECTION TITLE
+   ======================================== */
+
+        .filter-section,
+        .add-section,
+        .action-section {
+            margin-bottom: 32px;
+        }
+
+        .filter-section:last-child,
+        .add-section:last-child,
+        .action-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .section-title i {
+            font-size: 20px;
+            color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 8px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .title-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #e2e8f0);
+            border-radius: 2px;
+        }
+
+        /* ========================================
+   GRID LAYOUT
+   ======================================== */
+
+        .filter-grid,
+        .add-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-card-item,
+        .select-card-item {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .action-buttons-grid {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ========================================
+   LABEL MODERN
+   ======================================== */
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-label i {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        /* ========================================
+   SELECT STYLE
+   ======================================== */
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .modern-select,
+        .moon-select {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .modern-select:hover,
+        .moon-select:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .modern-select:focus,
+        .moon-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .select-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .modern-select:focus~.select-icon,
+        .moon-select:focus~.select-icon {
+            transform: translateY(-50%) rotate(180deg);
+            color: #3b82f6;
+        }
+
+        /* ========================================
+   SEARCH BOX MODERN
+   ======================================== */
+
+        .search-wrapper-modern {
+            width: 100%;
+        }
+
+        .search-box-modern {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon-modern {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-input-modern {
+            width: 100%;
+            padding: 12px 40px 12px 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .search-input-modern:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .clear-icon-modern {
+            position: absolute;
+            right: 16px;
+            color: #94a3b8;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .clear-icon-modern:hover {
+            color: #ef4444;
+        }
+
+        /* ========================================
+   BUTTON MODERN
+   ======================================== */
+
+        .btn-modern {
+            position: relative;
+            padding: 0;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .btn-modern:hover .btn-shine {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        /* ========================================
+   ACTION BUTTONS
+   ======================================== */
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-action i {
+            font-size: 18px;
+        }
+
+        .btn-action span {
+            font-size: 14px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
+        }
+
+        .btn-action:active {
+            transform: translateY(1px);
+        }
+
+        /* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+        @media (max-width: 768px) {
+            .action-container {
+                padding: 20px;
+            }
+
+            .filter-grid,
+            .add-grid {
+                flex-direction: column;
+            }
+
+            .filter-card-item,
+            .select-card-item {
+                width: 100%;
+            }
+
+            .btn-modern {
+                width: 100%;
+            }
+
+            .btn-content {
+                justify-content: center;
+            }
+
+            .action-buttons-grid {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ========================================
+           ANIMATIONS
+        ======================================== */
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-container {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* =========================
+           BUTTON DALAM TABLE
+       ========================= */
         table button {
             padding: 5px 8px;
             font-size: 12px;
         }
 
         /* =========================
-       RESPONSIVE
-    ========================= */
+           RESPONSIVE
+        ========================= */
         @media (max-width: 768px) {
             table {
                 font-size: 12px;
@@ -251,7 +687,7 @@
 
 <body>
 
-    <h2>SURAT PEMBERITAHUAN</h2>
+    <h2>SURAT PEMBERITAHUAN LAPORAN BULANAN NOTARIS/PPAT</h2>
 
     <!-- Navbar -->
     <nav id="mainNavbar" class="navbar fixed-top shadow-sm py-2">
@@ -263,65 +699,132 @@
 
             <!-- Menu Navigasi -->
             <div class="nav-links d-flex align-items-center">
-                <a href="dashbord.html" class="nav-link" title="Dashbord">
-                    <i class="bi bi-buildings"></i> Dashbord
+                <a href="dashbord.html" class="nav-link" title="Dashboard">
+                    <i class="bi bi-buildings"></i>
                 </a>
                 <a href="fomulir.html" class="nav-link" title="Formulir PPAT">
-                    <i class="bi bi-file-earmark-text me-1"></i> Formulir PPAT
+                    <i class="bi bi-file-earmark-text me-1"></i>
                 </a>
-                <a href="datajukir.html" class="nav-link" title="Formulir PPAT">
-                    <i class="bi bi-send"> Arsip Surat</i>
+                <a href="datajukir.html" class="nav-link" title="Arsip Surat">
+                    <i class="bi bi-send"></i>
                 </a>
                 <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
-                    <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
+                    <i class="bi bi-box-arrow-right me-1"></i>
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="action-box">
+    <!-- ACTION BOX MODERN - GABUNGAN -->
+    <div class="action-container">
 
-        <div class="d-flex flex-wrap gap-2 mt-3">
+        <!-- SECTION 1: FILTER & SEARCH -->
+        <div class="filter-section">
+            <div class="section-title">
+                <i class="bi bi-funnel-fill"></i>
+                <span>Filter Data</span>
+                <div class="title-line"></div>
+            </div>
 
-            <!-- FILTER BULAN -->
-            <select id="filterBulan" class="form-select custom-select">
-                <option value="">Semua Bulan</option>
-                <option>Januari</option>
-                <option>Februari</option>
-                <option>Maret</option>
-                <option>April</option>
-                <option>Mei</option>
-                <option>Juni</option>
-                <option>Juli</option>
-                <option>Agustus</option>
-                <option>September</option>
-                <option>Oktober</option>
-                <option>November</option>
-                <option>Desember</option>
-            </select>
+            <div class="filter-grid">
+                <!-- Filter Bulan -->
+                <div class="filter-card-item">
+                    <label class="filter-label">
+                        <i class="bi bi-calendar-month"></i> Periode Bulan
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="filterBulan" class="moon-select">
+                            <option value="">🌙 Semua Bulan</option>
+                            <option value="Januari">🌕 Januari</option>
+                            <option value="Februari">🌖 Februari</option>
+                            <option value="Maret">🌗 Maret</option>
+                            <option value="April">🌘 April</option>
+                            <option value="Mei">🌑 Mei</option>
+                            <option value="Juni">🌒 Juni</option>
+                            <option value="Juli">🌓 Juli</option>
+                            <option value="Agustus">🌔 Agustus</option>
+                            <option value="September">🌕 September</option>
+                            <option value="Oktober">🌖 Oktober</option>
+                            <option value="November">🌗 November</option>
+                            <option value="Desember">🌘 Desember</option>
+                        </select>
+                        <i class="bi bi-chevron-down select-icon"></i>
+                    </div>
+                </div>
 
-            <!-- CARI NAMA -->
-            <input type="text" id="searchNama" class="form-control" placeholder="🔍 Cari nama PPAT..."
-                style="max-width:250px;">
-
+                <!-- Search Box -->
+                <div class="filter-card-item">
+                    <label class="filter-label">
+                        <i class="bi bi-search"></i> Cari Nama Notaris/PPAT
+                    </label>
+                    <div class="search-wrapper-modern">
+                        <div class="search-box-modern">
+                            <i class="bi bi-search search-icon-modern"></i>
+                            <input type="text" id="searchNama" class="search-input-modern"
+                                placeholder="Ketik nama PPAT..." autocomplete="off">
+                            <i class="bi bi-x-circle-fill clear-icon-modern" id="clearSearch"
+                                style="display: none;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
-            <select id="notaris" class="form-select custom-select"></select>
+        <!-- SECTION 2: TAMBAH DATA -->
+        <div class="add-section">
+            <div class="section-title">
+                <i class="bi bi-person-plus-fill"></i>
+                <span>Manajemen Notaris</span>
+                <div class="title-line"></div>
+            </div>
 
-            <button class="btn btn-primary" onclick="tambahNotaris()">
-                <i class="bi bi-person-plus-fill"></i> Tambah Manual
-            </button>
+            <div class="add-grid">
+                <div class="select-card-item">
+                    <label class="filter-label">
+                        <i class="bi bi-person-badge"></i> Pilih Notaris
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="notaris" class="modern-select">
+                            <option value="">-- Pilih Notaris --</option>
+                        </select>
+                        <i class="bi bi-chevron-down select-icon"></i>
+                    </div>
+                </div>
+
+                <button class="btn-modern btn-primary" onclick="tambahNotaris()">
+                    <div class="btn-content">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span>Tambah Data</span>
+                    </div>
+                    <div class="btn-shine"></div>
+                </button>
+            </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-warning" onclick="generateData()">
-                <i class="bi bi-calendar-plus"></i> Generate Data/Tarik Semua
-            </button>
+        <!-- SECTION 3: AKSI DATA -->
+        <div class="action-section">
+            <div class="section-title">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>Aksi Data</span>
+                <div class="title-line"></div>
+            </div>
 
-            <button class="btn btn-danger" onclick="kirimMassal()">
-                <i class="bi bi-send-check-fill"></i> Kirim Semua
-            </button>
+            <div class="action-buttons-grid">
+                <button class="btn-action btn-warning" onclick="generateData()">
+                    <i class="bi bi-calendar-plus"></i>
+                    <span>Tarik Semua Data (1 Bulan)</span>
+                </button>
+
+                <button class="btn-action btn-danger" onclick="kirimMassal()">
+                    <i class="bi bi-send-check-fill"></i>
+                    <span>Kirim Semua Data</span>
+                </button>
+
+                <button class="btn-action btn-secondary" onclick="printTable()">
+                    <i class="bi bi-printer-fill"></i>
+                    <span>Print Table</span>
+                </button>
+            </div>
         </div>
 
     </div>
@@ -329,7 +832,7 @@
     <table>
         <thead class="table-dark">
             <tr>
-                <th><i class="bi bi-hash"></i></th>
+                <th><i class="bi bi-hash"></i> No</th>
                 <th><i class="bi bi-person-badge"></i> Nomor Unik</th>
                 <th><i class="bi bi-person-fill"></i> Nama </th>
                 <th><i class="bi bi-geo-alt-fill"></i> Alamat Kantor</th>
@@ -350,8 +853,8 @@
 
     <script>
         /* =========================
-             FUNGSI LOGIN DAN LOGOUT
-         ========================= */
+           FUNGSI LOGIN DAN LOGOUT
+        ========================= */
         function cekLogin() {
             const token = localStorage.getItem("token");
 
@@ -383,16 +886,21 @@
                 });
         }
 
-        const URL = "https://script.google.com/macros/s/AKfycbwRoiwRJo9bgYeN7AoPuaoARfeGT3LLw9HEpZB-sXiXsvR7B_dcJLlPj6NSHX0KEYL03g/exec";
+        const URL = "https://script.google.com/macros/s/AKfycbwKzzZCJ6rVpe0jffqVzngLYmRcIESiqI0VGq8k0Qvsb-Axj1YYU5BMtK8O9nAiBPsJ6A/exec";
 
         /* =========================
-           SHOW LOADING
+           SHOW LOADING MODERN
         ========================= */
-        function showLoading(msg = "Loading...") {
+        function showLoading(message = "Memuat data...") {
             Swal.fire({
-                title: msg,
+                title: message,
                 allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                showCloseButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
         }
 
@@ -403,43 +911,75 @@
             Swal.close();
         }
 
+
         /* =========================
-           LOAD DATA
+           LOAD DATA 
         ========================= */
         async function load() {
             showLoading("Memuat data...");
             try {
                 const res = await fetch(URL + "?action=get");
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+
                 const d = await res.json();
+
+                // DEBUG: Lihat struktur data
+                console.log("Data dari server:", d);
+                if (d.length > 0) {
+                    console.log("Keys yang tersedia:", Object.keys(d[0]));
+                }
 
                 const filterBulan = (document.getElementById("filterBulan")?.value || "").toLowerCase().trim();
                 const searchNama = (document.getElementById("searchNama")?.value || "").toLowerCase().trim();
 
                 let html = "";
+                let no = 1;
 
                 d.forEach(x => {
+                    // SESUAIKAN DENGAN KEY DARI APPS SCRIPT
+                    let id = x.id || "-";
                     let nama = (x.nama || "").toLowerCase();
-                    let bulanData = (x.bulan || "").toString().toLowerCase().trim();
+                    let alamat = x.alamat || "-";
+                    let bulan = x.bulan || "-";
+                    let nomorSurat = x.nomor || "-";
+                    let email = x.email || "";
+                    let statusEmail = x.status || "";
 
-                    if (filterBulan && bulanData !== filterBulan) return;
+                    // EKSTRAK NAMA BULAN (misal: "Januari" -> "januari")
+                    let namaBulan = bulan.toLowerCase().trim();
+
+                    // FILTER
+                    if (filterBulan && namaBulan !== filterBulan) return;
                     if (searchNama && !nama.includes(searchNama)) return;
+
+                    // Tentukan status tampilan
+                    let statusText = "BELUM";
+                    let statusClass = "status-belum";
+
+                    if (statusEmail === "TERKIRIM") {
+                        statusText = "TERKIRIM";
+                        statusClass = "status-terkirim";
+                    }
 
                     html += `
                 <tr>
-                    <td>${x.no || "-"}</td>
-                    <td>${x.id || "-"}</td>
+                    <td>${no++}</td>
+                    <td>${id}</td>
                     <td>${x.nama || "-"}</td>
-                    <td>${x.alamat || "-"}</td>
-                    <td>${x.bulan || "-"}</td>
-                    <td>${x.nomor || "-"}</td>
+                    <td>${alamat}</td>
+                    <td>${bulan}</td>
+                    <td>${nomorSurat}</td>
                     <td>
-                        ${x.email
-                            ? `<a href="mailto:${x.email}" class="email-badge">${x.email}</a>`
+                        ${email
+                            ? `<a href="mailto:${email}" class="email-badge">${email}</a>`
                             : `<span style="color:#aaa;">Tidak ada email</span>`}
                     </td>
                     <td>
-                        <span class="status ${x.status === 'TERKIRIM' ? 'status-terkirim' : 'status-belum'}">
-                            ${x.status || "BELUM"}
+                        <span class="status ${statusClass}">
+                            ${statusText}
                         </span>
                     </td>
                     <td style="text-align:center;">
@@ -448,11 +988,12 @@
                             : `<button disabled class="btn-secondary"><i class="bi bi-eye-slash"></i></button>`}
                     </td>
                     <td>
-                        ${x.status === "TERKIRIM"
+                        ${statusEmail === "TERKIRIM"
                             ? `<button class="kirim" disabled><i class="bi bi-check-circle-fill"></i> Terkirim</button>`
-                            : `<button class="kirim" onclick="kirim(${x.row})"><i class="bi bi-send-fill"></i> Kirim Manual</button>`}
+                            : `<button class="kirim" onclick="kirimManual(${x.row})"><i class="bi bi-send-fill"></i> Kirim</button>`}
                     </td>
-                </tr>`;
+                </tr>
+            `;
                 });
 
                 if (html === "") {
@@ -461,22 +1002,54 @@
                     <td colspan="10" style="text-align:center; padding:20px; color:#888;">
                         <i class="bi bi-exclamation-circle"></i> Data tidak ditemukan
                     </td>
-                </tr>`;
+                </tr>
+            `;
                 }
 
                 document.getElementById("data").innerHTML = html;
+
             } catch (err) {
-                console.error(err);
+                console.error("Error detail:", err);
                 document.getElementById("data").innerHTML = `
-                <tr>
-                    <td colspan="10" style="text-align:center; color:red;">
-                        Gagal load data
-                    </td>
-                </tr>`;
+            <tr>
+                <td colspan="10" style="text-align:center; color:red;">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Gagal load data: ${err.message}
+                </td>
+            </tr>
+        `;
             } finally {
                 hideLoading();
             }
         }
+
+        /* =========================
+           INITIAL EVENT LISTENERS
+        ========================= */
+        function initEventListeners() {
+            const filterBulan = document.getElementById("filterBulan");
+            if (filterBulan) {
+                filterBulan.addEventListener("change", () => load());
+            }
+
+            const searchNama = document.getElementById("searchNama");
+            if (searchNama) {
+                searchNama.addEventListener("keyup", () => load());
+            }
+        }
+
+        // Panggil setelah DOM siap
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNotaris();
+            load();
+            initEventListeners();
+        });
+
+        // Panggil setelah load selesai
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNotaris();
+            load();
+            initEventListeners();
+        });
 
         /* =========================
            TAMBAH NOTARIS
@@ -512,26 +1085,6 @@
                 hideLoading();
                 Swal.fire("Gagal!", "Tidak dapat menambahkan data", "error");
             }
-        }
-
-        /* =========================
-       LOADING MODERN
-    ========================= */
-        function showLoading(message = "Memuat data...") {
-            Swal.fire({
-                title: message,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                showCloseButton: false
-            });
-        }
-
-        function hideLoading() {
-            Swal.close();
         }
 
         /* =========================
@@ -590,27 +1143,52 @@
         }
 
         /* =========================
-           LIHAT NOMOR
+           LIHAT NOMOR SURAT
         ========================= */
         function lihat(nomor) {
             window.open(URL + "?action=cek&nomor=" + encodeURIComponent(nomor), "_blank");
         }
 
         /* =========================
-           KIRIM EMAIL
+           KIRIM EMAIL MANUAL
         ========================= */
-        async function kirim(row) {
+        async function kirimManual(row) {
+            showLoading("Mengirim email...");
+
             try {
-                showLoading("Mengirim email...");
                 const res = await fetch(URL + "?action=kirim&row=" + row);
                 const text = await res.text();
+
                 hideLoading();
-                Swal.fire("Sukses!", "Email berhasil dikirim", "success");
+
+                if (text === "OK") {
+                    Swal.fire({
+                        title: "Sukses!",
+                        text: "Email berhasil dikirim",
+                        icon: "success",
+                        confirmButtonText: "Tutup"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Gagal!",
+                        text: text,
+                        icon: "error",
+                        confirmButtonText: "Tutup"
+                    });
+                }
+
                 load();
+
             } catch (err) {
                 console.error(err);
                 hideLoading();
-                Swal.fire("Gagal!", "Tidak dapat mengirim email", "error");
+
+                Swal.fire({
+                    title: "Gagal!",
+                    text: "Tidak dapat mengirim email",
+                    icon: "error",
+                    confirmButtonText: "Tutup"
+                });
             }
         }
 
@@ -620,24 +1198,42 @@
         async function kirimMassal() {
             const result = await Swal.fire({
                 title: "Kirim semua email?",
+                text: "Proses ini akan mengirim email ke semua notaris yang statusnya BELUM",
                 icon: "question",
                 showCancelButton: true,
-                confirmButtonText: "Ya, kirim",
+                confirmButtonText: "Ya, kirim semua",
                 cancelButtonText: "Batal"
             });
 
             if (!result.isConfirmed) return;
 
+            showLoading("Mengirim email massal... Mohon tunggu");
+
             try {
-                showLoading("Mengirim semua email...");
-                await fetch(URL + "?action=massal");
+                const res = await fetch(URL + "?action=massal");
+                const text = await res.text();
+
                 hideLoading();
-                Swal.fire("Selesai!", "Semua email berhasil dikirim", "success");
+
+                Swal.fire({
+                    title: "Selesai!",
+                    text: text,
+                    icon: "success",
+                    confirmButtonText: "Tutup"
+                });
+
                 load();
+
             } catch (err) {
                 console.error(err);
                 hideLoading();
-                Swal.fire("Gagal!", "Tidak bisa mengirim email", "error");
+
+                Swal.fire({
+                    title: "Gagal!",
+                    text: "Tidak bisa mengirim email massal",
+                    icon: "error",
+                    confirmButtonText: "Tutup"
+                });
             }
         }
 
@@ -661,6 +1257,147 @@
         // INITIAL LOAD
         loadNotaris();
         load();
+
+        /* =========================
+       PRINT TABLE (HANYA SAMPAI STATUS)
+    ========================= */
+        function printTable() {
+            // Ambil data dari tabel yang sedang tampil (sudah terfilter)
+            const filterBulan = (document.getElementById("filterBulan")?.value || "");
+            const searchNama = (document.getElementById("searchNama")?.value || "");
+
+            // Ambil semua baris data dari tbody
+            const rows = document.querySelectorAll("#data tr");
+
+            if (rows.length === 0 || (rows.length === 1 && rows[0].innerText.includes("Data tidak ditemukan"))) {
+                Swal.fire("Info", "Tidak ada data untuk dicetak", "info");
+                return;
+            }
+
+            // Buat struktur HTML untuk print
+            let printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Data Notaris/PPAT</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', Arial, sans-serif;
+                            margin: 20px;
+                            padding: 0;
+                        }
+                        h2 {
+                            text-align: center;
+                            margin-bottom: 10px;
+                            color: #333;
+                        }
+                        .info-print {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            font-size: 12px;
+                            color: #666;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 11px;
+                        }
+                        th, td {
+                            border: 1px solid #000;
+                            padding: 8px;
+                            text-align: left;
+                            vertical-align: top;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                            text-align: center;
+                        }
+                        .status-terkirim {
+                            color: green;
+                            font-weight: bold;
+                        }
+                        .status-belum {
+                            color: red;
+                            font-weight: bold;
+                        }
+                        .email-badge {
+                            color: #0066cc;
+                            text-decoration: none;
+                        }
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 10px;
+                            }
+                            .no-print {
+                                display: none;
+                            }
+                            table {
+                                page-break-inside: avoid;
+                            }
+                            tr {
+                                page-break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>SURAT PEMBERITAHUAN LAPORAN BULANAN NOTARIS/PPAT</h2>
+                    <div class="info-print">
+                        Dicetak pada: ${new Date().toLocaleString('id-ID')}<br>
+                        ${filterBulan ? `Filter Bulan: ${filterBulan}` : "Semua Bulan"} | 
+                        ${searchNama ? `Filter Nama: ${searchNama}` : "Semua Nama"}
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nomor Unik</th>
+                                <th>Nama</th>
+                                <th>Alamat Kantor</th>
+                                <th>Periode Bulan</th>
+                                <th>Nomor Surat</th>
+                                <th>Email Aktif</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                    `;
+
+            // Looping setiap baris data (hanya sampai kolom Status)
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                if (cells.length >= 8) {
+                    printContent += `
+                <tr>
+                    <td style="text-align:center;">${cells[0]?.innerText || '-'}</td>
+                    <td>${cells[1]?.innerText || '-'}</td>
+                    <td>${cells[2]?.innerText || '-'}</td>
+                    <td>${cells[3]?.innerText || '-'}</td>
+                    <td style="text-align:center;">${cells[4]?.innerText || '-'}</td>
+                    <td style="text-align:center;">${cells[5]?.innerText || '-'}</td>
+                    <td>${cells[6]?.innerHTML || '-'}</td>
+                    <td style="text-align:center;">${cells[7]?.innerHTML || '-'}</td>
+                </tr>
+                         `;
+                }
+            });
+
+            printContent += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+                `;
+
+            // Buka window baru untuk print
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
 
         // blok klik kanan
         document.addEventListener("contextmenu", function (e) {
