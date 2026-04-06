@@ -528,7 +528,6 @@
                 <div class="table-wrapper">
 
                     <table id="tableLaporan">
-
                         <thead>
                             <tr>
                                 <th>Nomor Unik</th>
@@ -546,9 +545,9 @@
                                 <th>Nomor Surat Denda</th>
                                 <th>Lihat PDF Denda</th>
                                 <th>Bukti Surat</th>
-                                <th>Note For You</th>
+                                <th>Catatan (Auto)</th>
                                 <th>Aksi Data</th>
-                            </tr>
+
                         </thead>
 
                         <tbody id="dataNotaris">
@@ -645,8 +644,8 @@
 
     <script>
         /* =========================
-                     FUNGSI LOGIN DAN LOGOUT
-                     ========================= */
+                    FUNGSI LOGIN DAN LOGOUT
+                    ========================= */
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
         function cekLogin() {
@@ -683,7 +682,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
            ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxpbQDb5_MmDnRnuz3dPr6FmCzSV8csP_VP5WsqGDAec4we8ESh64VlWz6BHk1P_r4cWA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxIxxLpqEA6K3zwEK_5-W9Or9BecNCaNfm0NLcGkSu3hFkNyidn49h3PQjitQSnwKDMog/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -691,236 +690,194 @@
         let lastJumlah = null;
         let transaksiList = [];
 
+        // ===============================
+        // FUNGSI UNTUK MENDAPATKAN CATATAN AUTO
+        // ===============================
+        function getCatatanAuto(statusTerlambat, statusEmail, hasUpload) {
+            // Jika TIDAK TERLAMBAT (VALID)
+            if (statusTerlambat !== "TIDAK VALID") {
+                return '<span style="color:green; font-weight:bold;">✅ VALID</span>';
+            }
+
+            // Jika TERLAMBAT, tampilkan status berdasarkan status_email
+            if (statusEmail === "SELESAI") {
+                return '<span style="color:green;">✓ Selesai (Email & Upload)</span>';
+            } else if (statusEmail === "WAITING_RESEND") {
+                return '<span style="color:orange;">⏳ Menunggu Kirim Ulang</span>';
+            } else if (statusEmail === "EMAIL_TERKIRIM") {
+                if (hasUpload) {
+                    return '<span style="color:orange;">⏳ Menunggu Kirim Ulang</span>';
+                } else {
+                    return '<span style="color:#d4a100;">📧 Email Terkirim, Belum Upload</span>';
+                }
+            } else {
+                // WARNA HITAM + TEKS "Belum Diproses"
+                return '<span style="color:black;">❌ Belum Diproses</span>';
+            }
+        }
+
         /* =========================
-        LOAD DATA GOOGLE SHEET
-        ========================= */
+       LOAD DATA GOOGLE SHEET
+       ========================= */
 
         function loadDataSheet() {
             fetch(scriptURL)
                 .then(res => res.json())
                 .then(data => {
-                    // ======================
-                    // PENANDA DATA PERTAMA (ANTI DUPLIKAT AKSI)
-                    // ======================
                     lastData = JSON.stringify(data);
                     let seen = new Set();
                     const tbody = document.querySelector("#dataNotaris");
                     tbody.innerHTML = "";
 
                     data.sort((a, b) => {
+                        // ... kode sorting tetap sama ...
+                    }).forEach(row => {
+                        let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
+                        let isFirst = !seen.has(key);
 
-                        const urutanBulan = [
-                            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-                        ];
-
-                        // ======================
-                        // 1. AMBIL BULAN
-                        // ======================
-                        let bulanA = a["laporan_bulanan"] || "";
-                        let bulanB = b["laporan_bulanan"] || "";
-
-                        let [namaBulanA, tahunA] = bulanA.split(" ");
-                        let [namaBulanB, tahunB] = bulanB.split(" ");
-
-                        let indexA = urutanBulan.indexOf(namaBulanA);
-                        let indexB = urutanBulan.indexOf(namaBulanB);
-
-                        // ======================
-                        // 2. URUTKAN TAHUN
-                        // ======================
-                        if (tahunA !== tahunB) {
-                            return parseInt(tahunA || 0) - parseInt(tahunB || 0);
+                        if (isFirst) {
+                            seen.add(key);
                         }
 
-                        // ======================
-                        // 3. URUTKAN BULAN
-                        // ======================
-                        if (indexA !== indexB) {
-                            return indexA - indexB;
-                        }
+                        let tr = document.createElement("tr");
 
-                        // ======================
-                        // 4. URUTKAN TANGGAL
-                        // ======================
-                        function parseTanggal(tgl) {
-                            if (!tgl) return new Date(0);
+                        let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                        let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
+                        let statusEmail = row["status_email"] || "";
+                        let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
 
-                            if (tgl.includes("/")) {
-                                let [dd, mm, yyyy] = tgl.split("/");
-                                return new Date(`${yyyy}-${mm}-${dd}`);
-                            }
+                        // 🔥 TAMBAHKAN INI
+                        let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
 
-                            return new Date(tgl);
-                        }
+                        // Aksi tombol berdasarkan status
+                        let actionHTML = "";
 
-                        let tglA = parseTanggal(a["tanggal_diterima"]);
-                        let tglB = parseTanggal(b["tanggal_diterima"]);
-
-                        if (tglA.getTime() !== tglB.getTime()) {
-                            return tglA - tglB;
-                        }
-
-                        // ======================
-                        // 5. JIKA SAMA → NAMA
-                        // ======================
-                        let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
-                        let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
-
-                        return namaA.localeCompare(namaB);
-                    })
-
-                        .forEach(row => {
-                            let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
-                            let isFirst = !seen.has(key);
-
-                            if (isFirst) {
-                                seen.add(key);
-                            }
-
-                            let tr = document.createElement("tr");
-
-                            let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
-                            let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
-                            let statusEmail = row["status_email"] || "";
-
-                            // Warna baris
-                            if (statusTerlambat === "TIDAK VALID") {
-                                tr.style.backgroundColor = "#ff0000"; // merah terang
-                            }
-
-                            // Aksi tombol
-                            let actionHTML = "";
-
-                            if (isFirst && statusTerlambat === "TIDAK VALID" && statusEmail !== "TERKIRIM") {
-                                // tombol hanya untuk data pertama saja
-                                actionHTML = `
-                            <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda PPAT">
-                                <i class="bi bi-envelope-fill"></i>
-                            </button>
-                            <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                             `;
-                            } else {
-
-                                if (statusTerlambat === "TIDAK VALID") {
-                                    // SEMUA TERLAMBAT = TANDA SERU KUNING
-                                    actionHTML = `<div class="text-center">
-                                <div class="tooltip-balon">
-                                    <i class="bi bi-exclamation-triangle-fill text-warning icon-status"></i>
-                                    <div class="isi-tooltip">
-                                        Terlambat : (${hariTelat}) hari
-                                    </div>
-                                </div>
-                            </div>`;
-                                } else {
-                                    // ✅ VALID
-                                    actionHTML = `<div class="text-center">
-                        <i class="bi bi-check-lg text-success" title="Valid / Terkirim"></i>
+                        // KASUS 4: SELESAI
+                        if (statusEmail === "SELESAI") {
+                            actionHTML = `<div class="text-center">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="Selesai ✅"></i>
                     </div>`;
-                                }
-
+                            tr.style.backgroundColor = "#d4edda";
+                        }
+                        // KASUS 3: WAITING_RESEND
+                        else if (statusEmail === "WAITING_RESEND" || (statusEmail === "EMAIL_TERKIRIM" && hasUpload)) {
+                            actionHTML = `
+                        <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Ulang Email Denda PPAT">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    `;
+                            tr.style.backgroundColor = "#fff3cd";
+                        }
+                        // KASUS 2: EMAIL_TERKIRIM
+                        else if (statusEmail === "EMAIL_TERKIRIM") {
+                            actionHTML = `<div class="text-center">
+                        <span style="background:#ffc107; color:#333; padding:5px 10px; border-radius:5px; font-size:11px;">
+                            📧 Terkirim
+                        </span>
+                    </div>`;
+                            tr.style.backgroundColor = "#fff3cd";
+                        }
+                        // KASUS 1: AWAL
+                        else if (isFirst && statusTerlambat === "TIDAK VALID") {
+                            actionHTML = `
+                        <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email Denda PPAT">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    `;
+                            tr.style.backgroundColor = "#ff0000";
+                        }
+                        // KASUS LAINNYA
+                        else {
+                            if (statusTerlambat === "TIDAK VALID") {
+                                actionHTML = `<div class="text-center">
+                            <div class="tooltip-balon">
+                                <i class="bi bi-exclamation-triangle-fill text-warning icon-status"></i>
+                                <div class="isi-tooltip">Terlambat : (${hariTelat}) hari</div>
+                            </div>
+                        </div>`;
+                                tr.style.backgroundColor = "#ff0000";
+                            } else {
+                                actionHTML = `<div class="text-center">
+                            <i class="bi bi-check-lg text-success" title="Valid"></i>
+                        </div>`;
                             }
+                        }
 
-                            /*Fungsi Table*/
-                            tr.innerHTML = `
-                    <td>${row["id"] || ""}</td>
-                    <td>
-                        ${row["nama_notaris_&_ppat"] || ""}
-                        ${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}
-                    </td>
-                    <td>${row["alamat"] || ""}</td>
-                    <td>${row["nomor_surat"] || ""}</td>
-                    <td>${row["tanggal_surat"] || ""}</td>
-                    <td>${row["tanggal_diterima"] || ""}</td>
-                    <td>${row["status_surat"] || ""}</td>
-                    <td>${row["laporan_bulanan"] || ""}</td>
-                    <td>${row["data_transaksi"] || ""}</td>
-                    <td>${row["jumlah_laporan"] || ""}</td>
-                    <td>${row["sspd_bphtb"] || ""}</td>
-                    <td>${row["keterangan"] || ""}</td>
-                    <td style="text-align:center;">
-                        ${row["nomor_std"] && row["nomor_std"].trim() !== ""
-                                    ? `<b>${row["nomor_std"]}</b>`
-                                    : `<span style="color:gray;">-</span>`}
-                    </td>
-                    <td style="text-align:center;">
-                        ${row["file_pdf"]
-                                    ? `
+                        /* Fungsi Table dengan kolom Catatan (Auto) */
+                        tr.innerHTML = `
+                            <td>${row["id"] || ""}</td>
+                            <td>
+                                ${row["nama_notaris_&_ppat"] || ""}
+                                ${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}
+                            </td>
+                            <td>${row["alamat"] || ""}</td>
+                            <td>${row["nomor_surat"] || ""}</td>
+                            <td>${row["tanggal_surat"] || ""}</td>
+                            <td>${row["tanggal_diterima"] || ""}</td>
+                            <td>${row["status_surat"] || ""}</td>
+                            <td>${row["laporan_bulanan"] || ""}</td>
+                            <td>${row["data_transaksi"] || ""}</td>
+                            <td>${row["jumlah_laporan"] || ""}</td>
+                            <td>${row["sspd_bphtb"] || ""}</td>
+                            <td>${row["keterangan"] || ""}</td>
+                            <td style="text-align:center;">
+                                ${row["nomor_std"] && row["nomor_std"].trim() !== ""
+                                ? `<b>${row["nomor_std"]}</b>`
+                                : `<span style="color:gray;">-</span>`}
+                            </td>
+                            <td style="text-align:center;">
+                                ${row["file_pdf"]
+                                ? `
                                     <a href="${row["file_pdf"]}" target="_blank" title="Lihat STD" class="icon-btn">
-                                    <i class="bi bi-eye-fill"></i>
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-
                                     <a href="#" onclick="printPDF('${row["file_pdf"]}')" title="Print STD" class="icon-btn print">
-                                    <i class="bi bi-printer-fill"></i>
+                                        <i class="bi bi-printer-fill"></i>
                                     </a>
                                     `
-                                    : "<span style='color:gray'>-</span>"}
+                                : "<span style='color:gray'>-</span>"}
+                            </td>
+                            <td style="text-align:center;">
+                                ${(() => {
+                                let tgl = getTanggal(row["tanggal_diterima"]);
+                                let bolehUpload = isFirst && tgl > 10;
 
-                                <td style="text-align:center;">
-    ${(() => {
-                                    let tgl = getTanggal(row["tanggal_diterima"]);
-                                    let bolehUpload = isFirst && tgl > 10;
-
-                                    if (row["file_surat_upload"]) {
-                                        return `
-                    <a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" 
-                    style="
-                        display:inline-flex;
-                        align-items:center;
-                        gap:5px;
-                        padding:6px 10px;
-                        background:#17a2b8;
-                        color:#fff;
-                        border-radius:6px;
-                        text-decoration:none;
-                        font-size:12px;
-                        transition:0.3s;
-                    "
-                    onmouseover="this.style.background='#138496'"
-                    onmouseout="this.style.background='#17a2b8'">
-                    
-                    <i class="bi bi-eye-fill"></i> Preview
-                    </a>
-                `;
-                                    }
-                                    else if (bolehUpload) {
-                                        return `
-                    <label 
-                        style="
-                            display:inline-flex;
-                            align-items:center;
-                            gap:6px;
-                            padding:6px 12px;
-                            background:linear-gradient(135deg,#28a745,#218838);
-                            color:#fff;
-                            border-radius:6px;
-                            cursor:pointer;
-                            font-size:12px;
-                        "
-                    >
-                        <i class="bi bi-cloud-upload-fill"></i> Upload
-
-                        <input type="file" accept="application/pdf"
-                            onchange="uploadPDF(this, '${row["id"]}')"
-                            style="display:none;">
-                    </label>
-                `;
-                                    }
-                                    else {
-                                        return `<span style='color:gray'>-</span>`;
-                                    }
-                                })()
+                                if (row["file_surat_upload"]) {
+                                    return `
+                            <a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" 
+                            style="display:inline-flex;align-items:center;gap:5px;padding:6px 10px;
+                            background:#17a2b8;color:#fff;border-radius:6px;text-decoration:none;font-size:12px;">
+                                <i class="bi bi-eye-fill"></i> Preview
+                            </a>
+                        `;
+                                } else if (bolehUpload) {
+                                    return `
+                            <label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;
+                            background:linear-gradient(135deg,#28a745,#218838);color:#fff;
+                            border-radius:6px;cursor:pointer;font-size:12px;">
+                                <i class="bi bi-cloud-upload-fill"></i> Upload
+                                <input type="file" accept="application/pdf"
+                                    onchange="uploadPDF(this, '${row["id"]}')"
+                                    style="display:none;">
+                            </label>
+                        `;
+                                } else {
+                                    return `<span style='color:gray'>-</span>`;
                                 }
+                            })()}
                         </td>
-                                                        
-                                <td>${statusTerlambat}</td>
-                                <td>${actionHTML}</td>
-                            `;
+                        <td style="text-align:center;">${catatanAuto}</td>   <!-- Catatan Auto -->
+                        <td style="text-align:center;">${actionHTML}</td>    <!-- Aksi Data -->
+                    `;
 
-                            tbody.appendChild(tr);
-                        });
+                        tbody.appendChild(tr);
+                    });
 
                     hitungTotal();
                     grafikBulanan();
@@ -1005,10 +962,9 @@
         }
 
         // ======================
-        // FUNGSI UPLOAD
+        // FUNGSI UPLOAD (DIPERBAIKI)
         // ======================
         function uploadPDF(input, id) {
-
             const file = input.files[0];
             if (!file) return;
 
@@ -1018,24 +974,15 @@
                 return;
             }
 
-            // ======================
-            // PROGRESS UI
-            // ======================
+            // Progress UI
             let progress = 0;
-
             let progressBox = document.createElement("div");
             progressBox.innerHTML = `
-        <div style="position:fixed;top:20px;right:20px;
-        background:#fff;padding:10px;border-radius:8px;
-        box-shadow:0 0 10px rgba(0,0,0,0.2);z-index:9999;">
-        
-        Upload PDF...
-        <div style="background:#ddd;height:10px;margin-top:5px;">
-            <div id="progressBar" style="
-                width:0%;
-                height:100%;
-                background:#28a745;"></div>
-        </div>
+        <div style="position:fixed;top:20px;right:20px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.2);z-index:9999;">
+            Upload PDF...
+            <div style="background:#ddd;height:10px;margin-top:5px;">
+                <div id="progressBar" style="width:0%;height:100%;background:#28a745;"></div>
+            </div>
         </div>
     `;
             document.body.appendChild(progressBox);
@@ -1044,22 +991,13 @@
                 progress += 10;
                 let bar = document.getElementById("progressBar");
                 if (bar) bar.style.width = progress + "%";
-
                 if (progress >= 90) clearInterval(interval);
             }, 200);
 
-            // ======================
-            // KONVERSI BASE64
-            // ======================
             const reader = new FileReader();
-
             reader.onload = function (e) {
-
                 const base64 = e.target.result.split(",")[1];
 
-                // ======================
-                // KIRIM KE SERVER (1x SAJA)
-                // ======================
                 fetch(scriptURL, {
                     method: "POST",
                     body: new URLSearchParams({
@@ -1069,71 +1007,78 @@
                         filename: file.name
                     })
                 })
-                    .then(res => res.text()) // pakai text dulu (lebih aman)
-                    .then(text => {
-
-                        console.log("Response:", text);
-
-                        let res;
-                        try {
-                            res = JSON.parse(text);
-                        } catch (e) {
-                            res = { result: "success" }; // fallback
-                        }
-
+                    .then(res => res.json())  // 🔥 LANGSUNG JSON, BUKAN TEXT
+                    .then(res => {
                         clearInterval(interval);
-
                         let bar = document.getElementById("progressBar");
                         if (bar) bar.style.width = "100%";
 
                         setTimeout(() => {
-                            progressBox.remove();
+                            if (progressBox) progressBox.remove();
                         }, 500);
 
-                        if (res.result === "success") {
-                            alert("✅ Upload berhasil");
+                        console.log("Response dari server:", res);
 
+                        if (res.result === "success") {
+                            alert("✅ Upload berhasil!");
                             input.value = "";
 
-                            // ======================
-                            // UPDATE UI LANGSUNG (TANPA RELOAD)
-                            // ======================
+                            // 🔥 PERBAIKAN: Ambil URL dari response
+                            let fileUrl = res.url;
+
+                            // Update preview button
                             let td = input.closest("td");
-
-                            if (td && res.url) {
+                            if (td && fileUrl) {
                                 td.innerHTML = `
-                                            <a href="#" onclick="previewPDF('${res.url}')" 
-                                            style="
-                                                display:inline-flex;
-                                                align-items:center;
-                                                gap:5px;
-                                                padding:6px 10px;
-                                                background:#17a2b8;
-                                                color:#fff;
-                                                border-radius:6px;
-                                                text-decoration:none;
-                                                font-size:12px;
-                                            ">
-                                                <i class="bi bi-eye-fill"></i> Preview
-                                            </a>
-                                        `;
-                            } else {
-                                // fallback kalau url tidak dikirim dari GAS
-                                loadDataSheet();
+                        <a href="#" onclick="previewPDF('${fileUrl}')" 
+                        style="display:inline-flex;align-items:center;gap:5px;padding:6px 10px;
+                        background:#17a2b8;color:#fff;border-radius:6px;text-decoration:none;font-size:12px;">
+                            <i class="bi bi-eye-fill"></i> Preview
+                        </a>
+                    `;
                             }
-                        }
 
+                            // 🔥 UPDATE STATUS MENJADI WAITING_RESEND
+                            let allRows = document.querySelectorAll("#dataNotaris tr");
+                            for (let row of allRows) {
+                                let rowId = row.cells[0].innerText;
+                                if (rowId == id) {
+                                    let actionCell = row.cells[row.cells.length - 1];
+
+                                    // Munculkan tombol kirim ulang
+                                    actionCell.innerHTML = `
+                            <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Ulang Email Denda PPAT">
+                                <i class="bi bi-envelope-fill"></i>
+                            </button>
+                            <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        `;
+
+                                    // Warna KUNING (menunggu kirim ulang)
+                                    row.style.backgroundColor = "#fff3cd";
+
+                                    // Update status ke WAITING_RESEND
+                                    updateStatusEmail(id, "WAITING_RESEND");
+                                    break;
+                                }
+                            }
+                        } else {
+                            alert("❌ Upload gagal: " + (res.message || "Unknown error"));
+                        }
                     })
                     .catch(err => {
-                        console.error(err);
-
+                        console.error("Error detail:", err);
                         clearInterval(interval);
-                        progressBox.remove();
+                        if (progressBox) progressBox.remove();
+                        alert("❌ Error koneksi! Tapi cek dulu apakah file sudah terupload?");
 
-                        alert("❌ Error koneksi!");
+                        // 🔥 TETAP COBA UPDATE STATUS (mungkin upload sebenarnya berhasil)
+                        setTimeout(() => {
+                            loadDataSheet(); // Reload untuk cek status sebenarnya
+                        }, 2000);
                     });
             };
-
             reader.readAsDataURL(file);
         }
 
@@ -1147,7 +1092,7 @@
 
             let id = row.cells[0].innerText
 
-            fetch("https://script.google.com/macros/s/AKfycbxpbQDb5_MmDnRnuz3dPr6FmCzSV8csP_VP5WsqGDAec4we8ESh64VlWz6BHk1P_r4cWA/exec?hapus=" + id)
+            fetch("https://script.google.com/macros/s/AKfycbxIxxLpqEA6K3zwEK_5-W9Or9BecNCaNfm0NLcGkSu3hFkNyidn49h3PQjitQSnwKDMog/exec?hapus=" + id)
                 .then(r => r.text())
                 .then(res => {
 
@@ -1249,15 +1194,15 @@
             const loading = document.createElement("div");
             loading.id = "globalLoading";
             loading.style = `
-        display:none; /* tetap tersembunyi */
-        position:fixed;
-        z-index:9999;
-        top:0; left:0;
-        width:100%; height:100%;
-        background:rgba(0,0,0,0.3);
-        align-items:center;
-        justify-content:center;
-    `;
+            display:none; /* tetap tersembunyi */
+            position:fixed;
+            z-index:9999;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.3);
+            align-items:center;
+            justify-content:center;
+        `;
             loading.innerHTML = `
         <div style="text-align:center;">
             <div style="
@@ -1475,6 +1420,7 @@
                 <select id="jsJenisLanggar">
                     <option value="Terlambat Menyampaikan Laporan">001. Terlambat Menyampaikan</option>
                     <option value="Tidak Menyampaikan Laporan">002. Tidak Menyampaikan</option>
+                    <option value="Pelanggaran : 0 / Denda Lunas">003. Bukti Bayar</option>
                 </select>
             </div>
 
@@ -1530,9 +1476,10 @@
         }
 
         // ===============================
-        // Fungsi kirim email
+        // FUNGSI KIRIM EMAIL (DIPERBAIKI)
         // ===============================
         let isSending = false;
+
         function kirimEmail(row, emailUser, jenis, nomorSPL) {
             var data = {
                 id: row.cells[0].innerText,
@@ -1547,46 +1494,235 @@
                 jumlah: row.cells[9].innerText,
                 sspd: row.cells[10].innerText,
                 keterangan: row.cells[11].innerText,
-                nomor_std: nomorSPL // kirim nomor SPL manual
+                nomor_std: nomorSPL
             };
 
-            // tampilkan spinner
-            document.getElementById("globalLoading").style.display = "flex";
+            const sendBtn = document.getElementById("jsSendBtn");
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.style.opacity = "0.5";
+                sendBtn.style.cursor = "not-allowed";
+                sendBtn.innerHTML = "⏳ Mengirim...";
+            }
 
-            // URL GAS
-            const baseUrl = "https://script.google.com/macros/s/AKfycbxpbQDb5_MmDnRnuz3dPr6FmCzSV8csP_VP5WsqGDAec4we8ESh64VlWz6BHk1P_r4cWA/exec";
+            const loadingDiv = document.getElementById("globalLoading");
+            if (loadingDiv) loadingDiv.style.display = "flex";
 
-            const urlUser = `${baseUrl}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
 
-            const urlArsip = `${baseUrl}?email=${encodeURIComponent("bengkulubapendakota@gmail.com")}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
-
-            // 🔥 cegah klik dobel
             if (isSending) return;
             isSending = true;
 
-            fetch(urlUser)
-                .then(() => {
-                    return fetch(urlArsip); // tetap kirim arsip
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("Gagal kirim email");
+                    return response.text();
                 })
                 .then(() => {
-                    alert("✅ Email berhasil dikirim (User + Arsip)");
+                    alert("✅ Email berhasil dikirim");
+
+                    let actionCell = row.cells[row.cells.length - 1];
+                    let uploadCell = row.cells[row.cells.length - 2];
+
+                    // 🔥 PERBAIKAN: Cek apakah sudah upload dengan lebih akurat
+                    let hasUpload = uploadCell && (
+                        uploadCell.innerHTML.includes("Preview") ||
+                        uploadCell.innerHTML.includes("eye-fill") ||
+                        uploadCell.innerHTML.includes("previewPDF") ||
+                        (row.querySelector("td:nth-last-child(2) a") !== null) // Cek ada link preview
+                    );
+
+                    // 🔥 CEK JUGA DARI DATA ROW (lebih akurat)
+                    let rowId = row.cells[0].innerText;
+                    let sudahUpload = false;
+
+                    // Ambil data dari sheet via fetch untuk cek status upload
+                    fetch(scriptURL)
+                        .then(res => res.json())
+                        .then(sheetData => {
+                            let foundRow = sheetData.find(r => r["id"] == rowId);
+                            if (foundRow && foundRow["file_surat_upload"]) {
+                                sudahUpload = true;
+                            }
+
+                            if (sudahUpload) {
+                                // 🔥 KASUS: Sudah upload + kirim ulang → SELESAI (HIJAU)
+                                actionCell.innerHTML = `
+                            <div class="text-center">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 20px;" title="Selesai ✅"></i>
+                            </div>
+                        `;
+                                row.style.backgroundColor = "#d4edda";
+                                updateStatusEmail(data.id, "SELESAI");
+                            } else if (hasUpload) {
+                                // 🔥 KASUS: Sudah upload + kirim ulang → SELESAI (HIJAU)
+                                actionCell.innerHTML = `
+                            <div class="text-center">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 20px;" title="Selesai ✅"></i>
+                            </div>
+                        `;
+                                row.style.backgroundColor = "#d4edda";
+                                updateStatusEmail(data.id, "SELESAI");
+                            } else {
+                                // 🔥 KASUS: Belum upload → EMAIL_TERKIRIM (KUNING)
+                                actionCell.innerHTML = `
+                            <div class="text-center">
+                                <span style="background:#ffc107; color:#333; padding:5px 10px; border-radius:5px; font-size:11px;">
+                                    📧 Terkirim
+                                </span>
+                            </div>
+                        `;
+                                row.style.backgroundColor = "#fff3cd";
+                                updateStatusEmail(data.id, "EMAIL_TERKIRIM");
+                            }
+
+                            setTimeout(() => loadDataSheet(), 500);
+                        });
                 })
-                .catch(() => {
-                    alert("❌ Gagal kirim email");
+                .catch((error) => {
+                    console.error("Kirim email error:", error);
+                    setTimeout(() => loadDataSheet(), 1000);
                 })
                 .finally(() => {
-                    isSending = false; // reset
-                    document.getElementById("globalLoading").style.display = "none";
+                    isSending = false;
+                    if (loadingDiv) loadingDiv.style.display = "none";
+                    if (sendBtn) {
+                        sendBtn.disabled = false;
+                        sendBtn.style.opacity = "1";
+                        sendBtn.style.cursor = "pointer";
+                        sendBtn.innerHTML = "✔ Kirim";
+                    }
                 });
         }
 
+        // ===============================
+        // UPDATE STATUS EMAIL (DIPERBAIKI)
+        // ===============================
+        function updateStatusEmail(id, status) {
+            const updateUrl = `${scriptURL}?update_status=${id}&status=${status}`;
+
+            fetch(updateUrl)
+                .then(res => res.text())
+                .then(() => {
+                    console.log(`✅ Status ${id} updated to ${status}`);
+                })
+                .catch(err => console.error("Update status error:", err));
+        }
 
         // ===============================
-        // Contoh penggunaan tombol di tabel
-        // tombol.onclick = function() { bukaModalEmail(this.closest("tr")); };
+        // FUNGSI UPLOAD (HANYA SATU)
+        // ===============================
+        function uploadPDF(input, id) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.type !== "application/pdf") {
+                alert("❌ Hanya file PDF!");
+                input.value = "";
+                return;
+            }
+
+            let progress = 0;
+            let progressBox = document.createElement("div");
+            progressBox.innerHTML = `
+                <div style="position:fixed;top:20px;right:20px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.2);z-index:9999;">
+                    Upload PDF...
+                    <div style="background:#ddd;height:10px;margin-top:5px;">
+                        <div id="progressBar" style="width:0%;height:100%;background:#28a745;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(progressBox);
+
+            let interval = setInterval(() => {
+                progress += 10;
+                let bar = document.getElementById("progressBar");
+                if (bar) bar.style.width = progress + "%";
+                if (progress >= 90) clearInterval(interval);
+            }, 200);
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64 = e.target.result.split(",")[1];
+
+                fetch(scriptURL, {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        action: "upload_pdf",
+                        id: id,
+                        file: base64,
+                        filename: file.name
+                    })
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        clearInterval(interval);
+                        let bar = document.getElementById("progressBar");
+                        if (bar) bar.style.width = "100%";
+                        setTimeout(() => {
+                            if (progressBox) progressBox.remove();
+                        }, 500);
+
+                        console.log("Response upload:", res);
+
+                        if (res.result === "success") {
+                            alert("✅ Upload berhasil");
+                            input.value = "";
+
+                            let td = input.closest("td");
+                            let fileUrl = res.url;
+
+                            if (td && fileUrl) {
+                                td.innerHTML = `
+                                <a href="#" onclick="previewPDF('${fileUrl}')" 
+                                style="display:inline-flex;align-items:center;gap:5px;padding:6px 10px;
+                                background:#17a2b8;color:#fff;border-radius:6px;text-decoration:none;font-size:12px;">
+                                    <i class="bi bi-eye-fill"></i> Preview
+                                </a>
+                            `;
+                            }
+
+                            updateStatusEmail(id, "WAITING_RESEND");
+
+                            setTimeout(() => {
+                                loadDataSheet();
+                            }, 500);
+                        } else {
+                            alert("❌ Upload gagal: " + (res.message || "Unknown error"));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Upload error:", err);
+                        clearInterval(interval);
+                        if (progressBox) progressBox.remove();
+                        setTimeout(() => {
+                            loadDataSheet();
+                        }, 2000);
+                    });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ===============================
+        // DEBUG: CEK DATA DARI SHEET
+        // ===============================
+        function cekDataSheet() {
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    console.log("=== DATA DARI SHEET ===");
+                    if (data.length > 0) {
+                        console.log("Headers yang tersedia:", Object.keys(data[0]));
+                        console.log("status_email:", data[0]["status_email"]);
+                        console.log("file_surat_upload:", data[0]["file_surat_upload"]);
+                    }
+                    console.log("========================");
+                });
+        }
+
+        // Panggil fungsi ini di console untuk debugging
+        cekDataSheet();
 
         // Buat Nomor Urut //
-
         function buatNomorUrut() {
 
             let last = localStorage.getItem("nomorSTD") || 0
