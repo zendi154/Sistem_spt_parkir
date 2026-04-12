@@ -1383,6 +1383,66 @@
             return notarisList;
         }
 
+        // Fungsi untuk mendapatkan semua notaris
+        function getAllNotarisFromDropdown() {
+            // Data notaris diambil dari daftar yang ada di formulir
+            const notarisList = [
+                { nama: "AMELIA MERDEKA SARI, S.H., M.Kn", id: "ID01202615P32", alamat: "Jl. Dempo 1, Kel. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "ANJAR KRISTIANTO, S.H., M.Kn", id: "ID01202626P33", alamat: "Jl. Cendrawasih, Kebun Gerand, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "ATMIWIJAYA ARTATI, S.H., M.Kn", id: "ID01202626P34", alamat: "Jl. Beringin No. 1 D kel. Padang Jati, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "ANGGA PRISMA JELITA, S.H.,M.Kn", id: "ID01202626P35", alamat: "Jl. Tim. Indah Raya, Tim. Indah, Kec. Singaran Pati, Kota Bengkulu" },
+                { nama: "ANNISA FADILLA KARTAMADJA,S.H., M.Kn", id: "ID01202626P36", alamat: "Jl. Kapuas Raya No.6, Lkr. Barat, Kec. Gading Cemp., Kota Bengkulu" },
+                { nama: "AULIYYA MARTATI, S.H., M.H", id: "ID01202626P37", alamat: "Jl. Meranti II No.4A, Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "ARDANA RESTIKA, S.H.,M.Kn", id: "ID01202626P38", alamat: "JL. Kapuas Raya No. 25B Kel. Tengah Padang Kec. Gading Cempaka" },
+                { nama: "AZIZA ADLIEN NABILA, S.H.,M.Kn", id: "ID01202626P39", alamat: "Jl. Veteran No. 30 Kel. Jitra Kec. Teluk Segara" },
+                { nama: "BERTHA NOVELISA, S.H., M.Kn", id: "ID01202626P310", alamat: "Jl. Bajak, Kec. Teluk Segara, Kota Bengkulu" },
+                { nama: "BJANZA METRA, S.H.,M.Kn", id: "ID01202626P311", alamat: "Jl. Sawah Lebar, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "BELLA FILDA AGATHA,S.H.,M.Kn", id: "ID01202626P312", alamat: "JL. Semark Gg SMPN 17, Kel. Pematang Gubernur Kec. Muara Bangkahulu Kota Bengkulu" },
+                { nama: "CHRISTINE, S.H.,M.Kn", id: "ID01202626P313", alamat: "Jl. Jendral. Sudirman No.10, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu" },
+                { nama: "DENI YOHANES, S.H., M.Kn", id: "ID01202626P314", alamat: "Jl. Karbela, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "DIAN RISMAWATI, S.H", id: "ID01202626P315", alamat: "Jl. Fatmawati No.11, Penurunan, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "DAUD WIDYA PRANATA SEPTI, S.H.,M.Kn", id: "ID01202626P316", alamat: "Jl. Belibis Kel No.26, Kel. Cempaka Permai, Kec. Gading Cempaka., Kota Bengkulu" },
+                { nama: "DENI KRISTIAN NATANAEL, S.H,.M.Kn", id: "ID01202626P317", alamat: "Jl. Dempo Raya No.74, Kebun Tebeng, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "DESRIANO INDRA SYAHPUTRA, S.H.,M.Kn", id: "ID01202626P318", alamat: "Jl. Air Manjunto No.25a, Padang Harapan, Kec. Gading Cempaka., Kota Bengkulu" },
+                { nama: "DORA YULIA AGUSTINA, S.H.,M.Kn", id: "ID01202626P319", alamat: "Jl. Kalimantan, Kp. Kelawi, Kec. Sungai Serut, Kota Bengkulu" },
+                { nama: "DWI FANI ARSIKASINDI, S.H.,M.H", id: "ID01202626P320", alamat: "Jl. Manggis, Panorama, Kec. Singaran Pati, Kota Bengkulu" },
+                { nama: "EMY EFRIANTI AGUSTINI, S.H., M.Kn", id: "ID01202626P321", alamat: "Jl. Kapt. P. Tandean, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu" },
+                { nama: "HARITRI GRATA JOHNI ARIFIN PUTRI, S.H., M.Kn", id: "ID01202626P322", alamat: "Jl. Ratu Agung No.23, Anggut Bawah, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "HELEN SAPARINGGA,S.H., M.Kn", id: "ID01202626P323", alamat: "Perumahan villa indah pesona Blk. B No.20, Suka Rami, Kec. Selebar, Kota Bengkulu" },
+                { nama: "H. EPISON, S.H", id: "ID01202626P324", alamat: "Jl. S. Parman No.62 H Kel. Pasar Melintang, Kec. Teluk Segara, Kota Bengkulu" },
+                { nama: "H. MUFTI NOKHMAN, S.H.,M.Kn", id: "ID01202626P325", alamat: "JL. S. Parman, No.7 b Rt/Rw 01/01, Tanah Patah, Ratu Agung, Padang Jati, Bengkulu, Kota Bengkulu" },
+                { nama: "IDAYANTI, S.H", id: "ID01202626P326", alamat: "Jl. Salak Bl I No.99, Dusun Besar, Kec. Singaran Pati, Kota Bengkulu" },
+                { nama: "IS HARIYANI,S.H", id: "ID01202626P327", alamat: "Jl. S. Parman No.40, Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "ILHAM RAHMADI, SH", id: "ID01202626P328", alamat: "Jl. Kalimantan No.2 RT14, RW.05, Rw. Makmur Permai, Kec. Muara Bangka Hulu, Kota Bengkulu" },
+                { nama: "INDAH ARIESTIA, S.H", id: "ID01202626P329", alamat: "Jl. Salak Raya No. 1 A Kel. Lingkar Timur Kec. Singaran Pati" },
+                { nama: "IRAWAN, S.H", id: "ID01202626P330", alamat: "Jl. Letnand Jendral. S. Parman No. 59 Kel. Padang Jati Kec. Ratu Samban" },
+                { nama: "JULIWATI SIAGIAN, S.H,M.Kn", id: "ID01202626P331", alamat: "Jalan Pangeran Natadirja KM 6,5 Kel, Jalan Gedang, Kec Gading Cempaka, Bengkulu" },
+                { nama: "KARTINI KESUMAWATY,S.H,.M.Kn", id: "ID01202626P332", alamat: "Jl. Flamboyan Raya,Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "KHAIRUNNISA, S.H., M.Kn", id: "ID01202626P333", alamat: "Jl. Letjend Suprapto No.183, Kebun Gerand, Kec. Tlk. Segara, Kota Bengkulu" },
+                { nama: "KUSWARI, S.H", id: "ID01202626P334", alamat: "Jl. M.T. Haryono Kel. Pengantungan Kec. Ratu Samban, Bengkulu" },
+                { nama: "LYDIA ARMAN, S.H., M.Kn", id: "ID01202626P335", alamat: "Jl. Sudirman III, Pintu Batu, Kec. Tlk. Segara, Kota Bengkulu" },
+                { nama: "LINDA OKTARINA, S.H", id: "ID01202626P336", alamat: "Jl. Putri Gading Cempaka, Penurunan, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "MIRZA, S.H.,M.Kn", id: "ID01202626P337", alamat: "JL. Raflesia Kel. Nusa indah Kec. Ratu Agung" },
+                { nama: "NOVIARTATI, S.H", id: "ID01202626P338", alamat: "JL. Prof DR Hazairin SH 11, Bengkulu, Pasar Baru, Teluk Segara, Bengkulu" },
+                { nama: "RANDI WIBOWO, S.H.,M.Kn", id: "ID01202626P339", alamat: "Jl. WR. Supratman, Pematang Gubernur, Kec. Muara Bangka Hulu, Kota Bengkulu" },
+                { nama: "RIZFITRIANI ALAMSYAH, S.H.,M.Kn", id: "ID01202626P340", alamat: "Jl. S. Parman No.26, Penurunan, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "SARI PRIYANKA, S.H., M.Kn", id: "ID01202626P341", alamat: "Jl. S. Parman, Kel.Kebun Kenanga, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "SUSANTI, S.H., M.Kn", id: "ID01202626P342", alamat: "Jl. Fatmawati, Penurunan, Kec. Ratu Samban, Kota Bengkulu" },
+                { nama: "SARI INDRA, S.H.,M.Kn", id: "ID01202626P343", alamat: "Jl. Air Manjunto No.25a, Padang Harapan, Kec. Gading Cemp., Kota Bengkulu" },
+                { nama: "SHINTA WIDYANIATI, S.H.,M.Kn", id: "ID01202626P344", alamat: "Jl. H. Adam Malik, Cemp. Permai, Kec. Selebar, Kota Bengkulu" },
+                { nama: "SICILIA HENDRA, S.H.,M.Kn", id: "ID01202626P345", alamat: "Jl. Hibrida 6C, RT.5/RW.02, Sido Mulyo, Kec. Gading Cemp., Kota Bengkulu" },
+                { nama: "SHABRINA ZHAFIRA,S.H.,M.Kn", id: "ID01202626P346", alamat: "Jl. P. Tandean No. 38 B Simpang Padang Harapan Kel. Jembatan Kecil. Kec. Singaran Pati" },
+                { nama: "SISKA WIDIA ASTUTI, S.H.,M.Kn", id: "ID01202626P347", alamat: "Jl. Mahakam Raya No. 19 Kel. Jalan Gedang" },
+                { nama: "TINA HAERANI BUNGGASI, S.H.,M.Kn", id: "ID01202626P348", alamat: "Jl. Mayjen Sutoyo No.36, RW.001, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu" },
+                { nama: "TIARA YUNITA OVELIA, S.H.,M.Kn", id: "ID01202626P349", alamat: "Jl. Kapuas V No.21, Padang Harapan, Kec. Gading Cemp., Kota Bengkulu" },
+                { nama: "VIKE DIANTI PUTRI, S.H.,M.Kn", id: "ID01202626P350", alamat: "Jl. Irian No.23, Suka Merindu, Kec. Sungai Serut, Kota Bengkulu" },
+                { nama: "VINANDA LOVITA, S.H.,M.Kn", id: "ID01202626P351", alamat: "Jl. Mawar No.15A, RT.001/RW.001, Nusa Indah, Kec. Ratu Agung, Kota Bengkulu" },
+                { nama: "WENY ARIMBI CRISTIANI,SST,Par.,S.H.,M.Kn", id: "ID01202626P352", alamat: "Jl. Cendrawasih, Kebun Gerand, Kec. Ratu Samban, Kota Bengkulu" }
+            ];
+
+            return notarisList;
+        }
+
         // Fungsi untuk mengambil data laporan dari Google Sheet
         async function getDataLaporanDariSheet() {
             try {
