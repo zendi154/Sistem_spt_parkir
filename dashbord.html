@@ -1365,25 +1365,7 @@
             }
         });
 
-        // Fungsi untuk mendapatkan semua notaris dari dropdown HTML
-        function getAllNotarisFromDropdown() {
-            const notarisSelect = document.getElementById('notaris');
-            const notarisList = [];
-
-            for (let i = 0; i < notarisSelect.options.length; i++) {
-                const option = notarisSelect.options[i];
-                if (option.value && option.value !== "Pilih Nama Di Daftar Ini") {
-                    notarisList.push({
-                        nama: option.value,
-                        id: option.getAttribute('data-id') || '',
-                        alamat: option.getAttribute('data-alamat') || ''
-                    });
-                }
-            }
-            return notarisList;
-        }
-
-        // Fungsi untuk mendapatkan semua notaris
+        // Fungsi untuk mendapatkan semua notaris dari dropdown
         function getAllNotarisFromDropdown() {
             // Data notaris diambil dari daftar yang ada di formulir
             const notarisList = [
