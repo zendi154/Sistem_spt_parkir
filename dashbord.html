@@ -735,6 +735,267 @@
         #loadingOverlay {
             backdrop-filter: blur(5px);
         }
+
+        /* ========================================
+   TOOLTIP NOTIFIKASI MODERN
+   ======================================== */
+        .tooltip-notifikasi {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .tooltip-notifikasi::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tooltip-notifikasi-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-notifikasi-content i {
+            font-size: 1rem;
+            color: #ffc107;
+        }
+
+        #notifikasiBelumLapor:hover .tooltip-notifikasi {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .swal-modern-popup {
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .swal-modern {
+            text-align: left;
+        }
+
+        /* HEADER */
+        .card-header {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-header .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card-header .icon {
+            font-size: 22px;
+        }
+
+        .card-header .nama {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .card-header .sub {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 13px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        /* FOCUS EFFECT */
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Tooltip untuk email */
+        .tooltip-notifikasi-email {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .tooltip-notifikasi-email::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .position-relative:first-child:hover .tooltip-notifikasi-email {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Tooltip Email */
+        .tooltip-email {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .tooltip-email::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tooltip Bell */
+        .tooltip-bell {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .tooltip-bell::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #notifikasiEmail:hover .tooltip-email {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #notifikasiBelumLapor:hover .tooltip-bell {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive untuk tooltip */
+        @media (max-width: 768px) {
+            .tooltip-notifikasi {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -834,12 +1095,14 @@
                                 <th>Jumlah Laporan</th>
                                 <th>SSPD BPHTB (Rp)</th>
                                 <th>Bentuk Perbuatan Hukum</th>
-                                <th>Nomor Surat Denda</th>
-                                <th>Lihat PDF Denda</th>
+                                <th>Nomor Surat Denda (STD)</th>
+                                <th>Lihat PDF STD</th>
+                                <th>Nomor Surat Pemberitahuan Denda</th>
+                                <th>Lihat PDF Pemberitahuan Denda</th>
                                 <th>Bukti Surat</th>
                                 <th>Catatan (Auto)</th>
                                 <th>Aksi Data</th>
-
+                            </tr>
                         </thead>
 
                         <tbody id="dataNotaris">
@@ -850,14 +1113,14 @@
 
                         <div class="col-md-6">
                             <h6 class="fw-bold text-primary">
-                                📊 Jumlah Laporan Diterima :
+                                Jumlah Laporan Diterima :
                                 <span id="totalLaporan">0</span>
                             </h6>
                         </div>
 
                         <div class="col-md-6 text-end">
                             <h6 class="fw-bold text-success">
-                                💰 BPHTB :
+                                Nilai BPHTB :
                                 <span id="totalSSPD">Rp. 0</span>
                             </h6>
                         </div>
@@ -924,7 +1187,7 @@
                 <i class="bi bi-send"></i>
             </a>
             <a href="Table.html" class="nav-link" title="Email PPAT">
-                <i class="bi bi-envelope"></i>
+                <i class="bi bi-people"></i>
             </a>
             <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
                 <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
@@ -954,8 +1217,8 @@
 
     <script>
         /* =========================
-               FUNGSI LOGIN DAN LOGOUT
-            ========================= */
+                      FUNGSI LOGIN DAN LOGOUT
+                   ========================= */
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
         function cekLogin() {
@@ -992,7 +1255,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
            ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxUy43AO9ovYINfWaZlbBtFQzL9vO1Vo_vHPYkM-Xa0JQOLSpifBNlm0olvpEALJu0Deg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwoi6cLUvmkEytFRtFriSoSnPyJdUNflD5nlMKRRSYbN1UdfwG9BmXhMhK4EsaTXp_T0A/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -1079,7 +1342,7 @@
             return 'Rp. ' + bersih.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
-        // Fungsi render tabel (yang sudah dimodifikasi)
+        // Fungsi render tabel (yang sudah diperbaiki)
         function renderTable(data) {
             let seen = new Set();
             const tbody = document.querySelector("#dataNotaris");
@@ -1112,13 +1375,13 @@
                 // CEK WAITING_RESEND ATAU EMAIL_TERKIRIM
                 else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
                     actionHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email"><i class="bi bi-envelope-fill"></i></button>
-                                  <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash-fill"></i></button>`;
+                          <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash-fill"></i></button>`;
                     tr.style.backgroundColor = "#fff3cd";
                 }
                 // KASUS AWAL (TERLAMBAT DAN BELUM ADA EMAIL)
                 else if (isFirst && statusTerlambat === "TIDAK VALID") {
                     actionHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-success btn-sm" title="Kirim Email"><i class="bi bi-envelope-fill"></i></button>
-                                  <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash-fill"></i></button>`;
+                          <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash-fill"></i></button>`;
                     tr.style.backgroundColor = "#ff0000";
                 }
                 else {
@@ -1136,15 +1399,14 @@
                 let bolehUpload = isFirst && tgl > 10;
 
                 if (row["file_surat_upload"]) {
-                    // Jika sudah upload, tampilkan icon mata untuk preview
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
                 } else if (bolehUpload) {
-                    // Jika belum upload dan boleh upload, tampilkan tombol upload
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
                 }
 
+                // PERBAIKAN: Hapus komentar di dalam template string
                 tr.innerHTML = `
             <td>${row["id"] || ""}</td>
             <td>${row["nama_notaris_&_ppat"] || ""}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
@@ -1156,10 +1418,12 @@
             <td>${row["laporan_bulanan"] || ""}</td>
             <td>${row["data_transaksi"] || ""}</td>
             <td>${row["jumlah_laporan"] || ""}</td>
-            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>  <!-- ← PERUBAHAN DI SINI -->
+            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
             <td>${row["keterangan"] || ""}</td>
             <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
             <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
@@ -1405,12 +1669,33 @@
         // EXPORT EXCEL
         function exportExcel() {
             if (!currentFilteredData || currentFilteredData.length === 0) { showError("Error", "Tidak ada data!"); return; }
-            let dataToExport = [["Nomor Unik", "Nama", "Alamat Kantor", "Nomor Surat", "Tanggal Surat", "Tanggal Diterima", "Status Surat", "Laporan Bulanan", "Data Transaksi", "Jumlah Laporan", "SSPD BPHTB (Rp)", "Bentuk Perbuatan Hukum", "Nomor Surat Denda", "Lihat PDF Denda", "Bukti Surat", "Catatan (Auto)", "Aksi Data"]];
+            let dataToExport = [
+                ["Nomor Unik", "Nama", "Alamat Kantor", "Nomor Surat", "Tanggal Surat",
+                    "Tanggal Diterima", "Status Surat", "Laporan Bulanan", "Data Transaksi",
+                    "Jumlah Laporan", "SSPD BPHTB (Rp)", "Bentuk Perbuatan Hukum",
+                    "Nomor Surat Denda (STD)", "Lihat PDF STD",
+                    "Nomor Surat Pemberitahuan Denda", "Lihat PDF Pemberitahuan Denda",
+                    "Bukti Surat", "Catatan (Auto)", "Aksi Data"]
+            ];
             currentFilteredData.forEach(row => {
                 dataToExport.push([
-                    row["id"] || "", row["nama_notaris_&_ppat"] || "", row["alamat"] || "", row["nomor_surat"] || "", row["tanggal_surat"] || "",
-                    row["tanggal_diterima"] || "", row["status_surat"] || "", row["laporan_bulanan"] || "", row["data_transaksi"] || "", row["jumlah_laporan"] || "",
-                    row["sspd_bphtb"] || "", row["keterangan"] || "", row["nomor_std"] || "", row["file_pdf"] ? "Ada" : "-", row["file_surat_upload"] ? "Ada" : "-",
+                    row["id"] || "",
+                    row["nama_notaris_&_ppat"] || "",
+                    row["alamat"] || "",
+                    row["nomor_surat"] || "",
+                    row["tanggal_surat"] || "",
+                    row["tanggal_diterima"] || "",
+                    row["status_surat"] || "",
+                    row["laporan_bulanan"] || "",
+                    row["data_transaksi"] || "",
+                    row["jumlah_laporan"] || "",
+                    row["sspd_bphtb"] || "",
+                    row["keterangan"] || "",
+                    row["nomor_std"] || "",
+                    row["file_pdf"] ? "Ada" : "-",
+                    row["nomor_surat_denda"] || "",  // Tambahan
+                    row["file_pdf_denda"] ? "Ada" : "-", // Tambahan
+                    row["file_surat_upload"] ? "Ada" : "-",
                     getCatatanAuto(cekTerlambat(row["tanggal_diterima"]), row["status_email"] || "", row["file_surat_upload"] && row["file_surat_upload"].trim() !== ""),
                     row["status_email"] === "SELESAI" ? "Selesai" : (row["status_email"] === "WAITING_RESEND" ? "Menunggu Kirim Ulang" : (row["status_email"] === "EMAIL_TERKIRIM" ? "Email Terkirim" : "Belum Diproses"))
                 ]);
@@ -1485,23 +1770,81 @@
                 return;
             }
 
-            // JIKA BELUM UPLOAD, TAMPILKAN FORM KIRIM EMAIL
             Swal.fire({
                 title: 'Kirim Email Denda',
-                html: `<div class="text-start"><div class="bg-light p-2 rounded mb-2">👤 ${nama}<br>🆔 ${id}<br>📅 ${bulan}</div>
-                        <input id="e" class="swal2-input mb-2" placeholder="📧 Email PPAT">
-                        <input id="n" class="swal2-input mb-2" placeholder="📝 Nomor SPL">
-                        <select id="j" class="swal2-select"><option value="Terlambat Menyampaikan Laporan">001. Terlambat</option><option value="Tidak Menyampaikan Laporan">002. Tidak Kirim</option><option value="Pelanggaran : 0 / Denda Lunas">003. Lunas</option></select></div>`,
-                confirmButtonText: '✉️ Kirim', cancelButtonText: 'Batal', confirmButtonColor: '#28a745', cancelButtonColor: '#dc3545', showCancelButton: true,
+                html: `
+  <div class="swal-modern">
+
+    <!-- HEADER CARD -->
+    <div class="card-header">
+      <div class="row">
+        <div class="icon">👤</div>
+        <div>
+          <div class="nama">${nama}</div>
+          <div class="sub">ID: ${id}</div>
+          <div class="sub">Periode: ${bulan}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-group">
+      <label>Email PPAT</label>
+      <input id="e" type="email" placeholder="contoh: notaris@email.com">
+    </div>
+
+    <div class="form-group">
+      <label>Nomor SPL</label>
+      <input id="n" type="text" placeholder="Contoh: 2024/SPL/B.3/BAPENDA/001">
+    </div>
+
+    <div class="form-group">
+      <label>Jenis Pelanggaran</label>
+      <select id="j">
+        <option value="Terlambat Menyampaikan Laporan">Terlambat Menyampaikan Laporan</option>
+        <option value="Tidak Menyampaikan Laporan">Tidak Menyampaikan Laporan</option>
+        <option value="Pelanggaran : 0 / Denda Lunas">Pelanggaran : 0 / Denda Lunas</option>
+      </select>
+    </div>
+
+  </div>
+  `,
+                width: 420,
+                confirmButtonText: 'Kirim',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                showCancelButton: true,
+                showCloseButton: true,
+                heightAuto: false,
+                customClass: {
+                    popup: 'swal-modern-popup'
+                },
+
                 preConfirm: () => {
-                    const email = document.getElementById('e')?.value.trim();
-                    const nomor = document.getElementById('n')?.value.trim();
-                    if (!email) return Swal.showValidationMessage('Email wajib diisi!');
-                    if (!email.includes('@')) return Swal.showValidationMessage('Email tidak valid!');
-                    if (!nomor) return Swal.showValidationMessage('Nomor SPL wajib diisi!');
-                    return { email, nomor, jenis: document.getElementById('j').value };
+                    const email = document.getElementById('e').value.trim();
+                    const nomor = document.getElementById('n').value.trim();
+
+                    if (!email) {
+                        Swal.showValidationMessage('Email wajib diisi');
+                        return false;
+                    }
+                    if (!email.includes('@')) {
+                        Swal.showValidationMessage('Email tidak valid');
+                        return false;
+                    }
+                    if (!nomor) {
+                        Swal.showValidationMessage('Nomor SPL wajib diisi');
+                        return false;
+                    }
+
+                    return {
+                        email,
+                        nomor,
+                        jenis: document.getElementById('j').value
+                    };
                 }
-            }).then(result => { if (result.isConfirmed) kirimEmail(row, result.value.email, result.value.jenis, result.value.nomor); });
+            });
         }
 
         // ===============================
@@ -1617,28 +1960,40 @@
         window.resetAllFilters = resetAllFilters;
 
         // ============================================
-        // FUNGSI STATISTIK NOTARIS
-        // DENGAN PEMILIH BULAN MANUAL
+        // NOTIFIKASI REALTIME DI NAVBAR (GABUNGAN)
         // ============================================
 
-        // Buat tombol Info (i) di navbar
-        document.addEventListener('DOMContentLoaded', function () {
+        // Fungsi untuk membuat badge notifikasi di navbar
+        function buatNotifikasiNavbar() {
             // Cari container navbar bagian kanan
             const navbarContainer = document.querySelector('#mainNavbar .container');
             if (!navbarContainer) return;
 
-            // Cek apakah tombol info sudah ada
-            if (document.getElementById('btnInfoNotaris')) return;
+            // Cek apakah sudah ada elemen notifikasi
+            if (document.getElementById('notifikasiBelumLapor')) return;
 
-            // Buat tombol info
-            const infoBtn = document.createElement('a');
-            infoBtn.href = '#';
-            infoBtn.id = 'btnInfoNotaris';
-            infoBtn.className = 'nav-link';
-            infoBtn.title = 'Lihat Statistik Notaris';
-            infoBtn.innerHTML = '<i class="bi bi-info-circle-fill"></i>';
+            // Buat elemen notifikasi
+            const notifWrapper = document.createElement('div');
+            notifWrapper.id = 'notifikasiBelumLapor';
+            notifWrapper.className = 'nav-link position-relative';
+            notifWrapper.style.cursor = 'pointer';
+            notifWrapper.style.position = 'relative';
 
-            infoBtn.onclick = function (e) {
+            notifWrapper.innerHTML = `
+        <i class="bi bi-bell-fill" style="font-size: 1.2rem;"></i>
+        <span id="badgeBelumLapor" class="badge rounded-pill bg-danger" style="font-size: 0.75rem; position: absolute; top: -4px; right: -10px; padding: 3px 8px; min-width: 20px; font-weight: bold;">
+            0
+        </span>
+        <div id="tooltipNotifikasi" class="tooltip-notifikasi">
+            <div class="tooltip-notifikasi-content">
+                <i class="bi bi-info-circle-fill"></i>
+                <span id="tooltipText">Memuat data...</span>
+            </div>
+        </div>
+    `;
+
+            // Klik notifikasi untuk membuka modal statistik
+            notifWrapper.onclick = function (e) {
                 e.preventDefault();
                 tampilkanModalStatistikDariSheet();
             };
@@ -1646,11 +2001,465 @@
             // Sisipkan sebelum tombol LOGOUT
             const logoutBtn = document.querySelector('a[title="Logout"]');
             if (logoutBtn) {
-                navbarContainer.insertBefore(infoBtn, logoutBtn);
+                navbarContainer.insertBefore(notifWrapper, logoutBtn);
             } else {
-                navbarContainer.appendChild(infoBtn);
+                navbarContainer.appendChild(notifWrapper);
             }
+        }
+
+        // Fungsi untuk mendapatkan total notaris yang BELUM LAPOR di SEMUA BULAN (akumulasi)
+        async function getTotalBelumLaporSemuaBulan() {
+            try {
+                const dataLaporan = await getDataLaporanDariSheet();
+                const semuaNotaris = getAllNotarisFromDropdown();
+
+                // Dapatkan semua bulan yang tersedia di data laporan
+                const availableMonths = getAvailableMonths(dataLaporan);
+
+                if (availableMonths.length === 0) {
+                    // Jika belum ada data laporan sama sekali, semua notaris belum lapor
+                    return semuaNotaris.length;
+                }
+
+                // Hitung untuk setiap notaris, apakah dia sudah lapor di SEMUA bulan
+                // Jika ada satu bulan saja dia belum lapor, maka dianggap BELUM LAPOR
+                let totalBelumLapor = 0;
+
+                semuaNotaris.forEach(notaris => {
+                    const namaNormal = normalisasiNama(notaris.nama);
+                    let sudahLaporDiSemuaBulan = true;
+
+                    // Cek setiap bulan yang tersedia
+                    for (const bulan of availableMonths) {
+                        let found = false;
+                        for (const laporan of dataLaporan) {
+                            const namaLaporan = laporan["nama_notaris_&_ppat"];
+                            const bulanLaporan = laporan["laporan_bulanan"];
+                            if (normalisasiNama(namaLaporan) === namaNormal && bulanLaporan === bulan) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            sudahLaporDiSemuaBulan = false;
+                            break;
+                        }
+                    }
+
+                    if (!sudahLaporDiSemuaBulan) {
+                        totalBelumLapor++;
+                    }
+                });
+
+                console.log(`Notaris yang BELUM LAPOR di SEMUA BULAN (${availableMonths.length} bulan) : ${totalBelumLapor}`);
+
+                return totalBelumLapor;
+
+            } catch (error) {
+                console.error('Gagal hitung belum lapor semua bulan:', error);
+                return 0;
+            }
+        }
+
+        // Fungsi untuk mendapatkan notaris yang belum lapor di bulan tertentu
+        async function getBelumLaporPerBulan(selectedMonth) {
+            try {
+                const dataLaporan = await getDataLaporanDariSheet();
+                const semuaNotaris = getAllNotarisFromDropdown();
+
+                // Hitung notaris yang sudah lapor di bulan tersebut
+                const sudahLaporNormal = new Set();
+                if (dataLaporan && Array.isArray(dataLaporan)) {
+                    dataLaporan.forEach(laporan => {
+                        const namaNotaris = laporan["nama_notaris_&_ppat"];
+                        const bulanLaporan = laporan["laporan_bulanan"];
+                        if (bulanLaporan === selectedMonth && namaNotaris) {
+                            sudahLaporNormal.add(normalisasiNama(namaNotaris));
+                        }
+                    });
+                }
+
+                // Hitung belum lapor
+                const belumLapor = semuaNotaris.filter(notaris =>
+                    !sudahLaporNormal.has(normalisasiNama(notaris.nama))
+                );
+
+                return belumLapor.length;
+            } catch (error) {
+                console.error('Gagal hitung belum lapor per bulan:', error);
+                return 0;
+            }
+        }
+
+        // Fungsi utama update badge notifikasi (gabungan)
+        async function updateNotifikasiBelumLapor() {
+            try {
+                // Ambil bulan yang dipilih di form
+                const bulanSelect = document.getElementById('laporan_bulanan');
+                const selectedMonth = bulanSelect ? bulanSelect.value : '';
+
+                let jumlahBelumLapor = 0;
+                let titleText = '';
+                let tooltipIcon = '';
+
+                // Jika ada bulan yang dipilih, hitung per bulan
+                if (selectedMonth && selectedMonth !== "Pilih Bulan Laporan") {
+                    jumlahBelumLapor = await getBelumLaporPerBulan(selectedMonth);
+                    if (jumlahBelumLapor === 0) {
+                        titleText = `✅ Semua PPAT/Notaris Sudah Melaporkan Untuk ${selectedMonth}`;
+                        tooltipIcon = 'bi-check-circle-fill';
+                    } else {
+                        titleText = `⚠️ ${jumlahBelumLapor} User PPAT/Notaris Belum Melaporkan Untuk ${selectedMonth}`;
+                        tooltipIcon = 'bi-exclamation-triangle-fill';
+                    }
+                }
+                // Jika belum pilih bulan, tampilkan total yang belum lapor di SEMUA bulan
+                else {
+                    jumlahBelumLapor = await getTotalBelumLaporSemuaBulan();
+                    if (jumlahBelumLapor === 0) {
+                        titleText = `✅ Semua PPAT/Notaris Sudah Melaporkan!`;
+                        tooltipIcon = 'bi-check-circle-fill';
+                    } else {
+                        titleText = `${jumlahBelumLapor} User PPAT/Notaris Belum Lapor!`;
+                        tooltipIcon = 'bi-people-fill';
+                    }
+                }
+
+                // Update badge
+                const badge = document.getElementById('badgeBelumLapor');
+                const tooltipText = document.getElementById('tooltipText');
+                const tooltipIconElem = document.querySelector('#tooltipNotifikasi .tooltip-notifikasi-content i');
+
+                if (badge) {
+                    badge.textContent = jumlahBelumLapor;
+                    if (jumlahBelumLapor === 0) {
+                        badge.classList.remove('bg-danger');
+                        badge.classList.add('bg-success');
+                    } else {
+                        badge.classList.remove('bg-success');
+                        badge.classList.add('bg-danger');
+                    }
+                }
+
+                if (tooltipText) tooltipText.textContent = titleText;
+                if (tooltipIconElem) tooltipIconElem.className = `bi ${tooltipIcon}`;
+
+                // Update juga notifikasi email
+                await updateNotifikasiEmail();
+
+            } catch (error) {
+                console.error('Gagal update notifikasi:', error);
+                const badge = document.getElementById('badgeBelumLapor');
+                if (badge) badge.textContent = '!';
+            }
+        }
+
+        // Fungsi untuk inisialisasi notifikasi
+        function initNotifikasi() {
+            buatNotifikasiNavbar();
+
+            setTimeout(() => {
+                updateNotifikasiBelumLapor();
+                updateNotifikasiEmail();
+            }, 1000);
+
+            const bulanSelect = document.getElementById('laporan_bulanan');
+            if (bulanSelect) {
+                bulanSelect.addEventListener('change', function () {
+                    setTimeout(() => {
+                        updateNotifikasiBelumLapor();
+                        updateNotifikasiEmail();
+                    }, 500);
+                });
+            }
+
+            const formLaporan = document.getElementById('form-laporan');
+            if (formLaporan) {
+                formLaporan.addEventListener('submit', function () {
+                    setTimeout(() => {
+                        updateNotifikasiBelumLapor();
+                        updateNotifikasiEmail();
+                    }, 2000);
+                });
+            }
+
+            const observer = new MutationObserver(function () {
+                const refreshBtn = document.querySelector('#modalStatistikNotaris .btn-primary');
+                if (refreshBtn && !refreshBtn.hasListener) {
+                    refreshBtn.hasListener = true;
+                    refreshBtn.addEventListener('click', function () {
+                        setTimeout(() => {
+                            updateNotifikasiBelumLapor();
+                            updateNotifikasiEmail();
+                        }, 1000);
+                    });
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        // Panggil initNotifikasi saat halaman selesai dimuat
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => {
+                initNotifikasi();
+            }, 1500);
         });
+
+        // Fungsi untuk membuat badge notifikasi di navbar (PISAH)
+        function buatNotifikasiNavbar() {
+            // Cari container navbar bagian kanan
+            const navbarContainer = document.querySelector('#mainNavbar .container');
+            if (!navbarContainer) return;
+
+            // Cek apakah sudah ada elemen notifikasi email
+            if (document.getElementById('notifikasiEmail')) return;
+
+            // ==================== NOTIFIKASI EMAIL ====================
+            const notifEmail = document.createElement('div');
+            notifEmail.id = 'notifikasiEmail';
+            notifEmail.className = 'nav-link position-relative';
+            notifEmail.style.cursor = 'pointer';
+            notifEmail.style.display = 'inline-block';
+            notifEmail.style.position = 'relative';
+            notifEmail.title = 'Email Belum Terkirim';
+
+            notifEmail.innerHTML = `
+        <i class="bi bi-envelope-fill" style="font-size: 1.2rem;"></i>
+        <span id="badgeEmail" class="badge rounded-pill bg-danger" style="font-size: 0.7rem; position: absolute; top: -8px; right: -12px; padding: 2px 6px; min-width: 18px; font-weight: bold;">0</span>
+        <div class="tooltip-email">
+            <div class="tooltip-content">
+                <i class="bi bi-envelope-fill"></i>
+                <span id="tooltipEmailText">Memuat data email...</span>
+            </div>
+        </div>
+    `;
+
+            notifEmail.onclick = function (e) {
+                e.preventDefault();
+                tampilkanDaftarEmailBelumTerkirim();
+            };
+
+            // ==================== NOTIFIKASI BELUM LAPOR ====================
+            const notifLapor = document.createElement('div');
+            notifLapor.id = 'notifikasiBelumLapor';
+            notifLapor.className = 'nav-link position-relative';
+            notifLapor.style.cursor = 'pointer';
+            notifLapor.style.display = 'inline-block';
+            notifLapor.style.position = 'relative';
+            notifLapor.title = 'Notaris Belum Lapor';
+
+            notifLapor.innerHTML = `
+            <i class="bi bi-bell-fill" style="font-size: 1.2rem;"></i>
+            <span id="badgeBelumLapor" class="badge rounded-pill bg-danger" style="font-size: 0.7rem; position: absolute; top: -8px; right: -12px; padding: 2px 6px; min-width: 18px; font-weight: bold;">0</span>
+            <div class="tooltip-bell">
+                <div class="tooltip-content">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span id="tooltipText">Memuat data...</span>
+                </div>
+            </div>
+        `;
+
+            notifLapor.onclick = function (e) {
+                e.preventDefault();
+                tampilkanModalStatistikDariSheet();
+            };
+
+            // Sisipkan sebelum tombol LOGOUT (email dulu baru lonceng)
+            const logoutBtn = document.querySelector('a[title="Logout"]');
+            if (logoutBtn) {
+                navbarContainer.insertBefore(notifEmail, logoutBtn);
+                navbarContainer.insertBefore(notifLapor, logoutBtn);
+            } else {
+                navbarContainer.appendChild(notifEmail);
+                navbarContainer.appendChild(notifLapor);
+            }
+        }
+
+        // Fungsi untuk menghitung jumlah email yang belum terkirim
+        function hitungEmailBelumTerkirim() {
+            try {
+                const dataLaporan = allData.length > 0 ? allData : window._statistikData?.dataLaporan || [];
+                let jumlah = 0;
+
+                if (dataLaporan && Array.isArray(dataLaporan)) {
+                    dataLaporan.forEach(row => {
+                        const statusEmail = row["status_email"] || "";
+                        const hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                        const statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+
+                        // Email dianggap BELUM TERKIRIM jika:
+                        // 1. Status TIDAK VALID (terlambat)
+                        // 2. Belum upload bukti
+                        // 3. Status email bukan SELESAI
+                        if (statusTerlambat === "TIDAK VALID" && !hasUpload && statusEmail !== "SELESAI") {
+                            jumlah++;
+                        }
+                    });
+                }
+
+                return jumlah;
+            } catch (error) {
+                console.error('Gagal hitung email belum terkirim:', error);
+                return 0;
+            }
+        }
+
+        // Fungsi untuk update badge email di navbar
+        async function updateNotifikasiEmail() {
+            try {
+                const jumlahEmail = hitungEmailBelumTerkirim();
+
+                const badgeEmail = document.getElementById('badgeEmail');
+                const tooltipEmailText = document.getElementById('tooltipEmailText');
+
+                if (badgeEmail) {
+                    badgeEmail.textContent = jumlahEmail;
+
+                    if (jumlahEmail === 0) {
+                        badgeEmail.classList.remove('bg-danger');
+                        badgeEmail.classList.add('bg-success');
+                    } else {
+                        badgeEmail.classList.remove('bg-success');
+                        badgeEmail.classList.add('bg-danger');
+                    }
+                }
+
+                if (tooltipEmailText) {
+                    if (jumlahEmail === 0) {
+                        tooltipEmailText.innerHTML = '✅ Semua email denda sudah terkirim!';
+                    } else {
+                        tooltipEmailText.innerHTML = ` ${jumlahEmail} User Email Denda Belum Dikirim...<br> *Klik Untuk Lihat Daftar`;
+                    }
+                }
+
+                console.log(` Email belum terkirim (unique): ${jumlahEmail}`);
+
+            } catch (error) {
+                console.error('Gagal update notifikasi email:', error);
+                const badgeEmail = document.getElementById('badgeEmail');
+                if (badgeEmail) badgeEmail.textContent = '!';
+            }
+        }
+
+        // Fungsi filter berdasarkan status email
+        function filterByStatusEmail() {
+            const jumlah = hitungEmailBelumTerkirim();
+            if (jumlah === 0) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Semua Email Terkirim',
+                    text: 'Tidak ada email denda yang tertunda.',
+                    confirmButtonColor: '#28a745'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Email Belum Terkirim',
+                    html: `Terdapat <strong>${jumlah}</strong> email denda yang belum terkirim.<br><br>
+                   <i class="bi bi-envelope-fill"></i> Silakan cek tabel dan kirim email melalui tombol aksi.`,
+                    confirmButtonColor: '#0d6efd'
+                });
+            }
+        }
+
+        // Fungsi untuk mendapatkan daftar unique notaris yang emailnya belum terkirim
+        function getDaftarEmailBelumTerkirim() {
+            try {
+                const dataLaporan = allData.length > 0 ? allData : window._statistikData?.dataLaporan || [];
+                const emailMap = new Map(); // Gunakan Map untuk memastikan unique
+
+                if (dataLaporan && Array.isArray(dataLaporan)) {
+                    dataLaporan.forEach(row => {
+                        const statusEmail = row["status_email"] || "";
+                        const hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                        const statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                        const nama = row["nama_notaris_&_ppat"] || "";
+                        const id = row["id"] || "";
+                        const bulan = row["laporan_bulanan"] || "";
+
+                        // Email dianggap BELUM TERKIRIM jika:
+                        // 1. Status TIDAK VALID (terlambat)
+                        // 2. Belum upload bukti
+                        // 3. Status email bukan SELESAI
+                        if (statusTerlambat === "TIDAK VALID" && !hasUpload && statusEmail !== "SELESAI" && nama) {
+                            const key = normalisasiNama(nama);
+                            if (!emailMap.has(key)) {
+                                emailMap.set(key, { nama, id, bulan });
+                            }
+                        }
+                    });
+                }
+
+                return Array.from(emailMap.values());
+            } catch (error) {
+                console.error('Gagal ambil daftar email:', error);
+                return [];
+            }
+        }
+
+        // Fungsi untuk menghitung jumlah email yang belum terkirim (UNIQUE)
+        function hitungEmailBelumTerkirim() {
+            const daftar = getDaftarEmailBelumTerkirim();
+            return daftar.length;
+        }
+
+        // Fungsi untuk menampilkan modal daftar email belum terkirim
+        function tampilkanDaftarEmailBelumTerkirim() {
+            const daftar = getDaftarEmailBelumTerkirim();
+            const jumlah = daftar.length;
+
+            if (jumlah === 0) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Semua Email Terkirim',
+                    text: 'Tidak ada email denda yang tertunda.',
+                    confirmButtonColor: '#28a745'
+                });
+                return;
+            }
+
+            // Buat tabel daftar email
+            let tabelHTML = `
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm table-hover" style="font-size: 13px;">
+                <thead class="table-danger">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Notaris & PPAT</th>
+                        <th>ID Notaris</th>
+                        <th>Bulan Laporan</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+            daftar.forEach((item, idx) => {
+                tabelHTML += `
+            <tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td>${item.nama}</td>
+                <td><code>${item.id}</code></td>
+                <td>${item.bulan}</td>
+            </tr>
+        `;
+            });
+
+            tabelHTML += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+            Swal.fire({
+                title: `📧 Email Belum Terkirim (${jumlah})`,
+                html: tabelHTML,
+                icon: 'warning',
+                width: '700px',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#0d6efd',
+                showCloseButton: true
+            });
+        }
 
         // ============================================
         // FUNGSI STATISTIK NOTARIS - VERSION FINAL
@@ -1832,7 +2641,7 @@
             const loadingModal = document.createElement('div');
             loadingModal.id = 'loadingStatistik';
             loadingModal.className = 'modal fade';
-            loadingModal.innerHTML = `<div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-body text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3">Mohon Tunggu...</p></div></div></div>`;
+            loadingModal.innerHTML = `<div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-body text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3"><b>Mohon Tunggu</b><br> Memuat Data...</p></div></div></div>`;
             document.body.appendChild(loadingModal);
             const loadingModalInstance = new bootstrap.Modal(loadingModal);
             loadingModalInstance.show();
@@ -1855,25 +2664,25 @@
                 const monthOptions = availableMonths.map(month => `<option value="${month}" ${month === selectedMonth ? 'selected' : ''}>${month}</option>`).join('');
 
                 const modalHTML = `
-            <div class="modal fade" id="modalStatistikNotaris" tabindex="-1" data-bs-keyboard="true" data-bs-backdrop="true" style="z-index: 1060;">
-                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
-                            <h5 class="modal-title"><i class="bi bi-bar-chart-steps"></i> Statistik Laporan Notaris & PPAT</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-4 p-3 bg-light rounded">
-                                <label class="form-label fw-bold mb-2"><i class="bi bi-calendar-month"></i> Pilih Periode Laporan:</label>
-                                <div class="d-flex gap-2">
-                                    <select id="pilihBulanStatistik" class="form-select" style="cursor: pointer;">
-                                        <option value="">-- Pilih Bulan / Tahun --</option>
-                                        ${monthOptions}
-                                    </select>
-                                    <button id="btnTerapkanBulan" class="btn btn-primary" style="white-space: nowrap;"><i class="bi bi-eye"></i> Tampilkan</button>
-                                </div>
-                            </div>
-                            
+<div class="modal fade" id="modalStatistikNotaris" tabindex="-1" data-bs-keyboard="true" data-bs-backdrop="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
+                <h5 class="modal-title"><i class="bi bi-bar-chart-steps"></i> Statistik Laporan Notaris & PPAT</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4 p-3 bg-light rounded">
+                    <label class="form-label fw-bold mb-2"><i class="bi bi-calendar-month"></i> Pilih Periode Laporan:</label>
+                    <div class="d-flex gap-2">
+                        <select id="pilihBulanStatistik" class="form-select" style="cursor: pointer;">
+                            <option value="">-- Pilih Bulan / Tahun --</option>
+                            ${monthOptions}
+                        </select>
+                        <button id="btnTerapkanBulan" class="btn btn-primary" style="white-space: nowrap;"><i class="bi bi-eye"></i> Tampilkan</button>
+                    </div>
+                </div>
+                
                 <div class="mb-4"><h6 class="text-muted mb-2">Periode Laporan: <strong class="text-primary" id="selectedMonthDisplay">${selectedMonth || 'Belum dipilih'}</strong></h6></div>
                 
                 <!-- SUMMARY CARDS -->
@@ -1910,8 +2719,8 @@
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                             <table class="table table-sm table-hover mb-0">
-                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>ID</th><th>Tgl Lapor</th></tr></thead>
-                                <tbody id="tbodyTepatWaktu">${tepatWaktu.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
+                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>Nomor Unik</th><th>Tgl Lapor</th></tr></thead>
+                                <tbody id="tbodyTepatWaktu">${tepatWaktu.map((l, idx) => `<tr><td style="text-align:center;">${idx + 1}</td><td>${l.nama}</td><td style="text-align:center;"><code>${l.id || '-'}</code></td><td style="text-align:center;"><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
                             </table>
                         </div>
                     </div>
@@ -1923,8 +2732,8 @@
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                             <table class="table table-sm table-hover mb-0">
-                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>ID</th><th>Tgl Lapor</th><tr></thead>
-                                <tbody id="tbodyTerlambat">${terlambat.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
+                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>Nomor Unik</th><th>Tgl Lapor</th></tr></thead>
+                                <tbody id="tbodyTerlambat">${terlambat.map((l, idx) => `<tr><td style="text-align:center;">${idx + 1}</td><td>${l.nama}</td><td style="text-align:center;"><code>${l.id || '-'}</code></td><td style="text-align:center;"><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
                             </table>
                         </div>
                     </div>
@@ -1936,33 +2745,33 @@
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                             <table class="table table-sm table-hover mb-0">
-                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>ID</th><th>Tgl Lapor</th></tr></thead>
-                                <tbody id="tbodyTidakMenyampaikan">${tidakMenyampaikan.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
+                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>Nomor Unik</th><th>Tgl Dibuat Sistem</th></tr></thead>
+                                <tbody id="tbodyTidakMenyampaikan">${tidakMenyampaikan.map((l, idx) => `<tr><td style="text-align:center;">${idx + 1}</td><td>${l.nama}</td><td style="text-align:center;"><code>${l.id || '-'}</code></td><td style="text-align:center;"><small>${l.tanggal || '-'}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">-</td></tr>'}</tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 
-                <!-- TABEL BELUM LAPOR -->
+                <!-- TABEL NOTIFIKASI -->
                 <div class="card mb-3 border-secondary">
-                    <div class="card-header bg-secondary text-white"><i class="bi bi-question-circle-fill"></i> <strong>BELUM LAPOR (${belumLapor.length})</strong></div>
+                    <div class="card-header bg-secondary text-white"><i class="bi bi-bell-fill"></i> <strong> NOTIFIKASI (${belumLapor.length})</strong></div>
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                             <table class="table table-sm table-hover mb-0">
-                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>ID</th><th>Alamat</th></tr></thead>
-                                <tbody id="tbodyBelumLapor">${belumLapor.map((n, idx) => `<tr><td>${idx + 1}</td><td>${n.nama}</td><td><code>${n.id || '-'}</code></td><td><small>${(n.alamat || '').substring(0, 50)}${(n.alamat || '').length > 50 ? '...' : ''}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">✅ Semua sudah lapor</td></tr>'}</tbody>
-                                            </table>
-                                        </div>
+                                <thead class="table-light sticky-top"><tr><th>No</th><th>Nama Notaris</th><th>Nomor Unik</th><th>Alamat</th></tr></thead>
+                                <tbody id="tbodyBelumLapor">${belumLapor.map((n, idx) => `<tr><td style="text-align:center;">${idx + 1}</td><td>${n.nama}</td><td style="text-align:center;"><code>${n.id || '-'}</code></td><td><small>${(n.alamat || '').substring(0, 50)}${(n.alamat || '').length > 50 ? '...' : ''}</small></td></tr>`).join('') || '<tr><td colspan="4" class="text-center">✅ Semua sudah lapor</td></tr>'}</tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" onclick="refreshStatistikFromSheet()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
-                                <button type="button" class="btn btn-success" id="btnCetakStatistik"><i class="bi bi-printer-fill"></i> Cetak</button>
-                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="refreshStatistikFromSheet()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+                            <button type="button" class="btn btn-success" id="btnCetakStatistik"><i class="bi bi-printer-fill"></i> Cetak</button>
                         </div>
                     </div>
-                </div>`;
+                </div>
+            </div>`;
 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
                 new bootstrap.Modal(document.getElementById('modalStatistikNotaris')).show();
@@ -2048,13 +2857,43 @@
             document.querySelector('.card.border-success .card-header').innerHTML = `<i class="bi bi-check-circle-fill"></i> <strong>TEPAT WAKTU (${tepatWaktu.length})</strong>`;
             document.querySelector('.card.border-warning .card-header').innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> <strong>TERLAMBAT (${terlambat.length})</strong>`;
             document.querySelector('.card.border-danger .card-header').innerHTML = `<i class="bi bi-x-circle-fill"></i> <strong>TIDAK MENYAMPAIKAN LAPORAN (${tidakMenyampaikan.length})</strong>`;
-            document.querySelector('.card.border-secondary .card-header').innerHTML = `<i class="bi bi-question-circle-fill"></i> <strong>BELUM LAPOR (${belumLapor.length})</strong>`;
+            document.querySelector('.card.border-secondary .card-header').innerHTML = `<i class="bi bi-bell-fill"></i> <strong> NOTIFIKASI (${belumLapor.length})</strong>`;
 
-            // Update tabel
-            document.getElementById('tbodyTepatWaktu').innerHTML = tepatWaktu.length ? tepatWaktu.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') : '<tr><td colspan="4" class="text-center">-</td></tr>';
-            document.getElementById('tbodyTerlambat').innerHTML = terlambat.length ? terlambat.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') : '<tr><td colspan="4" class="text-center">-</td></tr>';
-            document.getElementById('tbodyTidakMenyampaikan').innerHTML = tidakMenyampaikan.length ? tidakMenyampaikan.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.nama}</td><td><code>${l.id || '-'}</code></td><td><small>${l.tanggal || '-'}</small></td></tr>`).join('') : '<td><td colspan="4" class="text-center">-</td></tr>';
-            document.getElementById('tbodyBelumLapor').innerHTML = belumLapor.length ? belumLapor.map((n, idx) => `<tr><td>${idx + 1}</td><td>${n.nama}</td><td><code>${n.id || '-'}</code></td><td><small>${(n.alamat || '').substring(0, 50)}${(n.alamat || '').length > 50 ? '...' : ''}</small></td></tr>`).join('') : '<td><td colspan="4" class="text-center">✅ Semua sudah lapor</td></tr>';
+            // Update tabel TEPAT WAKTU
+            document.getElementById('tbodyTepatWaktu').innerHTML = tepatWaktu.length ? tepatWaktu.map((l, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td>${l.nama}</td>
+            <td style="text-align:center;"><code>${l.id || '-'}</code></td>
+            <td style="text-align:center;"><small>${l.tanggal || '-'}</small></td>
+        </tr>`).join('') : '<tr><td colspan="4" class="text-center">-</td></tr>';
+
+            // Update tabel TERLAMBAT
+            document.getElementById('tbodyTerlambat').innerHTML = terlambat.length ? terlambat.map((l, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td>${l.nama}</td>
+            <td style="text-align:center;"><code>${l.id || '-'}</code></td>
+            <td style="text-align:center;"><small>${l.tanggal || '-'}</small></td>
+        </tr>`).join('') : '<tr><td colspan="4" class="text-center">-</td></tr>';
+
+            // Update tabel TIDAK MENYAMPAIKAN
+            document.getElementById('tbodyTidakMenyampaikan').innerHTML = tidakMenyampaikan.length ? tidakMenyampaikan.map((l, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td>${l.nama}</td>
+            <td style="text-align:center;"><code>${l.id || '-'}</code></td>
+            <td style="text-align:center;"><small>${l.tanggal || '-'}</small></td>
+        </tr>`).join('') : '<tr><td colspan="4" class="text-center">-</td></tr>';
+
+            // Update tabel NOTIFIKASI (BELUM LAPOR)
+            document.getElementById('tbodyBelumLapor').innerHTML = belumLapor.length ? belumLapor.map((n, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td>${n.nama}</td>
+            <td style="text-align:center;"><code>${n.id || '-'}</code></td>
+            <td><small>${(n.alamat || '').substring(0, 50)}${(n.alamat || '').length > 50 ? '...' : ''}</small></td>
+        </tr>`).join('') : '<tr><td colspan="4" class="text-center">✅ Semua sudah lapor</td></tr>';
         }
 
         // Cetak statistik ke PDF (VERSION RINGKAS - HEMAT KERTAS)
@@ -2084,294 +2923,306 @@
                 }
 
                 printWindow.document.write(`<!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Statistik Notaris - ${selectedMonth}</title>
-                    <style>
-                        @page {
-                            size: A4 portrait;
-                            margin: 10mm;
-                        }
-                        body {
-                            font-family: 'Times New Roman', Arial, sans-serif;
-                            margin: 0;
-                            padding: 10px;
-                            font-size: 10pt;
-                            background: white;
-                        }
-                        .header {
-                            text-align: center;
-                            margin-bottom: 15px;
-                            border-bottom: 2px solid #0d6efd;
-                            padding-bottom: 8px;
-                        }
-                        .header h1 {
-                            margin: 0;
-                            color: #0d6efd;
-                            font-size: 16pt;
-                        }
-                        .header h3 {
-                            margin: 3px 0;
-                            font-size: 11pt;
-                        }
-                        .header p {
-                            margin: 3px 0;
-                            font-size: 8pt;
-                        }
-                        .summary {
-                            display: flex;
-                            justify-content: space-around;
-                            margin: 15px 0;
-                            gap: 8px;
-                            flex-wrap: wrap;
-                        }
-                        .summary-card {
-                            flex: 1;
-                            text-align: center;
-                            padding: 8px;
-                            border-radius: 6px;
-                            color: white;
-                            min-width: 80px;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        .summary-card.total { background: #0d6efd; }
-                        .summary-card.tepat { background: #2b8c4e; }
-                        .summary-card.terlambat { background: #e68a2e; }
-                        .summary-card.tidak { background: #c0392b; }
-                        .summary-card h2 { margin: 0; font-size: 18pt; }
-                        .summary-card p { margin: 3px 0 0; font-size: 7pt; }
-                        
-                        .progress-print {
-                            margin: 15px 0;
-                            border: 1px solid #ddd;
-                            border-radius: 8px;
-                            overflow: hidden;
-                        }
-                        .progress-bar-print {
-                            display: flex;
-                            height: 25px;
-                            width: 100%;
-                        }
-                        .progress-hijau {
-                            background-color: #2b8c4e;
-                            color: white;
-                            text-align: center;
-                            line-height: 25px;
-                            font-size: 9pt;
-                            font-weight: bold;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        .progress-kuning {
-                            background-color: #e68a2e;
-                            color: #000;
-                            text-align: center;
-                            line-height: 25px;
-                            font-size: 9pt;
-                            font-weight: bold;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        .progress-merah {
-                            background-color: #c0392b;
-                            color: white;
-                            text-align: center;
-                            line-height: 25px;
-                            font-size: 9pt;
-                            font-weight: bold;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        .legend {
-                            display: flex;
-                            justify-content: space-between;
-                            margin: 10px 0;
-                            font-size: 7pt;
-                            flex-wrap: wrap;
-                        }
-                        .section {
-                            margin: 15px 0;
-                            page-break-inside: avoid;
-                        }
-                        .section-title {
-                            padding: 5px 8px;
-                            border-radius: 4px;
-                            margin-bottom: 8px;
-                            font-weight: bold;
-                            font-size: 10pt;
-                            color: white;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        .section-title.tepat { background: #2b8c4e; }
-                        .section-title.terlambat { background: #e68a2e; color: #000; }
-                        .section-title.tidak { background: #c0392b; }
-                        .section-title.belum { background: #6c757d; }
-                        
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin: 5px 0;
-                            font-size: 8pt;
-                        }
-                        th, td {
-                            border: 1px solid #ccc;
-                            padding: 4px 6px;
-                            text-align: left;
-                            color: black;
-                        }
-                        th {
-                            background: #e9ecef !important;
-                            font-weight: bold;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                        tbody tr:nth-child(even) {
-                            background: #f8f9fa;
-                        }
-                        tbody tr:nth-child(odd) {
-                            background: #ffffff;
-                        }
-                        .footer {
-                            margin-top: 20px;
-                            text-align: center;
-                            font-size: 7pt;
-                            color: #666;
-                            border-top: 1px solid #ddd;
-                            padding-top: 8px;
-                        }
-                        @media print {
-                            body { margin: 0; padding: 8px; background: white; }
-                            .no-print { display: none; }
-                            .section { break-inside: avoid; }
-                            table { break-inside: avoid; }
-                            th { background: #e9ecef !important; }
-                            .summary-card, .progress-hijau, .progress-kuning, .progress-merah, .section-title {
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>LAPORAN STATISTIK NOTARIS & PPAT</h1>
-                        <h3>Kota Bengkulu</h3>
-                        <p>Periode Laporan: <strong>${selectedMonth}</strong></p>
-                        <p>Tanggal Cetak: ${now.toLocaleDateString('id-ID')} | ${now.toLocaleTimeString('id-ID')}</p>
-                    </div>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Statistik Notaris - ${selectedMonth}</title>
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 10mm;
+                    }
+                    body {
+                        font-family: 'Times New Roman', Arial, sans-serif;
+                        margin: 0;
+                        padding: 10px;
+                        font-size: 10pt;
+                        background: white;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 15px;
+                        border-bottom: 2px solid #0d6efd;
+                        padding-bottom: 8px;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        color: #0d6efd;
+                        font-size: 16pt;
+                    }
+                    .header h3 {
+                        margin: 3px 0;
+                        font-size: 11pt;
+                    }
+                    .header p {
+                        margin: 3px 0;
+                        font-size: 8pt;
+                    }
+                    .summary {
+                        display: flex;
+                        justify-content: space-around;
+                        margin: 15px 0;
+                        gap: 8px;
+                        flex-wrap: wrap;
+                    }
+                    .summary-card {
+                        flex: 1;
+                        text-align: center;
+                        padding: 8px;
+                        border-radius: 6px;
+                        color: white;
+                        min-width: 80px;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .summary-card.total { background: #0d6efd; }
+                    .summary-card.tepat { background: #2b8c4e; }
+                    .summary-card.terlambat { background: #e68a2e; }
+                    .summary-card.tidak { background: #c0392b; }
+                    .summary-card h2 { margin: 0; font-size: 18pt; }
+                    .summary-card p { margin: 3px 0 0; font-size: 7pt; }
                     
-                    <div class="summary">
-                        <div class="summary-card total"><h2>${total}</h2><p>Total Notaris</p></div>
-                        <div class="summary-card tepat"><h2>${tepatWaktu.length}</h2><p>✓ Tepat Waktu</p></div>
-                        <div class="summary-card terlambat"><h2>${terlambat.length}</h2><p>⚠ Terlambat</p></div>
-                        <div class="summary-card tidak"><h2>${tidakMenyampaikan.length}</h2><p>✗ Tidak Kirim</p></div>
-                    </div>
+                    .progress-print {
+                        margin: 15px 0;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+                    .progress-bar-print {
+                        display: flex;
+                        height: 25px;
+                        width: 100%;
+                    }
+                    .progress-hijau {
+                        background-color: #2b8c4e;
+                        color: white;
+                        text-align: center;
+                        line-height: 25px;
+                        font-size: 9pt;
+                        font-weight: bold;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .progress-kuning {
+                        background-color: #e68a2e;
+                        color: #000;
+                        text-align: center;
+                        line-height: 25px;
+                        font-size: 9pt;
+                        font-weight: bold;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .progress-merah {
+                        background-color: #c0392b;
+                        color: white;
+                        text-align: center;
+                        line-height: 25px;
+                        font-size: 9pt;
+                        font-weight: bold;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .legend {
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 10px 0;
+                        font-size: 7pt;
+                        flex-wrap: wrap;
+                    }
+                    .section {
+                        margin: 15px 0;
+                        page-break-inside: avoid;
+                        width: 100%;
+                    }
+                    .section-title {
+                        padding: 5px 8px;
+                        border-radius: 4px;
+                        margin-bottom: 8px;
+                        font-weight: bold;
+                        font-size: 10pt;
+                        color: white;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .section-title.tepat { background: #2b8c4e; }
+                    .section-title.terlambat { background: #e68a2e; color: #000; }
+                    .section-title.tidak { background: #c0392b; }
+                    .section-title.belum { background: #6c757d; }
                     
-                    <div class="progress-print">
-                        <div class="progress-bar-print">
-                            <div class="progress-hijau" style="width: ${persenTepat}%;">${persenTepat}%</div>
-                            <div class="progress-kuning" style="width: ${persenTerlambat}%;">${persenTerlambat}%</div>
-                            <div class="progress-merah" style="width: ${persenTidak}%;">${persenTidak}%</div>
-                        </div>
-                    </div>
-                    <div class="legend">
-                        <span>■ Tepat Waktu: ${tepatWaktu.length} (${persenTepat}%)</span>
-                        <span>■ Terlambat: ${terlambat.length} (${persenTerlambat}%)</span>
-                        <span>■ Tidak Kirim: ${tidakMenyampaikan.length} (${persenTidak}%)</span>
-                        <span>□ Belum Lapor: ${belumLapor.length} (${hitungPersen(belumLapor.length)}%)</span>
-                    </div>
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 5px 0;
+                        font-size: 8pt;
+                        table-layout: fixed;
+                    }
+                    th, td {
+                        border: 1px solid #ccc;
+                        padding: 6px 8px;
+                        text-align: left;
+                        color: black;
+                        word-wrap: break-word;
+                    }
+                    th:nth-child(1), td:nth-child(1) { width: 5%; }  /* No */
+                    th:nth-child(2), td:nth-child(2) { width: 50%; } /* Nama */
+                    th:nth-child(3), td:nth-child(3) { width: 20%; } /* ID */
+                    th:nth-child(4), td:nth-child(4) { width: 25%; } /* Tgl Lapor */
                     
-                    ${tepatWaktu.length > 0 ? `
-<div class="section">
-    <div class="section-title tepat">✓ TEPAT WAKTU (${tepatWaktu.length})</div>
-    <table>
-        <thead>
-            <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
-        </thead>
-        <tbody>
-            ${tepatWaktu.map((l, i) => `<tr>
-                <td>${i + 1}</td>
-                <td>${l.nama}</td>
-                <td>${l.id || '-'}</td>
-                <td>${l.tanggal || '-'}</td>
-                                    </tr>`).join('')}
-                                </tbody>
-                            </table>
-                    </div>` : ''}
-
-                    ${terlambat.length > 0 ? `
-                    <div class="section">
-                        <div class="section-title terlambat">⚠ TERLAMBAT (${terlambat.length})</div>
-                        <table>
-                            <thead>
-                                <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
-                            </thead>
-                            <tbody>
-                                ${terlambat.map((l, i) => `<tr>
-                                    <td>${i + 1}</td>
-                                    <td>${l.nama}</td>
-                                    <td>${l.id || '-'}</td>
-                                    <td>${l.tanggal || '-'}</td>
-                                </tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>` : ''}
-
-                    ${tidakMenyampaikan.length > 0 ? `
-                    <div class="section">
-                        <div class="section-title tidak">✗ TIDAK MENYAMPAIKAN LAPORAN (${tidakMenyampaikan.length})</div>
-                        <table>
-                            <thead>
-                                <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
-                            </thead>
-                            <tbody>
-                                ${tidakMenyampaikan.map((l, i) => `<tr>
-                                    <td>${i + 1}</td>
-                                    <td>${l.nama}</td>
-                                    <td>${l.id || '-'}</td>
-                                    <td>${l.tanggal || '-'}</td>
-                                </tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>` : ''}
-
-                    ${belumLapor.length > 0 ? `
-                    <div class="section">
-                        <div class="section-title belum">❌ BELUM LAPOR (${belumLapor.length})</div>
-                        <table>
-                            <thead>
-                                <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th></tr>
-                            </thead>
-                            <tbody>
-                                ${belumLapor.slice(0, 15).map((n, i) => `<tr>
-                                    <td>${i + 1}</td>
-                                    <td>${n.nama}</td>
-                                    <td>${n.id || '-'}</td>
-                                </tr>`).join('')}
-                                ${belumLapor.length > 15 ? `<tr><td colspan="3" style="text-align:center;">... dan ${belumLapor.length - 15} notaris lainnya ...</td></tr>` : ''}
-                            </tbody>
-                        </table>
-                    </div>` : ''}
-                    
-                <div class="footer" style="text-align: left; margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
-                    <p style="margin: 3px 0;">Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
-                    <p style="margin: 3px 0;">*Bidang Pengendalian dan Evaluasi Pendapatan Daerah</p>
+                    th {
+                        background: #e9ecef !important;
+                        font-weight: bold;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    tbody tr:nth-child(even) {
+                        background: #f8f9fa;
+                    }
+                    tbody tr:nth-child(odd) {
+                        background: #ffffff;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        text-align: left;
+                        font-size: 7pt;
+                        color: #666;
+                        border-top: 1px solid #ddd;
+                        padding-top: 8px;
+                    }
+                    @media print {
+                        body { margin: 0; padding: 8px; background: white; }
+                        .no-print { display: none; }
+                        .section { break-inside: avoid; }
+                        table { break-inside: avoid; }
+                        th { background: #e9ecef !important; }
+                        .summary-card, .progress-hijau, .progress-kuning, .progress-merah, .section-title {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+               <div class="header" style="border: 3px solid #0d6efd; border-radius: 12px; padding: 20px; margin-bottom: 25px; background: linear-gradient(135deg, #e8f0fe, #ffffff); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <h1 style="font-size: 24pt; margin: 0; color: #0d6efd; font-weight: bold;">📊 LAPORAN STATISTIK NOTARIS & PPAT</h1>
+                <h3 style="font-size: 16pt; margin: 10px 0; color: #2b8c4e;">Kota Bengkulu</h3>
+                <p style="margin: 8px 0; font-size: 11pt;">Periode Laporan: <strong style="font-size: 12pt;">${selectedMonth}</strong></p>
+                <p style="margin: 8px 0; font-size: 11pt;">Tanggal Cetak: ${now.toLocaleDateString('id-ID')} | ${now.toLocaleTimeString('id-ID')}</p>
+            </div>
+                
+                <div class="summary">
+                    <div class="summary-card total"><h2>${total}</h2><p>Total Notaris</p></div>
+                    <div class="summary-card tepat"><h2>${tepatWaktu.length}</h2><p>✓ Tepat Waktu</p></div>
+                    <div class="summary-card terlambat"><h2>${terlambat.length}</h2><p>⚠ Terlambat</p></div>
+                    <div class="summary-card tidak"><h2>${tidakMenyampaikan.length}</h2><p>✗ Tidak Kirim</p></div>
                 </div>
-                    
-                    <script>
-                        window.onload = function() {
-                            setTimeout(function() {
-                                window.print();
-                                window.onafterprint = function() { window.close(); };
-                                setTimeout(function() { window.close(); }, 1000);
-                            }, 500);
-                        };
-                    <\/script>
-                </body>
-                </html>`);
+                
+                <div class="progress-print">
+                    <div class="progress-bar-print">
+                        <div class="progress-hijau" style="width: ${persenTepat}%;">${persenTepat}%</div>
+                        <div class="progress-kuning" style="width: ${persenTerlambat}%;">${persenTerlambat}%</div>
+                        <div class="progress-merah" style="width: ${persenTidak}%;">${persenTidak}%</div>
+                    </div>
+                </div>
+                <div class="legend">
+                    <span>■ Tepat Waktu: ${tepatWaktu.length} (${persenTepat}%)</span>
+                    <span>■ Terlambat: ${terlambat.length} (${persenTerlambat}%)</span>
+                    <span>■ Tidak Kirim: ${tidakMenyampaikan.length} (${persenTidak}%)</span>
+                    <span>□ Belum Lapor: ${belumLapor.length} (${hitungPersen(belumLapor.length)}%)</span>
+                </div>
+                
+                <!-- TABLE 1: TEPAT WAKTU -->
+                ${tepatWaktu.length > 0 ? `
+                <div class="section">
+                    <div class="section-title tepat">✓ TEPAT WAKTU (${tepatWaktu.length})</div>
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
+                        </thead>
+                        <tbody>
+                            ${tepatWaktu.map((l, i) => `<tr>
+                                <td style="text-align:center;">${i + 1}</td>
+                                <td>${l.nama}</td>
+                                <td style="text-align:center;">${l.id || '-'}</td>
+                                <td style="text-align:center;">${l.tanggal || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>` : '<div class="section"><div class="section-title tepat">✓ TEPAT WAKTU (0)</div><p style="padding:10px;text-align:center;">Tidak ada data</p></div>'}
+
+                <!-- TABLE 2: TERLAMBAT -->
+                ${terlambat.length > 0 ? `
+                <div class="section">
+                    <div class="section-title terlambat">⚠ TERLAMBAT (${terlambat.length})</div>
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
+                        </thead>
+                        <tbody>
+                            ${terlambat.map((l, i) => `<tr>
+                                <td style="text-align:center;">${i + 1}</td>
+                                <td>${l.nama}</td>
+                                <td style="text-align:center;">${l.id || '-'}</td>
+                                <td style="text-align:center;">${l.tanggal || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>` : '<div class="section"><div class="section-title terlambat">⚠ TERLAMBAT (0)</div><p style="padding:10px;text-align:center;">Tidak ada data</p></div>'}
+
+                <!-- TABLE 3: TIDAK MENYAMPAIKAN LAPORAN -->
+                ${tidakMenyampaikan.length > 0 ? `
+                <div class="section">
+                    <div class="section-title tidak">✗ TIDAK MENYAMPAIKAN LAPORAN (${tidakMenyampaikan.length})</div>
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th><th>Tgl Lapor</th></tr>
+                        </thead>
+                        <tbody>
+                            ${tidakMenyampaikan.map((l, i) => `<tr>
+                                <td style="text-align:center;">${i + 1}</td>
+                                <td>${l.nama}</td>
+                                <td style="text-align:center;">${l.id || '-'}</td>
+                                <td style="text-align:center;">${l.tanggal || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>` : '<div class="section"><div class="section-title tidak">✗ TIDAK MENYAMPAIKAN LAPORAN (0)</div><p style="padding:10px;text-align:center;">Tidak ada data</p></div>'}
+
+                <!-- TABLE 4: BELUM LAPOR (NOTIFIKASI) -->
+                ${belumLapor.length > 0 ? `
+                <div class="section">
+                    <div class="section-title belum"> NOTIFIKASI (${belumLapor.length})</div>
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th></tr>
+                        </thead>
+                        <tbody>
+                            ${belumLapor.slice(0, 15).map((n, i) => `<tr>
+                                <td style="text-align:center;">${i + 1}</td>
+                                <td>${n.nama}</td>
+                                <td style="text-align:center;">${n.id || '-'}</td>
+                            </tr>`).join('')}
+                            ${belumLapor.length > 15 ? `<tr><td colspan="3" style="text-align:center;">... dan ${belumLapor.length - 15} notaris lainnya ...</td>` : ''}
+                        </tbody>
+                    </table>
+                </div>` : '<div class="section"><div class="section-title belum"> NOTIFIKASI (0)</div><p style="padding:10px;text-align:center;">Semua notaris sudah melaporkan</p></div>'}
+                
+                <div class="footer">
+                    <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
+                    <p>*Bidang Pengendalian dan Evaluasi Pendapatan Daerah</p>
+                </div>
+                
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
+                            setTimeout(function() { window.close(); }, 1000);
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>`);
 
                 printWindow.document.close();
 
