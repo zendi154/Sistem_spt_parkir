@@ -111,27 +111,54 @@
             outline: none;
         }
 
-        /* SEARCH INPUT MODERN */
-        .position-relative {
-            position: relative;
-        }
+        /* ===============================
+           SEARCH MODERN
+        =============================== */
+        .search-box {
+            display: flex;
+            align-items: center;
 
-        .bi-search {
-            left: 15px !important;
-            color: #667eea;
-            font-size: 1rem;
-        }
-
-        #searchNotaris {
-            padding-left: 40px !important;
+            background: #fff;
             border-radius: 30px;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            border: 1px solid #ddd;
+
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
 
-        #searchNotaris:focus {
-            background: white;
-            border-color: #667eea;
+        /* ICON */
+        .search-icon {
+            font-size: 18px;
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        /* INPUT */
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+
+            font-size: 14px;
+            background: transparent;
+        }
+
+        /* FOCUS */
+        .search-box:focus-within {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+
+        /* ICON SAAT FOCUS */
+        .search-box:focus-within .search-icon {
+            color: #0d6efd;
+        }
+
+        /* PLACEHOLDER */
+        .search-input::placeholder {
+            color: #999;
         }
 
         /* BUTTON MODERN */
@@ -990,6 +1017,90 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* ===============================
+           FLOATING FOOTER (MODERN)
+        =============================== */
+        .floating-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 30px;
+
+            right: auto;
+            /* optional biar aman */
+
+            z-index: 9999;
+
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.15);
+
+            padding: 8px;
+            border-radius: 50px;
+
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        /* BUTTON */
+        .btn-control {
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            min-width: 130px;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+
+            font-weight: 600;
+            color: white;
+
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            /* default PLAY */
+            transition: all 0.3s ease;
+        }
+
+        /* HOVER */
+        .btn-control:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ACTIVE CLICK */
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+
+        /* MODE AKTIF (NOTIF ON) */
+        .btn-control.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        /* ICON */
+        .btn-control i {
+            font-size: 18px;
+        }
+
+        .btn-control.active {
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+        }
+
+        @keyframes slideLeft {
+            from {
+                transform: translateX(-40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .floating-footer {
+            animation: slideLeft 0.4s ease;
+        }
+
         /* Responsive untuk tooltip */
         @media (max-width: 768px) {
             .tooltip-notifikasi {
@@ -1013,12 +1124,11 @@
 
                 <div class="row g-2 mb-3 align-items-center">
 
-                    <!-- SEARCH -->
                     <div class="col-md-6">
-                        <div class="position-relative">
-                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                            <input type="text" id="searchNotaris" class="form-control ps-5"
-                                placeholder="Cari Nama Notaris / PPAT...">
+                        <div class="search-box">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="searchNotaris" class="search-input"
+                                placeholder="Cari Nama Notaris / PPAT">
                         </div>
                     </div>
 
@@ -1041,6 +1151,15 @@
                         </button>
                     </div>
 
+                </div>
+
+                <!-- FLOATING FOOTER CONTROL -->
+                <div class="floating-footer">
+                    <button class="btn-control" id="btnPlayPause" onclick="togglePlayPause()"
+                        title="Aktifkan Notifikasi">
+                        <i class="bi bi-play-fill" id="playPauseIcon"></i>
+                        <span id="playPauseText">PLAY</span>
+                    </button>
                 </div>
 
                 <!-- CONTAINER BULAN -->
@@ -1120,7 +1239,7 @@
 
                         <div class="col-md-6 text-end">
                             <h6 class="fw-bold text-success">
-                                Nilai BPHTB :
+                                Nominal Bphtb Total :
                                 <span id="totalSSPD">Rp. 0</span>
                             </h6>
                         </div>
@@ -1135,12 +1254,12 @@
                     </div>
 
                     <div class="grafik-box">
-                        <h6>⏱ Status Laporan</h6>
+                        <h6>⏱ Status Laporan PPAT</h6>
                         <canvas id="grafikStatus"></canvas>
                     </div>
 
                     <div class="grafik-box">
-                        <h6>🏆 Notaris Paling Aktif</h6>
+                        <h6>🏆 PPAT Paling Aktif</h6>
                         <canvas id="grafikTopNotaris"></canvas>
                     </div>
 
@@ -1190,7 +1309,7 @@
                 <i class="bi bi-people"></i>
             </a>
             <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
-                <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
+                <i class="bi bi-box-arrow-right me-1"></i>
             </a>
         </div>
     </nav>
@@ -1216,9 +1335,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+
         /* =========================
-                      FUNGSI LOGIN DAN LOGOUT
-                   ========================= */
+                 FUNGSI LOGIN DAN LOGOUT
+              ========================= */
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
         function cekLogin() {
@@ -1265,6 +1385,7 @@
         let lastData = null;
         let allData = [];
         let currentFilteredData = [];
+        let lastLength = 0;
 
         // Urutan bulan untuk sorting
         const urutanBulan = {
@@ -1773,42 +1894,42 @@
             Swal.fire({
                 title: 'Kirim Email Denda',
                 html: `
-  <div class="swal-modern">
+                <div class="swal-modern">
 
-    <!-- HEADER CARD -->
-    <div class="card-header">
-      <div class="row">
-        <div class="icon">👤</div>
-        <div>
-          <div class="nama">${nama}</div>
-          <div class="sub">ID: ${id}</div>
-          <div class="sub">Periode: ${bulan}</div>
-        </div>
-      </div>
-    </div>
+                    <!-- HEADER CARD -->
+                    <div class="card-header">
+                    <div class="row">
+                        <div class="icon">👤</div>
+                        <div>
+                        <div class="nama">${nama}</div>
+                        <div class="sub">ID: ${id}</div>
+                        <div class="sub">Periode: ${bulan}</div>
+                        </div>
+                    </div>
+                    </div>
 
-    <!-- FORM -->
-    <div class="form-group">
-      <label>Email PPAT</label>
-      <input id="e" type="email" placeholder="contoh: notaris@email.com">
-    </div>
+                    <!-- FORM -->
+                    <div class="form-group">
+                    <label>Email PPAT</label>
+                    <input id="e" type="email" placeholder="contoh: notaris@email.com">
+                    </div>
 
-    <div class="form-group">
-      <label>Nomor SPL</label>
-      <input id="n" type="text" placeholder="Contoh: 2024/SPL/B.3/BAPENDA/001">
-    </div>
+                    <div class="form-group">
+                    <label>Nomor SPL</label>
+                    <input id="n" type="text" placeholder="Contoh: 2024/SPL/B.3/BAPENDA/001">
+                    </div>
 
-    <div class="form-group">
-      <label>Jenis Pelanggaran</label>
-      <select id="j">
-        <option value="Terlambat Menyampaikan Laporan">Terlambat Menyampaikan Laporan</option>
-        <option value="Tidak Menyampaikan Laporan">Tidak Menyampaikan Laporan</option>
-        <option value="Pelanggaran : 0 / Denda Lunas">Pelanggaran : 0 / Denda Lunas</option>
-      </select>
-    </div>
+                    <div class="form-group">
+                    <label>Jenis Pelanggaran</label>
+                    <select id="j">
+                        <option value="Terlambat Menyampaikan Laporan">Terlambat Menyampaikan Laporan</option>
+                        <option value="Tidak Menyampaikan Laporan">Tidak Menyampaikan Laporan</option>
+                        <option value="Pelanggaran : 0 / Denda Lunas">Pelanggaran : 0 / Denda Lunas</option>
+                    </select>
+                    </div>
 
-  </div>
-  `,
+                </div>
+                `,
                 width: 420,
                 confirmButtonText: 'Kirim',
                 cancelButtonText: 'Batal',
@@ -1886,6 +2007,17 @@
             try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
         }
 
+        // Data Baru
+        function appendNewData(newData) {
+            const tbody = document.querySelector("#dataNotaris");
+
+            newData.forEach(row => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `<td>${row["id"]}</td><td>${row["nama_notaris_&_ppat"]}</td>`;
+                tbody.prepend(tr); // masuk ke atas
+            });
+        }
+
         // PREVIEW PDF
         function previewPDF(url) {
             let old = document.getElementById("pdfModal");
@@ -1935,6 +2067,8 @@
 
         // INISIALISASI
         document.addEventListener("DOMContentLoaded", function () {
+
+            // hidden input
             if (!document.getElementById("selectedBulan")) {
                 let hiddenInput = document.createElement("input");
                 hiddenInput.type = "hidden";
@@ -1942,8 +2076,220 @@
                 hiddenInput.value = "";
                 document.body.appendChild(hiddenInput);
             }
+
             loadDataSheet();
-            document.getElementById("searchNotaris")?.addEventListener("keyup", filterData);
+
+            let lastData = "";
+            let firstLoad = true;
+            let allData = [];
+            let currentFilteredData = [];
+
+            // ===============================
+            // 🔥 SORT SUPER RAPI
+            // ===============================
+            const bulanMap = {
+                "Januari": 1, "Februari": 2, "Maret": 3, "April": 4,
+                "Mei": 5, "Juni": 6, "Juli": 7, "Agustus": 8,
+                "September": 9, "Oktober": 10, "November": 11, "Desember": 12
+            };
+
+            function sortSuperRapi(data) {
+                return data.sort((a, b) => {
+
+                    let bulanA = bulanMap[a.laporan_bulanan] || 0;
+                    let bulanB = bulanMap[b.laporan_bulanan] || 0;
+
+                    if (bulanA !== bulanB) return bulanA - bulanB;
+
+                    let tglA = new Date(a.tanggal_diterima);
+                    let tglB = new Date(b.tanggal_diterima);
+
+                    if (tglA.getTime() !== tglB.getTime()) return tglB - tglA;
+
+                    let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
+                    let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
+
+                    return namaA.localeCompare(namaB);
+                });
+            }
+
+            // ===============================
+            // AUDIO ENGINE
+            // ===============================
+            let audioCtx = null;
+            let isPlaying = false;
+            let lastPlayTime = 0;
+
+            const playPauseBtn = document.getElementById('btnPlayPause');
+            const playPauseIcon = document.getElementById('playPauseIcon');
+            const playPauseText = document.getElementById('playPauseText');
+
+            function updateButtonAppearance() {
+                if (isPlaying) {
+                    playPauseBtn.classList.add("active");
+                    playPauseIcon.className = 'bi bi-pause-fill';
+                    playPauseText.textContent = 'Pause';
+                } else {
+                    playPauseBtn.classList.remove("active");
+                    playPauseIcon.className = 'bi bi-play-fill';
+                    playPauseText.textContent = 'Play';
+                }
+            }
+
+            function initAudio() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            async function unlockAudio() {
+                if (!audioCtx) initAudio();
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+            }
+
+            async function playNotif() {
+                if (!isPlaying) return;
+
+                const now = Date.now();
+                if (now - lastPlayTime < 800) return;
+                lastPlayTime = now;
+
+                try {
+                    await unlockAudio();
+
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.frequency.value = 1000;
+                    gain.gain.value = 0.3;
+
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+                    osc.stop(audioCtx.currentTime + 0.1);
+
+                } catch (e) {
+                    console.log("Audio error:", e);
+                }
+            }
+
+            // ===============================
+            // TOGGLE PLAY / PAUSE
+            // ===============================
+            window.togglePlayPause = function () {
+                isPlaying = !isPlaying;
+
+                if (isPlaying) {
+                    setTimeout(() => playNotif(), 200);
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: '🔔 Notifikasi Aktif',
+                        timer: 2000,
+                        position: 'top-end'
+                    });
+
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: '❌ Notifikasi Dimatikan',
+                        timer: 2000,
+                        position: 'top-end'
+                    });
+                }
+
+                updateButtonAppearance();
+            }
+
+            // ===============================
+            // UNLOCK AUDIO
+            // ===============================
+            document.addEventListener("click", async function firstClick() {
+                initAudio();
+                await unlockAudio();
+                document.removeEventListener("click", firstClick);
+            }, { once: true });
+
+            // ===============================
+            // AUTO CEK GOOGLE SHEET
+            // ===============================
+            setInterval(() => {
+                fetch(scriptURL)
+                    .then(res => res.json())
+                    .then(async (data) => {
+
+                        let newData = JSON.stringify(data);
+
+                        if (firstLoad) {
+                            lastData = newData;
+                            firstLoad = false;
+                            return;
+                        }
+
+                        if (newData !== lastData) {
+
+                            console.log("📊 DATA BARU!");
+
+                            if (isPlaying) {
+                                await playNotif();
+                            }
+
+                            lastData = newData;
+
+                            // PAKAI SORT BARU
+                            let sorted = sortSuperRapi(data);
+
+                            allData = sorted;
+                            currentFilteredData = sorted;
+
+                            renderTable(sorted);
+                            tampilkanRingkasanBulanan();
+
+                            Toast.fire({
+                                icon: 'info',
+                                position: 'top-end',
+                                timer: 2500,
+                                showConfirmButton: false,
+                                html: `
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="bi bi-calendar2-check-fill" style="font-size:20px;color:#0d6efd;"></i>
+                            <div>
+                                <b>Data Baru Masuk</b><br>
+                                <small>${new Date().toLocaleTimeString()}</small>
+                            </div>
+                        </div>
+                        `
+                            });
+                        }
+
+                    })
+                    .catch(err => console.error(err));
+
+            }, 5000);
+
+            // ===============================
+            // SEARCH
+            // ===============================
+            document.getElementById("searchNotaris")
+                ?.addEventListener("keyup", filterData);
+
+            // ===============================
+            // CSS
+            // ===============================
+            const style = document.createElement('style');
+            style.innerHTML = `
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `;
+            document.head.appendChild(style);
+
+            updateButtonAppearance();
         });
 
         // EXPORT FUNGSI KE GLOBAL
