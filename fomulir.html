@@ -1756,23 +1756,37 @@
             <div class="container d-flex justify-content-between align-items-center">
 
                 <!-- Kiri: Judul -->
-                <a class="navbar-brand d-flex align-items-center" href="">
-                    <i class="bi bi-pencil"> LAPORAN NOTARIS DAN PPAT</i>
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <i class="bi bi-pencil-square me-2"></i> FOMULIR LAPORAN
                 </a>
 
-                <!-- Kanan: Icon Scan -->
-                <a href="dashbord.html" class="nav-link" title="Dashboard">
-                    <i class="bi bi-buildings"></i>
-                </a>
-                <a href="datajukir.html" class="nav-link" title="Arsip Surat">
-                    <i class="bi bi-send"></i>
-                </a>
-                <a href="Table.html" class="nav-link" title="Email PPAT">
-                    <i class="bi bi-people"></i>
-                </a>
-                <a href="table.html" class="nav-link" onclick="logout()" title="Logout">
-                    <i class="bi bi-box-arrow-right me-1"></i> LOGOUT
-                </a>
+                <!-- Kanan: Tombol Navigasi dengan jarak -->
+                <div class="d-flex gap-3 align-items-center">
+                    <!-- Tombol Petunjuk -->
+                    <a href="#" class="nav-link p-1" id="btnPetunjukForm" title="Petunjuk Pengisian Formulir">
+                        <i class="bi bi-question-circle-fill fs-5"></i>
+                    </a>
+
+                    <!-- Dashboard -->
+                    <a href="dashbord.html" class="nav-link p-1" title="Dashboard">
+                        <i class="bi bi-speedometer2 fs-5"></i>
+                    </a>
+
+                    <!-- Arsip Surat -->
+                    <a href="datajukir.html" class="nav-link p-1" title="Arsip Surat">
+                        <i class="bi bi-send fs-5"></i>
+                    </a>
+
+                    <!-- Email PPAT -->
+                    <a href="Table.html" class="nav-link p-1" title="Email PPAT">
+                        <i class="bi bi-people fs-5"></i>
+                    </a>
+
+                    <!-- Logout -->
+                    <a href="table.html" class="nav-link p-1" onclick="logout()" title="Logout">
+                        <i class="bi bi-box-arrow-right me-1 fs-5"></i>
+                    </a>
+                </div>
 
             </div>
         </nav>
@@ -1797,8 +1811,8 @@
 
     <script>
         /* =========================
-               FUNGSI LOGIN DAN LOGOUT
-            ========================= */
+           FUNGSI LOGIN DAN LOGOUT
+        ========================= */
         const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
 
         function cekLogin() {
@@ -1835,7 +1849,7 @@
            FUNGSI FOMULIR
            ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwoi6cLUvmkEytFRtFriSoSnPyJdUNflD5nlMKRRSYbN1UdfwG9BmXhMhK4EsaTXp_T0A/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNXHj30_lpjVY9wpyz1ORvPijlqpH4ZKvroGkE3HOxRYQP0k8ohsMzxXjz508W5gzqVQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2346,22 +2360,36 @@
     </style>
 `);
 
-        // Fungsi untuk menampilkan loading sebelum berpindah halaman
+        // Fungsi untuk menampilkan loading sebelum berpindah halaman (kecuali untuk tombol petunjuk)
         document.addEventListener("DOMContentLoaded", function () {
             let links = document.querySelectorAll("a"); // Target semua link di halaman
+
             links.forEach(link => {
-                link.addEventListener("click", function (event) {
-                    event.preventDefault(); // Mencegah navigasi langsung
-                    let overlay = document.getElementById("loadingOverlay");
+                // TOMBOL YANG TIDAK PERLU LOADING (Petunjuk, atau yang memiliki class tertentu)
+                const isExcluded = link.id === 'btnPetunjukForm' ||
+                    link.classList.contains('no-loading') ||
+                    link.getAttribute('data-no-loading') === 'true';
 
-                    overlay.style.visibility = "visible";
-                    overlay.style.opacity = "1";
+                // Hanya proses link yang bukan tombol petunjuk dan memiliki href yang valid
+                if (!isExcluded && link.href && link.href !== '#' && !link.href.endsWith('#')) {
+                    link.addEventListener("click", function (event) {
+                        // Jangan prevent jika ini adalah tombol petunjuk
+                        if (this.id === 'btnPetunjukForm') return;
 
-                    let loadingTime = 10000; // 10 detik sebelum pindah halaman
-                    setTimeout(() => {
-                        window.location.href = this.href; // Pindah halaman setelah 10 detik
-                    }, loadingTime);
-                });
+                        event.preventDefault(); // Mencegah navigasi langsung
+                        let overlay = document.getElementById("loadingOverlay");
+
+                        if (overlay) {
+                            overlay.style.visibility = "visible";
+                            overlay.style.opacity = "1";
+                        }
+
+                        let loadingTime = 10000; // 10 detik sebelum pindah halaman
+                        setTimeout(() => {
+                            window.location.href = this.href; // Pindah halaman setelah 10 detik
+                        }, loadingTime);
+                    });
+                }
             });
         });
 
@@ -3558,449 +3586,344 @@
             }
         }
 
+        // Tambahkan tombol petunjuk di navbar
+        const petunjukBtn = document.createElement('a');
+        petunjukBtn.href = '#';
+        petunjukBtn.className = 'nav-link';
+        petunjukBtn.title = 'Petunjuk Formulir';
+        petunjukBtn.innerHTML = '<i class="bi bi-question-circle-fill"></i>';
+        petunjukBtn.onclick = function (e) {
+            e.preventDefault();
+            tampilkanPetunjukKeterangan();
+        };
+
+        // Tambahkan di dalam DOMContentLoaded
+        const navbarContainer = document.querySelector('#mainNavbar .container div:last-child');
+        if (navbarContainer && !document.getElementById('btnPetunjukForm')) {
+            const btn = document.createElement('a');
+            btn.href = '#';
+            btn.className = 'nav-link';
+            btn.id = 'btnPetunjukForm';
+            btn.title = 'Petunjuk Pengisian Formulir';
+            btn.innerHTML = '<i class="bi bi-question-circle-fill"></i> Petunjuk';
+            btn.onclick = function (e) {
+                e.preventDefault();
+                tampilkanPetunjukKeterangan();
+            };
+            navbarContainer.insertBefore(btn, navbarContainer.firstChild);
+        }
+
         // ============================================
-        // FUNGSI SIMPAN PDF UNTUK STATISTIK LAPORAN
+        // FUNGSI PETUNJUK KETERANGAN FORMULIR
         // ============================================
 
-        // Fungsi untuk membuat PDF dari data statistik
-        async function simpanStatistikKePDF() {
-            // Ambil data terbaru dari sheet
-            const loadingModal = document.createElement('div');
-            loadingModal.id = 'loadingPDF';
-            loadingModal.className = 'modal fade';
-            loadingModal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Membuat PDF... <br> Mohon tunggu sebentar</p>
+        // Fungsi untuk menampilkan petunjuk pengisian form
+        function tampilkanPetunjukKeterangan() {
+            // Hapus modal petunjuk jika sudah ada
+            const existingModal = document.getElementById('modalPetunjukForm');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Buat modal petunjuk
+            const modalHTML = `
+        <div class="modal fade" id="modalPetunjukForm" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
+                        <h5 class="modal-title">
+                            <i class="bi bi-info-circle-fill"></i> Panduan Pengisian Formulir Laporan PPAT
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Daftar Isi -->
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-lightbulb-fill"></i>
+                            <strong>Tips Cepat:</strong> Isi data secara berurutan dari atas ke bawah. Field yang bertanda <span class="text-danger">*</span> wajib diisi.
+                        </div>
+
+                        <!-- 1. DATA NOTARIS -->
+                        <div class="card mb-3 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <i class="bi bi-person-badge"></i> 1. Data Notaris & PPAT
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>📋 Pilih Nama Notaris:</strong> 
+                                        Pilih nama notaris/PPAT dari daftar dropdown. Data ID, Nama Lengkap, dan Alamat akan terisi otomatis.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🆔 ID Notaris:</strong> 
+                                        Terisi otomatis berdasarkan pilihan notaris. Tidak perlu diisi manual.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📍 Alamat:</strong> 
+                                        Alamat kantor notaris akan muncul otomatis setelah memilih nama notaris.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2. DATA SURAT -->
+                        <div class="card mb-3 border-success">
+                            <div class="card-header bg-success text-white">
+                                <i class="bi bi-envelope-paper"></i> 2. Data Surat PPAT
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>📄 Nomor Surat PPAT:</strong> 
+                                        Masukkan nomor surat PPAT (akan otomatis menjadi huruf kapital). Contoh: <code>123/PPAT/2024</code>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📅 Tanggal Surat PPAT:</strong> 
+                                        Pilih tanggal pembuatan surat PPAT dari kalender.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📥 Tanggal Surat Masuk:</strong> 
+                                        Pilih tanggal surat diterima oleh instansi. Gunakan format <code>DD/MM/YYYY</code>.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📊 Status Surat:</strong> 
+                                        <span class="badge bg-success">Tepat Waktu</span> (tanggal ≤ 10) / 
+                                        <span class="badge bg-warning">Terlambat</span> (tanggal > 10) / 
+                                        <span class="badge bg-danger">Tidak Menyampaikan Laporan</span> (manual)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📆 Bulan Laporan:</strong> 
+                                        Pilih bulan dan tahun laporan yang akan dilaporkan.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 3. JENIS TRANSAKSI -->
+                        <div class="card mb-3 border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="bi bi-arrow-left-right"></i> 3. Jenis Transaksi
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>✅ ADA TRANSAKSI:</strong> 
+                                        Pilih jika ada transaksi (AJB, Hibah, APHB, dll). Maka form data transaksi akan muncul.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>❌ TIDAK ADA:</strong> 
+                                        Pilih jika tidak ada transaksi (Laporan Nihil). Blok transaksi akan disembunyikan.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 4. DATA TRANSAKSI -->
+                        <div class="card mb-3 border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <i class="bi bi-calculator-fill"></i> 4. Data Transaksi (Jika Ada)
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>📆 Tanggal Transaksi:</strong> Pilih tanggal pelaksanaan transaksi.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🔢 No. SPPD:</strong> Masukkan nomor Surat Setoran Pajak Daerah (jika ada).
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📑 Nomor Akta:</strong> Format <code>00/2024</code> atau <code>000/2024</code>.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🏷️ Nomor Hak/Sertifikat:</strong> Contoh: <code>SHM No. 1234</code> atau <code>HGB/1234</code>.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>👤 Penjual & Pembeli:</strong> Nama lengkap pihak-pihak dalam transaksi.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🗺️ Kelurahan:</strong> Ketik nama kelurahan, akan muncul saran otomatis.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🏠 NOP (18 digit):</strong> Nomor Objek Pajak, format <code>12.34.567.890.1234.5</code>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>💰 NJOP & Harga Transaksi:</strong> Nilai Jual Objek Pajak dan harga transaksi dalam Rupiah.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📏 Luas Tanah/Bangunan:</strong> Format <code>0000/0000</code> (Tanah/Bangunan dalam m²).
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>💵 Tarif SSP:</strong> Pilih tarif yang berlaku (2.5%, 2.0%, 1.5%, 1.0%, 0.5%, atau 0% untuk manual).
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>💰 SSP & SSB:</strong> Nominal Bea Perolehan Hak atas Tanah dan Bangunan akan dihitung otomatis.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>✅ Centang Konfirmasi:</strong> Wajib dicentang untuk melanjutkan.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 5. JUMLAH LAPORAN & BPHTB -->
+                        <div class="card mb-3 border-info">
+                            <div class="card-header bg-info text-white">
+                                <i class="bi bi-bar-chart"></i> 5. Jumlah Laporan & BPHTB
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>🔢 Jumlah Laporan:</strong> 
+                                        Total jumlah akta yang dilaporkan pada periode ini.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🔄 Sinkron Nominal Transaksi:</strong> 
+                                        Jika diaktifkan (hijau), nominal BPHTB akan mengikuti nilai SSB. Jika dimatikan, bisa diisi manual.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>💰 Jumlah Nominal BPHTB:</strong> 
+                                        Total Bea Perolehan Hak atas Tanah dan Bangunan (otomatis atau manual).
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 6. KETERANGAN -->
+                        <div class="card mb-3 border-secondary">
+                            <div class="card-header bg-secondary text-white">
+                                <i class="bi bi-pencil-square"></i> 6. Keterangan Rincian Akta
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>📝 Format Keterangan:</strong> 
+                                        <code>AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0</code>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>✨ Fitur Cerdas:</strong> 
+                                        Sistem akan memvalidasi jumlah total akta dengan angka di <strong>Jumlah Laporan</strong>.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>💡 Contoh:</strong> Jika ada 3 AJB dan 2 APHT, tulis <code>AJB ; 3  APHT ; 2</code>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 7. PERSETUJUAN -->
+                        <div class="card mb-3 border-dark">
+                            <div class="card-header bg-dark text-white">
+                                <i class="bi bi-check-circle"></i> 7. Persetujuan & Pengiriman
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>☑️ Centang Persetujuan:</strong> 
+                                        Wajib dicentang sebagai tanda data yang diinput benar.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📤 Tombol Kirim:</strong> 
+                                        Setelah semua data valid, klik <span class="btn btn-primary btn-sm disabled">Kirim Laporan</span> untuk mengirim ke server.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>⏳ Proses:</strong> 
+                                        Akan muncul loading, lalu notifikasi sukses. Halaman akan otomatis reload setelah 5 detik.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 8. STATISTIK -->
+                        <div class="card mb-3 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <i class="bi bi-graph-up"></i> 8. Statistik Laporan (Tombol ℹ️ di Navbar)
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>📊 Lihat Statistik:</strong> 
+                                        Klik tombol <i class="bi bi-info-circle-fill"></i> di navbar untuk melihat rekap laporan notaris.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>📆 Filter Bulan:</strong> 
+                                        Pilih periode laporan yang ingin dilihat statistiknya.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>🖨️ Cetak Data:</strong> 
+                                        Klik tombol <span class="btn btn-success btn-sm disabled"><i class="bi bi-printer-fill"></i> Cetak Data</span> untuk menyimpan laporan statistik sebagai PDF.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 9. SHORTCUT & PERINGATAN -->
+                        <div class="alert alert-danger mt-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <strong>Peringatan Keamanan:</strong>
+                            <hr>
+                            <ul class="mb-0">
+                                <li>❌ Klik kanan (Right-click) dinonaktifkan</li>
+                                <li>❌ Shortcut inspect element (F12, Ctrl+Shift+I, Ctrl+U) diblokir</li>
+                                <li>❌ Console browser dinonaktifkan</li>
+                                <li>⚠️ DevTools terdeteksi akan mengaburkan tampilan</li>
+                            </ul>
+                        </div>
+
+                        <div class="alert alert-success mt-2">
+                            <i class="bi bi-question-circle-fill"></i>
+                            <strong>Butuh Bantuan?</strong>
+                            <p class="mb-0 mt-1">Jika mengalami kendala, hubungi admin atau lihat dokumentasi lengkap.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Tutup
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="scrollKeForm()">
+                            <i class="bi bi-arrow-down"></i> Mulai Isi Form
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     `;
-            document.body.appendChild(loadingModal);
-            const loadingModalInstance = new bootstrap.Modal(loadingModal);
-            loadingModalInstance.show();
 
-            try {
-                // Ambil data dari Google Sheet
-                const dataLaporan = await getDataLaporanDariSheet();
-                const semuaNotaris = getAllNotarisFromDropdown();
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                // Dapatkan bulan yang sedang dipilih di modal
-                const pilihBulan = document.getElementById('pilihBulanStatistik');
-                let selectedMonth = pilihBulan ? pilihBulan.value : '';
-                if (!selectedMonth) {
-                    selectedMonth = document.getElementById('selectedMonthDisplay')?.textContent || '';
-                }
-                if (!selectedMonth) {
-                    selectedMonth = document.getElementById('laporan_bulanan')?.value || '';
-                }
+            // Tampilkan modal
+            const modal = new bootstrap.Modal(document.getElementById('modalPetunjukForm'));
+            modal.show();
+        }
 
-                // Dapatkan data berdasarkan bulan
-                const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
-                const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
+        // Fungsi untuk scroll ke form
+        function scrollKeForm() {
+            const modalElement = document.getElementById('modalPetunjukForm');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
 
-                // Kelompokkan notaris yang sudah lapor berdasarkan status
-                const tepatWaktu = sudahLapor.filter(n => n.status === 'Tepat Waktu');
-                const terlambat = sudahLapor.filter(n => n.status === 'Menyampaikan/Terlambat');
-                const tidakMenyampaikan = sudahLapor.filter(n => n.status === 'Tidak Menyampaikan Laporan');
-
-                // Format tanggal untuk nama file
-                const now = new Date();
-                const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
-
-                // Buat konten HTML untuk PDF
-                const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Laporan Statistik Notaris - ${selectedMonth}</title>
-    <style>
-        @page {
-            size: A4 landscape;
-            margin: 15mm;
-        }
-        body {
-            font-family: 'Times New Roman', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            font-size: 11pt;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #0d6efd;
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            margin: 0;
-            color: #0d6efd;
-            font-size: 18pt;
-        }
-        .header h3 {
-            margin: 5px 0;
-            color: #333;
-        }
-        .header p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .summary {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            gap: 15px;
-        }
-        .summary-card {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            color: white;
-        }
-        .summary-card.total { background: linear-gradient(135deg, #0d6efd, #0b5ed7); }
-        .summary-card.sudah { background: linear-gradient(135deg, #198754, #157347); }
-        .summary-card.belum { background: linear-gradient(135deg, #dc3545, #bb2d3b); }
-        .summary-card h2 { margin: 0; font-size: 28pt; }
-        .summary-card p { margin: 5px 0 0; opacity: 0.9; }
-        
-        .progress-container {
-            margin: 20px 0;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            background: #198754;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .section {
-            margin: 20px 0;
-            page-break-inside: avoid;
-        }
-        .section-title {
-            background: #0d6efd;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .section-title i {
-            margin-right: 8px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 9pt;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background: #f8f9fa;
-            font-weight: bold;
-        }
-        .status-tepat { color: #198754; font-weight: bold; }
-        .status-terlambat { color: #fd7e14; font-weight: bold; }
-        .status-tidak { color: #dc3545; font-weight: bold; }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 9pt;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 8pt;
-            font-weight: bold;
-        }
-        .badge-success { background: #198754; color: white; }
-        .badge-warning { background: #fd7e14; color: white; }
-        .badge-danger { background: #dc3545; color: white; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>📊 LAPORAN STATISTIK NOTARIS & PPAT</h1>
-        <h3>Kota Bengkulu</h3>
-        <p>Periode Laporan: <strong>${selectedMonth}</strong></p>
-        <p>Tanggal Cetak: ${now.toLocaleDateString('id-ID')} | Pukul: ${now.toLocaleTimeString('id-ID')}</p>
-    </div>
-    
-    <div class="summary">
-        <div class="summary-card total">
-            <h2>${semuaNotaris.length}</h2>
-            <p>Total Notaris</p>
-        </div>
-        <div class="summary-card sudah">
-            <h2>${sudahLapor.length}</h2>
-            <p>✓ Sudah Lapor</p>
-        </div>
-        <div class="summary-card belum">
-            <h2>${belumLapor.length}</h2>
-            <p>✗ Belum Lapor</p>
-        </div>
-    </div>
-    
-    <div class="progress-container">
-        <div class="progress-bar" style="width: ${(sudahLapor.length / semuaNotaris.length * 100)}%">
-            ${Math.round((sudahLapor.length / semuaNotaris.length * 100))}% Terlapor
-        </div>
-    </div>
-    
-    <!-- RINGKASAN STATUS -->
-    <div class="section">
-        <div class="section-title">
-            📈 RINGKASAN STATUS LAPORAN
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Jumlah Notaris</th>
-                    <th>Persentase</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="background: #d1e7dd;">
-                    <td><span class="badge badge-success">✓</span> Tepat Waktu</td>
-                    <td><strong>${tepatWaktu.length}</strong> notaris</td>
-                    <td>${Math.round((tepatWaktu.length / semuaNotaris.length * 100))}%</td>
-                </tr>
-                <tr style="background: #fff3cd;">
-                    <td><span class="badge badge-warning">⚠</span> Menyampaikan/Terlambat</td>
-                    <td><strong>${terlambat.length}</strong> notaris</td>
-                    <td>${Math.round((terlambat.length / semuaNotaris.length * 100))}%</td>
-                </tr>
-                <tr style="background: #f8d7da;">
-                    <td><span class="badge badge-danger">✗</span> Tidak Menyampaikan</td>
-                    <td><strong>${tidakMenyampaikan.length}</strong> notaris</td>
-                    <td>${Math.round((tidakMenyampaikan.length / semuaNotaris.length * 100))}%</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    
-    <!-- NOTARIS YANG SUDAH LAPOR -->
-    <div class="section">
-        <div class="section-title">
-            ✅ NOTARIS YANG SUDAH LAPOR (${sudahLapor.length})
-        </div>
-        ${sudahLapor.length > 0 ? `
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Notaris & PPAT</th>
-                    <th>Status</th>
-                    <th>Tanggal Lapor</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${sudahLapor.map((l, idx) => `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>${l.nama}</td>
-                        <td class="${l.status === 'Tepat Waktu' ? 'status-tepat' : (l.status === 'Menyampaikan/Terlambat' ? 'status-terlambat' : 'status-tidak')}">
-                            ${l.status === 'Tepat Waktu' ? '✓ Tepat Waktu' : (l.status === 'Menyampaikan/Terlambat' ? '⚠ Terlambat' : '✗ Tidak Menyampaikan')}
-                        </td>
-                        <td>${l.tanggal || '-'}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        ` : '<p style="color: #666;">Belum ada data laporan untuk periode ini</p>'}
-    </div>
-    
-    <!-- NOTARIS YANG BELUM LAPOR -->
-    <div class="section">
-        <div class="section-title">
-            ❌ NOTARIS YANG BELUM LAPOR (${belumLapor.length})
-        </div>
-        ${belumLapor.length > 0 ? `
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Notaris & PPAT</th>
-                    <th>ID Notaris</th>
-                    <th>Alamat</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${belumLapor.map((n, idx) => `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>${n.nama}</td>
-                        <td>${n.id || '-'}</td>
-                        <td>${n.alamat ? n.alamat.substring(0, 50) + '...' : '-'}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        ` : '<p style="color: #28a745;">✓ Semua notaris sudah melaporkan tepat waktu!</p>'}
-    </div>
-    
-    <!-- REKAP PER STATUS -->
-    <div class="section">
-        <div class="section-title">
-            📊 REKAPITULASI PER STATUS
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategori</th>
-                    <th>Jumlah</th>
-                    <th>Daftar Notaris</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="background:#d1e7dd;">✓ Tepat Waktu</td>
-                    <td style="background:#d1e7dd;"><strong>${tepatWaktu.length}</strong></td>
-                    <td style="background:#d1e7dd;">${tepatWaktu.map(t => t.nama.split(',')[0]).join(', ')}</td>
-                </tr>
-                <tr>
-                    <td style="background:#fff3cd;">⚠ Terlambat</td>
-                    <td style="background:#fff3cd;"><strong>${terlambat.length}</strong></td>
-                    <td style="background:#fff3cd;">${terlambat.map(t => t.nama.split(',')[0]).join(', ')}</td>
-                </tr>
-                <tr>
-                    <td style="background:#f8d7da;">✗ Tidak Menyampaikan</td>
-                    <td style="background:#f8d7da;"><strong>${tidakMenyampaikan.length}</strong></td>
-                    <td style="background:#f8d7da;">${tidakMenyampaikan.map(t => t.nama.split(',')[0]).join(', ')}</td>
-                </tr>
-                <tr style="background:#e2e3e5;">
-                    <td>❌ Belum Lapor Sama Sekali</td>
-                    <td><strong>${belumLapor.length}</strong></td>
-                    <td>${belumLapor.map(b => b.nama.split(',')[0]).join(', ')}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="footer">
-        <p>*Dokumen ini dibuat secara otomatis oleh Sistem Informasi Laporan PPAT - Bapenda Kota Bengkulu</p>
-    </div>
-</body>
-</html>
-        `;
-
-                // Buat Blob PDF dari HTML
-                const pdfBlob = new Blob([htmlContent], { type: 'text/html' });
-
-                // Gunakan window.print untuk menyimpan sebagai PDF
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(htmlContent);
-                printWindow.document.close();
-
-                setTimeout(() => {
-                    printWindow.print();
-                    loadingModalInstance.hide();
-                    loadingModal.remove();
-                }, 1000);
-
-            } catch (error) {
-                console.error('Error membuat PDF:', error);
-                loadingModalInstance.hide();
-                loadingModal.remove();
-                alert('Gagal membuat PDF: ' + error.message);
+            // Scroll ke form utama
+            const formElement = document.querySelector('form[name="LAPORAN NOTARIS"]');
+            if (formElement) {
+                formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
-        // Tambahkan tombol Simpan PDF di modal statistik
-        // Modifikasi fungsi tampilkanModalStatistikDariSheet - tambahkan tombol PDF
-        // Cari bagian modal-footer dan tambahkan tombol PDF
+        // Ekspor fungsi ke global
+        window.tampilkanPetunjukKeterangan = tampilkanPetunjukKeterangan;
+        window.scrollKeForm = scrollKeForm;
 
-        // Override fungsi untuk menambahkan tombol PDF
-        async function tampilkanModalStatistikDariSheetWithPDF(bulanPilihan = null) {
-            // Panggil fungsi asli terlebih dahulu
-            await tampilkanModalStatistikDariSheet(bulanPilihan);
-
-            // Tunggu modal terbentuk lalu tambahkan tombol PDF
-            setTimeout(() => {
-                const modalFooter = document.querySelector('#modalStatistikNotaris .modal-footer');
-                if (modalFooter && !document.getElementById('btnSimpanPDF')) {
-                    const btnPDF = document.createElement('button');
-                    btnPDF.id = 'btnSimpanPDF';
-                    btnPDF.type = 'button';
-                    btnPDF.className = 'btn btn-success me-auto';
-                    btnPDF.innerHTML = '<i class="bi bi-file-pdf-fill"></i> Simpan PDF';
-                    btnPDF.onclick = function () {
-                        simpanStatistikKePDF();
-                    };
-                    modalFooter.insertBefore(btnPDF, modalFooter.firstChild);
-                }
-            }, 500);
-        }
-
-        // Override fungsi asli
-        const originalTampilkanModal = tampilkanModalStatistikDariSheet;
-        window.tampilkanModalStatistikDariSheet = async function (bulanPilihan = null) {
-            await originalTampilkanModal(bulanPilihan);
-            setTimeout(() => {
-                const modalFooter = document.querySelector('#modalStatistikNotaris .modal-footer');
-                if (modalFooter && !document.getElementById('btnSimpanPDF')) {
-                    const btnPDF = document.createElement('button');
-                    btnPDF.id = 'btnSimpanPDF';
-                    btnPDF.type = 'button';
-                    btnPDF.className = 'btn btn-success me-auto';
-                    btnPDF.innerHTML = '<i class="bi bi-printer-fill"></i> Cetak Data';
-                    btnPDF.onclick = function () {
-                        simpanStatistikKePDF();
-                    };
-                    modalFooter.insertBefore(btnPDF, modalFooter.firstChild);
-                }
-            }, 500);
-        };
-
-        // Fungsi refresh statistik
-        function refreshStatistikFromSheet() {
-            tampilkanModalStatistikDariSheet();
-        }
-
-        /* Disable klik kanan */
-        document.addEventListener('contextmenu', e => e.preventDefault());
-
-        /* Blok shortcut Inspect */
-        document.addEventListener('keydown', function (e) {
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
-                (e.ctrlKey && e.key === 'U')
-            ) {
-                e.preventDefault();
-                return false;
+        // ============================================
+        // TAMBAHAN: EVENT LISTENER UNTUK TOMBOL PETUNJUK
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnPetunjuk = document.getElementById('btnPetunjukForm');
+            if (btnPetunjuk) {
+                btnPetunjuk.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    tampilkanPetunjukKeterangan();
+                });
             }
         });
-
-        setInterval(function () {
-            const threshold = 160;
-            if (
-                window.outerWidth - window.innerWidth > threshold ||
-                window.outerHeight - window.innerHeight > threshold
-            ) {
-                document.body.style.filter = 'blur(10px)';
-                document.body.style.pointerEvents = 'none';
-            }
-        }, 500);
 
         console.log = function () { };
         console.warn = function () { };
