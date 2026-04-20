@@ -3,309 +3,91 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <title>Notifikasi PPAT</title>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Notifikasi PPAT - Bapenda Kota Bengkulu</title>
     <style>
         /* =========================
-            GLOBAL
+            RESET & GLOBAL
         ========================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Work Sans', sans-serif;
-            background: linear-gradient(135deg, #eef2f7, #dfe9f3);
-            padding: 80px 20px 20px 20px;
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2f7 0%, #d4dfe9 100%);
+            padding: 80px 20px 30px 20px;
+            min-height: 100vh;
         }
 
         h2 {
             font-weight: 700;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            margin-bottom: 25px;
+            color: #1e3c72;
+            text-align: center;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        h2:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #2a5298, #4ca1af);
+            margin: 12px auto 0;
+            border-radius: 4px;
         }
 
         /* =========================
-       NAVBAR
+       NAVBAR MODERN
         ========================= */
         #mainNavbar {
-            background: linear-gradient(90deg, #2c3e50, #4ca1af);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
         }
 
         .navbar-brand {
-            font-weight: 600;
+            font-weight: 700;
             color: white !important;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
         }
 
         .nav-link {
             color: white !important;
             margin-left: 15px;
             font-weight: 500;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            opacity: 0.85;
         }
 
         .nav-link:hover {
-            opacity: 0.8;
+            opacity: 1;
+            transform: translateY(-2px);
         }
 
         /* =========================
-       BOX / CARD
+       ACTION CONTAINER MODERN
         ========================= */
-        .card-box,
-        .action-box {
-            background: white;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        /* =========================
-       FORM
-    ========================= */
-        select {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 7px 10px;
-            min-width: 250px;
-        }
-
-        select:focus {
-            border-color: #4ca1af;
-            box-shadow: 0 0 5px rgba(76, 161, 175, 0.4);
-            outline: none;
-        }
-
-        /* =========================
-       BUTTON
-    ========================= */
-        button {
-            border-radius: 8px;
-            padding: 7px 12px;
-            border: none;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.25s;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-        }
-
-        button i {
-            margin-right: 5px;
-            font-size: 13px;
-        }
-
-        .kirim {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white;
-        }
-
-        .massal {
-            background: linear-gradient(135deg, #e74c3c, #ff6b6b);
-            color: white;
-        }
-
-        .preview {
-            background: linear-gradient(135deg, #3498db, #5dade2);
-            color: white;
-        }
-
-        /* =========================
-       TABLE
-    ========================= */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            font-size: 13px;
-        }
-
-        /* HEADER */
-        thead {
-            background: linear-gradient(90deg, #2c3e50, #4ca1af);
-            color: white;
-        }
-
-        thead th {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            padding: 10px 8px;
-            text-align: center;
-            white-space: nowrap;
-            /* 🔥 BIAR TIDAK TURUN */
-        }
-
-        /* ICON HEADER */
-        thead i {
-            margin-right: 4px;
-            font-size: 12px;
-        }
-
-        /* CELL */
-        th,
-        td {
-            padding: 8px 8px;
-            vertical-align: middle;
-            /* 🔥 KUNCI SEJAJAR */
-        }
-
-        /* TEXT CONTROL */
-        td {
-            line-height: 1.4;
-        }
-
-        /* KHUSUS KOLOM PANJANG */
-        td:nth-child(3),
-        td:nth-child(4) {
-            white-space: normal;
-        }
-
-        /* KOLOM LAIN JANGAN TURUN */
-        td:not(:nth-child(3)):not(:nth-child(4)) {
-            white-space: nowrap;
-        }
-
-        /* CENTER KOLOM TERTENTU */
-        td:nth-child(1),
-        td:nth-child(5),
-        td:nth-child(6),
-        td:nth-child(8),
-        td:nth-child(9),
-        td:nth-child(10) {
-            text-align: center;
-        }
-
-        /* ROW EFFECT */
-        tbody tr {
-            transition: 0.2s;
-        }
-
-        tbody tr:hover {
-            background: #f5f9ff;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #fafafa;
-        }
-
-        /* =========================
-           EMAIL BADGE
-        ========================= */
-        .email-badge {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        /* =========================
-           SEARCH 
-         ========================= */
-
-        .search-wrapper {
-            position: relative;
-        }
-
-        .search-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            color: #6c757d;
-            font-size: 16px;
-            pointer-events: none;
-        }
-
-        .search-input {
-            width: 280px;
-            padding: 10px 35px 10px 40px;
-            border: 1px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #2d89ef;
-            box-shadow: 0 0 0 3px rgba(45, 137, 239, 0.1);
-            width: 320px;
-        }
-
-        .clear-icon {
-            position: absolute;
-            right: 12px;
-            color: #6c757d;
-            font-size: 14px;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .clear-icon:hover {
-            color: #dc3545;
-        }
-
-        /* =========================
-           STATUS
-        ========================= */
-        .status {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .status-terkirim {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-belum {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* =========================
-             ACTION CONTAINER
-           ========================= */
-        /* ========================================
-   ACTION CONTAINER MODERN
-   ======================================== */
-
         .action-container {
-            background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
-            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
             padding: 28px;
             margin-bottom: 28px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.1);
-        }
-
-        /* ========================================
-   SECTION TITLE
-   ======================================== */
-
-        .filter-section,
-        .add-section,
-        .action-section {
-            margin-bottom: 32px;
-        }
-
-        .filter-section:last-child,
-        .add-section:last-child,
-        .action-section:last-child {
-            margin-bottom: 0;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .section-title {
@@ -313,7 +95,7 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 20px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
             color: #1e293b;
         }
@@ -322,9 +104,8 @@
             font-size: 20px;
             color: #3b82f6;
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            padding: 8px;
+            padding: 10px;
             border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
         }
 
         .title-line {
@@ -334,14 +115,13 @@
             border-radius: 2px;
         }
 
-        /* ========================================
-   GRID LAYOUT
-   ======================================== */
-
+        /* =========================
+       FILTER & FORM STYLE
+        ========================= */
         .filter-grid,
         .add-grid {
             display: flex;
-            gap: 24px;
+            gap: 20px;
             flex-wrap: wrap;
             align-items: flex-end;
         }
@@ -354,35 +134,22 @@
 
         .action-buttons-grid {
             display: flex;
-            gap: 16px;
+            gap: 15px;
             flex-wrap: wrap;
             align-items: center;
         }
-
-        /* ========================================
-   LABEL MODERN
-   ======================================== */
 
         .filter-label {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             color: #475569;
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
-        .filter-label i {
-            font-size: 14px;
-            color: #3b82f6;
-        }
-
-        /* ========================================
-   SELECT STYLE
-   ======================================== */
 
         .select-wrapper {
             position: relative;
@@ -397,11 +164,10 @@
             color: #1e293b;
             background: #ffffff;
             border: 2px solid #e2e8f0;
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
             appearance: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: inherit;
+            transition: all 0.3s ease;
         }
 
         .modern-select:hover,
@@ -412,13 +178,6 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
-        .modern-select:focus,
-        .moon-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-
         .select-icon {
             position: absolute;
             right: 16px;
@@ -426,77 +185,32 @@
             transform: translateY(-50%);
             color: #94a3b8;
             pointer-events: none;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .modern-select:focus~.select-icon,
-        .moon-select:focus~.select-icon {
-            transform: translateY(-50%) rotate(180deg);
-            color: #3b82f6;
-        }
-
-        /* ========================================
-   SEARCH BOX MODERN
-   ======================================== */
-
-        .search-wrapper-modern {
-            width: 100%;
-        }
-
-        .search-box-modern {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-icon-modern {
-            position: absolute;
-            left: 16px;
-            color: #94a3b8;
-            font-size: 16px;
-            pointer-events: none;
         }
 
         .search-input-modern {
             width: 100%;
-            padding: 12px 40px 12px 44px;
+            padding: 12px 16px 12px 44px;
             border: 2px solid #e2e8f0;
-            border-radius: 16px;
+            border-radius: 14px;
             font-size: 14px;
             transition: all 0.3s ease;
             background: white;
-            font-family: inherit;
         }
 
         .search-input-modern:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .clear-icon-modern {
-            position: absolute;
-            right: 16px;
-            color: #94a3b8;
-            font-size: 14px;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .clear-icon-modern:hover {
-            color: #ef4444;
-        }
-
-        /* ========================================
-   BUTTON MODERN
-   ======================================== */
-
+        /* =========================
+       BUTTON MODERN
+        ========================= */
         .btn-modern {
             position: relative;
             padding: 0;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -513,21 +227,6 @@
             z-index: 2;
         }
 
-        .btn-shine {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.6s ease;
-            z-index: 1;
-        }
-
-        .btn-modern:hover .btn-shine {
-            left: 100%;
-        }
-
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
@@ -539,10 +238,6 @@
             box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
         }
 
-        /* ========================================
-   ACTION BUTTONS
-   ======================================== */
-
         .btn-action {
             display: inline-flex;
             align-items: center;
@@ -551,98 +246,307 @@
             font-size: 14px;
             font-weight: 600;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .btn-action i {
-            font-size: 18px;
-        }
-
-        .btn-action span {
-            font-size: 14px;
         }
 
         .btn-warning {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
         }
 
         .btn-danger {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
             color: white;
-            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
         }
 
-        .btn-secondary:hover {
+        .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-action:active {
-            transform: translateY(1px);
+        /* =========================
+       TABLE CONTAINER - SCROLL HORIZONTAL & VERTIKAL
+        ========================= */
+        .table-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            position: relative;
         }
 
-        /* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
+        /* Scroll horizontal & vertikal */
+        .table-scroll {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 65vh;
+            scrollbar-width: thin;
+            scrollbar-color: #4ca1af #e2e8f0;
+        }
 
+        .table-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4ca1af, #2c3e50);
+            border-radius: 10px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        }
+
+        /* Indikator scroll */
+        .scroll-indicator {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .scroll-indicator i {
+            font-size: 12px;
+            color: #4ca1af;
+        }
+
+        /* =========================
+       TABLE STYLE MODERN
+        ========================= */
+        table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            border-bottom: none;
+        }
+
+        thead th i {
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        tbody td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid #edf2f7;
+            transition: all 0.2s ease;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, #f0f9ff 0%, #e6f7ff 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafcff;
+        }
+
+        /* Kolom tertentu rata tengah */
+        td:first-child,
+        td:nth-child(5),
+        td:nth-child(6),
+        td:nth-child(8),
+        td:nth-child(9),
+        td:nth-child(10) {
+            text-align: center;
+        }
+
+        /* Status Badge */
+        .status {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .status-terkirim {
+            background: linear-gradient(135deg, #d4edda, #a3e4b7);
+            color: #155724;
+            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+        }
+
+        .status-belum {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
+        }
+
+        .status-gagal {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+
+        /* Email Badge */
+        .email-badge {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            text-decoration: none;
+            color: #1565c0;
+            font-weight: 500;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        .email-badge:hover {
+            background: linear-gradient(135deg, #bbdefb, #90caf9);
+            transform: translateY(-1px);
+        }
+
+        /* Button in table */
+        table button {
+            border-radius: 10px;
+            padding: 6px 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .kirim {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 2px 5px rgba(39, 174, 96, 0.3);
+        }
+
+        .kirim:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        .preview {
+            background: linear-gradient(135deg, #3498db, #5dade2);
+            color: white;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .preview:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Info bar */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .total-data {
+            font-weight: 700;
+            color: #2a5298;
+        }
+
+        /* =========================
+       RESPONSIVE
+        ========================= */
         @media (max-width: 768px) {
+            body {
+                padding: 70px 12px 20px 12px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
             .action-container {
                 padding: 20px;
             }
 
             .filter-grid,
-            .add-grid {
+            .add-grid,
+            .action-buttons-grid {
                 flex-direction: column;
             }
 
             .filter-card-item,
-            .select-card-item {
-                width: 100%;
-            }
-
-            .btn-modern {
-                width: 100%;
-            }
-
-            .btn-content {
-                justify-content: center;
-            }
-
-            .action-buttons-grid {
-                flex-direction: column;
-                width: 100%;
-            }
-
+            .select-card-item,
+            .btn-modern,
             .btn-action {
                 width: 100%;
-                justify-content: center;
+            }
+
+            .table-scroll {
+                max-height: 55vh;
+            }
+
+            thead th {
+                padding: 10px 8px;
+                font-size: 10px;
+            }
+
+            tbody td {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+
+            .status {
+                padding: 3px 8px;
+                font-size: 9px;
+            }
+
+            .email-badge {
+                padding: 3px 8px;
+                font-size: 10px;
+            }
+
+            table button {
+                padding: 4px 8px;
+                font-size: 10px;
             }
         }
-
-        /* ========================================
-           ANIMATIONS
-        ======================================== */
 
         @keyframes fadeInUp {
             from {
@@ -656,47 +560,30 @@
             }
         }
 
-        .action-container {
+        .action-container,
+        .table-wrapper {
             animation: fadeInUp 0.5s ease-out;
         }
-
-        /* =========================
-           BUTTON DALAM TABLE
-       ========================= */
-        table button {
-            padding: 5px 8px;
-            font-size: 12px;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-        @media (max-width: 768px) {
-            table {
-                font-size: 12px;
-            }
-
-            select {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-        }
     </style>
-
 </head>
 
 <body>
 
-    <h2> SURAT PEMBERITAHUAN LAPORAN BULANAN PPAT/NOATRSIS</h2>
+    <h2><i class="bi bi-envelope-paper-fill"></i> SURAT PEMBERITAHUAN LAPORAN BULANAN NOTARIS/PPAT</h2>
 
-    <!-- Navbar -->
     <nav id="mainNavbar" class="navbar fixed-top shadow-sm py-2">
         <div class="container d-flex justify-content-between align-items-center">
-            <!-- Judul -->
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-envelope"> KIRIM EMAIL OTOMATIS</i>
+                <i class="bi bi-envelope me-2"></i> KIRIM EMAIL OTOMATIS
             </a>
-
+            <div class="nav-links d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-light me-2" onclick="cekStatusKirim()" title="Cek Status">
+                    <i class="bi bi-graph-up"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-light" onclick="refreshData()" title="Refresh">
+                    <i class="bi bi-arrow-repeat"></i>
+                </button>
+            </div>
             <!-- Menu Navigasi -->
             <div class="nav-links d-flex align-items-center">
                 <a href="dashbord.html" class="nav-link" title="Dashboard">
@@ -712,23 +599,16 @@
         </div>
     </nav>
 
-    <!-- ACTION BOX MODERN - GABUNGAN -->
     <div class="action-container">
-
-        <!-- SECTION 1: FILTER & SEARCH -->
         <div class="filter-section">
             <div class="section-title">
                 <i class="bi bi-funnel-fill"></i>
                 <span>Filter Data</span>
                 <div class="title-line"></div>
             </div>
-
             <div class="filter-grid">
-                <!-- Filter Bulan -->
                 <div class="filter-card-item">
-                    <label class="filter-label">
-                        <i class="bi bi-calendar-month"></i> Periode Bulan
-                    </label>
+                    <label class="filter-label"><i class="bi bi-calendar-month"></i> Periode Bulan</label>
                     <div class="select-wrapper">
                         <select id="filterBulan" class="moon-select">
                             <option value="">🌙 Semua Bulan</option>
@@ -748,15 +628,10 @@
                         <i class="bi bi-chevron-down select-icon"></i>
                     </div>
                 </div>
-
-                <!-- Search Box -->
                 <div class="filter-card-item">
-                    <label class="filter-label">
-                        <i class="bi bi-search"></i> Cari Nama Notaris/PPAT
-                    </label>
+                    <label class="filter-label"><i class="bi bi-search"></i> Cari Nama Notaris/PPAT</label>
                     <div class="search-wrapper-modern">
                         <div class="search-box-modern">
-                            <i class="bi bi-search search-icon-modern"></i>
                             <input type="text" id="searchNama" class="search-input-modern"
                                 placeholder="Ketik nama PPAT..." autocomplete="off">
                             <i class="bi bi-x-circle-fill clear-icon-modern" id="clearSearch"
@@ -767,296 +642,327 @@
             </div>
         </div>
 
-        <!-- SECTION 2: TAMBAH DATA -->
         <div class="add-section">
             <div class="section-title">
                 <i class="bi bi-person-plus-fill"></i>
                 <span>Manajemen Notaris</span>
                 <div class="title-line"></div>
             </div>
-
             <div class="add-grid">
                 <div class="select-card-item">
-                    <label class="filter-label">
-                        <i class="bi bi-person-badge"></i> Pilih Notaris
-                    </label>
+                    <label class="filter-label"><i class="bi bi-person-badge"></i> Pilih Notaris</label>
                     <div class="select-wrapper">
                         <select id="notaris" class="modern-select">
-                            <option value="">-- Pilih Notaris --</option>
+                            <option value="">-- Pilih Notaris Di Daftar Ini --</option>
                         </select>
                         <i class="bi bi-chevron-down select-icon"></i>
                     </div>
                 </div>
-
                 <button class="btn-modern btn-primary" onclick="tambahNotaris()">
                     <div class="btn-content">
                         <i class="bi bi-person-plus-fill"></i>
                         <span>Tambah Data</span>
                     </div>
-                    <div class="btn-shine"></div>
                 </button>
             </div>
         </div>
 
-        <!-- SECTION 3: AKSI DATA -->
         <div class="action-section">
             <div class="section-title">
                 <i class="bi bi-lightning-charge-fill"></i>
                 <span>Aksi Data</span>
                 <div class="title-line"></div>
             </div>
-
             <div class="action-buttons-grid">
                 <button class="btn-action btn-warning" onclick="generateData()">
                     <i class="bi bi-calendar-plus"></i>
                     <span>Tarik Semua Data (1 Bulan)</span>
                 </button>
-
                 <button class="btn-action btn-danger" onclick="kirimMassal()">
                     <i class="bi bi-send-check-fill"></i>
                     <span>Kirim Semua Data</span>
                 </button>
-
                 <button class="btn-action btn-secondary" onclick="printTable()">
                     <i class="bi bi-printer-fill"></i>
                     <span>Print Table</span>
                 </button>
             </div>
         </div>
-
     </div>
 
-    <table>
-        <thead class="table-dark">
-            <tr>
-                <th><i class="bi bi-hash"></i> No</th>
-                <th><i class="bi bi-person-badge"></i> Nomor Unik</th>
-                <th><i class="bi bi-person-fill"></i> Nama </th>
-                <th><i class="bi bi-geo-alt-fill"></i> Alamat Kantor</th>
-                <th><i class="bi bi-calendar-month"></i> Periode Bulan</th>
-                <th><i class="bi bi-file-earmark-text"></i> Nomor Surat</th>
-                <th><i class="bi bi-envelope-fill"></i> Email Aktif</th>
-                <th><i class="bi bi-check-circle-fill"></i> Status</th>
-                <th><i class="bi bi-eye-fill"></i> Arsip</th>
-                <th><i class="bi bi-gear-fill"></i> Aksi</th>
-            </tr>
-        </thead>
-
-        <tbody id="data"></tbody>
-    </table>
-
-    <!-- Tambahkan SweetAlert2 CDN di <head> -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- TABLE DENGAN SCROLL HORIZONTAL & VERTIKAL -->
+    <div class="table-wrapper">
+        <div class="scroll-indicator">
+            <i class="bi bi-arrows-move"></i>
+            <span>Geser ke kanan/kiri untuk melihat semua kolom | Scroll ke bawah untuk lebih banyak data</span>
+            <i class="bi bi-arrow-left-right"></i>
+        </div>
+        <div class="table-scroll">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-hash"></i> No</th>
+                        <th><i class="bi bi-person-badge"></i> Nomor Unik</th>
+                        <th><i class="bi bi-person-fill"></i> Nama</th>
+                        <th><i class="bi bi-geo-alt-fill"></i> Alamat Kantor</th>
+                        <th><i class="bi bi-calendar-month"></i> Periode Bulan</th>
+                        <th><i class="bi bi-file-earmark-text"></i> Nomor Surat</th>
+                        <th><i class="bi bi-envelope-fill"></i> Email Aktif</th>
+                        <th><i class="bi bi-check-circle-fill"></i> Status</th>
+                        <th><i class="bi bi-eye-fill"></i> Arsip</th>
+                        <th><i class="bi bi-gear-fill"></i> Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data">
+                    <tr>
+                        <td colspan="10" style="text-align:center; padding:40px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="mt-2">Memuat data...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="info-bar">
+            <div><i class="bi bi-database"></i> <span id="totalDataCount">0</span> Data</div>
+            <div><i class="bi bi-arrow-left-right"></i> Geser tabel untuk melihat semua kolom</div>
+        </div>
+    </div>
 
     <script>
         /* =========================
            FUNGSI LOGIN DAN LOGOUT
         ========================= */
+        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+
         function cekLogin() {
             const token = localStorage.getItem("token");
 
-            // Jika token tidak ada, redirect ke table.html
             if (!token) {
-                console.warn("Token tidak ditemukan, redirect ke table.html");
                 window.location.href = "table.html";
                 return;
             }
 
-            // Cek token ke server langsung tanpa const URL
-            fetch("https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec?action=check&token=" + encodeURIComponent(token))
+            fetch(`${URL}?action=check&token=${token}`)
+                .then(res => res.json())
                 .then(res => {
-                    if (!res.ok) throw new Error("Response tidak OK");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.status !== "valid") {
-                        console.warn("Token tidak valid, hapus dan redirect");
+                    if (res.status !== "valid") {
                         localStorage.removeItem("token");
                         window.location.href = "table.html";
-                    } else {
-                        console.log("Token valid, akses diterima");
                     }
                 })
-                .catch(err => {
-                    console.error("Terjadi error saat cek login:", err);
+                .catch(() => {
                     window.location.href = "table.html";
                 });
         }
 
-        const URL = "https://script.google.com/macros/s/AKfycbwBqcLTS3emcuIBW8rD1cHnmnCXbvyV_RuXjLp_Pq9wY1GlFrdLXji6Kd4AU3RAf15YAQ/exec";
+        // jalankan saat halaman dibuka
+        cekLogin();
 
-        /* =========================
-           SHOW LOADING MODERN
-        ========================= */
-        function showLoading(message = "Mohon Tunggu<br>Memuat data...") {
+        // Fungsi LogOut
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "table.html";
+        }
+
+        // FUNGSI DATA
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbxEzr-sTmwz8dtIbanFfcgizkT6FL7u-7p7bqZ-3j93B8cjRAU1vhMrFR1tAEttPkEy/exec";
+
+        let activeLoading = false;
+
+        function showLoading(msg) {
+            if (activeLoading) return;
+            activeLoading = true;
             Swal.fire({
-                title: message,
+                title: msg,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showConfirmButton: false,
-                showCloseButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
         }
 
-        /* =========================
-           HIDE LOADING
-        ========================= */
         function hideLoading() {
-            Swal.close();
+            activeLoading = false;
+            if (Swal.isVisible()) {
+                Swal.close();
+            }
         }
 
+        // Fungsi JSONP untuk semua request - PERBAIKAN: gunakan BASE_URL
+        function jsonpRequest(params, callback) {
+            const callbackName = 'jsonp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            // PERUBAHAN: Gunakan BASE_URL, bukan URL
+            let url = BASE_URL + "?";
 
-        /* =========================
-           LOAD DATA 
-        ========================= */
-        async function load() {
+            // Bangun query string manual (menghindari URL constructor)
+            Object.keys(params).forEach(key => {
+                url += encodeURIComponent(key) + "=" + encodeURIComponent(params[key]) + "&";
+            });
+            url += "callback=" + callbackName;
+
+            console.log("Request URL:", url);
+
+            const timeoutId = setTimeout(() => {
+                if (window[callbackName]) {
+                    console.error("Timeout:", callbackName);
+                    delete window[callbackName];
+                    if (document.body.contains(script)) document.body.removeChild(script);
+                    callback({ error: true, message: "Request timeout" });
+                }
+            }, 30000);
+
+            window[callbackName] = function (response) {
+                console.log("Response for", callbackName, ":", response);
+                clearTimeout(timeoutId);
+                delete window[callbackName];
+                if (document.body.contains(script)) document.body.removeChild(script);
+                callback(response);
+            };
+
+            const script = document.createElement('script');
+            script.src = url;
+            script.onerror = function () {
+                clearTimeout(timeoutId);
+                delete window[callbackName];
+                if (document.body.contains(script)) document.body.removeChild(script);
+                callback({ error: true, message: "Network error" });
+            };
+            document.body.appendChild(script);
+        }
+
+        // LOAD DATA
+        function load() {
+            console.log("load() dipanggil");
             showLoading("Memuat data...");
-            try {
-                const res = await fetch(URL + "?action=get");
 
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-                }
-
-                const d = await res.json();
-
-                // DEBUG: Lihat struktur data
-                console.log("Data dari server:", d);
-                if (d.length > 0) {
-                    console.log("Keys yang tersedia:", Object.keys(d[0]));
-                }
-
-                const filterBulan = (document.getElementById("filterBulan")?.value || "").toLowerCase().trim();
-                const searchNama = (document.getElementById("searchNama")?.value || "").toLowerCase().trim();
-
-                let html = "";
-                let no = 1;
-
-                d.forEach(x => {
-                    // SESUAIKAN DENGAN KEY DARI APPS SCRIPT
-                    let id = x.id || "-";
-                    let nama = (x.nama || "").toLowerCase();
-                    let alamat = x.alamat || "-";
-                    let bulan = x.bulan || "-";
-                    let nomorSurat = x.nomor || "-";
-                    let email = x.email || "";
-                    let statusEmail = x.status || "";
-
-                    // EKSTRAK NAMA BULAN (misal: "Januari" -> "januari")
-                    let namaBulan = bulan.toLowerCase().trim();
-
-                    // FILTER
-                    if (filterBulan && namaBulan !== filterBulan) return;
-                    if (searchNama && !nama.includes(searchNama)) return;
-
-                    // Tentukan status tampilan
-                    let statusText = "BELUM";
-                    let statusClass = "status-belum";
-
-                    if (statusEmail === "TERKIRIM") {
-                        statusText = "TERKIRIM";
-                        statusClass = "status-terkirim";
-                    }
-
-                    html += `
-                <tr>
-                    <td>${no++}</td>
-                    <td>${id}</td>
-                    <td>${x.nama || "-"}</td>
-                    <td>${alamat}</td>
-                    <td>${bulan}</td>
-                    <td>${nomorSurat}</td>
-                    <td>
-                        ${email
-                            ? `<a href="mailto:${email}" class="email-badge">${email}</a>`
-                            : `<span style="color:#aaa;">Tidak ada email</span>`}
-                    </td>
-                    <td>
-                        <span class="status ${statusClass}">
-                            ${statusText}
-                        </span>
-                    </td>
-                    <td style="text-align:center;">
-                        ${x.nomor
-                            ? `<button class="preview" onclick="lihat('${x.nomor}')"><i class="bi bi-eye-fill"></i></button>`
-                            : `<button disabled class="btn-secondary"><i class="bi bi-eye-slash"></i></button>`}
-                    </td>
-                    <td>
-                        ${statusEmail === "TERKIRIM"
-                            ? `<button class="kirim" disabled><i class="bi bi-check-circle-fill"></i> Terkirim</button>`
-                            : `<button class="kirim" onclick="kirimManual(${x.row})"><i class="bi bi-send-fill"></i> Kirim</button>`}
-                    </td>
-                </tr>
-            `;
-                });
-
-                if (html === "") {
-                    html = `
-                <tr>
-                    <td colspan="10" style="text-align:center; padding:20px; color:#888;">
-                        <i class="bi bi-exclamation-circle"></i> Data tidak ditemukan
-                    </td>
-                </tr>
-            `;
-                }
-
-                document.getElementById("data").innerHTML = html;
-
-            } catch (err) {
-                console.error("Error detail:", err);
-                document.getElementById("data").innerHTML = `
-            <tr>
-                <td colspan="10" style="text-align:center; color:red;">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Gagal load data: ${err.message}
-                </td>
-            </tr>
-        `;
-            } finally {
+            jsonpRequest({ action: 'get' }, function (response) {
+                console.log("Data response:", response);
                 hideLoading();
-            }
+
+                if (response.error) {
+                    document.getElementById("data").innerHTML = `<tr><td colspan="10" style="color:red; text-align:center;">Error: ${response.message}</td></tr>`;
+                    return;
+                }
+
+                if (!response || response.length === 0) {
+                    document.getElementById("data").innerHTML = `<tr><td colspan="10" style="text-align:center;">Tidak Ada Data</td>`;
+                    return;
+                }
+
+                renderDataToTable(response);
+            });
         }
 
-        /* =========================
-           INITIAL EVENT LISTENERS
-        ========================= */
-        function initEventListeners() {
-            const filterBulan = document.getElementById("filterBulan");
-            if (filterBulan) {
-                filterBulan.addEventListener("change", () => load());
+        function renderDataToTable(data) {
+            const filterBulan = (document.getElementById("filterBulan")?.value || "").toLowerCase().trim();
+            const searchNama = (document.getElementById("searchNama")?.value || "").toLowerCase().trim();
+            let html = "", no = 1;
+            let count = 0;
+
+            // Fungsi masking email (Opsi 2: 3 huruf pertama + *** + 2 huruf terakhir)
+            function maskEmail(email) {
+                if (!email || email === "") return '<span style="color:#aaa;">Tidak ada email</span>';
+
+                const atIndex = email.indexOf('@');
+                if (atIndex === -1) return email;
+
+                const nama = email.substring(0, atIndex);
+                const domain = email.substring(atIndex);
+
+                if (nama.length <= 5) {
+                    // Jika nama pendek, tampilkan 2 huruf pertama + ***
+                    const maskedNama = nama.substring(0, 2) + '***';
+                    return `<span style="color:#555; cursor: help; border-bottom: 1px dotted #999;" title="${email}">${maskedNama}${domain}</span>`;
+                } else {
+                    // Opsi 2: 3 huruf pertama + *** + 2 huruf terakhir
+                    const awal = nama.substring(0, 3);
+                    const akhir = nama.substring(nama.length - 2);
+                    const maskedNama = awal + '***' + akhir;
+                    return `<span style="color:#555; cursor: help; border-bottom: 1px dotted #999;" title="${email}">${maskedNama}${domain}</span>`;
+                }
             }
 
-            const searchNama = document.getElementById("searchNama");
-            if (searchNama) {
-                searchNama.addEventListener("keyup", () => load());
+            data.forEach(x => {
+                let namaBulan = (x.bulan || "").toLowerCase().trim();
+                let nama = (x.nama || "").toLowerCase();
+
+                if (filterBulan && namaBulan !== filterBulan) return;
+                if (searchNama && !nama.includes(searchNama)) return;
+
+                count++;
+
+                let statusClass = x.status === "TERKIRIM" ? "status-terkirim" : "status-belum";
+                let statusText = x.status === "TERKIRIM" ? "TERKIRIM" : "BELUM";
+
+                // Email yang sudah di-mask (tidak bisa diklik)
+                const emailDisplay = maskEmail(x.email);
+
+                html += `<tr>
+            <td style="text-align:center;">${no++}</td>
+            <td style="text-align:center;">${x.id || '-'}</td>
+            <td>${x.nama || '-'}</td>
+            <td>${x.alamat || '-'}</td>
+            <td style="text-align:center;">${x.bulan || '-'}</td>
+            <td style="text-align:center;">${x.nomor || '-'}</td>
+            <td>${emailDisplay}</td>
+            <td style="text-align:center;"><span class="status ${statusClass}">${statusText}</span></td>
+            <td style="text-align:center;">${x.nomor ? `<button class="preview" onclick="lihat('${x.nomor}')"><i class="bi bi-eye-fill"></i></button>` : '-'}</td>
+            <td style="text-align:center;">${x.status === "TERKIRIM" ? '<button disabled class="kirim">Terkirim</button>' : `<button class="kirim" onclick="kirimManual(${x.row})">Kirim</button>`}</td>
+        </tr>`;
+            });
+
+            if (count === 0 && data.length > 0) {
+                html = `<tr><td colspan="10" style="text-align:center;">Data tidak sesuai filter穷</tr>`;
+            } else if (count === 0) {
+                html = `<tr><td colspan="10" style="text-align:center;">Tidak ada数据穷</tr>`;
             }
+
+            document.getElementById("data").innerHTML = html;
+            console.log("Menampilkan", count, "data");
         }
 
-        // Panggil setelah DOM siap
-        document.addEventListener("DOMContentLoaded", () => {
-            loadNotaris();
-            load();
-            initEventListeners();
-        });
+        // LOAD NOTARIS
+        function loadNotaris() {
+            console.log("loadNotaris() dipanggil");
+            showLoading("Memuat data notaris...");
 
-        // Panggil setelah load selesai
-        document.addEventListener("DOMContentLoaded", () => {
-            loadNotaris();
-            load();
-            initEventListeners();
-        });
+            jsonpRequest({ action: 'notaris' }, function (response) {
+                console.log("Notaris response:", response);
+                hideLoading();
 
-        /* =========================
-           TAMBAH NOTARIS
-        ========================= */
-        async function tambahNotaris() {
+                if (response.error) {
+                    document.getElementById("notaris").innerHTML = '<option value="">Error loading</option>';
+                    Swal.fire("Error", "Gagal memuat notaris: " + response.message, "error");
+                    return;
+                }
+
+                if (!response || response.length === 0) {
+                    document.getElementById("notaris").innerHTML = '<option value="">Tidak ada notaris</option>';
+                    Swal.fire("Info", "Sheet NOTARIS kosong. Silakan isi data notaris.", "info");
+                    return;
+                }
+
+                let html = '<option value="">-- Pilih Notaris --</option>';
+                response.forEach(n => {
+                    html += `<option value="${n.nama}" data-id="${n.id}" data-alamat="${n.alamat}" data-email="${n.email || ''}">${n.nama}</option>`;
+                });
+                document.getElementById("notaris").innerHTML = html;
+                console.log("Notaris loaded:", response.length);
+            });
+        }
+
+        // TAMBAH NOTARIS
+        function tambahNotaris() {
             const select = document.getElementById("notaris");
             const opt = select.options[select.selectedIndex];
 
-            if (!opt.value) {
-                Swal.fire("Pilih notaris dulu!", "", "warning");
+            console.log("Selected option:", opt);
+
+            if (!opt || !opt.value) {
+                Swal.fire("Pilih notaris!", "Silakan pilih notaris dari dropdown", "warning");
                 return;
             }
 
@@ -1064,342 +970,397 @@
                 nama: opt.value,
                 id: opt.getAttribute("data-id"),
                 alamat: opt.getAttribute("data-alamat"),
-                email: opt.getAttribute("data-email") || "" // email bisa kosong
+                email: opt.getAttribute("data-email") || ""
             };
 
-            try {
-                showLoading("Menambahkan notaris...");
-                const res = await fetch(URL + "?action=tambah", {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                });
-                const text = await res.text();
-                hideLoading();
-                Swal.fire("Berhasil!", "Notaris berhasil ditambahkan", "success");
-                load();
-            } catch (err) {
-                console.error(err);
-                hideLoading();
-                Swal.fire("Gagal!", "Tidak dapat menambahkan data", "error");
-            }
-        }
+            console.log("Data to add:", data);
 
-        /* =========================
-           GENERATE DATA BULANAN
-        ========================= */
-        async function generateData() {
-            const result = await Swal.fire({
-                title: "Generate data bulan ini?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Ya, generate",
-                cancelButtonText: "Batal"
-            });
-
-            if (!result.isConfirmed) return;
-
-            try {
-                showLoading("Sedang generate data...");
-
-                const res = await fetch(URL + "?action=generate");
-                const text = await res.text(); // misal: "0 data ditambahkan"
-
-                hideLoading();
-
-                if (text.startsWith("0")) {
-                    // ❌ Alert merah jika data tidak ditambahkan
-                    Swal.fire({
-                        title: "Gagal",
-                        text: "Maaf, beberapa notaris belum punya email sehingga data tidak bisa ditambahkan",
-                        icon: "error",
-                        confirmButtonText: "Tutup"
-                    });
-                } else {
-                    // ✅ Alert hijau jika ada data ditambahkan
-                    Swal.fire({
-                        title: "Selesai",
-                        text: text,
-                        icon: "success",
-                        confirmButtonText: "Tutup"
-                    });
-                }
-
-                // Reload tabel setelah generate
-                load();
-
-            } catch (err) {
-                console.error(err);
-                hideLoading();
-                Swal.fire({
-                    title: "Gagal",
-                    text: "Terjadi kesalahan saat generate data",
-                    icon: "error",
-                    confirmButtonText: "Tutup"
-                });
-            }
-        }
-
-        /* =========================
-           LIHAT NOMOR SURAT
-        ========================= */
-        function lihat(nomor) {
-            window.open(URL + "?action=cek&nomor=" + encodeURIComponent(nomor), "_blank");
-        }
-
-        /* =========================
-           KIRIM EMAIL MANUAL
-        ========================= */
-        async function kirimManual(row) {
-            showLoading("Mengirim email...");
-
-            try {
-                const res = await fetch(URL + "?action=kirim&row=" + row);
-                const text = await res.text();
-
-                hideLoading();
-
-                if (text === "OK") {
-                    Swal.fire({
-                        title: "Sukses!",
-                        text: "Email berhasil dikirim",
-                        icon: "success",
-                        confirmButtonText: "Tutup"
-                    });
-                } else {
-                    Swal.fire({
-                        title: "Gagal!",
-                        text: text,
-                        icon: "error",
-                        confirmButtonText: "Tutup"
-                    });
-                }
-
-                load();
-
-            } catch (err) {
-                console.error(err);
-                hideLoading();
-
-                Swal.fire({
-                    title: "Gagal!",
-                    text: "Tidak dapat mengirim email",
-                    icon: "error",
-                    confirmButtonText: "Tutup"
-                });
-            }
-        }
-
-        /* =========================
-           KIRIM MASSAL
-        ========================= */
-        async function kirimMassal() {
-            const result = await Swal.fire({
-                title: "Kirim semua email?",
-                text: "Proses ini akan mengirim email ke semua notaris yang statusnya BELUM",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Ya, kirim semua",
-                cancelButtonText: "Batal"
-            });
-
-            if (!result.isConfirmed) return;
-
-            showLoading("Mengirim email massal... Mohon tunggu");
-
-            try {
-                const res = await fetch(URL + "?action=massal");
-                const text = await res.text();
-
-                hideLoading();
-
-                Swal.fire({
-                    title: "Selesai!",
-                    text: text,
-                    icon: "success",
-                    confirmButtonText: "Tutup"
-                });
-
-                load();
-
-            } catch (err) {
-                console.error(err);
-                hideLoading();
-
-                Swal.fire({
-                    title: "Gagal!",
-                    text: "Tidak bisa mengirim email massal",
-                    icon: "error",
-                    confirmButtonText: "Tutup"
-                });
-            }
-        }
-
-        /* =========================
-           LOAD NOTARIS UNTUK SELECT
-        ========================= */
-        async function loadNotaris() {
-            try {
-                const res = await fetch(URL + "?action=notaris");
-                const data = await res.json();
-                let html = '<option value="">-- Pilih Notaris --</option>';
-                data.forEach(n => {
-                    html += `<option value="${n.nama}" data-id="${n.id}" data-alamat="${n.alamat}" data-email="${n.email || ''}">${n.nama}</option>`;
-                });
-                document.getElementById("notaris").innerHTML = html;
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        // INITIAL LOAD
-        loadNotaris();
-        load();
-
-        /* =========================
-       PRINT TABLE (HANYA SAMPAI STATUS)
-    ========================= */
-        function printTable() {
-            // Ambil data dari tabel yang sedang tampil (sudah terfilter)
-            const filterBulan = (document.getElementById("filterBulan")?.value || "");
-            const searchNama = (document.getElementById("searchNama")?.value || "");
-
-            // Ambil semua baris data dari tbody
-            const rows = document.querySelectorAll("#data tr");
-
-            if (rows.length === 0 || (rows.length === 1 && rows[0].innerText.includes("Data tidak ditemukan"))) {
-                Swal.fire("Info", "Tidak ada data untuk dicetak", "info");
+            if (!data.id || !data.nama || !data.alamat) {
+                Swal.fire("Data tidak lengkap!", "Notaris harus memiliki ID, Nama, dan Alamat", "error");
                 return;
             }
 
-            // Buat struktur HTML untuk print
-            let printContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Data Notaris/PPAT</title>
-                    <style>
-                        body {
-                            font-family: 'Times New Roman', Arial, sans-serif;
-                            margin: 20px;
-                            padding: 0;
-                        }
-                        h2 {
-                            text-align: center;
-                            margin-bottom: 10px;
-                            color: #333;
-                        }
-                        .info-print {
-                            text-align: center;
-                            margin-bottom: 20px;
-                            font-size: 12px;
-                            color: #666;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            font-size: 11px;
-                        }
-                        th, td {
-                            border: 1px solid #000;
-                            padding: 8px;
-                            text-align: left;
-                            vertical-align: top;
-                        }
-                        th {
-                            background-color: #f2f2f2;
-                            font-weight: bold;
-                            text-align: center;
-                        }
-                        .status-terkirim {
-                            color: green;
-                            font-weight: bold;
-                        }
-                        .status-belum {
-                            color: red;
-                            font-weight: bold;
-                        }
-                        .email-badge {
-                            color: #0066cc;
-                            text-decoration: none;
-                        }
-                        @media print {
-                            body {
-                                margin: 0;
-                                padding: 10px;
-                            }
-                            .no-print {
-                                display: none;
-                            }
-                            table {
-                                page-break-inside: avoid;
-                            }
-                            tr {
-                                page-break-inside: avoid;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h2>SURAT PEMBERITAHUAN LAPORAN BULANAN NOTARIS/PPAT</h2>
-                    <div class="info-print">
-                        Dicetak pada: ${new Date().toLocaleString('id-ID')}<br>
-                        ${filterBulan ? `Filter Bulan: ${filterBulan}` : "Semua Bulan"} | 
-                        ${searchNama ? `Filter Nama: ${searchNama}` : "Semua Nama"}
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nomor Unik</th>
-                                <th>Nama</th>
-                                <th>Alamat Kantor</th>
-                                <th>Periode Bulan</th>
-                                <th>Nomor Surat</th>
-                                <th>Email Aktif</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                                    `;
+            showLoading("Menambahkan notaris...");
 
-            // Looping setiap baris data (hanya sampai kolom Status)
+            jsonpRequest({
+                action: 'tambah',
+                data: JSON.stringify(data)
+            }, function (response) {
+                console.log("Tambah response:", response);
+
+                if (response === "OK") {
+                    Swal.fire("Berhasil!", "Notaris berhasil ditambahkan", "success");
+                    load(); // Refresh tabel
+                } else if (response === "SUDAH ADA") {
+                    Swal.fire("Info", "Notaris sudah ada di data bulan ini", "info");
+                } else {
+                    Swal.fire("Gagal!", response || "Tidak dapat menambahkan data", "error");
+                }
+            });
+        }
+
+        // GENERATE DATA
+        function generateData() {
+            Swal.fire({ title: "Generate data bulan ini?", icon: "question", showCancelButton: true }).then(result => {
+                if (!result.isConfirmed) return;
+                showLoading("Generate data...");
+                jsonpRequest({ action: 'generate' }, function (response) {
+                    hideLoading();
+                    if (response && response.toString().startsWith("0")) {
+                        Swal.fire("Gagal", "Beberapa notaris belum punya email", "error");
+                    } else {
+                        Swal.fire("Selesai", response, "success");
+                    }
+                    load();
+                });
+            });
+        }
+
+        function lihat(nomor) {
+            window.open(BASE_URL + "?action=cek&nomor=" + encodeURIComponent(nomor), "_blank");
+        }
+
+        function refreshData() {
+            console.log("Refresh data");
+            load();
+        }
+
+        // KIRIM MANUAL
+        function kirimManual(row) {
+            Swal.fire({ title: "Kirim email?", icon: "question", showCancelButton: true }).then(result => {
+                if (!result.isConfirmed) return;
+                showLoading("Mengirim email...");
+                jsonpRequest({ action: 'kirim', row: row }, function (response) {
+                    hideLoading();
+                    if (response === "OK") {
+                        Swal.fire("Sukses!", "Email berhasil dikirim", "success");
+                    } else {
+                        Swal.fire("Gagal!", response, "error");
+                    }
+                    load();
+                });
+            });
+        }
+
+        // KIRIM MASSAL
+        function kirimMassal() {
+            Swal.fire({ title: "Kirim semua email?", text: "Mengirim ke semua notaris yang BELUM", icon: "question", showCancelButton: true }).then(result => {
+                if (!result.isConfirmed) return;
+                showLoading("Mengirim email massal...");
+                jsonpRequest({ action: 'massal' }, function (response) {
+                    hideLoading();
+                    Swal.fire("Selesai!", response, "success");
+                    load();
+                });
+            });
+        }
+
+        // CEK STATUS
+        function cekStatusKirim() {
+            showLoading("Cek status...");
+            jsonpRequest({ action: 'cekstatus' }, function (data) {
+                hideLoading();
+                Swal.fire({
+                    title: `Status ${data.bulan} ${data.tahun}`,
+                    html: `<div style="text-align:left;">
+                        <p>📊 Total: <b>${data.total}</b></p>
+                        <p>✅ Terkirim: <b style="color:green;">${data.terkirim}</b></p>
+                        <p>⏳ Belum: <b style="color:orange;">${data.belum}</b></p>
+                        <p>❌ Gagal: <b style="color:red;">${data.gagal}</b></p>
+                    </div>`,
+                    icon: "info"
+                });
+            });
+        }
+
+        // Event Listeners
+        document.getElementById("filterBulan")?.addEventListener("change", load);
+        document.getElementById("searchNama")?.addEventListener("keyup", load);
+
+        const clearSearch = document.getElementById("clearSearch");
+        if (clearSearch) {
+            clearSearch.addEventListener("click", function () {
+                document.getElementById("searchNama").value = "";
+                load();
+            });
+        }
+
+        // Inisialisasi
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM loaded");
+            loadNotaris();
+            load();
+        });
+
+        document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+        function printTable() {
+            // Ambil data filter yang sedang aktif
+            const filterBulan = document.getElementById("filterBulan")?.value || "Semua Bulan";
+            const searchNama = document.getElementById("searchNama")?.value || "Semua";
+
+            // Ambil tabel asli dan clone
+            const originalTable = document.querySelector("#dataTable");
+            const clonedTable = originalTable.cloneNode(true);
+
+            // Hapus kolom Aksi (tombol Kirim) dan Arsip dari clone
+            const rows = clonedTable.querySelectorAll("tr");
             rows.forEach(row => {
-                const cells = row.querySelectorAll("td");
-                if (cells.length >= 8) {
-                    printContent += `
-                <tr>
-                    <td style="text-align:center;">${cells[0]?.innerText || '-'}</td>
-                    <td>${cells[1]?.innerText || '-'}</td>
-                    <td>${cells[2]?.innerText || '-'}</td>
-                    <td>${cells[3]?.innerText || '-'}</td>
-                    <td style="text-align:center;">${cells[4]?.innerText || '-'}</td>
-                    <td style="text-align:center;">${cells[5]?.innerText || '-'}</td>
-                    <td>${cells[6]?.innerHTML || '-'}</td>
-                    <td style="text-align:center;">${cells[7]?.innerHTML || '-'}</td>
-                </tr>
-                         `;
+                // Hapus kolom terakhir (Aksi) dan kolom Arsip
+                if (row.cells.length >= 10) {
+                    row.deleteCell(9); // Hapus kolom Aksi
+                    row.deleteCell(8); // Hapus kolom Arsip
                 }
             });
 
-            printContent += `
-                        </tbody>
-                    </table>
-                </body>
-                </html>
-                `;
+            // Hapus tombol-tombol dari dalam tabel
+            clonedTable.querySelectorAll("button").forEach(btn => btn.remove());
+            clonedTable.querySelectorAll(".preview, .kirim").forEach(el => el.remove());
 
-            // Buka window baru untuk print
+            // Ubah link email menjadi teks biasa
+            clonedTable.querySelectorAll(".email-badge").forEach(el => {
+                const span = document.createElement("span");
+                span.textContent = el.textContent;
+                span.style.color = "#555";
+                el.parentNode.replaceChild(span, el);
+            });
+
+            // Style untuk print
+            const styles = `
+        <style>
+            @page {
+                size: landscape;
+                margin: 15mm;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', 'Work Sans', Arial, sans-serif;
+                padding: 20px;
+                background: white;
+            }
+            
+            .print-header {
+                text-align: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 3px solid #2c3e50;
+            }
+            
+            .print-header h1 {
+                font-size: 22px;
+                color: #1e3c72;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .print-header h2 {
+                font-size: 16px;
+                color: #2a5298;
+                margin-bottom: 5px;
+            }
+            
+            .print-header p {
+                font-size: 12px;
+                color: #666;
+                margin-top: 10px;
+            }
+            
+            .print-info {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding: 12px 15px;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 10px;
+                font-size: 12px;
+            }
+            
+            .print-info-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .print-info-label {
+                font-weight: 700;
+                color: #2c3e50;
+            }
+            
+            .print-info-value {
+                color: #555;
+            }
+            
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            
+            th {
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                color: white;
+                padding: 12px 8px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border: 1px solid #1a2632;
+            }
+            
+            td {
+                padding: 10px 8px;
+                text-align: left;
+                border: 1px solid #ddd;
+                vertical-align: middle;
+            }
+            
+            td:first-child, td:nth-child(5), td:nth-child(6), td:nth-child(8) {
+                text-align: center;
+            }
+            
+            .status-terkirim {
+                background: #d4edda;
+                color: #155724;
+                padding: 4px 8px;
+                border-radius: 20px;
+                display: inline-block;
+                font-weight: 600;
+                font-size: 10px;
+            }
+            
+            .status-belum {
+                background: #fff3cd;
+                color: #856404;
+                padding: 4px 8px;
+                border-radius: 20px;
+                display: inline-block;
+                font-weight: 600;
+                font-size: 10px;
+            }
+            
+            .print-footer {
+                margin-top: 25px;
+                padding-top: 15px;
+                text-align: center;
+                font-size: 10px;
+                color: #999;
+                border-top: 1px solid #ddd;
+            }
+            
+            .print-footer .qr {
+                margin-top: 10px;
+            }
+            
+            .print-footer .qr img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            
+            tr:hover {
+                background-color: #f1f5f9;
+            }
+            
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+                .no-print {
+                    display: none;
+                }
+                th {
+                    background: #2c3e50;
+                    color: white;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .status-terkirim, .status-belum {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .print-info {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+    `;
+
+            // Buat konten print
+            const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Laporan Data Notaris PPAT - Bapenda Kota Bengkulu</title>
+            ${styles}
+        </head>
+        <body>
+            <div class="print-header">
+                <h1>PEMERINTAH KOTA BENGKULU</h1>
+                <h2>BADAN PENDAPATAN DAERAH</h2>
+                <p>Jl. WR. Supratman, Kelurahan Bentiring Permai, Kota Bengkulu</p>
+                <p>Email: bengkulubapendakota@gmail.com | Website: sibabe.bengkulu.go.id</p>
+            </div>
+            
+            <div class="print-info">
+                <div class="print-info-item">
+                    <span class="print-info-label">📅 Tanggal Cetak:</span>
+                    <span class="print-info-value">${new Date().toLocaleString('id-ID')}</span>
+                </div>
+                <div class="print-info-item">
+                    <span class="print-info-label">📁 Filter Bulan:</span>
+                    <span class="print-info-value">${filterBulan}</span>
+                </div>
+                <div class="print-info-item">
+                    <span class="print-info-label">🔍 Pencarian:</span>
+                    <span class="print-info-value">${searchNama}</span>
+                </div>
+                <div class="print-info-item">
+                    <span class="print-info-label">📊 Total Data:</span>
+                    <span class="print-info-value">${document.querySelectorAll("#data tr:not(:has(td[colspan]))").length} Data</span>
+                </div>
+            </div>
+            
+            ${clonedTable.outerHTML}
+            
+            <div class="print-footer">
+                <div>Dokumen ini dicetak secara elektronik oleh sistem Bapenda Kota Bengkulu</div>
+                <div class="qr">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(window.location.href)}" alt="QR Code">
+                </div>
+                <div>© ${new Date().getFullYear()} - Bidang Pengendalian dan Evaluasi Pendapatan Daerah Kota Bengkulu</div>
+            </div>
+        </body>
+        </html>
+    `;
+
+            // Buka window print
             const printWindow = window.open('', '_blank');
             printWindow.document.write(printContent);
             printWindow.document.close();
-            printWindow.print();
-        }
 
-        // blok klik kanan
-        document.addEventListener("contextmenu", function (e) {
-            e.preventDefault();
-        });
+            // Tunggu loading selesai lalu print
+            printWindow.onload = function () {
+                printWindow.print();
+                printWindow.onafterprint = function () {
+                    printWindow.close();
+                };
+            };
+        }
     </script>
 
 </body>
