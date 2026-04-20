@@ -1928,39 +1928,140 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        /* =========================
-           FUNGSI LOGIN DAN LOGOUT
-        ========================= */
-        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+        // ============================================
+        // FUNGSI PEMBATASAN AKSES (TAMBAHKAN INI)
+        // ============================================
 
-        function cekLogin() {
+        const URL_API = "https://script.google.com/macros/s/AKfycbwUrIknI8zEsn_lsQrIAfUr2twP4CDSVajcK3-8VYEK2V7KrLFHJ6c5had52kWmAKeg/exec";
+        let currentUserRole = null;
+        let currentUserName = null;
+        let currentUserEmail = null;
+
+        async function checkLoginAndRole() {
             const token = localStorage.getItem("token");
-
             if (!token) {
                 window.location.href = "table.html";
-                return;
+                return false;
             }
 
-            fetch(`${URL}?action=check&token=${token}`)
-                .then(res => res.json())
-                .then(res => {
-                    if (res.status !== "valid") {
-                        localStorage.removeItem("token");
-                        window.location.href = "table.html";
-                    }
-                })
-                .catch(() => {
+            try {
+                const response = await fetch(`${URL_API}?action=getUserData&token=${token}`);
+                const userData = await response.json();
+
+                if (userData.status !== "success") {
+                    localStorage.removeItem("token");
                     window.location.href = "table.html";
-                });
+                    return false;
+                }
+
+                currentUserRole = userData.role;
+                currentUserName = userData.name;
+                currentUserEmail = userData.email;
+
+                localStorage.setItem("userRole", userData.role);
+                localStorage.setItem("userName", userData.name);
+
+                updateNavbarForRole(userData.role, userData.name);
+
+                return true;
+
+            } catch (error) {
+                console.error("Error checking login:", error);
+                return false;
+            }
         }
 
-        // jalankan saat halaman dibuka
-        cekLogin();
+        function updateNavbarForRole(role, name) {
+            const navbarContainer = document.querySelector('#mainNavbar .container');
+            if (navbarContainer && !document.getElementById('roleBadgeNav')) {
+                const roleBadge = document.createElement('div');
+                roleBadge.id = 'roleBadgeNav';
+                roleBadge.className = 'ms-3 me-2';
 
-        // Fungsi LogOut
+                if (role === 'admin') {
+                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-shield-lock-fill"></i> ADMIN</span>';
+                } else {
+                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-eye-fill"></i> USER (Print Only)</span>';
+                }
+
+                const logoutBtn = document.querySelector('a[title="Logout"]');
+                if (logoutBtn) {
+                    navbarContainer.insertBefore(roleBadge, logoutBtn);
+                } else {
+                    navbarContainer.appendChild(roleBadge);
+                }
+            }
+        }
+
+        function disableEditingForUser() {
+            const editButtons = document.querySelectorAll('.btn-primary, .btn-success, .btn-warning');
+            editButtons.forEach(btn => {
+                const btnText = btn.innerText.toLowerCase();
+                if (btnText.includes('simpan') || btnText.includes('edit') || btnText.includes('tambah') ||
+                    btnText.includes('update') || btnText.includes('kirim') || btnText.includes('upload')) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.title = 'Fitur hanya untuk ADMIN';
+                }
+            });
+
+            const inputs = document.querySelectorAll('input:not([readonly]), textarea:not([readonly]), select:not([disabled])');
+            inputs.forEach(input => {
+                input.setAttribute('readonly', true);
+                input.setAttribute('disabled', true);
+                input.style.backgroundColor = '#f0f0f0';
+                input.style.cursor = 'not-allowed';
+            });
+        }
+
+        function showPrintOnlyNotification() {
+            const notification = document.createElement('div');
+            notification.id = 'printOnlyNotification';
+            notification.innerHTML = `
+        <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
+                    background: linear-gradient(135deg, #ffa502, #ff7f50); 
+                    color: white; padding: 12px 20px; border-radius: 30px; 
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+                    display: flex; align-items: center; gap: 10px;
+                    animation: slideInRight 0.5s ease;">
+            <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
+            <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
+            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
+        </div>
+        <style>
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        </style>
+    `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                const notif = document.getElementById('printOnlyNotification');
+                if (notif) notif.remove();
+            }, 5000);
+        }
+
         function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "table.html";
+            Swal.fire({
+                title: 'Konfirmasi Logout',
+                text: 'Apakah Anda yakin ingin keluar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Logout!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userRole");
+                    localStorage.removeItem("userName");
+                    window.location.href = "table.html";
+                }
+            });
         }
 
         /* =========================
@@ -2818,7 +2919,27 @@
         function printPDF(url) { let win = window.open(url, "_blank"); if (win) win.onload = () => { win.print(); }; }
 
         // INISIALISASI
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            // ============================================
+            // TAMBAHKAN INI DI AWAL - CEK LOGIN DAN ROLE
+            // ============================================
+            const isLoggedIn = await checkLoginAndRole();
+            if (!isLoggedIn) {
+                return; // Akan redirect ke halaman login
+            }
+
+            // ============================================
+            // TAMBAHKAN INI - SESUAIKAN AKSES BERDASARKAN ROLE
+            // ============================================
+            if (currentUserRole !== 'admin') {
+                disableEditingForUser();
+                showPrintOnlyNotification();
+            }
+
+            // ============================================
+            // KODE ASLI ANDA (JANGAN DIHAPUS)
+            // ============================================
 
             // hidden input
             if (!document.getElementById("selectedBulan")) {
@@ -2836,9 +2957,9 @@
             let allData = [];
             let currentFilteredData = [];
 
-            // ===============================
-            // SORT SUPER RAPI
-            // ===============================
+            // ============================================
+            // SORT SUPER RAPI (KODE ASLI ANDA)
+            // ============================================
             const bulanMap = {
                 "Januari": 1, "Februari": 2, "Maret": 3, "April": 4,
                 "Mei": 5, "Juni": 6, "Juli": 7, "Agustus": 8,
@@ -2847,27 +2968,21 @@
 
             function sortSuperRapi(data) {
                 return data.sort((a, b) => {
-
                     let bulanA = bulanMap[a.laporan_bulanan] || 0;
                     let bulanB = bulanMap[b.laporan_bulanan] || 0;
-
                     if (bulanA !== bulanB) return bulanA - bulanB;
-
                     let tglA = new Date(a.tanggal_diterima);
                     let tglB = new Date(b.tanggal_diterima);
-
                     if (tglA.getTime() !== tglB.getTime()) return tglB - tglA;
-
                     let namaA = (a["nama_notaris_&_ppat"] || "").toLowerCase();
                     let namaB = (b["nama_notaris_&_ppat"] || "").toLowerCase();
-
                     return namaA.localeCompare(namaB);
                 });
             }
 
-            // ===============================
-            // AUDIO ENGINE
-            // ===============================
+            // ============================================
+            // AUDIO ENGINE (KODE ASLI ANDA)
+            // ============================================
             let audioCtx = null;
             let isPlaying = false;
             let lastPlayTime = 0;
@@ -2903,48 +3018,35 @@
 
             async function playNotif() {
                 if (!isPlaying) return;
-
                 const now = Date.now();
                 if (now - lastPlayTime < 800) return;
                 lastPlayTime = now;
-
                 try {
                     await unlockAudio();
-
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-
                     osc.frequency.value = 1000;
                     gain.gain.value = 0.3;
-
                     osc.start();
                     gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
                     osc.stop(audioCtx.currentTime + 0.1);
-
                 } catch (e) {
                     console.log("Audio error:", e);
                 }
             }
 
-            // ===============================
-            // TOGGLE PLAY / PAUSE
-            // ===============================
             window.togglePlayPause = function () {
                 isPlaying = !isPlaying;
-
                 if (isPlaying) {
                     setTimeout(() => playNotif(), 200);
-
                     Toast.fire({
                         icon: 'success',
                         title: '🔔 Notifikasi Aktif',
                         timer: 1500,
                         position: 'top-end'
                     });
-
                 } else {
                     Toast.fire({
                         icon: 'error',
@@ -2953,95 +3055,78 @@
                         position: 'top-end'
                     });
                 }
-
                 updateButtonAppearance();
             }
 
-            // ===============================
-            // UNLOCK AUDIO
-            // ===============================
             document.addEventListener("click", async function firstClick() {
                 initAudio();
                 await unlockAudio();
                 document.removeEventListener("click", firstClick);
             }, { once: true });
 
-            // ===============================
-            // AUTO CEK GOOGLE SHEET
-            // ===============================
+            // ============================================
+            // AUTO CEK GOOGLE SHEET (KODE ASLI ANDA)
+            // ============================================
             setInterval(() => {
                 fetch(scriptURL)
                     .then(res => res.json())
                     .then(async (data) => {
-
                         let newData = JSON.stringify(data);
-
                         if (firstLoad) {
                             lastData = newData;
                             firstLoad = false;
                             return;
                         }
-
                         if (newData !== lastData) {
-
                             console.log("📊 DATA BARU MASUK!");
-
                             if (isPlaying) {
                                 await playNotif();
                             }
-
                             lastData = newData;
-
-                            // PAKAI SORT BARU
                             let sorted = sortSuperRapi(data);
-
                             allData = sorted;
                             currentFilteredData = sorted;
-
                             renderTable(sorted);
                             tampilkanRingkasanBulanan();
-
                             Toast.fire({
                                 icon: 'info',
                                 position: 'top-end',
                                 timer: 1500,
                                 showConfirmButton: false,
-                                html: `
-                        <div style="display:flex;align-items:center;gap:10px;">
+                                html: `<div style="display:flex;align-items:center;gap:10px;">
                             <i class="bi bi-calendar2-check-fill" style="font-size:20px;color:#0d6efd;"></i>
-                            <div>
-                                <b>Data Baru Masuk</b><br>
-                                <small>${new Date().toLocaleTimeString()}</small>
-                            </div>
-                        </div>
-                        `
+                            <div><b>Data Baru Masuk</b><br><small>${new Date().toLocaleTimeString()}</small></div>
+                        </div>`
                             });
                         }
-
                     })
                     .catch(err => console.error(err));
-
             }, 5000);
 
-            // ===============================
-            // SEARCH
-            // ===============================
-            document.getElementById("searchNotaris")
-                ?.addEventListener("keyup", filterData);
+            // ============================================
+            // SEARCH (KODE ASLI ANDA)
+            // ============================================
+            document.getElementById("searchNotaris")?.addEventListener("keyup", filterData);
 
-            // ===============================
-            // CSS
-            // ===============================
+            // ============================================
+            // CSS (KODE ASLI ANDA)
+            // ============================================
             const style = document.createElement('style');
-            style.innerHTML = `
-            @keyframes pop {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-                  }
-             `;
+            style.innerHTML = `@keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }`;
             document.head.appendChild(style);
 
             updateButtonAppearance();
+
+            // ============================================
+            // TAMBAHKAN INI DI AKHIR - LISTENER LOGOUT
+            // ============================================
+            const logoutLinks = document.querySelectorAll('a[title="Logout"], [onclick="logout()"]');
+            logoutLinks.forEach(link => {
+                link.onclick = function (e) {
+                    e.preventDefault();
+                    logout();
+                };
+            });
         });
 
         // EXPORT FUNGSI KE GLOBAL
@@ -4006,23 +4091,23 @@
                                                 <th style="width: 15%; text-align: center;">Tahun Pensiun</th>
                                                 <th style="width: 15%;">Keterangan</th>
                                             </tr>
-                                        </thead>
-                                        <tbody id="tbodyPensiunStatistik">
-                                            ${pensiunTableHTML}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody id="tbodyPensiunStatistik">
+                                                ${pensiunTableHTML}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="refreshStatistikFromSheet()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+                                <button type="button" class="btn btn-success" id="btnCetakStatistik"><i class="bi bi-printer-fill"></i> Cetak</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="refreshStatistikFromSheet()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
-                        <button type="button" class="btn btn-success" id="btnCetakStatistik"><i class="bi bi-printer-fill"></i> Cetak</button>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+                </div>`;
 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
                 new bootstrap.Modal(document.getElementById('modalStatistikNotaris')).show();
@@ -4639,216 +4724,216 @@
 
             // Buat HTML untuk print
             const printHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Ringkasan BPHTB per Bulan</title>
-    <style>
-        @page {
-            size: A4 portrait;
-            margin: 15mm;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Times New Roman', 'Arial', sans-serif;
-            font-size: 12pt;
-            line-height: 1.4;
-            color: #1e293b;
-            background: white;
-        }
-        
-        .print-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-        
-        /* HEADER */
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #0284c7;
-        }
-        
-        .header h1 {
-            font-size: 19pt;
-            color: #475569;
-            margin-bottom: 5px;
-        }
-        
-        .header h3 {
-            font-size: 16pt;
-            color: #475569;
-            margin-bottom: 5px;
-            font-weight: normal;
-        }
-        
-        .header p {
-            font-size: 10pt;
-            color: #64748b;
-            margin-top: 5px;
-        }
-        
-        /* INFO CETAK */
-        .info-cetak {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f0f9ff;
-            border-radius: 8px;
-            font-size: 9pt;
-        }
-        
-        .info-cetak .left, .info-cetak .right {
-            color: #1e293b;
-        }
-        
-        /* TABLE STYLE */
-        .table-ringkasan {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 10pt;
-        }
-        
-        .table-ringkasan th,
-        .table-ringkasan td {
-            border: 1px solid #cbd5e1;
-            padding: 10px 12px;
-            text-align: left;
-        }
-        
-        .table-ringkasan th {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            font-size: 10pt;
-        }
-        
-        .table-ringkasan td {
-            text-align: center;
-        }
-        
-        .table-ringkasan td:first-child {
-            text-align: center;
-            width: 10%;
-        }
-        
-        .table-ringkasan td:nth-child(2) {
-            text-align: left;
-            width: 50%;
-            font-weight: 500;
-        }
-        
-        .table-ringkasan td:nth-child(3) {
-            text-align: right;
-            width: 40%;
-            font-weight: 600;
-            color: #0284c7;
-        }
-        
-        .table-ringkasan tfoot td {
-            background: #f1f5f9;
-            font-weight: 700;
-            font-size: 11pt;
-        }
-        
-        .table-ringkasan tfoot td:last-child {
-            color: #059669;
-            font-size: 12pt;
-        }
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Ringkasan BPHTB per Bulan</title>
+            <style>
+                @page {
+                    size: A4 portrait;
+                    margin: 15mm;
+                }
+                
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Times New Roman', 'Arial', sans-serif;
+                    font-size: 12pt;
+                    line-height: 1.4;
+                    color: #1e293b;
+                    background: white;
+                }
+                
+                .print-container {
+                    max-width: 100%;
+                    margin: 0 auto;
+                }
+                
+                /* HEADER */
+                .header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #0284c7;
+                }
+                
+                .header h1 {
+                    font-size: 19pt;
+                    color: #475569;
+                    margin-bottom: 5px;
+                }
+                
+                .header h3 {
+                    font-size: 16pt;
+                    color: #475569;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                
+                .header p {
+                    font-size: 10pt;
+                    color: #64748b;
+                    margin-top: 5px;
+                }
+                
+                /* INFO CETAK */
+                .info-cetak {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    background: #f0f9ff;
+                    border-radius: 8px;
+                    font-size: 9pt;
+                }
+                
+                .info-cetak .left, .info-cetak .right {
+                    color: #1e293b;
+                }
+                
+                /* TABLE STYLE */
+                .table-ringkasan {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 15px;
+                    font-size: 10pt;
+                }
+                
+                .table-ringkasan th,
+                .table-ringkasan td {
+                    border: 1px solid #cbd5e1;
+                    padding: 10px 12px;
+                    text-align: left;
+                }
+                
+                .table-ringkasan th {
+                    background: linear-gradient(135deg, #0284c7, #38bdf8);
+                    color: white;
+                    font-weight: 600;
+                    text-align: center;
+                    font-size: 10pt;
+                }
+                
+                .table-ringkasan td {
+                    text-align: center;
+                }
+                
+                .table-ringkasan td:first-child {
+                    text-align: center;
+                    width: 10%;
+                }
+                
+                .table-ringkasan td:nth-child(2) {
+                    text-align: left;
+                    width: 50%;
+                    font-weight: 500;
+                }
+                
+                .table-ringkasan td:nth-child(3) {
+                    text-align: right;
+                    width: 40%;
+                    font-weight: 600;
+                    color: #0284c7;
+                }
+                
+                .table-ringkasan tfoot td {
+                    background: #f1f5f9;
+                    font-weight: 700;
+                    font-size: 11pt;
+                }
+                
+                .table-ringkasan tfoot td:last-child {
+                    color: #059669;
+                    font-size: 12pt;
+                }
 
-            /* FOOTER TABLE 1 BARIS WARNA BIRU */
-            .footer-table {
-                width: 100%;
-                margin-top: 30px;
-                border-collapse: collapse;
-            }
-            
-               .footer {
-                margin-top: 30px;
-                padding-top: 15px;
-                padding-left: 0;
-                border-top: 1px solid #cbd5e1;
-                text-align: left;  /* RATA KIRI */
-                font-size: 8pt;
-                color: #64748b;
-            }
+                    /* FOOTER TABLE 1 BARIS WARNA BIRU */
+                    .footer-table {
+                        width: 100%;
+                        margin-top: 30px;
+                        border-collapse: collapse;
+                    }
+                    
+                    .footer {
+                        margin-top: 30px;
+                        padding-top: 15px;
+                        padding-left: 0;
+                        border-top: 1px solid #cbd5e1;
+                        text-align: left;  /* RATA KIRI */
+                        font-size: 8pt;
+                        color: #64748b;
+                    }
 
-            .footer-table td {
-                background: linear-gradient(135deg, #0284c7, #38bdf8);
-                border-radius: 10px;
-                padding: 12px 15px;
-                text-align: left;
-            }
+                    .footer-table td {
+                        background: linear-gradient(135deg, #0284c7, #38bdf8);
+                        border-radius: 10px;
+                        padding: 12px 15px;
+                        text-align: left;
+                    }
 
-            .footer-table p {
-                margin: 3px 0;
-                font-size: 8pt;
-                text-align: left;
-                color: white;
-            }
+                    .footer-table p {
+                        margin: 3px 0;
+                        font-size: 8pt;
+                        text-align: left;
+                        color: white;
+                    }
 
-            .footer-table p:first-child {
-                margin-top: 0;
-            }
+                    .footer-table p:first-child {
+                        margin-top: 0;
+                    }
 
-            .footer-table p:last-child {
-                margin-bottom: 0;
-            }
-        
-        /* TERBILANG */
-        .terbilang {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f8fafc;
-            border-left: 4px solid #0284c7;
-            font-size: 12pt;
-            font-style: italic;
-        }
-        
-        @media print {
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            .no-print {
-                display: none;
-            }
-            .table-ringkasan th {
-                background: #0284c7 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="print-container">
-        <!-- HEADER -->
-        <div class="header">
-            <h2>Bidang Pengendalian dan Evaluasi Pendapatan Daerah</h2>
-            <h3>Nominal BPHTB Berdasarkan Laporan Bulanan PPAT/Notaris</h3>
-        </div>
-        
-        <!-- INFO CETAK -->
-        <div class="info-cetak">
-            <div class="left">
-                <strong>Periode Data:</strong> ${dataYangDigunakan.length > 0 ? dataYangDigunakan[0]["laporan_bulanan"]?.split(' ')[1] + ' - ' + dataYangDigunakan[dataYangDigunakan.length - 1]["laporan_bulanan"]?.split(' ')[1] : '-'}
-            </div>
-            <div class="right">
-                <strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}
-            </div>
-        </div>
+                    .footer-table p:last-child {
+                        margin-bottom: 0;
+                    }
+                
+                /* TERBILANG */
+                .terbilang {
+                    margin-top: 20px;
+                    padding: 10px;
+                    background: #f8fafc;
+                    border-left: 4px solid #0284c7;
+                    font-size: 12pt;
+                    font-style: italic;
+                }
+                
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .no-print {
+                        display: none;
+                    }
+                    .table-ringkasan th {
+                        background: #0284c7 !important;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-container">
+                <!-- HEADER -->
+                <div class="header">
+                    <h2>Bidang Pengendalian dan Evaluasi Pendapatan Daerah</h2>
+                    <h3>Nominal BPHTB Berdasarkan Laporan Bulanan PPAT/Notaris</h3>
+                </div>
+                
+                <!-- INFO CETAK -->
+                <div class="info-cetak">
+                    <div class="left">
+                        <strong>Periode Data:</strong> ${dataYangDigunakan.length > 0 ? dataYangDigunakan[0]["laporan_bulanan"]?.split(' ')[1] + ' - ' + dataYangDigunakan[dataYangDigunakan.length - 1]["laporan_bulanan"]?.split(' ')[1] : '-'}
+                    </div>
+                    <div class="right">
+                        <strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}
+                    </div>
+                </div>
         
             <!-- TABLE RINGKASAN -->
             <table class="table-ringkasan">
@@ -4867,14 +4952,14 @@
                         <td style="text-align:right; color:#0284c7; font-weight:600;">${formatRupiahTabel(String(total))}</td>
                     </tr>
                     `).join('')}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2" style="text-align:right; font-weight:700;">TOTAL KESELURUHAN :</td>
-                        <td style="text-align:right; color:#059669; font-weight:800; font-size:12pt;">${formatRupiahTabel(String(grandTotal))}</td>
-                    </tr>
-                </tfoot>
-            </table>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align:right; font-weight:700;">TOTAL KESELURUHAN :</td>
+                                <td style="text-align:right; color:#059669; font-weight:800; font-size:12pt;">${formatRupiahTabel(String(grandTotal))}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
         
                     <!-- TERBILANG -->
                     <div class="terbilang">
