@@ -2080,7 +2080,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxhF16gZqoEqlIMCwa0jLne_Dv1SmK_zkNPkwhE1K4DUJ_g8FojYbVenIz1UT8tJQUufg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyYvcUn6d4Cf7-oK2wqsyNx_U0kPRhWg8E4x0XL7M4bOrPkfx0NsizFcHRRh6rTjEzpRg/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -7107,20 +7107,16 @@
             }
         }
 
-        // ============================================
-        // FUNGSI DETEKSI OTOMATIS NOTARIS TIDAK MELAPOR
-        // ============================================
-
         async function deteksiOtomatisTidakLapor() {
-            // Tampilkan dialog untuk input bulan dan tahun (opsional)
+            // Tampilkan dialog untuk input bulan dan tahun
             const { value: formValues } = await Swal.fire({
                 title: 'Deteksi Notaris Tidak Melapor',
                 html: `
             <div class="text-start">
                 <p>Deteksi notaris yang belum menyampaikan laporan pada periode tertentu.</p>
-                <label class="form-label mt-2">Bulan (opsional):</label>
+                <label class="form-label mt-2">Pilih Bulan Laporan:</label>
                 <select id="swal-bulan" class="form-select">
-                    <option value="">-- Pilih Bulan (default: bulan ini) --</option>
+                    <option value="">-- Pilih Bulan --</option>
                     <option value="Januari">Januari</option>
                     <option value="Februari">Februari</option>
                     <option value="Maret">Maret</option>
@@ -7134,13 +7130,13 @@
                     <option value="November">November</option>
                     <option value="Desember">Desember</option>
                 </select>
-                <label class="form-label mt-2">Tahun (opsional):</label>
-                <input type="number" id="swal-tahun" class="form-control" placeholder="Contoh: 2026">
+                <label class="form-label mt-2">Tahun:</label>
+                <input type="number" id="swal-tahun" class="form-control" placeholder="Contoh: 2026" value="2026">
             </div>
         `,
                 focusConfirm: false,
                 showCancelButton: true,
-                confirmButtonText: 'Deteksi Sekarang',
+                confirmButtonText: 'Preview Daftar',
                 cancelButtonText: 'Batal',
                 preConfirm: () => {
                     return {
@@ -7151,6 +7147,10 @@
             });
 
             if (!formValues) return;
+            if (!formValues.bulan) {
+                Swal.fire('Peringatan', 'Silakan pilih bulan terlebih dahulu!', 'warning');
+                return;
+            }
 
             const bulan = formValues.bulan;
             const tahun = formValues.tahun;
@@ -7160,31 +7160,28 @@
                 title: 'Memproses...',
                 text: 'Mendeteksi notaris yang tidak melapor...',
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             try {
-                let url = `${scriptURL}?action=deteksi_tidak_lapor`;
-                if (bulan) url += `&bulan=${encodeURIComponent(bulan)}`;
-                if (tahun) url += `&tahun=${encodeURIComponent(tahun)}`;
-
+                // PERTAMA: TAMPILKAN PREVIEW DAFTAR NOTARIS YANG BELUM LAPOR
+                let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
                 const response = await fetch(url);
                 const result = await response.json();
 
                 Swal.close();
 
-                if (result.success) {
+                if (result.success && result.preview) {
                     let daftarHtml = '';
                     if (result.totalTidakLapor > 0) {
                         daftarHtml = `
-                    <div style="max-height: 300px; overflow-y: auto; margin-top: 15px;">
+                    <div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
                         <table class="table table-sm table-hover">
                             <thead class="table-danger">
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Notaris</th>
+                                    <th>Nama Notaris & PPAT</th>
+                                    <th>ID Notaris</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -7192,55 +7189,82 @@
                                     <tr>
                                         <td class="text-center">${idx + 1}</td>
                                         <td>${escapeHtml(nama)}</td>
+                                        <td class="text-center">-</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
                 `;
+                    } else {
+                        daftarHtml = '<p class="text-success">✅ Semua notaris sudah melapor!</p>';
                     }
 
-                    Swal.fire({
-                        icon: result.totalTidakLapor > 0 ? 'warning' : 'success',
-                        title: 'Selesai!',
+                    // TAMPILKAN KONFIRMASI SEBELUM MENAMBAHKAN DATA
+                    const confirmResult = await Swal.fire({
+                        title: result.totalTidakLapor > 0 ? `⚠️ ${result.totalTidakLapor} Notaris Belum Melapor` : 'Informasi',
                         html: `
                     <div class="text-start">
-                        <p><strong>Periode:</strong> ${result.bulan}</p>
+                        <p><strong>Periode yang dideteksi:</strong> ${result.targetBulan}</p>
                         <p><strong>Tanggal Akhir Bulan:</strong> ${result.tanggalAkhir}</p>
-                        <p><strong>Total Notaris Tidak Lapor:</strong> <span class="fw-bold text-danger">${result.totalTidakLapor}</span></p>
+                        <hr>
                         ${daftarHtml}
                         <hr>
-                        <p class="text-muted small">*Data notaris yang tidak melapor telah ditambahkan ke sistem dengan status "Tidak Menyampaikan Laporan".</p>
+                        <p class="text-muted small">*Data notaris yang belum lapor akan ditambahkan ke sistem dengan status "Tidak Menyampaikan Laporan".</p>
                     </div>
                 `,
-                        confirmButtonColor: '#28a745'
+                        icon: result.totalTidakLapor > 0 ? 'warning' : 'success',
+                        showCancelButton: result.totalTidakLapor > 0,
+                        confirmButtonText: result.totalTidakLapor > 0 ? 'Ya, Tambahkan Data' : 'OK',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#dc3545'
                     });
 
-                    // Refresh data di tabel
-                    if (typeof loadDataSheet === 'function') {
-                        loadDataSheet();
-                    } else if (typeof load === 'function') {
-                        load();
+                    // JIKA USER KONFIRMASI, BARU TAMBAHKAN DATA
+                    if (confirmResult.isConfirmed && result.totalTidakLapor > 0) {
+                        // Tampilkan loading lagi
+                        Swal.fire({
+                            title: 'Menambahkan Data...',
+                            text: 'Sedang menambahkan data notaris yang tidak melapor...',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+
+                        // Panggil action deteksi_tidak_lapor untuk benar-benar menambahkan data
+                        const addUrl = `${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
+                        const addResponse = await fetch(addUrl);
+                        const addResult = await addResponse.json();
+
+                        Swal.close();
+
+                        if (addResult.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Selesai!',
+                                html: `
+                            <p><strong>Periode:</strong> ${addResult.targetBulan}</p>
+                            <p><strong>Total Notaris Ditambahkan:</strong> ${addResult.totalTidakLapor}</p>
+                        `,
+                                confirmButtonColor: '#28a745'
+                            });
+
+                            // Refresh tabel dashboard
+                            if (typeof loadDataSheet === 'function') {
+                                loadDataSheet();
+                            }
+                        } else {
+                            Swal.fire('Gagal!', addResult.message || 'Terjadi kesalahan', 'error');
+                        }
                     }
-
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: result.message || 'Terjadi kesalahan saat mendeteksi data',
-                        confirmButtonColor: '#dc3545'
-                    });
+                    Swal.fire('Error', result.message || 'Terjadi kesalahan', 'error');
                 }
 
             } catch (error) {
                 Swal.close();
                 console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error Koneksi',
-                    text: 'Gagal terhubung ke server. Silakan coba lagi.',
-                    confirmButtonColor: '#dc3545'
-                });
+                Swal.fire('Error Koneksi', 'Gagal terhubung ke server. Silakan coba lagi.', 'error');
             }
         }
     </script>
