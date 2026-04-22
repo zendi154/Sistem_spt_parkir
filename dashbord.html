@@ -7174,25 +7174,25 @@
                 if (result.success && result.preview) {
                     let daftarHtml = '';
                     if (result.totalTidakLapor > 0) {
-                        // TAMPILKAN TABEL LENGKAP DENGAN ID DAN ALAMAT
+                        // TAMPILKAN TABEL LENGKAP DENGAN UKURAN HURUF KECIL
                         daftarHtml = `
-                    <div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-                        <table class="table table-sm table-hover">
-                            <thead class="table-danger">
+                    <div style="max-height: 400px; overflow-y: auto; margin-top: 15px; font-size: 11px;">
+                        <table class="table table-sm table-hover" style="font-size: 11px;">
+                            <thead class="table-danger" style="font-size: 11px;">
                                 <tr>
-                                    <th>No</th>
-                                    <th>Nama Notaris & PPAT</th>
-                                    <th>Nomor Unik</th>
-                                    <th>Alamat Kantor</th>
+                                    <th style="width: 5%; font-size: 11px;">No</th>
+                                    <th style="width: 40%; font-size: 11px;">Nama Notaris & PPAT</th>
+                                    <th style="width: 15%; font-size: 11px;">Nomor Unik</th>
+                                    <th style="width: 40%; font-size: 11px;">Alamat Kantor</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style="font-size: 11px;">
                                 ${result.daftarTidakLapor.map((item, idx) => `
                                     <tr>
-                                        <td class="text-center">${idx + 1}</td>
-                                        <td><strong>${escapeHtml(item.nama || item)}</strong></td>
-                                        <td class="text-center"><code>${escapeHtml(item.id || '-')}</code></td>
-                                        <td><small>${escapeHtml((item.alamat || '').substring(0, 60))}${(item.alamat || '').length > 60 ? '...' : ''}</small></td>
+                                        <td style="text-align: center; font-size: 11px;">${idx + 1}</td>
+                                        <td style="font-size: 11px;"><strong>${escapeHtml(item.nama || item)}</strong></td>
+                                        <td style="text-align: center; font-size: 11px;"><code style="font-size: 10px;">${escapeHtml(item.id || '-')}</code></td>
+                                        <td style="font-size: 11px;"><small style="font-size: 10px;">${escapeHtml((item.alamat || '').substring(0, 60))}${(item.alamat || '').length > 60 ? '...' : ''}</small></td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -7200,20 +7200,20 @@
                     </div>
                 `;
                     } else {
-                        daftarHtml = '<p class="text-success">✅ Semua notaris sudah melapor!</p>';
+                        daftarHtml = '<p class="text-success" style="font-size: 12px;">✅ Semua notaris sudah melapor!</p>';
                     }
 
                     // TAMPILKAN KONFIRMASI SEBELUM MENAMBAHKAN DATA
                     const confirmResult = await Swal.fire({
                         title: result.totalTidakLapor > 0 ? `⚠️ ${result.totalTidakLapor} Notaris Belum Melapor` : 'Informasi',
                         html: `
-                    <div class="text-start">
-                        <p><strong>Periode yang dideteksi:</strong> ${result.targetBulan}</p>
-                        <p><strong>Tanggal Akhir Bulan:</strong> ${result.tanggalAkhir}</p>
-                        <hr>
+                    <div class="text-start" style="font-size: 12px;">
+                        <p style="font-size: 12px;"><strong>Periode yang dideteksi:</strong> ${result.targetBulan}</p>
+                        <p style="font-size: 12px;"><strong>Tanggal Akhir Bulan:</strong> ${result.tanggalAkhir}</p>
+                        <hr style="margin: 8px 0;">
                         ${daftarHtml}
-                        <hr>
-                        <p class="text-muted small">*Data notaris yang belum lapor akan ditambahkan ke sistem dengan status "Tidak Menyampaikan Laporan".</p>
+                        <hr style="margin: 8px 0;">
+                        <p class="text-muted small" style="font-size: 10px;">*Data notaris yang belum lapor akan ditambahkan ke sistem dengan status "Tidak Menyampaikan Laporan".</p>
                     </div>
                 `,
                         icon: result.totalTidakLapor > 0 ? 'warning' : 'success',
@@ -7221,7 +7221,8 @@
                         confirmButtonText: result.totalTidakLapor > 0 ? 'Ya, Tambahkan Data' : 'OK',
                         cancelButtonText: 'Batal',
                         confirmButtonColor: '#28a745',
-                        cancelButtonColor: '#dc3545'
+                        cancelButtonColor: '#dc3545',
+                        width: '900px'
                     });
 
                     // JIKA USER KONFIRMASI, BARU TAMBAHKAN DATA
@@ -7246,8 +7247,8 @@
                                 icon: 'success',
                                 title: 'Selesai!',
                                 html: `
-                            <p><strong>Periode:</strong> ${addResult.targetBulan}</p>
-                            <p><strong>Total Notaris Ditambahkan:</strong> ${addResult.totalTidakLapor}</p>
+                            <p style="font-size: 13px;"><strong>Periode:</strong> ${addResult.targetBulan}</p>
+                            <p style="font-size: 13px;"><strong>Total Notaris Ditambahkan:</strong> ${addResult.totalTidakLapor}</p>
                         `,
                                 confirmButtonColor: '#28a745'
                             });
