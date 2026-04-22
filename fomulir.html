@@ -1811,7 +1811,7 @@
 
     <script>
         // ============================================
-        // FUNGSI PEMBATASAN AKSES (TAMBAHKAN INI)
+        // FUNGSI PEMBATASAN AKSES
         // ============================================
 
         const URL_API = "https://script.google.com/macros/s/AKfycbwXsh3qJO8w1hvrroyI71-UIyxbK6TOhYyPezJnH7PofB2DB3b6h6Yk69EZ8bVbSGAH/exec";
@@ -1901,25 +1901,24 @@
             const notification = document.createElement('div');
             notification.id = 'printOnlyNotification';
             notification.innerHTML = `
-        <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
-                    background: linear-gradient(135deg, #ffa502, #ff7f50); 
-                    color: white; padding: 12px 20px; border-radius: 30px; 
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-                    display: flex; align-items: center; gap: 10px;
-                    animation: slideInRight 0.5s ease;">
-            <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
-            <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
-            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
-        </div>
-        <style>
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        </style>
-    `;
+                <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
+                            background: linear-gradient(135deg, #ffa502, #ff7f50); 
+                            color: white; padding: 12px 20px; border-radius: 30px; 
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+                            display: flex; align-items: center; gap: 10px;
+                            animation: slideInRight 0.5s ease;">
+                    <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
+                    <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
+                </div>
+                <style>
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                </style>
+            `;
             document.body.appendChild(notification);
-
             setTimeout(() => {
                 const notif = document.getElementById('printOnlyNotification');
                 if (notif) notif.remove();
@@ -1948,57 +1947,11 @@
 
         /* =========================
            FUNGSI FOMULIR
-           ========================= */
+        ========================= */
 
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyNXHj30_lpjVY9wpyz1ORvPijlqpH4ZKvroGkE3HOxRYQP0k8ohsMzxXjz508W5gzqVQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
-        const btnKirim = document.querySelector('.btn-kirim');
-        const loading = document.querySelector('.loading-wrapper');
-        const success = document.querySelector('.success-wrapper');
-        let lastJumlah = null;
         let transaksiList = [];
-
-        /* =========================
-            LOAD DATA GOOGLE SHEET
-            ========================= */
-
-        function loadDataSheet() {
-
-            fetch(scriptURL)
-                .then(res => res.json())
-                .then(data => {
-
-                    const tbody = document.querySelector("#tableLaporan tbody")
-
-                    tbody.innerHTML = ""
-
-                    data.reverse().forEach(row => {
-
-                        let tr = document.createElement("tr")
-
-                        tr.innerHTML = `
-                            <td>${row["Tanggal"] || ""}</td>
-                                <td>${row["id"] || ""}</td>
-                                    <td>${row["nama_notaris_&_ppat"] || ""}</td>
-                                        <td>${row["alamat"] || ""}</td>
-                                    <td>${row["nomor_surat"] || ""}</td>
-                                <td>${row["tanggal_surat"] || ""}</td>
-                            <td>${row["tanggal_diterima"] || ""}</td>
-                        <td>${row["status_surat"] || ""}</td>
-                            <td>${row["laporan_bulanan"] || ""}</td>
-                                <td>${row["data_transaksi"] || ""}</td>
-                                    <td>${row["jumlah_laporan"] || ""}</td>
-                                        <td>${row["sspd_bphtb"] || ""}</td>
-                                <td>${row["keterangan"] || ""}</td>
-                    `
-
-                        tbody.appendChild(tr)
-
-                    })
-
-                })
-
-        }
 
         /* =========================
            FORMAT RUPIAH
@@ -2011,15 +1964,10 @@
             view.addEventListener('input', function () {
                 let angka = this.value.replace(/\D/g, '');
                 real.value = angka;
-                this.value = angka
-                    ? 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                    : '';
+                this.value = angka ? 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
             });
         }
 
-        /* =========================
-           FORMAT NOP 18 DIGIT
-        ========================= */
         function formatNOPInput(viewId, realId) {
             const view = document.getElementById(viewId);
             const real = document.getElementById(realId);
@@ -2028,7 +1976,6 @@
             view.addEventListener('input', function () {
                 let angka = this.value.replace(/\D/g, '').slice(0, 18);
                 real.value = angka;
-
                 let f = '';
                 if (angka.length > 0) f += angka.substring(0, 2);
                 if (angka.length > 2) f += '.' + angka.substring(2, 4);
@@ -2037,18 +1984,13 @@
                 if (angka.length > 10) f += '.' + angka.substring(10, 13);
                 if (angka.length > 13) f += '.' + angka.substring(13, 17);
                 if (angka.length > 17) f += '.' + angka.substring(17, 18);
-
                 this.value = f;
             });
         }
 
-        /* =========================
-           FORMAT LUAS TANAH / BANGUNAN 4/4
-        ========================= */
         function formatLuasTB(id) {
             const input = document.getElementById(id);
             if (!input) return;
-
             input.addEventListener('input', function () {
                 let angka = this.value.replace(/\D/g, '').slice(0, 8);
                 if (angka.length > 4) {
@@ -2059,47 +2001,30 @@
             });
         }
 
-        /* =========================
-           AKTIFKAN FORMAT
-        ========================= */
-        formatRupiahInput('harga_transaksi_view', 'harga_transaksi');
-        formatRupiahInput('ssp_view', 'ssp');
-        formatRupiahInput('ssb_view', 'ssb');
-        formatRupiahInput('njop_view', 'njop');
-        formatNOPInput('nop_view', 'nop');
-        formatLuasTB('luas_tb');
-
-        /* =========================
-           TOGGLE BLOK TRANSAKSI
-        ========================= */
+        // ============================================
+        // SATU KALI DOMContentLoaded SAJA
+        // ============================================
         document.addEventListener('DOMContentLoaded', async function () {
 
             // ============================================
-            // CEK LOGIN DAN ROLE (PENTING! DILAKUKAN PERTAMA)
+            // 1. CEK LOGIN DAN ROLE
             // ============================================
             const isLoggedIn = await checkLoginAndRole();
-            if (!isLoggedIn) {
-                return; // Akan redirect ke halaman login
-            }
+            if (!isLoggedIn) return;
 
             // ============================================
-            // SESUAIKAN AKSES BERDASARKAN ROLE
+            // 2. SESUAIKAN AKSES BERDASARKAN ROLE
             // ============================================
             if (currentUserRole !== 'admin') {
-                // Nonaktifkan semua tombol yang bisa mengedit data
                 disableEditingForUser();
-
-                // Tampilkan notifikasi print only
                 showPrintOnlyNotification();
 
-                // Nonaktifkan form submission
                 const formLaporan = document.getElementById('form-laporan');
                 if (formLaporan) {
                     formLaporan.style.pointerEvents = 'none';
                     formLaporan.style.opacity = '0.7';
                 }
 
-                // Nonaktifkan tombol kirim
                 const btnKirim = document.querySelector('.btn-kirim');
                 if (btnKirim) {
                     btnKirim.disabled = true;
@@ -2109,9 +2034,18 @@
             }
 
             // ============================================
-            // KODE ASLI ANDA (LANJUTKAN)
+            // 3. AKTIFKAN FORMAT INPUT
             // ============================================
+            formatRupiahInput('harga_transaksi_view', 'harga_transaksi');
+            formatRupiahInput('ssp_view', 'ssp');
+            formatRupiahInput('ssb_view', 'ssb');
+            formatRupiahInput('njop_view', 'njop');
+            formatNOPInput('nop_view', 'nop');
+            formatLuasTB('luas_tb');
 
+            // ============================================
+            // 4. TOGGLE BLOK TRANSAKSI
+            // ============================================
             const ya = document.getElementById('trx_ya');
             const tidak = document.getElementById('trx_tidak');
             const blok = document.getElementById('blokTransaksi');
@@ -2121,55 +2055,53 @@
                     blok.classList.remove('d-none');
                 } else {
                     blok.classList.add('d-none');
-                    document.getElementById('cekTransaksi').checked = false;
+                    const cek = document.getElementById('cekTransaksi');
+                    if (cek) cek.checked = false;
                 }
             }
 
-            // default TIDAK
-            tidak.checked = true;
+            if (tidak) tidak.checked = true;
             toggleTransaksi();
+            if (ya) ya.addEventListener('change', toggleTransaksi);
+            if (tidak) tidak.addEventListener('change', toggleTransaksi);
 
-            ya.addEventListener('change', toggleTransaksi);
-            tidak.addEventListener('change', toggleTransaksi);
+            // ============================================
+            // 5. DATA WILAYAH (KECAMATAN & KELURAHAN)
+            // ============================================
+            const dataWilayah = {
+                "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
+                "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
+                "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
+                "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
+                "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
+                "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
+                "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
+                "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
+                "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
+            };
 
-            document.addEventListener('DOMContentLoaded', function () {
+            const kecamatanSelect = document.getElementById('kecamatan');
+            const kelInput = document.getElementById('kelurahanInput');
+            const kelList = document.getElementById('kelurahanList');
+            const kecHidden = document.getElementById('kecamatan_value');
+            const kelHidden = document.getElementById('kelurahan_value');
 
-                const dataWilayah = {
-                    "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
-                    "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
-                    "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
-                    "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
-                    "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
-                    "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
-                    "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
-                    "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
-                    "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
-                };
+            const kelurahanMap = {};
+            Object.entries(dataWilayah).forEach(([kec, list]) => {
+                list.forEach(kel => kelurahanMap[kel] = kec);
+            });
 
-                const kecamatanSelect = document.getElementById('kecamatan');
-                const kelInput = document.getElementById('kelurahanInput');
-                const kelList = document.getElementById('kelurahanList');
-                const kecHidden = document.getElementById('kecamatan_value');
-                const kelHidden = document.getElementById('kelurahan_value');
-
-                // map kelurahan → kecamatan
-                const kelurahanMap = {};
-                Object.entries(dataWilayah).forEach(([kec, list]) => {
-                    list.forEach(kel => kelurahanMap[kel] = kec);
-                });
-
+            if (kelInput) {
                 kelInput.addEventListener('input', function () {
                     const keyword = this.value.trim().toLowerCase();
-                    kelList.innerHTML = '';
-
-                    // reset saat diketik ulang
-                    kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
-                    kecamatanSelect.disabled = true;
-                    kecHidden.value = '';
-                    kelHidden.value = '';
+                    if (kelList) kelList.innerHTML = '';
+                    if (kecamatanSelect) kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                    if (kecamatanSelect) kecamatanSelect.disabled = true;
+                    if (kecHidden) kecHidden.value = '';
+                    if (kelHidden) kelHidden.value = '';
 
                     if (!keyword) {
-                        kelList.classList.add('d-none');
+                        if (kelList) kelList.classList.add('d-none');
                         return;
                     }
 
@@ -2180,384 +2112,151 @@
                             const li = document.createElement('li');
                             li.className = 'list-group-item list-group-item-action';
                             li.textContent = kel;
-
                             li.onclick = () => {
-                                kelInput.value = kel;
-                                kelList.classList.add('d-none');
-
-                                kecamatanSelect.innerHTML =
-                                    `<option selected>${kelurahanMap[kel]}</option>`;
-                                kecamatanSelect.disabled = true;
-
-                                kecHidden.value = kelurahanMap[kel];
-                                kelHidden.value = kel;
+                                if (kelInput) kelInput.value = kel;
+                                if (kelList) kelList.classList.add('d-none');
+                                if (kecamatanSelect) kecamatanSelect.innerHTML = `<option selected>${kelurahanMap[kel]}</option>`;
+                                if (kecamatanSelect) kecamatanSelect.disabled = true;
+                                if (kecHidden) kecHidden.value = kelurahanMap[kel];
+                                if (kelHidden) kelHidden.value = kel;
                             };
-
-                            kelList.appendChild(li);
+                            if (kelList) kelList.appendChild(li);
                         });
-
-                    kelList.classList.remove('d-none');
+                    if (kelList) kelList.classList.remove('d-none');
                 });
-
-                document.addEventListener('click', e => {
-                    if (!kelInput.contains(e.target)) {
-                        kelList.classList.add('d-none');
-                    }
-                });
-
-                // expose validasi ke global
-                window.validasiWilayah = function () {
-                    if (!kelHidden.value || !kecHidden.value) {
-                        alert('❌ Kelurahan harus dipilih dari daftar');
-                        kelInput.focus();
-                        return false;
-                    }
-                    return true;
-                };
-
-            });
-
-            /* =========================
-            SUBMIT FORM (FINAL)
-            ========================= */
-            form.addEventListener('submit', function (e) {
-
-                const trxYa = document.getElementById('trx_ya');
-                const trxTidak = document.getElementById('trx_tidak');
-
-                /* =========================
-                   JIKA TRANSAKSI = TIDAK / NIHIL
-                ========================= */
-                if (trxTidak && trxTidak.checked) {
-                    // boleh submit tanpa validasi transaksi
-                    return;
-                }
-
-                /* =========================
-                   JIKA TRANSAKSI = YA
-                ========================= */
-
-                // validasi checkbox konfirmasi
-                if (!document.getElementById('cekTransaksi').checked) {
-                    alert('⚠️ Centang konfirmasi data transaksi');
-                    e.preventDefault();
-                    return;
-                }
-
-                const luasInput = document.getElementById('luas_tb').value.trim();
-
-                if (!luasInput) {
-                    alert('⚠️ Luas tanah/bangunan harus diisi');
-                    e.preventDefault();
-                    return;
-                }
-
-                // split & validasi 1–4 digit / 1–4 digit
-                const parts = luasInput.split('/');
-                if (
-                    parts.length !== 2 ||
-                    !/^\d{1,4}$/.test(parts[0]) ||
-                    !/^\d{1,4}$/.test(parts[1])
-                ) {
-                    alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi!');
-                    e.preventDefault();
-                    return;
-                }
-
-                // tambah leading zero
-                const luasTBFormatted =
-                    parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
-
-                // push data transaksi
-                const data = {
-                    tanggal: tanggal_transaksi.value,
-                    no_sppd: no_sppd.value.trim(),
-                    nomor_akta: document.getElementById('nomor_akta').value.trim(),
-                    nomor_hak: document.getElementById('nomor_hak').value.trim(),
-                    penjual: nama_penjual.value.trim(),
-                    pembeli: nama_pembeli.value.trim(),
-
-                    kecamatan: document.getElementById('kecamatan_value').value,
-                    kelurahan: document.getElementById('kelurahan_value').value,
-
-                    nop: nop_view.value,
-                    njop: njop_view.value,
-                    luas_tb: luasTBFormatted,
-                    harga: harga_transaksi_view.value,
-                    ssp: ssp_view.value,
-                    ssb: ssb_view.value
-                };
-
-                if (!data.kecamatan || !data.kelurahan) {
-                    alert('❌ Kecamatan & Kelurahan wajib dipilih');
-                    return;
-                }
-
-                transaksiList.push(data);
-                document.getElementById('data_transaksi').value =
-                    JSON.stringify(transaksiList);
-            });
-
-            const nomorHakInput = document.getElementById('nomor_hak');
-            if (nomorHakInput) {
-                nomorHakInput.value = nomorHakInput.value.toUpperCase();
             }
 
-            /* =========================
-               RESET FORM
-            ========================= */
-            function resetFormTransaksi() {
-                const ids = [
-                    'tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak', 'nama_penjual', 'nama_pembeli',
-                    'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
-                    'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
-                    'luas_tb'
-                ];
-
-                ['kecamatan', 'kelurahan'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.value = '';
-                        if (id === 'kelurahan') el.disabled = true;
-                    }
-                });
-
-                ids.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = '';
-                });
-
-                // reset radio & blok transaksi
-                document.getElementById('trx_ya').checked = false;
-                document.getElementById('trx_tidak').checked = true;
-                document.getElementById('blokTransaksi').classList.add('d-none');
-
-                // reset checkbox
-                document.getElementById('cekTransaksi').checked = false;
-
-                // reset data
-                transaksiList = [];
-                document.getElementById('data_transaksi').value = '';
-            }
-
-            const nomorHak = document.getElementById("nomor_hak");
-
-            nomorHak.addEventListener("input", function () {
-
-                let value = this.value.toUpperCase();
-
-                // Hapus spasi berlebih
-                value = value.replace(/\s+/g, " ").trim();
-
-                // Jika format SHM 1234 → ubah jadi SHM No. 1234
-                if (/^SHM\s?\d+$/i.test(value)) {
-                    value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
+            document.addEventListener('click', e => {
+                if (kelInput && kelList && !kelInput.contains(e.target)) {
+                    kelList.classList.add('d-none');
                 }
-
-                // Jika format HGB 1234 → ubah jadi HGB/1234
-                if (/^HGB\s?\d+$/i.test(value)) {
-                    value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
-                }
-
-                // Jika format angka saja 123/2024 tetap
-                if (/^\d+\/\d{4}$/.test(value)) {
-                    value = value;
-                }
-
-                this.value = value;
             });
 
-            // Ambil input nomor surat
-            const nomorSurat = document.getElementById('nomor_surat');
+            window.validasiWilayah = function () {
+                if (!kelHidden?.value || !kecHidden?.value) {
+                    alert('❌ Kelurahan harus dipilih dari daftar');
+                    if (kelInput) kelInput.focus();
+                    return false;
+                }
+                return true;
+            };
 
-            // Saat mengetik langsung di input → semua huruf kapital
-            nomorSurat.addEventListener('input', function () {
-                this.value = this.value.toUpperCase();
-            });
-
-            // Saat submit → pastikan yang dikirim juga huruf kapital
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-
-                // ubah nomor surat ke huruf kapital sebelum dikirim
-                nomorSurat.value = nomorSurat.value.toUpperCase();
-
-                // tampilkan loading
-                success.classList.add('d-none');
-                btnKirim.classList.add('d-none');
-                loading.classList.remove('d-none');
-
-                fetch(scriptURL, {
-                    method: 'POST',
-                    body: new FormData(form)
-                })
-                    .then(response => {
-                        loading.classList.add('d-none');
-
-                        // tampilkan sukses
-                        success.classList.remove('d-none');
-
-                        // TUNGGU SEBENTAR → LALU RELOAD HALAMAN
-                        setTimeout(() => {
-                            location.reload(); // 🔄 RESET TOTAL HALAMAN
-                        }, 5000); // 5 detik
-                    })
-
-                    .catch(error => {
-                        loading.classList.add('d-none');
-                        btnKirim.classList.remove('d-none');
-                        alert('Gagal mengirim laporan!');
-                        console.error(error);
-                    });
-            });
-
-            const bulan = [
-                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-            ];
-
-            const select = document.getElementById("laporan_bulanan");
+            // ============================================
+            // 6. LOAD BULAN KE DROPDOWN
+            // ============================================
+            const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const selectBulan = document.getElementById("laporan_bulanan");
             const today = new Date();
             const tahunSekarang = today.getFullYear();
-            const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
+            const bulanSekarang = today.getMonth();
 
-            // hanya 2 tahun: tahun sebelumnya + tahun sekarang
-            for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
-                const group = document.createElement("optgroup");
-                group.label = `Tahun ${tahun}`;
-
-                bulan.forEach((b, i) => {
-                    const val = `${b} ${tahun}`;
-                    const option = document.createElement("option");
-                    option.value = val;
-                    option.textContent = val;
-
-                    // otomatis pilih bulan & tahun saat ini
-                    if (tahun === tahunSekarang && i === bulanSekarang) {
-                        option.selected = true;
-                    }
-
-                    group.appendChild(option);
-                });
-
-                select.appendChild(group);
+            if (selectBulan) {
+                for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
+                    const group = document.createElement("optgroup");
+                    group.label = `Tahun ${tahun}`;
+                    bulan.forEach((b, i) => {
+                        const val = `${b} ${tahun}`;
+                        const option = document.createElement("option");
+                        option.value = val;
+                        option.textContent = val;
+                        if (tahun === tahunSekarang && i === bulanSekarang) {
+                            option.selected = true;
+                        }
+                        group.appendChild(option);
+                    });
+                    selectBulan.appendChild(group);
+                }
             }
 
+            // ============================================
+            // 7. SELECT NOTARIS
+            // ============================================
             const selectNotaris = document.getElementById("notaris");
-            const npwpField = document.getElementById("id");
+            const idField = document.getElementById("id");
             const namaField = document.getElementById("nama");
             const alamatField = document.getElementById("alamat");
 
-            selectNotaris.addEventListener("change", function () {
-                const selectedOption = this.options[this.selectedIndex];
-                const npwp = selectedOption.getAttribute("data-id");
-                const alamat = selectedOption.getAttribute("data-alamat");
-                const nama = selectedOption.value;
-
-                npwpField.value = npwp || "";
-                namaField.value = nama || "";
-                alamatField.value = alamat || "";
-            });
-
-            // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
-            document.body.insertAdjacentHTML("beforeend", `
-    <div id="loadingOverlay" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-        color: white;
-        font-family: Arial, sans-serif;
-        font-size: 18px;
-        text-align: center;
-    ">
-        <div style="
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        "></div>
-        <p style="margin-top: 15px;">Mohon Tunggu... <br> Terima kasih!</p>
-    </div>
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-`);
-
-            // Fungsi untuk menampilkan loading sebelum berpindah halaman (kecuali untuk tombol petunjuk)
-            document.addEventListener("DOMContentLoaded", function () {
-                let links = document.querySelectorAll("a"); // Target semua link di halaman
-
-                links.forEach(link => {
-                    // TOMBOL YANG TIDAK PERLU LOADING (Petunjuk, atau yang memiliki class tertentu)
-                    const isExcluded = link.id === 'btnPetunjukForm' ||
-                        link.classList.contains('no-loading') ||
-                        link.getAttribute('data-no-loading') === 'true';
-
-                    // Hanya proses link yang bukan tombol petunjuk dan memiliki href yang valid
-                    if (!isExcluded && link.href && link.href !== '#' && !link.href.endsWith('#')) {
-                        link.addEventListener("click", function (event) {
-                            // Jangan prevent jika ini adalah tombol petunjuk
-                            if (this.id === 'btnPetunjukForm') return;
-
-                            event.preventDefault(); // Mencegah navigasi langsung
-                            let overlay = document.getElementById("loadingOverlay");
-
-                            if (overlay) {
-                                overlay.style.visibility = "visible";
-                                overlay.style.opacity = "1";
-                            }
-
-                            let loadingTime = 10000; // 10 detik sebelum pindah halaman
-                            setTimeout(() => {
-                                window.location.href = this.href; // Pindah halaman setelah 10 detik
-                            }, loadingTime);
-                        });
-                    }
+            if (selectNotaris) {
+                selectNotaris.addEventListener("change", function () {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const id = selectedOption.getAttribute("data-id");
+                    const alamat = selectedOption.getAttribute("data-alamat");
+                    const nama = selectedOption.value;
+                    if (idField) idField.value = id || "";
+                    if (namaField) namaField.value = nama || "";
+                    if (alamatField) alamatField.value = alamat || "";
                 });
-            });
+            }
 
-            window.addEventListener("load", function () {
-                let overlay = document.getElementById("loadingOverlay");
-                overlay.style.visibility = "hidden";
-                overlay.style.opacity = "0";
-            });
+            // ============================================
+            // 8. NOMOR HAK & NOMOR SURAT
+            // ============================================
+            const nomorHak = document.getElementById("nomor_hak");
+            if (nomorHak) {
+                nomorHak.addEventListener("input", function () {
+                    let value = this.value.toUpperCase().replace(/\s+/g, " ").trim();
+                    if (/^SHM\s?\d+$/i.test(value)) value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
+                    if (/^HGB\s?\d+$/i.test(value)) value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
+                    this.value = value;
+                });
+            }
 
-            document.addEventListener('DOMContentLoaded', function () {
+            const nomorSurat = document.getElementById('nomor_surat');
+            if (nomorSurat) {
+                nomorSurat.addEventListener('input', function () {
+                    this.value = this.value.toUpperCase();
+                });
+            }
 
-                const jumlah = document.getElementById('jumlah_laporan');
-                const ket = document.getElementById('keterangan');
-                const ketHint = document.getElementById('ketHint');
-                const ketError = document.getElementById('ketError');
-                const form = document.getElementById('form-laporan');
+            // ============================================
+            // 9. STATUS SURAT OTOMATIS
+            // ============================================
+            const tanggalDiterima = document.getElementById('tanggal_diterima');
+            const statusSurat = document.getElementById('status_surat');
 
-                const rupiahView = document.getElementById('sspd_bphtb_view');
-                const rupiahReal = document.getElementById('sspd_bphtb');
-
-                const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
-
-                /* =====================
-                   FORMAT RUPIAH
-                ===================== */
-                function formatAngka(angka) {
-                    return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            if (tanggalDiterima && statusSurat) {
+                function updateStatusSurat() {
+                    if (!tanggalDiterima.value) {
+                        statusSurat.value = '';
+                        return;
+                    }
+                    const tanggal = new Date(tanggalDiterima.value);
+                    const hari = tanggal.getDate();
+                    statusSurat.value = hari <= 10 ? 'Tepat Waktu' : 'Menyampaikan/Terlambat';
                 }
+                tanggalDiterima.addEventListener('change', updateStatusSurat);
+                tanggalDiterima.addEventListener('input', updateStatusSurat);
+                updateStatusSurat();
+            }
 
+            // ============================================
+            // 10. SINKRON BPHTB DENGAN SSB
+            // ============================================
+            const ssbView = document.getElementById('ssb_view');
+            const bphtbView = document.getElementById('sspd_bphtb_view');
+            const toggleSync = document.getElementById('autoBPHTB');
+
+            if (ssbView && bphtbView && toggleSync) {
+                function syncBPHTB() {
+                    if (!toggleSync.checked) return;
+                    let angka = ssbView.value.replace(/\D/g, '');
+                    if (angka) {
+                        bphtbView.value = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    }
+                }
+                ssbView.addEventListener('input', syncBPHTB);
+                toggleSync.addEventListener('change', function () {
+                    if (this.checked) syncBPHTB();
+                });
+            }
+
+            // ============================================
+            // 11. FORMAT RUPIAH BPHTB
+            // ============================================
+            const rupiahView = document.getElementById('sspd_bphtb_view');
+            const rupiahReal = document.getElementById('sspd_bphtb');
+
+            if (rupiahView && rupiahReal) {
                 rupiahView.addEventListener('input', function () {
                     let angka = this.value.replace(/\D/g, '');
                     rupiahReal.value = angka;
@@ -2565,1513 +2264,244 @@
                         this.value = '';
                         return;
                     }
-                    this.value = 'Rp. ' + formatAngka(angka);
+                    this.value = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 });
+            }
 
-                rupiahView.addEventListener('focus', function () {
-                    this.value = this.value.replace(/Rp\.?\s?|\.|,00/g, '');
-                });
+            // ============================================
+            // 12. SUBMIT FORM
+            // ============================================
+            const formElement = document.forms['LAPORAN NOTARIS'];
+            const btnKirimEl = document.querySelector('.btn-kirim');
+            const loadingDiv = document.querySelector('.loading-wrapper');
+            const successDiv = document.querySelector('.success-wrapper');
 
-                rupiahView.addEventListener('blur', function () {
-                    if (this.value !== '') {
-                        this.value = 'Rp. ' + formatAngka(this.value.replace(/\D/g, '')) + ',00';
-                    }
-                });
+            if (formElement) {
+                formElement.addEventListener('submit', function (e) {
+                    e.preventDefault();
 
-                /* =====================
-                   HELPER KETERANGAN
-                ===================== */
-                function lockKet(text, hint) {
-                    ket.value = text;
-                    ket.readOnly = true;
-                    ket.style.pointerEvents = 'none';
-                    ket.style.backgroundColor = '#e9ecef';
-                    ketHint.textContent = hint;
-                    ketHint.className = 'form-text fw-semibold text-secondary';
-                    ket.classList.remove('is-valid', 'is-invalid');
-                    ketError.textContent = '';
-                }
+                    const trxYa = document.getElementById('trx_ya');
+                    const trxTidak = document.getElementById('trx_tidak');
 
-                function unlockKet(text, hint) {
-                    ket.readOnly = false;
-                    ket.style.pointerEvents = 'auto';
-                    ket.style.backgroundColor = '';
-                    ket.value = text;
-                    ketHint.textContent = hint;
-                    ketHint.className = 'form-text fw-semibold text-info';
-                }
-
-                function hitungKet(text) {
-                    const angka = text.match(/\d+/g);
-                    return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
-                }
-
-                /* =====================
-                   LOGIKA UTAMA
-                ===================== */
-                function prosesKeterangan() {
-                    const val = jumlah.value;
-
-                    if (val === '') {
-                        lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
-                        return false;
-                    }
-
-                    const num = Number(val);
-
-                    if (num === 0) {
-                        lockKet('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
-                        return true;
-                    }
-
-                    if (ket.readOnly) {
-                        unlockKet(TEMPLATE, '✏️ Isi rincian sesuai jumlah laporan');
-                    }
-
-                    const total = hitungKet(ket.value);
-
-                    if (total !== num) {
-                        ket.classList.add('is-invalid');
-                        ket.classList.remove('is-valid');
-                        ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
-                        ketHint.textContent = '❌ Jumlah rincian belum sesuai';
-                        ketHint.className = 'form-text fw-semibold text-danger';
-                        return false;
+                    if (trxTidak && trxTidak.checked) {
+                        // Laporan nihil, lanjutkan
                     } else {
-                        ket.classList.remove('is-invalid');
-                        ket.classList.add('is-valid');
-                        ketError.textContent = '';
-                        ketHint.textContent = '✅ Jumlah rincian sesuai';
-                        ketHint.className = 'form-text fw-semibold text-success';
-                        return true;
+                        if (!document.getElementById('cekTransaksi')?.checked) {
+                            alert('⚠️ Centang konfirmasi data transaksi');
+                            return;
+                        }
+
+                        const luasInput = document.getElementById('luas_tb')?.value.trim();
+                        if (!luasInput) {
+                            alert('⚠️ Luas tanah/bangunan harus diisi');
+                            return;
+                        }
+
+                        const parts = luasInput.split('/');
+                        if (parts.length !== 2 || !/^\d{1,4}$/.test(parts[0]) || !/^\d{1,4}$/.test(parts[1])) {
+                            alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi');
+                            return;
+                        }
+
+                        // Push data transaksi
+                        const data = {
+                            tanggal: document.getElementById('tanggal_transaksi')?.value,
+                            no_sppd: document.getElementById('no_sppd')?.value.trim(),
+                            nomor_akta: document.getElementById('nomor_akta')?.value.trim(),
+                            nomor_hak: document.getElementById('nomor_hak')?.value.trim(),
+                            penjual: document.getElementById('nama_penjual')?.value.trim(),
+                            pembeli: document.getElementById('nama_pembeli')?.value.trim(),
+                            kecamatan: document.getElementById('kecamatan_value')?.value,
+                            kelurahan: document.getElementById('kelurahan_value')?.value,
+                            nop: document.getElementById('nop_view')?.value,
+                            njop: document.getElementById('njop_view')?.value,
+                            luas_tb: parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0'),
+                            harga: document.getElementById('harga_transaksi_view')?.value,
+                            ssp: document.getElementById('ssp_view')?.value,
+                            ssb: document.getElementById('ssb_view')?.value
+                        };
+
+                        if (!data.kecamatan || !data.kelurahan) {
+                            alert('❌ Kecamatan & Kelurahan wajib dipilih');
+                            return;
+                        }
+
+                        transaksiList.push(data);
+                        document.getElementById('data_transaksi').value = JSON.stringify(transaksiList);
                     }
-                }
 
-                /* =====================
-                   EVENT
-                ===================== */
-                lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                    if (nomorSurat) nomorSurat.value = nomorSurat.value.toUpperCase();
 
-                jumlah.addEventListener('input', prosesKeterangan);
-                ket.addEventListener('input', prosesKeterangan);
+                    if (loadingDiv) loadingDiv.classList.remove('d-none');
+                    if (btnKirimEl) btnKirimEl.classList.add('d-none');
 
-                form.addEventListener('submit', function (e) {
-                    if (!form.checkValidity() || !prosesKeterangan()) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        form.classList.add('was-validated');
-                    }
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        body: new FormData(formElement)
+                    })
+                        .then(() => {
+                            if (loadingDiv) loadingDiv.classList.add('d-none');
+                            if (successDiv) successDiv.classList.remove('d-none');
+                            setTimeout(() => location.reload(), 5000);
+                        })
+                        .catch(error => {
+                            if (loadingDiv) loadingDiv.classList.add('d-none');
+                            if (btnKirimEl) btnKirimEl.classList.remove('d-none');
+                            alert('Gagal mengirim laporan!');
+                            console.error(error);
+                        });
                 });
-
-                function resetKeterangan() {
-                    lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
-                    ket.classList.remove('is-valid', 'is-invalid');
-                    ketError.textContent = '';
-                }
-
-            });
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-                function formatTanggalDMY(inputId, prefix) {
-                    const input = document.getElementById(inputId);
-
-                    // hidden input untuk dikirim ke server
-                    let hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = `tanggal_${prefix}_indo`;
-                    input.closest('form').appendChild(hidden);
-
-                    function updateHidden() {
-                        if (!input.value) return;
-                        const [yyyy, mm, dd] = input.value.split('-');
-                        hidden.value = `${dd}/${mm}/${yyyy}`;
-                    }
-
-                    // update saat input berubah atau diketik langsung
-                    input.addEventListener('change', updateHidden);
-                    input.addEventListener('input', updateHidden);
-
-                    // pastikan saat submit juga terupdate
-                    input.closest('form').addEventListener('submit', updateHidden);
-                }
-
-                // Tanggal Surat
-                formatTanggalDMY('tanggal_surat', 'surat');
-
-                // Tanggal Disposisi
-                formatTanggalDMY('tanggal_disposisi', 'disposisi');
-
-            });
-
-            const alertPerhatian = document.getElementById('alertPerhatian');
-
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-
-                if (alertPerhatian) {
-                    alertPerhatian.classList.add('d-none');
-                }
-
-                // lanjutkan loading & submit
-            });
-
-            /* ===============================
-               LIVE CHAT RESPONSIVE GUARD
-            ================================ */
-            function isDesktop() {
-                return window.innerWidth >= 993;
             }
 
-            let liveChatContainer = null;
-
-            if (isDesktop()) {
-                liveChatContainer = document.createElement('div');
-                liveChatContainer.id = 'liveChatFloating';
-                document.body.appendChild(liveChatContainer);
-            }
-
-            /* Jika layar di-resize */
-            window.addEventListener('resize', function () {
-                if (isDesktop() && !liveChatContainer) {
-                    liveChatContainer = document.createElement('div');
-                    liveChatContainer.id = 'liveChatFloating';
-                    document.body.appendChild(liveChatContainer);
-                }
-
-                if (!isDesktop() && liveChatContainer) {
-                    liveChatContainer.remove();
-                    liveChatContainer = null;
+            // ============================================
+            // 13. LOADING OVERLAY UNTUK NAVIGASI
+            // ============================================
+            const links = document.querySelectorAll("a");
+            links.forEach(link => {
+                const isExcluded = link.id === 'btnPetunjukForm' || link.classList.contains('no-loading');
+                if (!isExcluded && link.href && link.href !== '#' && !link.href.endsWith('#')) {
+                    link.addEventListener("click", function (event) {
+                        if (this.id === 'btnPetunjukForm') return;
+                        event.preventDefault();
+                        const overlay = document.getElementById("loadingOverlay");
+                        if (overlay) {
+                            overlay.style.visibility = "visible";
+                            overlay.style.opacity = "1";
+                        }
+                        setTimeout(() => {
+                            window.location.href = this.href;
+                        }, 10000);
+                    });
                 }
             });
 
-            // AMBIL ELEMENT FORM (AMAN)
-            const adminInput = document.querySelector('[name="admin penginput"]');
-            const notarisSelect = document.getElementById('notaris');
-            const idInput = document.getElementById('id');
-            const namaInput = document.getElementById('nama');
-            const alamatInput = document.getElementById('alamat');
-            const tanggalSurat = document.getElementById('tanggal_surat');
+            // ============================================
+            // 14. HILANGKAN LOADING OVERLAY SAAT LOAD
+            // ============================================
+            window.addEventListener("load", function () {
+                const overlay = document.getElementById("loadingOverlay");
+                if (overlay) {
+                    overlay.style.visibility = "hidden";
+                    overlay.style.opacity = "0";
+                }
+            });
+
+            // ============================================
+            // 15. FUNGSI KETERANGAN (JUMLAH LAPORAN)
+            // ============================================
             const jumlahLaporan = document.getElementById('jumlah_laporan');
-            const keteranganInput = document.getElementById('keterangan');
-            const sspdInput = document.getElementById('sspd_bphtb_view');
+            const keterangan = document.getElementById('keterangan');
+            const ketHint = document.getElementById('ketHint');
+            const ketError = document.getElementById('ketError');
+            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
 
-            // FORMAT TANGGAL
-            function formatTanggalIndo(val) {
-                if (!val) return '-';
-                const [y, m, d] = val.split('-');
-                return `${d}/${m}/${y}`;
+            function hitungKet(text) {
+                const angka = text.match(/\d+/g);
+                return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
             }
 
-            // FUNGSI NOMOR AKTA
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const nomorAkta = document.getElementById('nomor_akta');
-
-                nomorAkta.addEventListener('input', function () {
-
-                    let raw = this.value.replace(/\D/g, '');
-
-                    // max 8 digit (4 nomor + 4 tahun)
-                    raw = raw.slice(0, 8);
-
-                    if (raw.length <= 4) {
-                        this.value = raw;
-                    } else {
-                        const nomor = raw.slice(0, raw.length - 4);
-                        const tahun = raw.slice(-4);
-                        this.value = `${nomor}/${tahun}`;
-                    }
-                });
-            });
-
-            // UPDATE / BUAT BARIS LIVE CHAT
-            function setLiveMessage(key, title, value) {
-                if (!liveChatContainer) return; // ⛔ STOP di HP & Tablet
-
-                let row = document.getElementById(`live-${key}`);
-
-                if (!row) {
-                    row = document.createElement('div');
-                    row.id = `live-${key}`;
-                    row.className = 'live-row';
-                    liveChatContainer.appendChild(row);
+            function prosesKeterangan() {
+                if (!jumlahLaporan || !keterangan) return false;
+                const val = jumlahLaporan.value;
+                if (val === '') return false;
+                const num = Number(val);
+                if (num === 0) {
+                    keterangan.value = 'Nihil';
+                    keterangan.readOnly = true;
+                    return true;
                 }
-
-                row.innerHTML = `
-        <span class="live-title">${title}</span>
-        <span class="live-value">${value || '-'}</span>
-    `;
-            }
-
-            /* ===============================
-               EVENT LISTENER
-            ================================ */
-
-            // ADMIN PENGINPUT
-            adminInput?.addEventListener('change', function () {
-                setLiveMessage('admin', 'Admin Penginput', this.value);
-            });
-
-            // NOTARIS
-            notarisSelect?.addEventListener('change', function () {
-                const selected = this.options[this.selectedIndex];
-
-                idInput.value = selected.dataset.id || '';
-                namaInput.value = selected.value || '';
-                alamatInput.value = selected.dataset.alamat || '';
-
-                setLiveMessage('notaris', 'Notaris & PPAT', selected.value);
-                setLiveMessage('id', 'Nomor Unik', selected.dataset.id);
-                setLiveMessage('alamat', 'Alamat', selected.dataset.alamat);
-            });
-
-            function formatRupiahLive(val) {
-                if (!val) return '-';
-                let angka = val.replace(/[^0-9]/g, '');
-                if (angka === '') return '-';
-                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            }
-
-            // TANGGAL SURAT
-            tanggalSurat?.addEventListener('input', function () {
-                setLiveMessage(
-                    'tanggal_surat',
-                    'Tanggal Surat',
-                    formatTanggalIndo(this.value)
-                );
-            });
-
-            function resetLiveChat() {
-                liveChatContainer.innerHTML = '';
-
-                // optional placeholder
-                const empty = document.createElement('div');
-                empty.className = 'live-chat-empty';
-                empty.textContent = 'Belum ada data…';
-                liveChatContainer.appendChild(empty);
-            }
-
-
-            // JUMLAH LAPORAN
-            jumlahLaporan?.addEventListener('input', function () {
-                setLiveMessage('jumlah_laporan', 'Jumlah Laporan', this.value);
-            });
-
-            // KETERANGAN
-            keteranganInput?.addEventListener('input', function () {
-                setLiveMessage('keterangan', 'Keterangan', this.value);
-            });
-
-            // NOMINAL SSB
-            sspdInput.addEventListener('input', function () {
-                let angka = this.value.replace(/\D/g, '');
-
-                if (!angka) {
-                    setLiveMessage('ssb', 'Nominal SSB', '-');
-                    return;
+                if (keterangan.readOnly) {
+                    keterangan.readOnly = false;
+                    keterangan.value = TEMPLATE;
                 }
-
-                const formatted = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
-                setLiveMessage('ssb', 'Nominal SSB', formatted);
-            });
-
-            const agreeCheck = document.getElementById('agreeCheck');
-
-            /* =====================
-               VALIDASI CHECKBOX
-            ===================== */
-            function validateAgree() {
-                if (!agreeCheck.checked) {
-                    agreeCheck.classList.add('is-invalid');
-                    agreeCheck.classList.remove('is-valid');
+                const total = hitungKet(keterangan.value);
+                if (total !== num) {
+                    if (ketError) ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
+                    if (ketHint) ketHint.textContent = '❌ Jumlah rincian belum sesuai';
                     return false;
                 } else {
-                    agreeCheck.classList.remove('is-invalid');
-                    agreeCheck.classList.add('is-valid');
+                    if (ketError) ketError.textContent = '';
+                    if (ketHint) ketHint.textContent = '✅ Jumlah rincian sesuai';
                     return true;
                 }
             }
 
-            /* real-time feedback */
-            agreeCheck.addEventListener('change', validateAgree);
-
-            /* reset bersih */
-            form.addEventListener('reset', function () {
-                setTimeout(() => {
-                    agreeCheck.checked = false;
-                    agreeCheck.classList.remove('is-valid', 'is-invalid');
-                }, 50);
-            });
-
-            form.addEventListener('submit', function (e) {
-                if (
-                    !form.checkValidity() ||
-                    !prosesKeterangan() ||
-                    !validateAgree()
-                ) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    form.classList.add('was-validated');
-                } else {
-                    setTimeout(() => {
-                        form.reset();
-                        resetKeterangan();
-                    }, 200);
-                }
-            });
-
-            form.addEventListener('submit', function (e) {
-                const nomorAktaVal = document.getElementById('nomor_akta').value.trim();
-
-                if (nomorAktaVal !== '') {
-                    const polaAkta = /^\d{2,4}\/\d{4}$/;
-                    if (!polaAkta.test(nomorAktaVal)) {
-                        alert('⚠️ Nomor Akta harus format 00/2024, 000/2024, atau 0000/2024');
-                        e.preventDefault();
-                        return;
-                    }
-                }
-            });
-
-            function scrollToAgree() {
-                agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            if (!validateAgree()) {
-                scrollToAgree();
-            }
-
-            /* =====================
-                 PENGHUBUNG DATA
-              ===================== */
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const ssbView = document.getElementById('ssb_view');
-                const ssbReal = document.getElementById('ssb');
-
-                const bphtbView = document.getElementById('sspd_bphtb_view');
-                const bphtbReal = document.getElementById('sspd_bphtb');
-
-                const toggle = document.getElementById('autoBPHTB');
-
-                if (!ssbView || !bphtbView || !toggle) return;
-
-                function formatRupiah(angka) {
-                    return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
-                }
-
-                function syncBPHTB() {
-                    if (!toggle.checked) return;
-
-                    let angka = ssbReal.value || ssbView.value.replace(/\D/g, '');
-                    bphtbReal.value = angka;
-                    bphtbView.value = angka ? formatRupiah(angka) : '';
-                }
-
-                /* =============================
-                   SAAT SSB DIKETIK → BPHTB IKUT
-                ============================== */
-                ssbView.addEventListener('input', syncBPHTB);
-
-                /* =============================
-                   TOGGLE ON / OFF
-                ============================== */
-                toggle.addEventListener('change', function () {
-
-                    if (this.checked) {
-                        // ON → kunci & sinkron
-                        bphtbView.readOnly = true;
-                        bphtbView.classList.add('bg-light');
-                        syncBPHTB();
-                    } else {
-                        // OFF → bebas edit manual
-                        bphtbView.readOnly = false;
-                        bphtbView.classList.remove('bg-light');
-                        bphtbView.value = '';
-                        bphtbReal.value = '';
-                    }
-                });
-
-                // default ON
-                bphtbView.readOnly = true;
-                bphtbView.classList.add('bg-light');
-            });
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const toggle = document.getElementById('autoBPHTB');
-                const card = document.querySelector('.auto-sync-card');
-                const icon = document.getElementById('syncIcon');
-                const status = document.getElementById('syncStatus');
-
-                function updateUI() {
-                    if (toggle.checked) {
-                        card.classList.remove('off');
-                        card.classList.add('on');
-
-                        icon.className = 'bi bi-link-45deg fs-5 text-success';
-                        status.textContent = '*Mengikuti Nominal Data Transaksi SSB';
-                        status.className = 'text-success';
-                    } else {
-                        card.classList.remove('on');
-                        card.classList.add('off');
-
-                        icon.className = 'bi bi-unlink fs-5 text-secondary';
-                        status.textContent = '*Input manual Nilai BPHTB';
-                        status.className = 'text-secondary';
-                    }
-                }
-
-                toggle.addEventListener('change', updateUI);
-                updateUI(); // init
-            });
-
-            // FORMAT TRANSAKSI AUTO Dan MANUAL
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const hargaView = document.getElementById('harga_transaksi_view');
-                const hargaReal = document.getElementById('harga_transaksi');
-
-                const sspView = document.getElementById('ssp_view');
-                const sspReal = document.getElementById('ssp');
-
-                const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
-
-                function formatRupiah(angka) {
-                    if (!angka || angka === '0') return '';
-                    return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                }
-
-                function hitungSSP() {
-                    const harga = parseInt(hargaReal.value || 0);
-                    const tarif = document.querySelector('input[name="tarif_ssp"]:checked').value;
-
-                    // MODE MANUAL
-                    if (tarif === '0') {
-                        sspView.readOnly = false;
-                        sspView.classList.remove('bg-light');
-                        return;
-                    }
-
-                    // MODE AUTO
-                    const nilai = Math.round(harga * (tarif / 100));
-
-                    sspReal.value = nilai;
-                    sspView.value = formatRupiah(String(nilai));
-                    sspView.readOnly = true;
-                    sspView.classList.add('bg-light');
-                }
-
-                // Harga diketik → SSP update
-                hargaView.addEventListener('input', hitungSSP);
-
-                // Tarif diubah → SSP update
-                tarifRadios.forEach(radio => {
-                    radio.addEventListener('change', function () {
-
-                        if (this.value === '0') {
-                            // manual
-                            sspView.value = '';
-                            sspReal.value = '';
-                            sspView.readOnly = false;
-                            sspView.classList.remove('bg-light');
-                            sspView.focus();
-                        } else {
-                            hitungSSP();
-                        }
-                    });
-                });
-
-                // FORMAT SSP MANUAL JIKA 0%
-                sspView.addEventListener('input', function () {
-                    if (document.querySelector('input[name="tarif_ssp"]:checked').value !== '0') return;
-
-                    let angka = this.value.replace(/\D/g, '');
-                    sspReal.value = angka;
-                    this.value = formatRupiah(angka);
-                });
-
-            });
+            if (jumlahLaporan) jumlahLaporan.addEventListener('input', prosesKeterangan);
+            if (keterangan) keterangan.addEventListener('input', prosesKeterangan);
 
             // ============================================
-            // STATUS SURAT: Tepat Waktu | Terlambat | Tidak Menyampaikan Laporan (Manual)
+            // 16. FORMAT TANGGAL DMY
             // ============================================
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const tanggalInput = document.getElementById('tanggal_diterima');
-                const statusInput = document.getElementById('status_surat');
-                const trxYa = document.getElementById('trx_ya');
-                const trxTidak = document.getElementById('trx_tidak');
-                const jumlahLaporan = document.getElementById('jumlah_laporan');
-
-                if (!tanggalInput || !statusInput) return;
-
-                let modeManualTidakLapor = false;
-
-                // Fungsi utama update status
-                function updateStatusSurat() {
-                    // JIKA MODE MANUAL AKTIF
-                    if (modeManualTidakLapor) {
-                        statusInput.value = 'Tidak Menyampaikan Laporan';
-                        statusInput.classList.remove('status-menyampaikan', 'status-terlambat');
-                        statusInput.classList.add('status-terlambat');
-                        statusInput.style.backgroundColor = '#f8d7da';
-                        statusInput.style.color = '#721c24';
-                        return;
-                    }
-
-                    // MODE OTOMATIS (KODE ASLI ANDA)
-                    if (!tanggalInput.value) {
-                        statusInput.value = '';
-                        statusInput.style.backgroundColor = '';
-                        statusInput.style.color = '';
-                        return;
-                    }
-
-                    const tanggal = new Date(tanggalInput.value);
-                    const hari = tanggal.getDate();
-
-                    if (hari <= 10) {
-                        statusInput.value = 'Tepat Waktu';
-                        statusInput.classList.remove('status-terlambat');
-                        statusInput.classList.add('status-menyampaikan');
-                        statusInput.style.backgroundColor = '';
-                        statusInput.style.color = '';
-                    } else {
-                        statusInput.value = 'Menyampaikan/Terlambat';
-                        statusInput.classList.remove('status-menyampaikan');
-                        statusInput.classList.add('status-terlambat');
-                        statusInput.style.backgroundColor = '';
-                        statusInput.style.color = '';
-                    }
+            function formatTanggalDMY(inputId, prefix) {
+                const input = document.getElementById(inputId);
+                if (!input) return;
+                let hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = `tanggal_${prefix}_indo`;
+                input.closest('form')?.appendChild(hidden);
+                function updateHidden() {
+                    if (!input.value) return;
+                    const [yyyy, mm, dd] = input.value.split('-');
+                    hidden.value = `${dd}/${mm}/${yyyy}`;
                 }
-
-                // Event listener untuk tanggal (kode asli Anda)
-                tanggalInput.addEventListener('change', updateStatusSurat);
-                tanggalInput.addEventListener('input', updateStatusSurat);
-
-                // ========================================
-                // TAMBAHAN: TOMBOL MANUAL "TIDAK MENYAMPAIKAN LAPORAN"
-                // ========================================
-
-                // Cek apakah tombol sudah ada
-                if (!document.getElementById('btnTidakLapor')) {
-                    const statusContainer = statusInput.closest('.col-12');
-
-                    const btnWrapper = document.createElement('div');
-                    btnWrapper.className = 'mt-2';
-                    btnWrapper.id = 'btnTidakLapor';
-
-                    const btnManual = document.createElement('button');
-                    btnManual.type = 'button';
-                    btnManual.className = 'btn btn-sm btn-danger me-2';
-                    btnManual.innerHTML = '<i class="bi bi-x-circle"></i> Set Tidak Menyampaikan Laporan';
-
-                    const btnReset = document.createElement('button');
-                    btnReset.type = 'button';
-                    btnReset.className = 'btn btn-sm btn-outline-secondary';
-                    btnReset.innerHTML = '<i class="bi bi-arrow-repeat"></i> Reset ke Auto';
-
-                    btnManual.onclick = function () {
-                        modeManualTidakLapor = true;
-                        updateStatusSurat();
-                        btnManual.disabled = true;
-                        btnReset.disabled = false;
-                    };
-
-                    btnReset.onclick = function () {
-                        modeManualTidakLapor = false;
-                        updateStatusSurat();
-                        btnManual.disabled = false;
-                        btnReset.disabled = true;
-                    };
-
-                    btnReset.disabled = true;
-
-                    btnWrapper.appendChild(btnManual);
-                    btnWrapper.appendChild(btnReset);
-                    statusContainer.appendChild(btnWrapper);
-                }
-
-                // Auto-reset mode manual jika user mengisi transaksi atau jumlah laporan
-                if (trxYa) {
-                    trxYa.addEventListener('change', function () {
-                        if (this.checked && modeManualTidakLapor) {
-                            modeManualTidakLapor = false;
-                            updateStatusSurat();
-                            const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
-                            const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
-                            if (btnManual) btnManual.disabled = false;
-                            if (btnReset) btnReset.disabled = true;
-                        }
-                    });
-                }
-
-                if (trxTidak) {
-                    trxTidak.addEventListener('change', function () {
-                        // Optional: Jika pilih "TIDAK ADA", bisa auto set ke mode manual?
-                        // Biarkan sesuai keinginan
-                    });
-                }
-
-                if (jumlahLaporan) {
-                    jumlahLaporan.addEventListener('input', function () {
-                        if (parseInt(this.value) > 0 && modeManualTidakLapor) {
-                            modeManualTidakLapor = false;
-                            updateStatusSurat();
-                            const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
-                            const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
-                            if (btnManual) btnManual.disabled = false;
-                            if (btnReset) btnReset.disabled = true;
-                        }
-                    });
-                }
-
-                // Jalankan pertama kali
-                updateStatusSurat();
-            });
+                input.addEventListener('change', updateHidden);
+                input.addEventListener('input', updateHidden);
+                input.closest('form')?.addEventListener('submit', updateHidden);
+            }
+            formatTanggalDMY('tanggal_surat', 'surat');
 
             // ============================================
-            // FUNGSI STATISTIK NOTARIS
-            // DENGAN PEMILIH BULAN MANUAL
+            // 17. PETUNJUK FORM
             // ============================================
+            window.tampilkanPetunjukKeterangan = function () {
+                const existingModal = document.getElementById('modalPetunjukForm');
+                if (existingModal) existingModal.remove();
 
-            // Buat tombol Info (i) di navbar
-            document.addEventListener('DOMContentLoaded', function () {
-                // Cari container navbar bagian kanan
-                const navbarContainer = document.querySelector('#mainNavbar .container');
-                if (!navbarContainer) return;
-
-                // Cek apakah tombol info sudah ada
-                if (document.getElementById('btnInfoNotaris')) return;
-
-                // Buat tombol info
-                const infoBtn = document.createElement('a');
-                infoBtn.href = '#';
-                infoBtn.id = 'btnInfoNotaris';
-                infoBtn.className = 'nav-link';
-                infoBtn.title = 'Lihat Statistik Notaris';
-                infoBtn.innerHTML = '<i class="bi bi-info-circle-fill"></i>';
-
-                infoBtn.onclick = function (e) {
-                    e.preventDefault();
-                    tampilkanModalStatistikDariSheet();
-                };
-
-                // Sisipkan sebelum tombol LOGOUT
-                const logoutBtn = document.querySelector('a[title="Logout"]');
-                if (logoutBtn) {
-                    navbarContainer.insertBefore(infoBtn, logoutBtn);
-                } else {
-                    navbarContainer.appendChild(infoBtn);
-                }
-            });
-
-            // Fungsi untuk mendapatkan semua notaris dari dropdown HTML
-            function getAllNotarisFromDropdown() {
-                const notarisSelect = document.getElementById('notaris');
-                const notarisList = [];
-
-                for (let i = 0; i < notarisSelect.options.length; i++) {
-                    const option = notarisSelect.options[i];
-                    if (option.value && option.value !== "Pilih Nama Di Daftar Ini") {
-                        notarisList.push({
-                            nama: option.value,
-                            id: option.getAttribute('data-id') || '',
-                            alamat: option.getAttribute('data-alamat') || ''
-                        });
-                    }
-                }
-                return notarisList;
-            }
-
-            // Fungsi untuk mengambil data laporan dari Google Sheet
-            async function getDataLaporanDariSheet() {
-                try {
-                    const response = await fetch(scriptURL);
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    console.error('Gagal mengambil data dari sheet:', error);
-                    return [];
-                }
-            }
-
-            // Fungsi untuk mendapatkan semua bulan yang tersedia dari data laporan
-            function getAvailableMonths(dataLaporan) {
-                const monthsSet = new Set();
-                dataLaporan.forEach(laporan => {
-                    const bulan = laporan["laporan_bulanan"];
-                    if (bulan && bulan !== "Pilih Bulan Laporan") {
-                        monthsSet.add(bulan);
-                    }
-                });
-                // Urutkan berdasarkan tahun dan bulan
-                const monthsArray = Array.from(monthsSet);
-                monthsArray.sort((a, b) => {
-                    const getDate = (str) => {
-                        const [bulan, tahun] = str.split(' ');
-                        const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
-                        return new Date(parseInt(tahun), bulanIndex);
-                    };
-                    return getDate(a) - getDate(b);
-                });
-                return monthsArray;
-            }
-
-            // Fungsi untuk mendapatkan notaris yang sudah lapor (UNIQUE per notaris)
-            function getNotarisSudahLapor(dataLaporan, bulanTerpilih) {
-                const sudahLaporMap = new Map(); // Gunakan Map untuk memastikan unique
-
-                dataLaporan.forEach(laporan => {
-                    const namaNotaris = laporan["nama_notaris_&_ppat"];
-                    const bulanLaporan = laporan["laporan_bulanan"];
-
-                    // Filter berdasarkan bulan yang dipilih
-                    if (bulanLaporan === bulanTerpilih && namaNotaris) {
-                        if (!sudahLaporMap.has(namaNotaris)) {
-                            sudahLaporMap.set(namaNotaris, {
-                                nama: namaNotaris,
-                                status: laporan["status_surat"] || '-',
-                                tanggal: laporan["tanggal_diterima"] || '-',
-                                id: laporan["id"] || ''
-                            });
-                        }
-                    }
-                });
-
-                return Array.from(sudahLaporMap.values());
-            }
-
-            // Fungsi untuk mendapatkan notaris yang BELUM lapor
-            function getNotarisBelumLapor(semuaNotaris, sudahLapor) {
-                const sudahLaporNama = sudahLapor.map(s => s.nama);
-                return semuaNotaris.filter(notaris => !sudahLaporNama.includes(notaris.nama));
-            }
-
-            // Tampilkan modal statistik
-            async function tampilkanModalStatistikDariSheet(bulanPilihan = null) {
-                // Hapus modal yang sudah ada
-                const existingModal = document.getElementById('modalStatistikNotaris');
-                if (existingModal) {
-                    existingModal.remove();
-                }
-
-                // Tampilkan loading
-                const loadingModal = document.createElement('div');
-                loadingModal.id = 'loadingStatistik';
-                loadingModal.className = 'modal fade';
-                loadingModal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Mengambil data dari server...</p>
-                </div>
-            </div>
-        </div>
-    `;
-                document.body.appendChild(loadingModal);
-                const loadingModalInstance = new bootstrap.Modal(loadingModal);
-                loadingModalInstance.show();
-
-                try {
-                    // Ambil data dari Google Sheet
-                    const dataLaporan = await getDataLaporanDariSheet();
-                    const semuaNotaris = getAllNotarisFromDropdown();
-
-                    // Dapatkan semua bulan yang tersedia
-                    const availableMonths = getAvailableMonths(dataLaporan);
-
-                    // Tentukan bulan yang dipilih (default: bulan dari form atau bulan terbaru)
-                    let selectedMonth = bulanPilihan;
-                    if (!selectedMonth) {
-                        selectedMonth = document.getElementById('laporan_bulanan')?.value || '';
-                        if (!selectedMonth && availableMonths.length > 0) {
-                            selectedMonth = availableMonths[availableMonths.length - 1]; // bulan terbaru
-                        }
-                    }
-
-                    // Dapatkan notaris yang sudah lapor (UNIQUE)
-                    const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
-                    const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
-
-                    // Tutup loading
-                    loadingModalInstance.hide();
-                    loadingModal.remove();
-
-                    // Buat opsi dropdown bulan
-                    const monthOptions = availableMonths.map(month => `
-            <option value="${month}" ${month === selectedMonth ? 'selected' : ''}>${month}</option>
-        `).join('');
-
-                    // Buat modal statistik dengan dropdown pemilih bulan
-                    const modalHTML = `
-            <div class="modal fade" id="modalStatistikNotaris" tabindex="-1" data-bs-backdrop="static">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
-                            <h5 class="modal-title">
-                                <i class="bi bi-bar-chart-steps"></i> Statistik Laporan Notaris & PPAT
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- PEMILIH BULAN MANUAL -->
-                            <div class="mb-4 p-3 bg-light rounded">
-                                <label class="form-label fw-bold mb-2">
-                                    <i class="bi bi-calendar-month"></i> Pilih Periode Laporan:
-                                </label>
-                                <div class="d-flex gap-2">
-                                    <select id="pilihBulanStatistik" class="form-select">
-                                        <option value="">-- Pilih Bulan / Tahun --</option>
-                                        ${monthOptions}
-                                    </select>
-                                    <button id="btnTerapkanBulan" class="btn btn-primary">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                const modalHTML = `
+                    <div class="modal fade" id="modalPetunjukForm" tabindex="-1" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
+                                    <h5 class="modal-title"><i class="bi bi-info-circle-fill"></i> Panduan Pengisian Formulir</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
-                                <small class="text-muted mt-2 d-block">
-                                    <i class="bi bi-info-circle"></i> 
-                                    Pilih bulan untuk melihat statistik laporan periode tersebut
-                                </small>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <h6 class="text-muted mb-2">
-                                    Periode Laporan: 
-                                    <strong class="text-primary" id="selectedMonthDisplay">${selectedMonth || 'Belum dipilih'}</strong>
-                                </h6>
-                            </div>
-                            
-                            <div class="row text-center mb-4">
-                                <div class="col-4">
-                                    <div class="card border-primary bg-light">
-                                        <div class="card-body">
-                                            <h2 class="text-primary mb-0">${semuaNotaris.length}</h2>
-                                            <small class="text-muted">Total Notaris</small>
-                                        </div>
-                                    </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-info"><i class="bi bi-lightbulb-fill"></i> <strong>Tips:</strong> Isi data secara berurutan dari atas ke bawah.</div>
+                                    <ul>
+                                        <li><strong>1. Data Notaris:</strong> Pilih nama notaris dari dropdown, data akan terisi otomatis</li>
+                                        <li><strong>2. Data Surat:</strong> Isi nomor surat, tanggal surat, dan tanggal masuk</li>
+                                        <li><strong>3. Jenis Transaksi:</strong> Pilih "ADA TRANSAKSI" jika ada, atau "TIDAK ADA" untuk laporan nihil</li>
+                                        <li><strong>4. Data Transaksi:</strong> Isi detail transaksi jika memilih ADA TRANSAKSI</li>
+                                        <li><strong>5. Jumlah Laporan:</strong> Isi total jumlah akta yang dilaporkan</li>
+                                        <li><strong>6. Keterangan:</strong> Rincikan jenis akta sesuai format yang tersedia</li>
+                                        <li><strong>7. Centang Persetujuan:</strong> Wajib dicentang sebelum mengirim</li>
+                                    </ul>
                                 </div>
-                                <div class="col-4">
-                                    <div class="card border-success bg-light">
-                                        <div class="card-body">
-                                            <h2 class="text-success mb-0" id="jumlahSudahLapor">${sudahLapor.length}</h2>
-                                            <small class="text-muted">Sudah Lapor</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="card border-danger bg-light">
-                                        <div class="card-body">
-                                            <h2 class="text-danger mb-0" id="jumlahBelumLapor">${belumLapor.length}</h2>
-                                            <small class="text-muted">Belum Lapor</small>
-                                        </div>
-                                    </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
-                            
-                            <div class="progress mb-4" style="height: 25px;">
-                                <div id="progressBar" class="progress-bar bg-success" style="width: ${semuaNotaris.length > 0 ? (sudahLapor.length / semuaNotaris.length * 100) : 0}%;">
-                                    ${Math.round((sudahLapor.length / semuaNotaris.length * 100) || 0)}%
-                                </div>
-                            </div>
-                            
-                            <div id="belumLaporContainer">
-                                ${belumLapor.length > 0 ? `
-                                    <div class="alert alert-warning">
-                                        <i class="bi bi-exclamation-triangle-fill"></i>
-                                        <strong>${belumLapor.length} Notaris</strong> belum menyampaikan laporan:
-                                    </div>
-                                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="table-light sticky-top">
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>Nama Notaris & PPAT</th>
-                                                    <th>ID Notaris</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="belumLaporBody">
-                                                ${belumLapor.map((n, idx) => `
-                                                    <tr>
-                                                        <td>${idx + 1}</td>
-                                                        <td>${n.nama}</td>
-                                                        <td><code>${n.id || '-'}</code></td>
-                                                    </tr>
-                                                `).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ` : `
-                                    <div class="alert alert-success">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <strong>Semua notaris sudah melaporkan!</strong>
-                                    </div>
-                                `}
-                            </div>
-                            
-                            <div id="sudahLaporContainer">
-                                ${sudahLapor.length > 0 ? `
-                                    <hr>
-                                    <h6 class="mt-3">
-                                        <i class="bi bi-check-circle text-success"></i> 
-                                        Notaris yang Sudah Lapor (${sudahLapor.length})
-                                    </h6>
-                                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="table-light sticky-top">
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>Nama Notaris & PPAT</th>
-                                                    <th>Status</th>
-                                                    <th>Tgl Lapor</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="sudahLaporBody">
-                                                ${sudahLapor.map((l, idx) => {
-                        let statusClass = '';
-                        if (l.status === 'Tepat Waktu') statusClass = 'text-success';
-                        else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
-                        else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
-
-                        return `
-                                                        <tr>
-                                                            <td>${idx + 1}</td>
-                                                            <td>${l.nama}</td>
-                                                            <td class="${statusClass} fw-bold">${l.status}</td>
-                                                            <td><small>${l.tanggal || '-'}</small></td>
-                                                        </tr>
-                                                    `;
-                    }).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="bi bi-x-circle"></i> Tutup
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="refreshStatistikFromSheet()">
-                                <i class="bi bi-arrow-repeat"></i> Refresh Data
-                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-        `;
-
-                    document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-                    // Tampilkan modal
-                    const modal = new bootstrap.Modal(document.getElementById('modalStatistikNotaris'));
-                    modal.show();
-
-                    // Event listener untuk tombol terapkan bulan
-                    const btnTerapkan = document.getElementById('btnTerapkanBulan');
-                    const pilihBulan = document.getElementById('pilihBulanStatistik');
-
-                    if (btnTerapkan && pilihBulan) {
-                        btnTerapkan.onclick = async function () {
-                            const bulanBaru = pilihBulan.value;
-                            if (bulanBaru) {
-                                // Update tampilan dengan data baru tanpa menutup modal
-                                await updateStatistikDalamModal(dataLaporan, semuaNotaris, bulanBaru);
-                            } else {
-                                alert('Silakan pilih bulan terlebih dahulu');
-                            }
-                        };
-                    }
-
-                } catch (error) {
-                    loadingModalInstance.hide();
-                    loadingModal.remove();
-                    console.error('Error:', error);
-                    alert('Gagal mengambil data statistik. Silakan coba lagi.');
-                }
-            }
-
-            // Fungsi untuk update statistik dalam modal tanpa reload modal
-            async function updateStatistikDalamModal(dataLaporan, semuaNotaris, selectedMonth) {
-                // Tampilkan loading di dalam modal
-                const belumLaporContainer = document.getElementById('belumLaporContainer');
-                const sudahLaporContainer = document.getElementById('sudahLaporContainer');
-
-                if (belumLaporContainer) {
-                    belumLaporContainer.innerHTML = `
-            <div class="text-center py-4">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2">Memuat data...</p>
-            </div>
-        `;
-                }
-                if (sudahLaporContainer) {
-                    sudahLaporContainer.innerHTML = '';
-                }
-
-                // Simulasi delay sedikit untuk efek loading
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                // Dapatkan notaris yang sudah lapor (UNIQUE)
-                const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
-                const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
-
-                // Update display bulan
-                const selectedMonthDisplay = document.getElementById('selectedMonthDisplay');
-                if (selectedMonthDisplay) {
-                    selectedMonthDisplay.textContent = selectedMonth;
-                }
-
-                // Update angka
-                const jumlahSudahLapor = document.getElementById('jumlahSudahLapor');
-                const jumlahBelumLapor = document.getElementById('jumlahBelumLapor');
-                const progressBar = document.getElementById('progressBar');
-
-                if (jumlahSudahLapor) jumlahSudahLapor.textContent = sudahLapor.length;
-                if (jumlahBelumLapor) jumlahBelumLapor.textContent = belumLapor.length;
-
-                const persen = semuaNotaris.length > 0 ? (sudahLapor.length / semuaNotaris.length * 100) : 0;
-                if (progressBar) {
-                    progressBar.style.width = `${persen}%`;
-                    progressBar.textContent = `${Math.round(persen)}%`;
-                }
-
-                // Update container BELUM LAPOR
-                if (belumLaporContainer) {
-                    if (belumLapor.length > 0) {
-                        belumLaporContainer.innerHTML = `
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <strong>${belumLapor.length} Notaris</strong> belum menyampaikan laporan:
-                </div>
-                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                    <table class="table table-sm table-hover">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Notaris & PPAT</th>
-                                <th>ID Notaris</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${belumLapor.map((n, idx) => `
-                                <tr>
-                                    <td>${idx + 1}</td>
-                                    <td>${n.nama}</td>
-                                    <td><code>${n.id || '-'}</code></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-                    } else {
-                        belumLaporContainer.innerHTML = `
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <strong>Semua notaris sudah melaporkan!</strong>
-                </div>
-            `;
-                    }
-                }
-
-                // Update container SUDAH LAPOR
-                if (sudahLaporContainer) {
-                    if (sudahLapor.length > 0) {
-                        sudahLaporContainer.innerHTML = `
-                <hr>
-                <h6 class="mt-3">
-                    <i class="bi bi-check-circle text-success"></i> 
-                    Notaris yang Sudah Lapor (${sudahLapor.length})
-                </h6>
-                <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                    <table class="table table-sm table-hover">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Notaris & PPAT</th>
-                                <th>Status</th>
-                                <th>Tgl Lapor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${sudahLapor.map((l, idx) => {
-                            let statusClass = '';
-                            if (l.status === 'Tepat Waktu') statusClass = 'text-success';
-                            else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
-                            else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
-
-                            return `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td>${l.nama}</td>
-                                        <td class="${statusClass} fw-bold">${l.status}</td>
-                                        <td><small>${l.tanggal || '-'}</small></td>
-                                    </tr>
-                                `;
-                        }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-                    } else {
-                        sudahLaporContainer.innerHTML = '';
-                    }
-                }
-            }
-
-            // Tambahkan tombol petunjuk di navbar
-            const petunjukBtn = document.createElement('a');
-            petunjukBtn.href = '#';
-            petunjukBtn.className = 'nav-link';
-            petunjukBtn.title = 'Petunjuk Formulir';
-            petunjukBtn.innerHTML = '<i class="bi bi-question-circle-fill"></i>';
-            petunjukBtn.onclick = function (e) {
-                e.preventDefault();
-                tampilkanPetunjukKeterangan();
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                new bootstrap.Modal(document.getElementById('modalPetunjukForm')).show();
             };
 
-            // Tambahkan di dalam DOMContentLoaded
-            const navbarContainer = document.querySelector('#mainNavbar .container div:last-child');
-            if (navbarContainer && !document.getElementById('btnPetunjukForm')) {
-                const btn = document.createElement('a');
-                btn.href = '#';
-                btn.className = 'nav-link';
-                btn.id = 'btnPetunjukForm';
-                btn.title = 'Petunjuk Pengisian Formulir';
-                btn.innerHTML = '<i class="bi bi-question-circle-fill"></i> Petunjuk';
-                btn.onclick = function (e) {
+            window.scrollKeForm = function () {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalPetunjukForm'));
+                if (modal) modal.hide();
+                const formEl = document.querySelector('form[name="LAPORAN NOTARIS"]');
+                if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+
+            const btnPetunjuk = document.getElementById('btnPetunjukForm');
+            if (btnPetunjuk) {
+                btnPetunjuk.addEventListener('click', function (e) {
                     e.preventDefault();
                     tampilkanPetunjukKeterangan();
-                };
-                navbarContainer.insertBefore(btn, navbarContainer.firstChild);
+                });
             }
-
-            // ============================================
-            // FUNGSI PETUNJUK KETERANGAN FORMULIR
-            // ============================================
-
-            // Fungsi untuk menampilkan petunjuk pengisian form
-            function tampilkanPetunjukKeterangan() {
-                // Hapus modal petunjuk jika sudah ada
-                const existingModal = document.getElementById('modalPetunjukForm');
-                if (existingModal) {
-                    existingModal.remove();
-                }
-
-                // Buat modal petunjuk
-                const modalHTML = `
-        <div class="modal fade" id="modalPetunjukForm" tabindex="-1" data-bs-backdrop="static">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header" style="background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white;">
-                        <h5 class="modal-title">
-                            <i class="bi bi-info-circle-fill"></i> Panduan Pengisian Formulir Laporan PPAT
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Daftar Isi -->
-                        <div class="alert alert-info mb-4">
-                            <i class="bi bi-lightbulb-fill"></i>
-                            <strong>Tips Cepat:</strong> Isi data secara berurutan dari atas ke bawah. Field yang bertanda <span class="text-danger">*</span> wajib diisi.
-                        </div>
-
-                        <!-- 1. DATA NOTARIS -->
-                        <div class="card mb-3 border-primary">
-                            <div class="card-header bg-primary text-white">
-                                <i class="bi bi-person-badge"></i> 1. Data Notaris & PPAT
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>📋 Pilih Nama Notaris:</strong> 
-                                        Pilih nama notaris/PPAT dari daftar dropdown. Data ID, Nama Lengkap, dan Alamat akan terisi otomatis.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🆔 ID Notaris:</strong> 
-                                        Terisi otomatis berdasarkan pilihan notaris. Tidak perlu diisi manual.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📍 Alamat:</strong> 
-                                        Alamat kantor notaris akan muncul otomatis setelah memilih nama notaris.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 2. DATA SURAT -->
-                        <div class="card mb-3 border-success">
-                            <div class="card-header bg-success text-white">
-                                <i class="bi bi-envelope-paper"></i> 2. Data Surat PPAT
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>📄 Nomor Surat PPAT:</strong> 
-                                        Masukkan nomor surat PPAT (akan otomatis menjadi huruf kapital). Contoh: <code>123/PPAT/2024</code>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📅 Tanggal Surat PPAT:</strong> 
-                                        Pilih tanggal pembuatan surat PPAT dari kalender.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📥 Tanggal Surat Masuk:</strong> 
-                                        Pilih tanggal surat diterima oleh instansi. Gunakan format <code>DD/MM/YYYY</code>.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📊 Status Surat:</strong> 
-                                        <span class="badge bg-success">Tepat Waktu</span> (tanggal ≤ 10) / 
-                                        <span class="badge bg-warning">Terlambat</span> (tanggal > 10) / 
-                                        <span class="badge bg-danger">Tidak Menyampaikan Laporan</span> (manual)
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📆 Bulan Laporan:</strong> 
-                                        Pilih bulan dan tahun laporan yang akan dilaporkan.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 3. JENIS TRANSAKSI -->
-                        <div class="card mb-3 border-warning">
-                            <div class="card-header bg-warning text-dark">
-                                <i class="bi bi-arrow-left-right"></i> 3. Jenis Transaksi
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>✅ ADA TRANSAKSI:</strong> 
-                                        Pilih jika ada transaksi (AJB, Hibah, APHB, dll). Maka form data transaksi akan muncul.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>❌ TIDAK ADA:</strong> 
-                                        Pilih jika tidak ada transaksi (Laporan Nihil). Blok transaksi akan disembunyikan.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 4. DATA TRANSAKSI -->
-                        <div class="card mb-3 border-danger">
-                            <div class="card-header bg-danger text-white">
-                                <i class="bi bi-calculator-fill"></i> 4. Data Transaksi (Jika Ada)
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>📆 Tanggal Transaksi:</strong> Pilih tanggal pelaksanaan transaksi.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🔢 No. SPPD:</strong> Masukkan nomor Surat Setoran Pajak Daerah (jika ada).
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📑 Nomor Akta:</strong> Format <code>00/2024</code> atau <code>000/2024</code>.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🏷️ Nomor Hak/Sertifikat:</strong> Contoh: <code>SHM No. 1234</code> atau <code>HGB/1234</code>.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>👤 Penjual & Pembeli:</strong> Nama lengkap pihak-pihak dalam transaksi.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🗺️ Kelurahan:</strong> Ketik nama kelurahan, akan muncul saran otomatis.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🏠 NOP (18 digit):</strong> Nomor Objek Pajak, format <code>12.34.567.890.1234.5</code>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>💰 NJOP & Harga Transaksi:</strong> Nilai Jual Objek Pajak dan harga transaksi dalam Rupiah.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📏 Luas Tanah/Bangunan:</strong> Format <code>0000/0000</code> (Tanah/Bangunan dalam m²).
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>💵 Tarif SSP:</strong> Pilih tarif yang berlaku (2.5%, 2.0%, 1.5%, 1.0%, 0.5%, atau 0% untuk manual).
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>💰 SSP & SSB:</strong> Nominal Bea Perolehan Hak atas Tanah dan Bangunan akan dihitung otomatis.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>✅ Centang Konfirmasi:</strong> Wajib dicentang untuk melanjutkan.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 5. JUMLAH LAPORAN & BPHTB -->
-                        <div class="card mb-3 border-info">
-                            <div class="card-header bg-info text-white">
-                                <i class="bi bi-bar-chart"></i> 5. Jumlah Laporan & BPHTB
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>🔢 Jumlah Laporan:</strong> 
-                                        Total jumlah akta yang dilaporkan pada periode ini.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🔄 Sinkron Nominal Transaksi:</strong> 
-                                        Jika diaktifkan (hijau), nominal BPHTB akan mengikuti nilai SSB. Jika dimatikan, bisa diisi manual.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>💰 Jumlah Nominal BPHTB:</strong> 
-                                        Total Bea Perolehan Hak atas Tanah dan Bangunan (otomatis atau manual).
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 6. KETERANGAN -->
-                        <div class="card mb-3 border-secondary">
-                            <div class="card-header bg-secondary text-white">
-                                <i class="bi bi-pencil-square"></i> 6. Keterangan Rincian Akta
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>📝 Format Keterangan:</strong> 
-                                        <code>AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0</code>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>✨ Fitur Cerdas:</strong> 
-                                        Sistem akan memvalidasi jumlah total akta dengan angka di <strong>Jumlah Laporan</strong>.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>💡 Contoh:</strong> Jika ada 3 AJB dan 2 APHT, tulis <code>AJB ; 3  APHT ; 2</code>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 7. PERSETUJUAN -->
-                        <div class="card mb-3 border-dark">
-                            <div class="card-header bg-dark text-white">
-                                <i class="bi bi-check-circle"></i> 7. Persetujuan & Pengiriman
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>☑️ Centang Persetujuan:</strong> 
-                                        Wajib dicentang sebagai tanda data yang diinput benar.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📤 Tombol Kirim:</strong> 
-                                        Setelah semua data valid, klik <span class="btn btn-primary btn-sm disabled">Kirim Laporan</span> untuk mengirim ke server.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>⏳ Proses:</strong> 
-                                        Akan muncul loading, lalu notifikasi sukses. Halaman akan otomatis reload setelah 5 detik.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 8. STATISTIK -->
-                        <div class="card mb-3 border-primary">
-                            <div class="card-header bg-primary text-white">
-                                <i class="bi bi-graph-up"></i> 8. Statistik Laporan (Tombol ℹ️ di Navbar)
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong>📊 Lihat Statistik:</strong> 
-                                        Klik tombol <i class="bi bi-info-circle-fill"></i> di navbar untuk melihat rekap laporan notaris.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>📆 Filter Bulan:</strong> 
-                                        Pilih periode laporan yang ingin dilihat statistiknya.
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>🖨️ Cetak Data:</strong> 
-                                        Klik tombol <span class="btn btn-success btn-sm disabled"><i class="bi bi-printer-fill"></i> Cetak Data</span> untuk menyimpan laporan statistik sebagai PDF.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 9. SHORTCUT & PERINGATAN -->
-                        <div class="alert alert-danger mt-3">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <strong>Peringatan Keamanan:</strong>
-                            <hr>
-                            <ul class="mb-0">
-                                <li>❌ Klik kanan (Right-click) dinonaktifkan</li>
-                                <li>❌ Shortcut inspect element (F12, Ctrl+Shift+I, Ctrl+U) diblokir</li>
-                                <li>❌ Console browser dinonaktifkan</li>
-                                <li>⚠️ DevTools terdeteksi akan mengaburkan tampilan</li>
-                            </ul>
-                        </div>
-
-                        <div class="alert alert-success mt-2">
-                            <i class="bi bi-question-circle-fill"></i>
-                            <strong>Butuh Bantuan?</strong>
-                            <p class="mb-0 mt-1">Jika mengalami kendala, hubungi admin atau lihat dokumentasi lengkap.</p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle"></i> Tutup
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="scrollKeForm()">
-                            <i class="bi bi-arrow-down"></i> Mulai Isi Form
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-                // Tampilkan modal
-                const modal = new bootstrap.Modal(document.getElementById('modalPetunjukForm'));
-                modal.show();
-            }
-
-            // Fungsi untuk scroll ke form
-            function scrollKeForm() {
-                const modalElement = document.getElementById('modalPetunjukForm');
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                modal.hide();
-
-                // Scroll ke form utama
-                const formElement = document.querySelector('form[name="LAPORAN NOTARIS"]');
-                if (formElement) {
-                    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-
-            // Ekspor fungsi ke global
-            window.tampilkanPetunjukKeterangan = tampilkanPetunjukKeterangan;
-            window.scrollKeForm = scrollKeForm;
-
-            // ============================================
-            // TAMBAHAN: EVENT LISTENER UNTUK TOMBOL PETUNJUK
-            // ============================================
-            document.addEventListener('DOMContentLoaded', function () {
-                const btnPetunjuk = document.getElementById('btnPetunjukForm');
-                if (btnPetunjuk) {
-                    btnPetunjuk.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        tampilkanPetunjukKeterangan();
-                    });
-                }
-            });
-
-            console.log = function () { };
-            console.warn = function () { };
-            console.error = function () { };
-            console.clear();
-
-            setInterval(() => {
-                debugger;
-            }, 1000);
         });
     </script>
 
