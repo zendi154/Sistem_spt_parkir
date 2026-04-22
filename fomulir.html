@@ -2289,6 +2289,151 @@
             }
 
             // ============================================
+            // 11b. TOMBOL SET TIDAK MENYAMPAIKAN LAPORAN
+            // ============================================
+            const tanggalDiterimaStatus = document.getElementById('tanggal_diterima');
+            const statusSuratInput = document.getElementById('status_surat');
+
+            if (tanggalDiterimaStatus && statusSuratInput) {
+                let modeManualTidakLapor = false;
+
+                // Cek apakah tombol sudah ada
+                if (!document.getElementById('btnTidakLapor')) {
+                    const statusContainer = statusSuratInput.closest('.col-12');
+
+                    const btnWrapper = document.createElement('div');
+                    btnWrapper.className = 'mt-2';
+                    btnWrapper.id = 'btnTidakLapor';
+
+                    const btnManual = document.createElement('button');
+                    btnManual.type = 'button';
+                    btnManual.className = 'btn btn-sm btn-danger me-2';
+                    btnManual.innerHTML = '<i class="bi bi-x-circle"></i> Set Tidak Menyampaikan Laporan';
+
+                    const btnReset = document.createElement('button');
+                    btnReset.type = 'button';
+                    btnReset.className = 'btn btn-sm btn-outline-secondary';
+                    btnReset.innerHTML = '<i class="bi bi-arrow-repeat"></i> Reset ke Auto';
+
+                    function updateStatusSuratManual() {
+                        if (modeManualTidakLapor) {
+                            statusSuratInput.value = 'Tidak Menyampaikan Laporan';
+                            statusSuratInput.classList.remove('status-menyampaikan', 'status-terlambat');
+                            statusSuratInput.classList.add('status-terlambat');
+                            statusSuratInput.style.backgroundColor = '#f8d7da';
+                            statusSuratInput.style.color = '#721c24';
+                        } else {
+                            // Auto berdasarkan tanggal
+                            if (!tanggalDiterimaStatus.value) {
+                                statusSuratInput.value = '';
+                                return;
+                            }
+                            const tanggal = new Date(tanggalDiterimaStatus.value);
+                            const hari = tanggal.getDate();
+                            statusSuratInput.value = hari <= 10 ? 'Tepat Waktu' : 'Menyampaikan/Terlambat';
+                            statusSuratInput.classList.remove('status-terlambat');
+                            statusSuratInput.classList.add(hari <= 10 ? 'status-menyampaikan' : 'status-terlambat');
+                            statusSuratInput.style.backgroundColor = '';
+                            statusSuratInput.style.color = '';
+                        }
+                    }
+
+                    btnManual.onclick = function () {
+                        modeManualTidakLapor = true;
+                        updateStatusSuratManual();
+                        btnManual.disabled = true;
+                        btnReset.disabled = false;
+                    };
+
+                    btnReset.onclick = function () {
+                        modeManualTidakLapor = false;
+                        updateStatusSuratManual();
+                        btnManual.disabled = false;
+                        btnReset.disabled = true;
+                    };
+
+                    btnReset.disabled = true;
+
+                    btnWrapper.appendChild(btnManual);
+                    btnWrapper.appendChild(btnReset);
+                    if (statusContainer) statusContainer.appendChild(btnWrapper);
+                }
+            }
+
+            // ============================================
+            // 11c. FUNGSI SSP - HITUNG OTOMATIS DARI HARGA
+            // ============================================
+            const hargaView = document.getElementById('harga_transaksi_view');
+            const hargaReal = document.getElementById('harga_transaksi');
+            const sspViewInput = document.getElementById('ssp_view');
+            const sspReal = document.getElementById('ssp');
+            const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
+
+            if (hargaView && sspViewInput) {
+                function formatRupiahSSP(angka) {
+                    if (!angka || angka === '0') return '';
+                    return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                }
+
+                function hitungSSP() {
+                    const harga = parseInt(hargaReal?.value || 0);
+                    const selectedTarif = document.querySelector('input[name="tarif_ssp"]:checked');
+                    const tarif = selectedTarif ? selectedTarif.value : '0';
+
+                    // MODE MANUAL (0%)
+                    if (tarif === '0') {
+                        if (sspViewInput) {
+                            sspViewInput.readOnly = false;
+                            sspViewInput.classList.remove('bg-light');
+                        }
+                        return;
+                    }
+
+                    // MODE AUTO
+                    const nilai = Math.round(harga * (tarif / 100));
+                    if (sspReal) sspReal.value = nilai;
+                    if (sspViewInput) {
+                        sspViewInput.value = formatRupiahSSP(String(nilai));
+                        sspViewInput.readOnly = true;
+                        sspViewInput.classList.add('bg-light');
+                    }
+                }
+
+                // Harga diketik → SSP update
+                hargaView.addEventListener('input', hitungSSP);
+
+                // Tarif diubah → SSP update
+                tarifRadios.forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        if (this.value === '0') {
+                            // manual
+                            if (sspViewInput) {
+                                sspViewInput.value = '';
+                                sspViewInput.readOnly = false;
+                                sspViewInput.classList.remove('bg-light');
+                                sspViewInput.focus();
+                            }
+                            if (sspReal) sspReal.value = '';
+                        } else {
+                            hitungSSP();
+                        }
+                    });
+                });
+
+                // Format SSP manual jika 0%
+                if (sspViewInput) {
+                    sspViewInput.addEventListener('input', function () {
+                        const selected = document.querySelector('input[name="tarif_ssp"]:checked');
+                        if (selected && selected.value !== '0') return;
+
+                        let angka = this.value.replace(/\D/g, '');
+                        if (sspReal) sspReal.value = angka;
+                        this.value = formatRupiahSSP(angka);
+                    });
+                }
+            }
+
+            // ============================================
             // 12. SUBMIT FORM
             // ============================================
             const formElement = document.forms['LAPORAN NOTARIS'];
@@ -2407,68 +2552,105 @@
             });
 
             // ============================================
-            // 15. FUNGSI KETERANGAN (JUMLAH LAPORAN)
+            // 15. FUNGSI KETERANGAN (JUMLAH LAPORAN) - DIPERBAIKI
             // ============================================
-            const jumlahLaporan = document.getElementById('jumlah_laporan');
-            const keterangan = document.getElementById('keterangan');
-            const ketHint = document.getElementById('ketHint');
-            const ketError = document.getElementById('ketError');
-            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
+            const jumlahLaporanField = document.getElementById('jumlah_laporan');
+            const keteranganField = document.getElementById('keterangan');
+            const ketHintSpan = document.getElementById('ketHint');
+            const ketErrorSpan = document.getElementById('ketError');
+            const TEMPLATE_TEXT = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
 
-            function hitungKet(text) {
+            function hitungTotalKeterangan(text) {
                 const angka = text.match(/\d+/g);
                 return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
             }
 
-            function prosesKeterangan() {
-                if (!jumlahLaporan || !keterangan) return false;
-                const val = jumlahLaporan.value;
-                if (val === '') return false;
+            function lockKeterangan(text, hint) {
+                if (keteranganField) {
+                    keteranganField.value = text;
+                    keteranganField.readOnly = true;
+                    keteranganField.style.pointerEvents = 'none';
+                    keteranganField.style.backgroundColor = '#e9ecef';
+                }
+                if (ketHintSpan) {
+                    ketHintSpan.textContent = hint;
+                    ketHintSpan.className = 'form-text fw-semibold text-secondary';
+                }
+                if (ketErrorSpan) ketErrorSpan.textContent = '';
+            }
+
+            function unlockKeterangan(text, hint) {
+                if (keteranganField) {
+                    keteranganField.readOnly = false;
+                    keteranganField.style.pointerEvents = 'auto';
+                    keteranganField.style.backgroundColor = '';
+                    keteranganField.value = text;
+                }
+                if (ketHintSpan) {
+                    ketHintSpan.textContent = hint;
+                    ketHintSpan.className = 'form-text fw-semibold text-info';
+                }
+            }
+
+            function prosesKeteranganBaru() {
+                if (!jumlahLaporanField || !keteranganField) return false;
+
+                const val = jumlahLaporanField.value;
+
+                if (val === '') {
+                    lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
+                    return false;
+                }
+
                 const num = Number(val);
+
+                // JIKA JUMLAH = 0 → NIHIL
                 if (num === 0) {
-                    keterangan.value = 'Nihil';
-                    keterangan.readOnly = true;
+                    lockKeterangan('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
                     return true;
                 }
-                if (keterangan.readOnly) {
-                    keterangan.readOnly = false;
-                    keterangan.value = TEMPLATE;
+
+                // JIKA JUMLAH > 0 dan masih readonly (belum pernah diisi)
+                if (keteranganField.readOnly) {
+                    unlockKeterangan(TEMPLATE_TEXT, '✏️ Isi rincian sesuai jumlah laporan');
                 }
-                const total = hitungKet(keterangan.value);
+
+                const total = hitungTotalKeterangan(keteranganField.value);
+
                 if (total !== num) {
-                    if (ketError) ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
-                    if (ketHint) ketHint.textContent = '❌ Jumlah rincian belum sesuai';
+                    if (ketErrorSpan) ketErrorSpan.textContent = `Total rincian ${total}, seharusnya ${num}`;
+                    if (ketHintSpan) {
+                        ketHintSpan.textContent = '❌ Jumlah rincian belum sesuai';
+                        ketHintSpan.className = 'form-text fw-semibold text-danger';
+                    }
+                    if (keteranganField) keteranganField.classList.add('is-invalid');
                     return false;
                 } else {
-                    if (ketError) ketError.textContent = '';
-                    if (ketHint) ketHint.textContent = '✅ Jumlah rincian sesuai';
+                    if (ketErrorSpan) ketErrorSpan.textContent = '';
+                    if (ketHintSpan) {
+                        ketHintSpan.textContent = '✅ Jumlah rincian sesuai';
+                        ketHintSpan.className = 'form-text fw-semibold text-success';
+                    }
+                    if (keteranganField) {
+                        keteranganField.classList.remove('is-invalid');
+                        keteranganField.classList.add('is-valid');
+                    }
                     return true;
                 }
             }
 
-            if (jumlahLaporan) jumlahLaporan.addEventListener('input', prosesKeterangan);
-            if (keterangan) keterangan.addEventListener('input', prosesKeterangan);
+            // Lock awal
+            lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
 
-            // ============================================
-            // 16. FORMAT TANGGAL DMY
-            // ============================================
-            function formatTanggalDMY(inputId, prefix) {
-                const input = document.getElementById(inputId);
-                if (!input) return;
-                let hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = `tanggal_${prefix}_indo`;
-                input.closest('form')?.appendChild(hidden);
-                function updateHidden() {
-                    if (!input.value) return;
-                    const [yyyy, mm, dd] = input.value.split('-');
-                    hidden.value = `${dd}/${mm}/${yyyy}`;
-                }
-                input.addEventListener('change', updateHidden);
-                input.addEventListener('input', updateHidden);
-                input.closest('form')?.addEventListener('submit', updateHidden);
-            }
-            formatTanggalDMY('tanggal_surat', 'surat');
+            if (jumlahLaporanField) jumlahLaporanField.addEventListener('input', prosesKeteranganBaru);
+            if (keteranganField) keteranganField.addEventListener('input', prosesKeteranganBaru);
+
+            // Reset function untuk form reset
+            window.resetKeteranganForm = function () {
+                lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
+                if (keteranganField) keteranganField.classList.remove('is-valid', 'is-invalid');
+                if (ketErrorSpan) ketErrorSpan.textContent = '';
+            };
 
             // ============================================
             // 17. PETUNJUK FORM
