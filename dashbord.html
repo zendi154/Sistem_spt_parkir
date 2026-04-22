@@ -1621,13 +1621,6 @@
                     </div>
                 </div>
 
-                <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
-                <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
-                    <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
-                        <i class="bi bi-robot"></i> Deteksi Tidak Lapor
-                    </button>
-                </div>
-
                 <!-- FLOATING FOOTER CONTROL -->
                 <div class="floating-footer">
                     <button class="btn-control" id="btnPlayPause" onclick="togglePlayPause()"
@@ -1654,6 +1647,13 @@
                     <div class="col-md-3">
                         <button type="button" class="btn btn-primary w-100" onclick="filterTanggal()">
                             <i class="bi bi-funnel"></i> Filter Tanggal
+                        </button>
+                    </div>
+
+                    <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
+                    <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
+                        <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
+                            <i class="bi bi-robot"></i> Deteksi Tidak Lapor
                         </button>
                     </div>
 
@@ -2939,6 +2939,27 @@
             const isLoggedIn = await checkLoginAndRole();
             if (!isLoggedIn) {
                 return; // Akan redirect ke halaman login
+            }
+
+            // ============================================
+            // TAMPILKAN TOMBOL HANYA UNTUK ADMIN
+            // ============================================
+            if (currentUserRole === 'admin') {
+                // Tombol Kirim Notifikasi
+                const btnKirim = document.getElementById('btnBelumLaporContainer');
+                if (btnKirim) {
+                    btnKirim.style.display = 'block';
+                    console.log("Tombol Kirim Notifikasi ditampilkan untuk ADMIN");
+                }
+
+                // Tombol Deteksi Otomatis
+                const btnDeteksi = document.getElementById('btnDeteksiOtomatisContainer');
+                if (btnDeteksi) {
+                    btnDeteksi.style.display = 'block';
+                    console.log("Tombol Deteksi Tidak Lapor ditampilkan untuk ADMIN");
+                }
+            } else {
+                console.log("User bukan admin, tombol tetap tersembunyi");
             }
 
             // Tampilkan tombol "Kirim Notifikasi Belum Lapor" hanya untuk ADMIN
