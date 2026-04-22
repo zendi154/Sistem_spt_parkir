@@ -1985,9 +1985,9 @@
                 roleBadge.className = 'ms-3 me-2';
 
                 if (role === 'admin') {
-                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-shield-lock-fill"></i> ADMIN</span>';
+                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-suitcase-lg-fill"></i> Hello! Administrator</span>';
                 } else {
-                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-eye-fill"></i> USER (Print Only)</span>';
+                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-person-arms-up"></i> Hello! User</span>';
                 }
 
                 const logoutBtn = document.querySelector('a[title="Logout"]');
@@ -2073,7 +2073,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycby1l1wnxFlkxq0G0rdaAoSADRrM4D4RMYxKQ6Vl-Hdl8Wn49xT_FHfldx0ywmscHemKEQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby0C57kgBqGeA_NGLT30Wdh_cShFLdm17jd5loM4mKGFoRE9-UhON74vbCWPCmd7OMEaQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2932,6 +2932,19 @@
             const isLoggedIn = await checkLoginAndRole();
             if (!isLoggedIn) {
                 return; // Akan redirect ke halaman login
+            }
+
+            // Tampilkan tombol "Kirim Notifikasi Belum Lapor" hanya untuk ADMIN
+            if (currentUserRole === 'admin') {
+                const btnContainer = document.getElementById('btnBelumLaporContainer');
+                if (btnContainer) {
+                    btnContainer.style.display = 'block';
+                    console.log("Tombol Kirim Notifikasi ditampilkan untuk ADMIN");
+                } else {
+                    console.log("Elemen btnBelumLaporContainer tidak ditemukan");
+                }
+            } else {
+                console.log("User bukan admin, tombol tetap tersembunyi");
             }
 
             // ============================================
