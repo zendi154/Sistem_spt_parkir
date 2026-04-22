@@ -564,6 +564,26 @@
         .table-wrapper {
             animation: fadeInUp 0.5s ease-out;
         }
+
+        /* Mode User - Nonaktifkan tombol aksi */
+        .user-mode .btn-action,
+        .user-mode .btn-modern,
+        .user-mode .kirim {
+            opacity: 0.5 !important;
+            pointer-events: none !important;
+            cursor: not-allowed !important;
+        }
+
+        .user-mode select:not(.status-select) {
+            background-color: #f0f0f0 !important;
+            cursor: not-allowed !important;
+        }
+
+        .user-mode .btn-warning,
+        .user-mode .btn-danger {
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -710,7 +730,6 @@
                         <th><i class="bi bi-envelope-fill"></i> Email Aktif</th>
                         <th><i class="bi bi-check-circle-fill"></i> Status</th>
                         <th><i class="bi bi-eye-fill"></i> Arsip</th>
-                        <th><i class="bi bi-gear-fill"></i> Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="data">
@@ -963,22 +982,19 @@
             let html = "", no = 1;
             let count = 0;
 
-            // Fungsi masking email (Opsi 2: 3 huruf pertama + *** + 2 huruf terakhir)
+            // Cek apakah user (bukan admin)
+            const isUser = (currentUserRole !== 'admin');
+
             function maskEmail(email) {
                 if (!email || email === "") return '<span style="color:#aaa;">Tidak ada email</span>';
-
                 const atIndex = email.indexOf('@');
                 if (atIndex === -1) return email;
-
                 const nama = email.substring(0, atIndex);
                 const domain = email.substring(atIndex);
-
                 if (nama.length <= 5) {
-                    // Jika nama pendek, tampilkan 2 huruf pertama + ***
                     const maskedNama = nama.substring(0, 2) + '***';
                     return `<span style="color:#555; cursor: help; border-bottom: 1px dotted #999;" title="${email}">${maskedNama}${domain}</span>`;
                 } else {
-                    // Opsi 2: 3 huruf pertama + *** + 2 huruf terakhir
                     const awal = nama.substring(0, 3);
                     const akhir = nama.substring(nama.length - 2);
                     const maskedNama = awal + '***' + akhir;
@@ -998,8 +1014,19 @@
                 let statusClass = x.status === "TERKIRIM" ? "status-terkirim" : "status-belum";
                 let statusText = x.status === "TERKIRIM" ? "TERKIRIM" : "BELUM";
 
-                // Email yang sudah di-mask (tidak bisa diklik)
                 const emailDisplay = maskEmail(x.email);
+
+                // KOLOM AKSI - berbeda untuk admin dan user
+                let actionColumn = '';
+                if (isUser) {
+                    // User: Hanya bisa lihat, tidak bisa kirim email
+                    actionColumn = `<td style="text-align:center;"><span class="status ${statusClass}">${statusText}</span></td>`;
+                } else {
+                    // Admin: Bisa kirim email
+                    actionColumn = `<td style="text-align:center;">
+                ${x.status === "TERKIRIM" ? '<button disabled class="kirim">Terkirim</button>' : `<button class="kirim" onclick="kirimManual(${x.row})">Kirim</button>`}
+            </td>`;
+                }
 
                 html += `<tr>
             <td style="text-align:center;">${no++}</td>
@@ -1009,16 +1036,15 @@
             <td style="text-align:center;">${x.bulan || '-'}</td>
             <td style="text-align:center;">${x.nomor || '-'}</td>
             <td>${emailDisplay}</td>
-            <td style="text-align:center;"><span class="status ${statusClass}">${statusText}</span></td>
+            ${actionColumn}
             <td style="text-align:center;">${x.nomor ? `<button class="preview" onclick="lihat('${x.nomor}')"><i class="bi bi-eye-fill"></i></button>` : '-'}</td>
-            <td style="text-align:center;">${x.status === "TERKIRIM" ? '<button disabled class="kirim">Terkirim</button>' : `<button class="kirim" onclick="kirimManual(${x.row})">Kirim</button>`}</td>
         </tr>`;
             });
 
             if (count === 0 && data.length > 0) {
-                html = `<tr><td colspan="10" style="text-align:center;">Data tidak sesuai filter穷</tr>`;
+                html = `<tr><td colspan="9" style="text-align:center;">Data tidak sesuai filter穷</tr>`;
             } else if (count === 0) {
-                html = `<tr><td colspan="10" style="text-align:center;">Tidak ada数据穷</tr>`;
+                html = `<tr><td colspan="9" style="text-align:center;">Tidak ada数据穷</tr>`;
             }
 
             document.getElementById("data").innerHTML = html;
@@ -1186,14 +1212,67 @@
             });
         }
 
-        // Inisialisasi
-        document.addEventListener("DOMContentLoaded", function () {
+        // Inisialisasi dengan cek login
+        document.addEventListener("DOMContentLoaded", async function () {
             console.log("DOM loaded");
+
+            // ============================================
+            // CEK LOGIN DAN ROLE (PENTING!)
+            // ============================================
+            const isLoggedIn = await checkLoginAndRole();
+            if (!isLoggedIn) {
+                return; // Akan redirect ke halaman login
+            }
+
+            // ============================================
+            // SESUAIKAN AKSES BERDASARKAN ROLE
+            // ============================================
+            if (currentUserRole !== 'admin') {
+                // Nonaktifkan tombol-tombol untuk user
+                disableEditingForUser();
+
+                // Tampilkan notifikasi print only
+                showPrintOnlyNotification();
+
+                // Sembunyikan tombol aksi yang hanya untuk admin
+                const actionButtons = document.querySelectorAll('.btn-action, .btn-modern, #generateData, [onclick="kirimMassal()"], [onclick="tambahNotaris()"], [onclick="generateData()"]');
+                actionButtons.forEach(btn => {
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                        btn.title = 'Fitur hanya untuk ADMIN';
+                    }
+                });
+
+                // Sembunyikan tombol Kirim di tabel (akan di-handle oleh renderDataToTable)
+                // Nonaktifkan select notaris
+                const notarisSelect = document.getElementById('notaris');
+                if (notarisSelect) {
+                    notarisSelect.disabled = true;
+                    notarisSelect.style.opacity = '0.7';
+                    notarisSelect.title = 'Fitur hanya untuk ADMIN';
+                }
+
+                // Sembunyikan tombol filter aksi
+                const filterButtons = document.querySelectorAll('.filter-section button, .action-section button');
+                filterButtons.forEach(btn => {
+                    if (btn && btn !== document.querySelector('[onclick="printTable()"]')) {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                    }
+                });
+            }
+
+            // ============================================
+            // LANJUTKAN KODE ASLI
+            // ============================================
+
+            document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
             loadNotaris();
             load();
         });
-
-        document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
         function printTable() {
             // Ambil data filter yang sedang aktif
