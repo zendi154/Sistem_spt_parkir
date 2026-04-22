@@ -2080,7 +2080,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyJNAAI7q1Cfy4xnP3zQK7tmST-4qTo2vP1izCwGvt5KucRQOsYiCh374dAuBoVgpQSMg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwfxdued9Es7bYHd4MRmg9rKSVBx1VaNIo5rPNYDbUEGmrGaj2xrw6VmAtxdRV_94Xpzg/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -6965,6 +6965,7 @@
         }
 
         // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
+        // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
         async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
             // Tampilkan loading dengan progress
             Swal.fire({
@@ -6986,6 +6987,7 @@
 
             let sukses = 0;
             let gagal = 0;
+            let lewati = 0;
 
             for (let i = 0; i < daftarNotaris.length; i++) {
                 const notaris = daftarNotaris[i];
@@ -6996,28 +6998,88 @@
                 const progressText = document.getElementById('progressText');
 
                 if (progressBar) progressBar.style.width = `${persen}%`;
-                if (progressText) progressText.textContent = `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...`;
+                if (progressText) progressText.textContent = `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 40)}...`;
 
-                // Kirim notifikasi ke email notaris
-                try {
-                    // Cari email notaris dari data yang ada
-                    const emailNotaris = await cariEmailNotaris(notaris.nama);
+                // Cari email notaris dari data yang ada
+                let emailNotaris = await cariEmailNotaris(notaris.nama);
 
-                    if (emailNotaris) {
-                        await kirimEmailNotifikasi(notaris, periode, emailNotaris);
-                        sukses++;
+                // Jika email tidak ditemukan, minta input manual
+                if (!emailNotaris) {
+                    // Tutup loading sementara untuk menampilkan prompt
+                    Swal.close();
+
+                    // Tanya user untuk input email manual
+                    const result = await Swal.fire({
+                        title: `Email untuk ${notaris.nama.substring(0, 50)}`,
+                        html: `
+                    <div class="text-start">
+                        <p><strong>Notaris:</strong> ${notaris.nama}</p>
+                        <p><strong>ID:</strong> ${notaris.id || '-'}</p>
+                        <hr>
+                        <label class="form-label">Masukkan Alamat Email:</label>
+                        <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
+                    </div>
+                `,
+                        input: 'text',
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim Email',
+                        cancelButtonText: 'Lewati',
+                        didOpen: () => {
+                            const input = document.getElementById('emailManual');
+                            if (input) input.focus();
+                        },
+                        preConfirm: () => {
+                            const email = document.getElementById('emailManual')?.value;
+                            if (!email) {
+                                Swal.showValidationMessage('Email harus diisi!');
+                                return false;
+                            }
+                            if (!email.includes('@')) {
+                                Swal.showValidationMessage('Email tidak valid!');
+                                return false;
+                            }
+                            return email;
+                        }
+                    });
+
+                    // Kembalikan loading
+                    Swal.fire({
+                        title: 'Mengirim Notifikasi...',
+                        html: `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                        <p><strong>Mengirim notifikasi...</strong></p>
+                        <div class="progress mt-3" style="height: 10px;">
+                            <div id="progressKirim" class="progress-bar bg-danger" style="width: ${persen}%;"></div>
+                        </div>
+                        <p id="progressText" class="text-muted mt-2 small">Mengirim ke ${i + 1} dari ${daftarNotaris.length}...</p>
+                    </div>
+                `,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false
+                    });
+
+                    if (result.isConfirmed && result.value) {
+                        emailNotaris = result.value;
                     } else {
-                        console.log(`Email untuk ${notaris.nama} tidak ditemukan`);
+                        lewati++;
                         gagal++;
+                        continue;
                     }
+                }
 
-                    // Delay agar tidak overload
-                    await new Promise(r => setTimeout(r, 500));
-
+                // Kirim email
+                try {
+                    await kirimEmailNotifikasi(notaris, periode, emailNotaris);
+                    sukses++;
                 } catch (err) {
                     console.error(`Gagal kirim ke ${notaris.nama}:`, err);
                     gagal++;
                 }
+
+                // Delay agar tidak overload
+                await new Promise(r => setTimeout(r, 500));
             }
 
             // Tutup loading dan tampilkan hasil
@@ -7030,10 +7092,10 @@
             <div class="text-center">
                 <p><strong>Periode: ${periode}</strong></p>
                 <hr>
-                <p>📧 Berhasil: <span class="text-success fw-bold">${sukses}</span> notaris</p>
-                <p>❌ Gagal: <span class="text-danger fw-bold">${gagal}</span> notaris</p>
+                <p>📧 <span class="text-success fw-bold">${sukses}</span> Email berhasil dikirim</p>
+                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal/Kirim dibatalkan</p>
                 <hr>
-                <p class="text-muted small">*Notifikasi dikirim ke email masing-masing notaris.</p>
+                <p class="text-muted small">*Email dikirim ke alamat yang dimasukkan.</p>
             </div>
         `,
                 confirmButtonColor: '#28a745'
