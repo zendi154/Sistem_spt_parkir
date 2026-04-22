@@ -1695,6 +1695,13 @@
                                 <button type="button" class="btn-close btn-close-white"
                                     data-bs-dismiss="modal"></button>
                             </div>
+                            <!-- BUTTON DETEKSI TIDAK MELAPOR - HANYA UNTUK ADMIN -->
+                            <div class="col-md-3" id="btnBelumLaporContainer" style="display: none;">
+                                <button type="button" class="btn btn-danger w-100"
+                                    onclick="deteksiDanKirimTidakMelapor()">
+                                    <i class="bi bi-bell-fill"></i> Kirim Notifikasi Belum Lapor
+                                </button>
+                            </div>
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -1929,10 +1936,10 @@
 
     <script>
         // ============================================
-        // FUNGSI PEMBATASAN AKSES (TAMBAHKAN INI)
+        // FUNGSI PEMBATASAN AKSES
         // ============================================
 
-        const URL_API = "https://script.google.com/macros/s/AKfycbwUrIknI8zEsn_lsQrIAfUr2twP4CDSVajcK3-8VYEK2V7KrLFHJ6c5had52kWmAKeg/exec";
+        const URL_API = "https://script.google.com/macros/s/AKfycbwXsh3qJO8w1hvrroyI71-UIyxbK6TOhYyPezJnH7PofB2DB3b6h6Yk69EZ8bVbSGAH/exec";
         let currentUserRole = null;
         let currentUserName = null;
         let currentUserEmail = null;
@@ -2019,25 +2026,24 @@
             const notification = document.createElement('div');
             notification.id = 'printOnlyNotification';
             notification.innerHTML = `
-        <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
-                    background: linear-gradient(135deg, #ffa502, #ff7f50); 
-                    color: white; padding: 12px 20px; border-radius: 30px; 
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-                    display: flex; align-items: center; gap: 10px;
-                    animation: slideInRight 0.5s ease;">
-            <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
-            <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
-            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
-        </div>
-        <style>
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        </style>
-    `;
+                <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
+                            background: linear-gradient(135deg, #ffa502, #ff7f50); 
+                            color: white; padding: 12px 20px; border-radius: 30px; 
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+                            display: flex; align-items: center; gap: 10px;
+                            animation: slideInRight 0.5s ease;">
+                    <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
+                    <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
+                </div>
+                <style>
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                </style>
+            `;
             document.body.appendChild(notification);
-
             setTimeout(() => {
                 const notif = document.getElementById('printOnlyNotification');
                 if (notif) notif.remove();
@@ -2068,7 +2074,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNXHj30_lpjVY9wpyz1ORvPijlqpH4ZKvroGkE3HOxRYQP0k8ohsMzxXjz508W5gzqVQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby1l1wnxFlkxq0G0rdaAoSADRrM4D4RMYxKQ6Vl-Hdl8Wn49xT_FHfldx0ywmscHemKEQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -6750,6 +6756,306 @@
                     title: 'Error',
                     text: 'Terjadi kesalahan: ' + error.message
                 });
+            }
+        }
+
+        // ============================================
+        // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR
+        // ============================================
+
+        async function deteksiDanKirimTidakMelapor() {
+            // Ambil bulan yang sedang dipilih
+            const selectedBulan = document.getElementById('selectedBulan')?.value || '';
+            const filterTahun = document.getElementById('filterTahun')?.value || '';
+
+            let bulanTerpilih = selectedBulan;
+
+            // Jika tidak ada bulan yang dipilih, ambil dari filter tahun atau bulan terbaru
+            if (!bulanTerpilih && filterTahun) {
+                const bulanTerbaru = getBulanTerbaruDariData();
+                if (bulanTerbaru) {
+                    bulanTerpilih = bulanTerbaru;
+                } else {
+                    const now = new Date();
+                    const bulanSaatIni = daftarBulan[now.getMonth()];
+                    const tahunSaatIni = now.getFullYear();
+                    bulanTerpilih = `${bulanSaatIni} ${tahunSaatIni}`;
+                }
+            }
+
+            if (!bulanTerpilih) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Silakan pilih bulan terlebih dahulu!',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Sedang Memproses...',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p><strong>Mendeteksi notaris yang belum melapor...</strong></p>
+                <p class="text-muted">Periode: ${bulanTerpilih}</p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false
+            });
+
+            try {
+                // Ambil data laporan dari sheet
+                const dataLaporan = await getDataLaporanDariSheet();
+
+                // Ambil semua notaris (aktif, tidak pensiun)
+                const semuaNotaris = getAllNotarisFromDropdown(true);
+
+                // Dapatkan notaris yang sudah lapor pada bulan tersebut
+                const sudahLaporSet = new Set();
+                dataLaporan.forEach(laporan => {
+                    const namaNotaris = laporan["nama_notaris_&_ppat"];
+                    const bulanLaporan = laporan["laporan_bulanan"];
+                    if (bulanLaporan === bulanTerpilih && namaNotaris) {
+                        sudahLaporSet.add(normalisasiNama(namaNotaris));
+                    }
+                });
+
+                // Filter notaris yang BELUM lapor
+                const belumLapor = semuaNotaris.filter(notaris =>
+                    !sudahLaporSet.has(normalisasiNama(notaris.nama))
+                );
+
+                // Tutup loading
+                Swal.close();
+
+                if (belumLapor.length === 0) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Semua Notaris Sudah Melapor!',
+                        text: `Semua notaris sudah menyampaikan laporan untuk periode ${bulanTerpilih}.`,
+                        confirmButtonColor: '#28a745'
+                    });
+                    return;
+                }
+
+                // Tampilkan konfirmasi dengan daftar notaris yang belum lapor
+                let daftarHtml = '<div style="max-height: 400px; overflow-y: auto;">';
+                daftarHtml += '<table class="table table-sm table-hover">';
+                daftarHtml += '<thead class="table-danger"><tr><th>No</th><th>Nama Notaris & PPAT</th><th>ID Notaris</th></tr></thead>';
+                daftarHtml += '<tbody>';
+
+                belumLapor.forEach((notaris, idx) => {
+                    daftarHtml += `
+                <tr>
+                    <td class="text-center">${idx + 1}</td>
+                    <td>${escapeHtml(notaris.nama)}</td>
+                    <td><code>${escapeHtml(notaris.id || '-')}</code></td>
+                </tr>
+            `;
+                });
+
+                daftarHtml += '</tbody></table></div>';
+
+                const result = await Swal.fire({
+                    title: `⚠️ ${belumLapor.length} Notaris Belum Melapor`,
+                    html: `
+                <div class="text-start">
+                    <p class="fw-bold mb-2">Periode: <span class="text-danger">${bulanTerpilih}</span></p>
+                    <p>Berikut daftar notaris yang belum menyampaikan laporan:</p>
+                    ${daftarHtml}
+                    <hr>
+                    <p class="text-muted small">*Data ini berdasarkan laporan yang sudah masuk ke sistem.</p>
+                </div>
+            `,
+                    icon: 'warning',
+                    width: '800px',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="bi bi-envelope-paper"></i> Kirim Notifikasi',
+                    cancelButtonText: 'Tutup',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d'
+                });
+
+                if (result.isConfirmed) {
+                    await kirimNotifikasiBelumLapor(belumLapor, bulanTerpilih);
+                }
+
+            } catch (error) {
+                Swal.close();
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Gagal mendeteksi notaris yang belum melapor. Silakan coba lagi.',
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+
+        // Fungsi untuk mendapatkan bulan terbaru dari data
+        function getBulanTerbaruDariData() {
+            if (!allData || allData.length === 0) return null;
+
+            const bulanSet = new Set();
+            allData.forEach(row => {
+                const bulan = row["laporan_bulanan"];
+                if (bulan) bulanSet.add(bulan);
+            });
+
+            const bulanList = Array.from(bulanSet);
+            if (bulanList.length === 0) return null;
+
+            bulanList.sort((a, b) => {
+                const getDate = (str) => {
+                    const [bulan, tahun] = str.split(' ');
+                    const bulanIndex = daftarBulan.indexOf(bulan);
+                    return new Date(parseInt(tahun), bulanIndex);
+                };
+                return getDate(b) - getDate(a);
+            });
+
+            return bulanList[0];
+        }
+
+        // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
+        async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
+            // Tampilkan loading dengan progress
+            Swal.fire({
+                title: 'Mengirim Notifikasi...',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p><strong>Mengirim notifikasi ke ${daftarNotaris.length} notaris...</strong></p>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div id="progressKirim" class="progress-bar bg-danger" style="width: 0%;"></div>
+                </div>
+                <p id="progressText" class="text-muted mt-2 small">Memulai pengiriman...</p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false
+            });
+
+            let sukses = 0;
+            let gagal = 0;
+
+            for (let i = 0; i < daftarNotaris.length; i++) {
+                const notaris = daftarNotaris[i];
+
+                // Update progress
+                const persen = ((i + 1) / daftarNotaris.length * 100);
+                const progressBar = document.getElementById('progressKirim');
+                const progressText = document.getElementById('progressText');
+
+                if (progressBar) progressBar.style.width = `${persen}%`;
+                if (progressText) progressText.textContent = `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...`;
+
+                // Kirim notifikasi ke email notaris
+                try {
+                    // Cari email notaris dari data yang ada
+                    const emailNotaris = await cariEmailNotaris(notaris.nama);
+
+                    if (emailNotaris) {
+                        await kirimEmailNotifikasi(notaris, periode, emailNotaris);
+                        sukses++;
+                    } else {
+                        console.log(`Email untuk ${notaris.nama} tidak ditemukan`);
+                        gagal++;
+                    }
+
+                    // Delay agar tidak overload
+                    await new Promise(r => setTimeout(r, 500));
+
+                } catch (err) {
+                    console.error(`Gagal kirim ke ${notaris.nama}:`, err);
+                    gagal++;
+                }
+            }
+
+            // Tutup loading dan tampilkan hasil
+            Swal.close();
+
+            Swal.fire({
+                icon: sukses > 0 ? 'success' : 'warning',
+                title: 'Pengiriman Selesai',
+                html: `
+            <div class="text-center">
+                <p><strong>Periode: ${periode}</strong></p>
+                <hr>
+                <p>📧 Berhasil: <span class="text-success fw-bold">${sukses}</span> notaris</p>
+                <p>❌ Gagal: <span class="text-danger fw-bold">${gagal}</span> notaris</p>
+                <hr>
+                <p class="text-muted small">*Notifikasi dikirim ke email masing-masing notaris.</p>
+            </div>
+        `,
+                confirmButtonColor: '#28a745'
+            });
+
+            // Refresh data untuk update badge notifikasi
+            await updateNotifikasiBelumLapor();
+        }
+
+        // Fungsi untuk mencari email notaris
+        async function cariEmailNotaris(namaNotaris) {
+            // Coba cari dari data laporan yang ada
+            const dataLaporan = await getDataLaporanDariSheet();
+
+            // Cari email dari data laporan sebelumnya
+            for (const laporan of dataLaporan) {
+                if (laporan["nama_notaris_&_ppat"] === namaNotaris && laporan["email"]) {
+                    return laporan["email"];
+                }
+            }
+
+            // Jika tidak ditemukan, coba dari data notaris di dropdown
+            const semuaNotaris = getAllNotarisFromDropdown(false);
+            const notaris = semuaNotaris.find(n => n.nama === namaNotaris);
+            if (notaris && notaris.email) {
+                return notaris.email;
+            }
+
+            return null;
+        }
+
+        // Fungsi untuk mengirim email notifikasi
+        async function kirimEmailNotifikasi(notaris, periode, emailTujuan) {
+            const subject = `Peringatan: Laporan Bulanan PPAT Periode ${periode}`;
+            const body = `
+        Kepada Yth. ${notaris.nama},
+        
+        Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode ${periode} belum kami terima.
+        
+        Mohon segera menyampaikan laporan melalui sistem yang tersedia di:
+        ${window.location.origin}/fomulir.html
+        
+        Terima kasih atas perhatian dan kerjasamanya.
+        
+        Hormat kami,
+        Bidang Pengendalian dan Evaluasi Pendapatan Daerah
+        Bapenda Kota Bengkulu
+    `;
+
+            // Panggil API Apps Script untuk kirim email
+            const response = await fetch(`${scriptURL}?action=kirim_notifikasi&email=${encodeURIComponent(emailTujuan)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+            const result = await response.json();
+
+            return result.success === true;
+        }
+
+        // Tampilkan tombol hanya untuk ADMIN
+        // Tambahkan di dalam DOMContentLoaded setelah cek role
+        if (currentUserRole === 'admin') {
+            const btnContainer = document.getElementById('btnBelumLaporContainer');
+            if (btnContainer) {
+                btnContainer.style.display = 'block';
             }
         }
     </script>
