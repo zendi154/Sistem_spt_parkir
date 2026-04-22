@@ -2072,7 +2072,46 @@
         /* =========================
            TOGGLE BLOK TRANSAKSI
         ========================= */
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
+
+            // ============================================
+            // CEK LOGIN DAN ROLE (PENTING! DILAKUKAN PERTAMA)
+            // ============================================
+            const isLoggedIn = await checkLoginAndRole();
+            if (!isLoggedIn) {
+                return; // Akan redirect ke halaman login
+            }
+
+            // ============================================
+            // SESUAIKAN AKSES BERDASARKAN ROLE
+            // ============================================
+            if (currentUserRole !== 'admin') {
+                // Nonaktifkan semua tombol yang bisa mengedit data
+                disableEditingForUser();
+
+                // Tampilkan notifikasi print only
+                showPrintOnlyNotification();
+
+                // Nonaktifkan form submission
+                const formLaporan = document.getElementById('form-laporan');
+                if (formLaporan) {
+                    formLaporan.style.pointerEvents = 'none';
+                    formLaporan.style.opacity = '0.7';
+                }
+
+                // Nonaktifkan tombol kirim
+                const btnKirim = document.querySelector('.btn-kirim');
+                if (btnKirim) {
+                    btnKirim.disabled = true;
+                    btnKirim.style.opacity = '0.5';
+                    btnKirim.title = 'Fitur hanya untuk ADMIN';
+                }
+            }
+
+            // ============================================
+            // KODE ASLI ANDA (LANJUTKAN)
+            // ============================================
+
             const ya = document.getElementById('trx_ya');
             const tidak = document.getElementById('trx_tidak');
             const blok = document.getElementById('blokTransaksi');
@@ -2092,337 +2131,336 @@
 
             ya.addEventListener('change', toggleTransaksi);
             tidak.addEventListener('change', toggleTransaksi);
-        });
 
-        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function () {
 
-            const dataWilayah = {
-                "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
-                "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
-                "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
-                "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
-                "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
-                "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
-                "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
-                "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
-                "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
-            };
+                const dataWilayah = {
+                    "Gading Cempaka": ["Cempaka Permai", "Jalan Gedang", "Lingkar Barat", "Padang Harapan", "Sido Mulyo"],
+                    "Kampung Melayu": ["Kandang", "Kandang Mas", "Muara Dua", "Padang Serai", "Sumber Jaya", "Teluk Sepang"],
+                    "Muara Bangkahulu": ["Bentiring", "Bentiring Permai", "Beringin Raya", "Kandang Limun", "Pematang Gubernur", "Rawa Makmur", "Rawa Makmur Permai"],
+                    "Ratu Agung": ["Kebun Beler", "Kebun Kenanga", "Kebun Tebeng", "Lempuing", "Nusa Indah", "Sawah Lebar", "Sawah Lebar Baru", "Tanah Patah"],
+                    "Ratu Samban": ["Anggut Atas", "Anggut Bawah", "Anggut Dalam", "Belakang Pondok", "Kebun Dahri", "Kebun Grean", "Padang Jati", "Penggantungan", "Penurunan"],
+                    "Selebar": ["Betungan", "Bumi Ayu", "Pagar Dewa", "Pekan Sabtu", "Sukarami", "Sumur Dewa"],
+                    "Singaran Pati": ["Dusun Besar", "Jembatan Kecil", "Lingkar Timur", "Padang Nangka", "Panorama", "Timur Indah"],
+                    "Sungai Serut": ["Kampung Kelawi", "Pasar Bengkulu", "Semarang", "Surabaya", "Suka Merindu", "Tanjung Agung", "Tanjung Jaya"],
+                    "Teluk Segara": ["Bajak", "Berkas", "Jitra", "Kampung Bali", "Kebun Keling", "Kebun Ros", "Malabero", "Pasar Baru", "Pasar Melintang", "Pintu Batu", "Pondok Besi", "Sumur Melele", "Tengah Padang"]
+                };
 
-            const kecamatanSelect = document.getElementById('kecamatan');
-            const kelInput = document.getElementById('kelurahanInput');
-            const kelList = document.getElementById('kelurahanList');
-            const kecHidden = document.getElementById('kecamatan_value');
-            const kelHidden = document.getElementById('kelurahan_value');
+                const kecamatanSelect = document.getElementById('kecamatan');
+                const kelInput = document.getElementById('kelurahanInput');
+                const kelList = document.getElementById('kelurahanList');
+                const kecHidden = document.getElementById('kecamatan_value');
+                const kelHidden = document.getElementById('kelurahan_value');
 
-            // map kelurahan → kecamatan
-            const kelurahanMap = {};
-            Object.entries(dataWilayah).forEach(([kec, list]) => {
-                list.forEach(kel => kelurahanMap[kel] = kec);
+                // map kelurahan → kecamatan
+                const kelurahanMap = {};
+                Object.entries(dataWilayah).forEach(([kec, list]) => {
+                    list.forEach(kel => kelurahanMap[kel] = kec);
+                });
+
+                kelInput.addEventListener('input', function () {
+                    const keyword = this.value.trim().toLowerCase();
+                    kelList.innerHTML = '';
+
+                    // reset saat diketik ulang
+                    kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                    kecamatanSelect.disabled = true;
+                    kecHidden.value = '';
+                    kelHidden.value = '';
+
+                    if (!keyword) {
+                        kelList.classList.add('d-none');
+                        return;
+                    }
+
+                    Object.keys(kelurahanMap)
+                        .filter(kel => kel.toLowerCase().includes(keyword))
+                        .slice(0, 10)
+                        .forEach(kel => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item list-group-item-action';
+                            li.textContent = kel;
+
+                            li.onclick = () => {
+                                kelInput.value = kel;
+                                kelList.classList.add('d-none');
+
+                                kecamatanSelect.innerHTML =
+                                    `<option selected>${kelurahanMap[kel]}</option>`;
+                                kecamatanSelect.disabled = true;
+
+                                kecHidden.value = kelurahanMap[kel];
+                                kelHidden.value = kel;
+                            };
+
+                            kelList.appendChild(li);
+                        });
+
+                    kelList.classList.remove('d-none');
+                });
+
+                document.addEventListener('click', e => {
+                    if (!kelInput.contains(e.target)) {
+                        kelList.classList.add('d-none');
+                    }
+                });
+
+                // expose validasi ke global
+                window.validasiWilayah = function () {
+                    if (!kelHidden.value || !kecHidden.value) {
+                        alert('❌ Kelurahan harus dipilih dari daftar');
+                        kelInput.focus();
+                        return false;
+                    }
+                    return true;
+                };
+
             });
 
-            kelInput.addEventListener('input', function () {
-                const keyword = this.value.trim().toLowerCase();
-                kelList.innerHTML = '';
+            /* =========================
+            SUBMIT FORM (FINAL)
+            ========================= */
+            form.addEventListener('submit', function (e) {
 
-                // reset saat diketik ulang
-                kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
-                kecamatanSelect.disabled = true;
-                kecHidden.value = '';
-                kelHidden.value = '';
+                const trxYa = document.getElementById('trx_ya');
+                const trxTidak = document.getElementById('trx_tidak');
 
-                if (!keyword) {
-                    kelList.classList.add('d-none');
+                /* =========================
+                   JIKA TRANSAKSI = TIDAK / NIHIL
+                ========================= */
+                if (trxTidak && trxTidak.checked) {
+                    // boleh submit tanpa validasi transaksi
                     return;
                 }
 
-                Object.keys(kelurahanMap)
-                    .filter(kel => kel.toLowerCase().includes(keyword))
-                    .slice(0, 10)
-                    .forEach(kel => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item list-group-item-action';
-                        li.textContent = kel;
+                /* =========================
+                   JIKA TRANSAKSI = YA
+                ========================= */
 
-                        li.onclick = () => {
-                            kelInput.value = kel;
-                            kelList.classList.add('d-none');
+                // validasi checkbox konfirmasi
+                if (!document.getElementById('cekTransaksi').checked) {
+                    alert('⚠️ Centang konfirmasi data transaksi');
+                    e.preventDefault();
+                    return;
+                }
 
-                            kecamatanSelect.innerHTML =
-                                `<option selected>${kelurahanMap[kel]}</option>`;
-                            kecamatanSelect.disabled = true;
+                const luasInput = document.getElementById('luas_tb').value.trim();
 
-                            kecHidden.value = kelurahanMap[kel];
-                            kelHidden.value = kel;
-                        };
+                if (!luasInput) {
+                    alert('⚠️ Luas tanah/bangunan harus diisi');
+                    e.preventDefault();
+                    return;
+                }
 
-                        kelList.appendChild(li);
+                // split & validasi 1–4 digit / 1–4 digit
+                const parts = luasInput.split('/');
+                if (
+                    parts.length !== 2 ||
+                    !/^\d{1,4}$/.test(parts[0]) ||
+                    !/^\d{1,4}$/.test(parts[1])
+                ) {
+                    alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi!');
+                    e.preventDefault();
+                    return;
+                }
+
+                // tambah leading zero
+                const luasTBFormatted =
+                    parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
+
+                // push data transaksi
+                const data = {
+                    tanggal: tanggal_transaksi.value,
+                    no_sppd: no_sppd.value.trim(),
+                    nomor_akta: document.getElementById('nomor_akta').value.trim(),
+                    nomor_hak: document.getElementById('nomor_hak').value.trim(),
+                    penjual: nama_penjual.value.trim(),
+                    pembeli: nama_pembeli.value.trim(),
+
+                    kecamatan: document.getElementById('kecamatan_value').value,
+                    kelurahan: document.getElementById('kelurahan_value').value,
+
+                    nop: nop_view.value,
+                    njop: njop_view.value,
+                    luas_tb: luasTBFormatted,
+                    harga: harga_transaksi_view.value,
+                    ssp: ssp_view.value,
+                    ssb: ssb_view.value
+                };
+
+                if (!data.kecamatan || !data.kelurahan) {
+                    alert('❌ Kecamatan & Kelurahan wajib dipilih');
+                    return;
+                }
+
+                transaksiList.push(data);
+                document.getElementById('data_transaksi').value =
+                    JSON.stringify(transaksiList);
+            });
+
+            const nomorHakInput = document.getElementById('nomor_hak');
+            if (nomorHakInput) {
+                nomorHakInput.value = nomorHakInput.value.toUpperCase();
+            }
+
+            /* =========================
+               RESET FORM
+            ========================= */
+            function resetFormTransaksi() {
+                const ids = [
+                    'tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak', 'nama_penjual', 'nama_pembeli',
+                    'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
+                    'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
+                    'luas_tb'
+                ];
+
+                ['kecamatan', 'kelurahan'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.value = '';
+                        if (id === 'kelurahan') el.disabled = true;
+                    }
+                });
+
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+
+                // reset radio & blok transaksi
+                document.getElementById('trx_ya').checked = false;
+                document.getElementById('trx_tidak').checked = true;
+                document.getElementById('blokTransaksi').classList.add('d-none');
+
+                // reset checkbox
+                document.getElementById('cekTransaksi').checked = false;
+
+                // reset data
+                transaksiList = [];
+                document.getElementById('data_transaksi').value = '';
+            }
+
+            const nomorHak = document.getElementById("nomor_hak");
+
+            nomorHak.addEventListener("input", function () {
+
+                let value = this.value.toUpperCase();
+
+                // Hapus spasi berlebih
+                value = value.replace(/\s+/g, " ").trim();
+
+                // Jika format SHM 1234 → ubah jadi SHM No. 1234
+                if (/^SHM\s?\d+$/i.test(value)) {
+                    value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
+                }
+
+                // Jika format HGB 1234 → ubah jadi HGB/1234
+                if (/^HGB\s?\d+$/i.test(value)) {
+                    value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
+                }
+
+                // Jika format angka saja 123/2024 tetap
+                if (/^\d+\/\d{4}$/.test(value)) {
+                    value = value;
+                }
+
+                this.value = value;
+            });
+
+            // Ambil input nomor surat
+            const nomorSurat = document.getElementById('nomor_surat');
+
+            // Saat mengetik langsung di input → semua huruf kapital
+            nomorSurat.addEventListener('input', function () {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Saat submit → pastikan yang dikirim juga huruf kapital
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+
+                // ubah nomor surat ke huruf kapital sebelum dikirim
+                nomorSurat.value = nomorSurat.value.toUpperCase();
+
+                // tampilkan loading
+                success.classList.add('d-none');
+                btnKirim.classList.add('d-none');
+                loading.classList.remove('d-none');
+
+                fetch(scriptURL, {
+                    method: 'POST',
+                    body: new FormData(form)
+                })
+                    .then(response => {
+                        loading.classList.add('d-none');
+
+                        // tampilkan sukses
+                        success.classList.remove('d-none');
+
+                        // TUNGGU SEBENTAR → LALU RELOAD HALAMAN
+                        setTimeout(() => {
+                            location.reload(); // 🔄 RESET TOTAL HALAMAN
+                        }, 5000); // 5 detik
+                    })
+
+                    .catch(error => {
+                        loading.classList.add('d-none');
+                        btnKirim.classList.remove('d-none');
+                        alert('Gagal mengirim laporan!');
+                        console.error(error);
                     });
-
-                kelList.classList.remove('d-none');
             });
 
-            document.addEventListener('click', e => {
-                if (!kelInput.contains(e.target)) {
-                    kelList.classList.add('d-none');
-                }
-            });
-
-            // expose validasi ke global
-            window.validasiWilayah = function () {
-                if (!kelHidden.value || !kecHidden.value) {
-                    alert('❌ Kelurahan harus dipilih dari daftar');
-                    kelInput.focus();
-                    return false;
-                }
-                return true;
-            };
-
-        });
-
-        /* =========================
-        SUBMIT FORM (FINAL)
-        ========================= */
-        form.addEventListener('submit', function (e) {
-
-            const trxYa = document.getElementById('trx_ya');
-            const trxTidak = document.getElementById('trx_tidak');
-
-            /* =========================
-               JIKA TRANSAKSI = TIDAK / NIHIL
-            ========================= */
-            if (trxTidak && trxTidak.checked) {
-                // boleh submit tanpa validasi transaksi
-                return;
-            }
-
-            /* =========================
-               JIKA TRANSAKSI = YA
-            ========================= */
-
-            // validasi checkbox konfirmasi
-            if (!document.getElementById('cekTransaksi').checked) {
-                alert('⚠️ Centang konfirmasi data transaksi');
-                e.preventDefault();
-                return;
-            }
-
-            const luasInput = document.getElementById('luas_tb').value.trim();
-
-            if (!luasInput) {
-                alert('⚠️ Luas tanah/bangunan harus diisi');
-                e.preventDefault();
-                return;
-            }
-
-            // split & validasi 1–4 digit / 1–4 digit
-            const parts = luasInput.split('/');
-            if (
-                parts.length !== 2 ||
-                !/^\d{1,4}$/.test(parts[0]) ||
-                !/^\d{1,4}$/.test(parts[1])
-            ) {
-                alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi!');
-                e.preventDefault();
-                return;
-            }
-
-            // tambah leading zero
-            const luasTBFormatted =
-                parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
-
-            // push data transaksi
-            const data = {
-                tanggal: tanggal_transaksi.value,
-                no_sppd: no_sppd.value.trim(),
-                nomor_akta: document.getElementById('nomor_akta').value.trim(),
-                nomor_hak: document.getElementById('nomor_hak').value.trim(),
-                penjual: nama_penjual.value.trim(),
-                pembeli: nama_pembeli.value.trim(),
-
-                kecamatan: document.getElementById('kecamatan_value').value,
-                kelurahan: document.getElementById('kelurahan_value').value,
-
-                nop: nop_view.value,
-                njop: njop_view.value,
-                luas_tb: luasTBFormatted,
-                harga: harga_transaksi_view.value,
-                ssp: ssp_view.value,
-                ssb: ssb_view.value
-            };
-
-            if (!data.kecamatan || !data.kelurahan) {
-                alert('❌ Kecamatan & Kelurahan wajib dipilih');
-                return;
-            }
-
-            transaksiList.push(data);
-            document.getElementById('data_transaksi').value =
-                JSON.stringify(transaksiList);
-        });
-
-        const nomorHakInput = document.getElementById('nomor_hak');
-        if (nomorHakInput) {
-            nomorHakInput.value = nomorHakInput.value.toUpperCase();
-        }
-
-        /* =========================
-           RESET FORM
-        ========================= */
-        function resetFormTransaksi() {
-            const ids = [
-                'tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak', 'nama_penjual', 'nama_pembeli',
-                'nop_view', 'nop', 'njop_view', 'njop', 'ssp_view', 'ssp',
-                'ssb_view', 'ssb', 'harga_transaksi_view', 'harga_transaksi',
-                'luas_tb'
+            const bulan = [
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
             ];
 
-            ['kecamatan', 'kelurahan'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.value = '';
-                    if (id === 'kelurahan') el.disabled = true;
-                }
-            });
+            const select = document.getElementById("laporan_bulanan");
+            const today = new Date();
+            const tahunSekarang = today.getFullYear();
+            const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
 
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
+            // hanya 2 tahun: tahun sebelumnya + tahun sekarang
+            for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
+                const group = document.createElement("optgroup");
+                group.label = `Tahun ${tahun}`;
 
-            // reset radio & blok transaksi
-            document.getElementById('trx_ya').checked = false;
-            document.getElementById('trx_tidak').checked = true;
-            document.getElementById('blokTransaksi').classList.add('d-none');
+                bulan.forEach((b, i) => {
+                    const val = `${b} ${tahun}`;
+                    const option = document.createElement("option");
+                    option.value = val;
+                    option.textContent = val;
 
-            // reset checkbox
-            document.getElementById('cekTransaksi').checked = false;
+                    // otomatis pilih bulan & tahun saat ini
+                    if (tahun === tahunSekarang && i === bulanSekarang) {
+                        option.selected = true;
+                    }
 
-            // reset data
-            transaksiList = [];
-            document.getElementById('data_transaksi').value = '';
-        }
-
-        const nomorHak = document.getElementById("nomor_hak");
-
-        nomorHak.addEventListener("input", function () {
-
-            let value = this.value.toUpperCase();
-
-            // Hapus spasi berlebih
-            value = value.replace(/\s+/g, " ").trim();
-
-            // Jika format SHM 1234 → ubah jadi SHM No. 1234
-            if (/^SHM\s?\d+$/i.test(value)) {
-                value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
-            }
-
-            // Jika format HGB 1234 → ubah jadi HGB/1234
-            if (/^HGB\s?\d+$/i.test(value)) {
-                value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
-            }
-
-            // Jika format angka saja 123/2024 tetap
-            if (/^\d+\/\d{4}$/.test(value)) {
-                value = value;
-            }
-
-            this.value = value;
-        });
-
-        // Ambil input nomor surat
-        const nomorSurat = document.getElementById('nomor_surat');
-
-        // Saat mengetik langsung di input → semua huruf kapital
-        nomorSurat.addEventListener('input', function () {
-            this.value = this.value.toUpperCase();
-        });
-
-        // Saat submit → pastikan yang dikirim juga huruf kapital
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            // ubah nomor surat ke huruf kapital sebelum dikirim
-            nomorSurat.value = nomorSurat.value.toUpperCase();
-
-            // tampilkan loading
-            success.classList.add('d-none');
-            btnKirim.classList.add('d-none');
-            loading.classList.remove('d-none');
-
-            fetch(scriptURL, {
-                method: 'POST',
-                body: new FormData(form)
-            })
-                .then(response => {
-                    loading.classList.add('d-none');
-
-                    // tampilkan sukses
-                    success.classList.remove('d-none');
-
-                    // TUNGGU SEBENTAR → LALU RELOAD HALAMAN
-                    setTimeout(() => {
-                        location.reload(); // 🔄 RESET TOTAL HALAMAN
-                    }, 5000); // 5 detik
-                })
-
-                .catch(error => {
-                    loading.classList.add('d-none');
-                    btnKirim.classList.remove('d-none');
-                    alert('Gagal mengirim laporan!');
-                    console.error(error);
+                    group.appendChild(option);
                 });
-        });
 
-        const bulan = [
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-        ];
+                select.appendChild(group);
+            }
 
-        const select = document.getElementById("laporan_bulanan");
-        const today = new Date();
-        const tahunSekarang = today.getFullYear();
-        const bulanSekarang = today.getMonth(); // 0 = Januari, 11 = Desember
+            const selectNotaris = document.getElementById("notaris");
+            const npwpField = document.getElementById("id");
+            const namaField = document.getElementById("nama");
+            const alamatField = document.getElementById("alamat");
 
-        // hanya 2 tahun: tahun sebelumnya + tahun sekarang
-        for (let tahun = tahunSekarang - 1; tahun <= tahunSekarang; tahun++) {
-            const group = document.createElement("optgroup");
-            group.label = `Tahun ${tahun}`;
+            selectNotaris.addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const npwp = selectedOption.getAttribute("data-id");
+                const alamat = selectedOption.getAttribute("data-alamat");
+                const nama = selectedOption.value;
 
-            bulan.forEach((b, i) => {
-                const val = `${b} ${tahun}`;
-                const option = document.createElement("option");
-                option.value = val;
-                option.textContent = val;
-
-                // otomatis pilih bulan & tahun saat ini
-                if (tahun === tahunSekarang && i === bulanSekarang) {
-                    option.selected = true;
-                }
-
-                group.appendChild(option);
+                npwpField.value = npwp || "";
+                namaField.value = nama || "";
+                alamatField.value = alamat || "";
             });
 
-            select.appendChild(group);
-        }
-
-        const selectNotaris = document.getElementById("notaris");
-        const npwpField = document.getElementById("id");
-        const namaField = document.getElementById("nama");
-        const alamatField = document.getElementById("alamat");
-
-        selectNotaris.addEventListener("change", function () {
-            const selectedOption = this.options[this.selectedIndex];
-            const npwp = selectedOption.getAttribute("data-id");
-            const alamat = selectedOption.getAttribute("data-alamat");
-            const nama = selectedOption.value;
-
-            npwpField.value = npwp || "";
-            namaField.value = nama || "";
-            alamatField.value = alamat || "";
-        });
-
-        // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
-        document.body.insertAdjacentHTML("beforeend", `
+            // Tambahkan Elemen Loading di HTML dengan Pusat yang Presisi
+            document.body.insertAdjacentHTML("beforeend", `
     <div id="loadingOverlay" style="
         position: fixed;
         top: 0;
@@ -2461,872 +2499,872 @@
     </style>
 `);
 
-        // Fungsi untuk menampilkan loading sebelum berpindah halaman (kecuali untuk tombol petunjuk)
-        document.addEventListener("DOMContentLoaded", function () {
-            let links = document.querySelectorAll("a"); // Target semua link di halaman
+            // Fungsi untuk menampilkan loading sebelum berpindah halaman (kecuali untuk tombol petunjuk)
+            document.addEventListener("DOMContentLoaded", function () {
+                let links = document.querySelectorAll("a"); // Target semua link di halaman
 
-            links.forEach(link => {
-                // TOMBOL YANG TIDAK PERLU LOADING (Petunjuk, atau yang memiliki class tertentu)
-                const isExcluded = link.id === 'btnPetunjukForm' ||
-                    link.classList.contains('no-loading') ||
-                    link.getAttribute('data-no-loading') === 'true';
+                links.forEach(link => {
+                    // TOMBOL YANG TIDAK PERLU LOADING (Petunjuk, atau yang memiliki class tertentu)
+                    const isExcluded = link.id === 'btnPetunjukForm' ||
+                        link.classList.contains('no-loading') ||
+                        link.getAttribute('data-no-loading') === 'true';
 
-                // Hanya proses link yang bukan tombol petunjuk dan memiliki href yang valid
-                if (!isExcluded && link.href && link.href !== '#' && !link.href.endsWith('#')) {
-                    link.addEventListener("click", function (event) {
-                        // Jangan prevent jika ini adalah tombol petunjuk
-                        if (this.id === 'btnPetunjukForm') return;
+                    // Hanya proses link yang bukan tombol petunjuk dan memiliki href yang valid
+                    if (!isExcluded && link.href && link.href !== '#' && !link.href.endsWith('#')) {
+                        link.addEventListener("click", function (event) {
+                            // Jangan prevent jika ini adalah tombol petunjuk
+                            if (this.id === 'btnPetunjukForm') return;
 
-                        event.preventDefault(); // Mencegah navigasi langsung
-                        let overlay = document.getElementById("loadingOverlay");
+                            event.preventDefault(); // Mencegah navigasi langsung
+                            let overlay = document.getElementById("loadingOverlay");
 
-                        if (overlay) {
-                            overlay.style.visibility = "visible";
-                            overlay.style.opacity = "1";
-                        }
+                            if (overlay) {
+                                overlay.style.visibility = "visible";
+                                overlay.style.opacity = "1";
+                            }
 
-                        let loadingTime = 10000; // 10 detik sebelum pindah halaman
-                        setTimeout(() => {
-                            window.location.href = this.href; // Pindah halaman setelah 10 detik
-                        }, loadingTime);
-                    });
-                }
-            });
-        });
-
-        window.addEventListener("load", function () {
-            let overlay = document.getElementById("loadingOverlay");
-            overlay.style.visibility = "hidden";
-            overlay.style.opacity = "0";
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const jumlah = document.getElementById('jumlah_laporan');
-            const ket = document.getElementById('keterangan');
-            const ketHint = document.getElementById('ketHint');
-            const ketError = document.getElementById('ketError');
-            const form = document.getElementById('form-laporan');
-
-            const rupiahView = document.getElementById('sspd_bphtb_view');
-            const rupiahReal = document.getElementById('sspd_bphtb');
-
-            const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
-
-            /* =====================
-               FORMAT RUPIAH
-            ===================== */
-            function formatAngka(angka) {
-                return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            }
-
-            rupiahView.addEventListener('input', function () {
-                let angka = this.value.replace(/\D/g, '');
-                rupiahReal.value = angka;
-                if (angka === '') {
-                    this.value = '';
-                    return;
-                }
-                this.value = 'Rp. ' + formatAngka(angka);
+                            let loadingTime = 10000; // 10 detik sebelum pindah halaman
+                            setTimeout(() => {
+                                window.location.href = this.href; // Pindah halaman setelah 10 detik
+                            }, loadingTime);
+                        });
+                    }
+                });
             });
 
-            rupiahView.addEventListener('focus', function () {
-                this.value = this.value.replace(/Rp\.?\s?|\.|,00/g, '');
+            window.addEventListener("load", function () {
+                let overlay = document.getElementById("loadingOverlay");
+                overlay.style.visibility = "hidden";
+                overlay.style.opacity = "0";
             });
 
-            rupiahView.addEventListener('blur', function () {
-                if (this.value !== '') {
-                    this.value = 'Rp. ' + formatAngka(this.value.replace(/\D/g, '')) + ',00';
-                }
-            });
+            document.addEventListener('DOMContentLoaded', function () {
 
-            /* =====================
-               HELPER KETERANGAN
-            ===================== */
-            function lockKet(text, hint) {
-                ket.value = text;
-                ket.readOnly = true;
-                ket.style.pointerEvents = 'none';
-                ket.style.backgroundColor = '#e9ecef';
-                ketHint.textContent = hint;
-                ketHint.className = 'form-text fw-semibold text-secondary';
-                ket.classList.remove('is-valid', 'is-invalid');
-                ketError.textContent = '';
-            }
+                const jumlah = document.getElementById('jumlah_laporan');
+                const ket = document.getElementById('keterangan');
+                const ketHint = document.getElementById('ketHint');
+                const ketError = document.getElementById('ketError');
+                const form = document.getElementById('form-laporan');
 
-            function unlockKet(text, hint) {
-                ket.readOnly = false;
-                ket.style.pointerEvents = 'auto';
-                ket.style.backgroundColor = '';
-                ket.value = text;
-                ketHint.textContent = hint;
-                ketHint.className = 'form-text fw-semibold text-info';
-            }
+                const rupiahView = document.getElementById('sspd_bphtb_view');
+                const rupiahReal = document.getElementById('sspd_bphtb');
 
-            function hitungKet(text) {
-                const angka = text.match(/\d+/g);
-                return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
-            }
+                const TEMPLATE = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
 
-            /* =====================
-               LOGIKA UTAMA
-            ===================== */
-            function prosesKeterangan() {
-                const val = jumlah.value;
-
-                if (val === '') {
-                    lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
-                    return false;
+                /* =====================
+                   FORMAT RUPIAH
+                ===================== */
+                function formatAngka(angka) {
+                    return angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 }
 
-                const num = Number(val);
+                rupiahView.addEventListener('input', function () {
+                    let angka = this.value.replace(/\D/g, '');
+                    rupiahReal.value = angka;
+                    if (angka === '') {
+                        this.value = '';
+                        return;
+                    }
+                    this.value = 'Rp. ' + formatAngka(angka);
+                });
 
-                if (num === 0) {
-                    lockKet('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
-                    return true;
-                }
+                rupiahView.addEventListener('focus', function () {
+                    this.value = this.value.replace(/Rp\.?\s?|\.|,00/g, '');
+                });
 
-                if (ket.readOnly) {
-                    unlockKet(TEMPLATE, '✏️ Isi rincian sesuai jumlah laporan');
-                }
+                rupiahView.addEventListener('blur', function () {
+                    if (this.value !== '') {
+                        this.value = 'Rp. ' + formatAngka(this.value.replace(/\D/g, '')) + ',00';
+                    }
+                });
 
-                const total = hitungKet(ket.value);
-
-                if (total !== num) {
-                    ket.classList.add('is-invalid');
-                    ket.classList.remove('is-valid');
-                    ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
-                    ketHint.textContent = '❌ Jumlah rincian belum sesuai';
-                    ketHint.className = 'form-text fw-semibold text-danger';
-                    return false;
-                } else {
-                    ket.classList.remove('is-invalid');
-                    ket.classList.add('is-valid');
+                /* =====================
+                   HELPER KETERANGAN
+                ===================== */
+                function lockKet(text, hint) {
+                    ket.value = text;
+                    ket.readOnly = true;
+                    ket.style.pointerEvents = 'none';
+                    ket.style.backgroundColor = '#e9ecef';
+                    ketHint.textContent = hint;
+                    ketHint.className = 'form-text fw-semibold text-secondary';
+                    ket.classList.remove('is-valid', 'is-invalid');
                     ketError.textContent = '';
-                    ketHint.textContent = '✅ Jumlah rincian sesuai';
-                    ketHint.className = 'form-text fw-semibold text-success';
-                    return true;
                 }
-            }
 
-            /* =====================
-               EVENT
-            ===================== */
-            lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
-
-            jumlah.addEventListener('input', prosesKeterangan);
-            ket.addEventListener('input', prosesKeterangan);
-
-            form.addEventListener('submit', function (e) {
-                if (!form.checkValidity() || !prosesKeterangan()) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    form.classList.add('was-validated');
+                function unlockKet(text, hint) {
+                    ket.readOnly = false;
+                    ket.style.pointerEvents = 'auto';
+                    ket.style.backgroundColor = '';
+                    ket.value = text;
+                    ketHint.textContent = hint;
+                    ketHint.className = 'form-text fw-semibold text-info';
                 }
+
+                function hitungKet(text) {
+                    const angka = text.match(/\d+/g);
+                    return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
+                }
+
+                /* =====================
+                   LOGIKA UTAMA
+                ===================== */
+                function prosesKeterangan() {
+                    const val = jumlah.value;
+
+                    if (val === '') {
+                        lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                        return false;
+                    }
+
+                    const num = Number(val);
+
+                    if (num === 0) {
+                        lockKet('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
+                        return true;
+                    }
+
+                    if (ket.readOnly) {
+                        unlockKet(TEMPLATE, '✏️ Isi rincian sesuai jumlah laporan');
+                    }
+
+                    const total = hitungKet(ket.value);
+
+                    if (total !== num) {
+                        ket.classList.add('is-invalid');
+                        ket.classList.remove('is-valid');
+                        ketError.textContent = `Total rincian ${total}, seharusnya ${num}`;
+                        ketHint.textContent = '❌ Jumlah rincian belum sesuai';
+                        ketHint.className = 'form-text fw-semibold text-danger';
+                        return false;
+                    } else {
+                        ket.classList.remove('is-invalid');
+                        ket.classList.add('is-valid');
+                        ketError.textContent = '';
+                        ketHint.textContent = '✅ Jumlah rincian sesuai';
+                        ketHint.className = 'form-text fw-semibold text-success';
+                        return true;
+                    }
+                }
+
+                /* =====================
+                   EVENT
+                ===================== */
+                lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+
+                jumlah.addEventListener('input', prosesKeterangan);
+                ket.addEventListener('input', prosesKeterangan);
+
+                form.addEventListener('submit', function (e) {
+                    if (!form.checkValidity() || !prosesKeterangan()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.classList.add('was-validated');
+                    }
+                });
+
+                function resetKeterangan() {
+                    lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
+                    ket.classList.remove('is-valid', 'is-invalid');
+                    ketError.textContent = '';
+                }
+
             });
 
-            function resetKeterangan() {
-                lockKet('', '🔔 Isi jumlah laporan terlebih dahulu');
-                ket.classList.remove('is-valid', 'is-invalid');
-                ketError.textContent = '';
-            }
+            document.addEventListener('DOMContentLoaded', function () {
 
-        });
+                function formatTanggalDMY(inputId, prefix) {
+                    const input = document.getElementById(inputId);
 
-        document.addEventListener('DOMContentLoaded', function () {
+                    // hidden input untuk dikirim ke server
+                    let hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = `tanggal_${prefix}_indo`;
+                    input.closest('form').appendChild(hidden);
 
-            function formatTanggalDMY(inputId, prefix) {
-                const input = document.getElementById(inputId);
+                    function updateHidden() {
+                        if (!input.value) return;
+                        const [yyyy, mm, dd] = input.value.split('-');
+                        hidden.value = `${dd}/${mm}/${yyyy}`;
+                    }
 
-                // hidden input untuk dikirim ke server
-                let hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = `tanggal_${prefix}_indo`;
-                input.closest('form').appendChild(hidden);
+                    // update saat input berubah atau diketik langsung
+                    input.addEventListener('change', updateHidden);
+                    input.addEventListener('input', updateHidden);
 
-                function updateHidden() {
-                    if (!input.value) return;
-                    const [yyyy, mm, dd] = input.value.split('-');
-                    hidden.value = `${dd}/${mm}/${yyyy}`;
+                    // pastikan saat submit juga terupdate
+                    input.closest('form').addEventListener('submit', updateHidden);
                 }
 
-                // update saat input berubah atau diketik langsung
-                input.addEventListener('change', updateHidden);
-                input.addEventListener('input', updateHidden);
+                // Tanggal Surat
+                formatTanggalDMY('tanggal_surat', 'surat');
 
-                // pastikan saat submit juga terupdate
-                input.closest('form').addEventListener('submit', updateHidden);
+                // Tanggal Disposisi
+                formatTanggalDMY('tanggal_disposisi', 'disposisi');
+
+            });
+
+            const alertPerhatian = document.getElementById('alertPerhatian');
+
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+
+                if (alertPerhatian) {
+                    alertPerhatian.classList.add('d-none');
+                }
+
+                // lanjutkan loading & submit
+            });
+
+            /* ===============================
+               LIVE CHAT RESPONSIVE GUARD
+            ================================ */
+            function isDesktop() {
+                return window.innerWidth >= 993;
             }
 
-            // Tanggal Surat
-            formatTanggalDMY('tanggal_surat', 'surat');
+            let liveChatContainer = null;
 
-            // Tanggal Disposisi
-            formatTanggalDMY('tanggal_disposisi', 'disposisi');
-
-        });
-
-        const alertPerhatian = document.getElementById('alertPerhatian');
-
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            if (alertPerhatian) {
-                alertPerhatian.classList.add('d-none');
-            }
-
-            // lanjutkan loading & submit
-        });
-
-        /* ===============================
-           LIVE CHAT RESPONSIVE GUARD
-        ================================ */
-        function isDesktop() {
-            return window.innerWidth >= 993;
-        }
-
-        let liveChatContainer = null;
-
-        if (isDesktop()) {
-            liveChatContainer = document.createElement('div');
-            liveChatContainer.id = 'liveChatFloating';
-            document.body.appendChild(liveChatContainer);
-        }
-
-        /* Jika layar di-resize */
-        window.addEventListener('resize', function () {
-            if (isDesktop() && !liveChatContainer) {
+            if (isDesktop()) {
                 liveChatContainer = document.createElement('div');
                 liveChatContainer.id = 'liveChatFloating';
                 document.body.appendChild(liveChatContainer);
             }
 
-            if (!isDesktop() && liveChatContainer) {
-                liveChatContainer.remove();
-                liveChatContainer = null;
-            }
-        });
+            /* Jika layar di-resize */
+            window.addEventListener('resize', function () {
+                if (isDesktop() && !liveChatContainer) {
+                    liveChatContainer = document.createElement('div');
+                    liveChatContainer.id = 'liveChatFloating';
+                    document.body.appendChild(liveChatContainer);
+                }
 
-        // AMBIL ELEMENT FORM (AMAN)
-        const adminInput = document.querySelector('[name="admin penginput"]');
-        const notarisSelect = document.getElementById('notaris');
-        const idInput = document.getElementById('id');
-        const namaInput = document.getElementById('nama');
-        const alamatInput = document.getElementById('alamat');
-        const tanggalSurat = document.getElementById('tanggal_surat');
-        const jumlahLaporan = document.getElementById('jumlah_laporan');
-        const keteranganInput = document.getElementById('keterangan');
-        const sspdInput = document.getElementById('sspd_bphtb_view');
-
-        // FORMAT TANGGAL
-        function formatTanggalIndo(val) {
-            if (!val) return '-';
-            const [y, m, d] = val.split('-');
-            return `${d}/${m}/${y}`;
-        }
-
-        // FUNGSI NOMOR AKTA
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const nomorAkta = document.getElementById('nomor_akta');
-
-            nomorAkta.addEventListener('input', function () {
-
-                let raw = this.value.replace(/\D/g, '');
-
-                // max 8 digit (4 nomor + 4 tahun)
-                raw = raw.slice(0, 8);
-
-                if (raw.length <= 4) {
-                    this.value = raw;
-                } else {
-                    const nomor = raw.slice(0, raw.length - 4);
-                    const tahun = raw.slice(-4);
-                    this.value = `${nomor}/${tahun}`;
+                if (!isDesktop() && liveChatContainer) {
+                    liveChatContainer.remove();
+                    liveChatContainer = null;
                 }
             });
-        });
 
-        // UPDATE / BUAT BARIS LIVE CHAT
-        function setLiveMessage(key, title, value) {
-            if (!liveChatContainer) return; // ⛔ STOP di HP & Tablet
+            // AMBIL ELEMENT FORM (AMAN)
+            const adminInput = document.querySelector('[name="admin penginput"]');
+            const notarisSelect = document.getElementById('notaris');
+            const idInput = document.getElementById('id');
+            const namaInput = document.getElementById('nama');
+            const alamatInput = document.getElementById('alamat');
+            const tanggalSurat = document.getElementById('tanggal_surat');
+            const jumlahLaporan = document.getElementById('jumlah_laporan');
+            const keteranganInput = document.getElementById('keterangan');
+            const sspdInput = document.getElementById('sspd_bphtb_view');
 
-            let row = document.getElementById(`live-${key}`);
-
-            if (!row) {
-                row = document.createElement('div');
-                row.id = `live-${key}`;
-                row.className = 'live-row';
-                liveChatContainer.appendChild(row);
+            // FORMAT TANGGAL
+            function formatTanggalIndo(val) {
+                if (!val) return '-';
+                const [y, m, d] = val.split('-');
+                return `${d}/${m}/${y}`;
             }
 
-            row.innerHTML = `
+            // FUNGSI NOMOR AKTA
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const nomorAkta = document.getElementById('nomor_akta');
+
+                nomorAkta.addEventListener('input', function () {
+
+                    let raw = this.value.replace(/\D/g, '');
+
+                    // max 8 digit (4 nomor + 4 tahun)
+                    raw = raw.slice(0, 8);
+
+                    if (raw.length <= 4) {
+                        this.value = raw;
+                    } else {
+                        const nomor = raw.slice(0, raw.length - 4);
+                        const tahun = raw.slice(-4);
+                        this.value = `${nomor}/${tahun}`;
+                    }
+                });
+            });
+
+            // UPDATE / BUAT BARIS LIVE CHAT
+            function setLiveMessage(key, title, value) {
+                if (!liveChatContainer) return; // ⛔ STOP di HP & Tablet
+
+                let row = document.getElementById(`live-${key}`);
+
+                if (!row) {
+                    row = document.createElement('div');
+                    row.id = `live-${key}`;
+                    row.className = 'live-row';
+                    liveChatContainer.appendChild(row);
+                }
+
+                row.innerHTML = `
         <span class="live-title">${title}</span>
         <span class="live-value">${value || '-'}</span>
     `;
-        }
-
-        /* ===============================
-           EVENT LISTENER
-        ================================ */
-
-        // ADMIN PENGINPUT
-        adminInput?.addEventListener('change', function () {
-            setLiveMessage('admin', 'Admin Penginput', this.value);
-        });
-
-        // NOTARIS
-        notarisSelect?.addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-
-            idInput.value = selected.dataset.id || '';
-            namaInput.value = selected.value || '';
-            alamatInput.value = selected.dataset.alamat || '';
-
-            setLiveMessage('notaris', 'Notaris & PPAT', selected.value);
-            setLiveMessage('id', 'Nomor Unik', selected.dataset.id);
-            setLiveMessage('alamat', 'Alamat', selected.dataset.alamat);
-        });
-
-        function formatRupiahLive(val) {
-            if (!val) return '-';
-            let angka = val.replace(/[^0-9]/g, '');
-            if (angka === '') return '-';
-            return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-
-        // TANGGAL SURAT
-        tanggalSurat?.addEventListener('input', function () {
-            setLiveMessage(
-                'tanggal_surat',
-                'Tanggal Surat',
-                formatTanggalIndo(this.value)
-            );
-        });
-
-        function resetLiveChat() {
-            liveChatContainer.innerHTML = '';
-
-            // optional placeholder
-            const empty = document.createElement('div');
-            empty.className = 'live-chat-empty';
-            empty.textContent = 'Belum ada data…';
-            liveChatContainer.appendChild(empty);
-        }
-
-
-        // JUMLAH LAPORAN
-        jumlahLaporan?.addEventListener('input', function () {
-            setLiveMessage('jumlah_laporan', 'Jumlah Laporan', this.value);
-        });
-
-        // KETERANGAN
-        keteranganInput?.addEventListener('input', function () {
-            setLiveMessage('keterangan', 'Keterangan', this.value);
-        });
-
-        // NOMINAL SSB
-        sspdInput.addEventListener('input', function () {
-            let angka = this.value.replace(/\D/g, '');
-
-            if (!angka) {
-                setLiveMessage('ssb', 'Nominal SSB', '-');
-                return;
             }
 
-            const formatted = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
-            setLiveMessage('ssb', 'Nominal SSB', formatted);
-        });
+            /* ===============================
+               EVENT LISTENER
+            ================================ */
 
-        const agreeCheck = document.getElementById('agreeCheck');
-
-        /* =====================
-           VALIDASI CHECKBOX
-        ===================== */
-        function validateAgree() {
-            if (!agreeCheck.checked) {
-                agreeCheck.classList.add('is-invalid');
-                agreeCheck.classList.remove('is-valid');
-                return false;
-            } else {
-                agreeCheck.classList.remove('is-invalid');
-                agreeCheck.classList.add('is-valid');
-                return true;
-            }
-        }
-
-        /* real-time feedback */
-        agreeCheck.addEventListener('change', validateAgree);
-
-        /* reset bersih */
-        form.addEventListener('reset', function () {
-            setTimeout(() => {
-                agreeCheck.checked = false;
-                agreeCheck.classList.remove('is-valid', 'is-invalid');
-            }, 50);
-        });
-
-        form.addEventListener('submit', function (e) {
-            if (
-                !form.checkValidity() ||
-                !prosesKeterangan() ||
-                !validateAgree()
-            ) {
-                e.preventDefault();
-                e.stopPropagation();
-                form.classList.add('was-validated');
-            } else {
-                setTimeout(() => {
-                    form.reset();
-                    resetKeterangan();
-                }, 200);
-            }
-        });
-
-        form.addEventListener('submit', function (e) {
-            const nomorAktaVal = document.getElementById('nomor_akta').value.trim();
-
-            if (nomorAktaVal !== '') {
-                const polaAkta = /^\d{2,4}\/\d{4}$/;
-                if (!polaAkta.test(nomorAktaVal)) {
-                    alert('⚠️ Nomor Akta harus format 00/2024, 000/2024, atau 0000/2024');
-                    e.preventDefault();
-                    return;
-                }
-            }
-        });
-
-        function scrollToAgree() {
-            agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        if (!validateAgree()) {
-            scrollToAgree();
-        }
-
-        /* =====================
-             PENGHUBUNG DATA
-          ===================== */
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const ssbView = document.getElementById('ssb_view');
-            const ssbReal = document.getElementById('ssb');
-
-            const bphtbView = document.getElementById('sspd_bphtb_view');
-            const bphtbReal = document.getElementById('sspd_bphtb');
-
-            const toggle = document.getElementById('autoBPHTB');
-
-            if (!ssbView || !bphtbView || !toggle) return;
-
-            function formatRupiah(angka) {
-                return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
-            }
-
-            function syncBPHTB() {
-                if (!toggle.checked) return;
-
-                let angka = ssbReal.value || ssbView.value.replace(/\D/g, '');
-                bphtbReal.value = angka;
-                bphtbView.value = angka ? formatRupiah(angka) : '';
-            }
-
-            /* =============================
-               SAAT SSB DIKETIK → BPHTB IKUT
-            ============================== */
-            ssbView.addEventListener('input', syncBPHTB);
-
-            /* =============================
-               TOGGLE ON / OFF
-            ============================== */
-            toggle.addEventListener('change', function () {
-
-                if (this.checked) {
-                    // ON → kunci & sinkron
-                    bphtbView.readOnly = true;
-                    bphtbView.classList.add('bg-light');
-                    syncBPHTB();
-                } else {
-                    // OFF → bebas edit manual
-                    bphtbView.readOnly = false;
-                    bphtbView.classList.remove('bg-light');
-                    bphtbView.value = '';
-                    bphtbReal.value = '';
-                }
+            // ADMIN PENGINPUT
+            adminInput?.addEventListener('change', function () {
+                setLiveMessage('admin', 'Admin Penginput', this.value);
             });
 
-            // default ON
-            bphtbView.readOnly = true;
-            bphtbView.classList.add('bg-light');
-        });
+            // NOTARIS
+            notarisSelect?.addEventListener('change', function () {
+                const selected = this.options[this.selectedIndex];
 
-        document.addEventListener('DOMContentLoaded', function () {
+                idInput.value = selected.dataset.id || '';
+                namaInput.value = selected.value || '';
+                alamatInput.value = selected.dataset.alamat || '';
 
-            const toggle = document.getElementById('autoBPHTB');
-            const card = document.querySelector('.auto-sync-card');
-            const icon = document.getElementById('syncIcon');
-            const status = document.getElementById('syncStatus');
+                setLiveMessage('notaris', 'Notaris & PPAT', selected.value);
+                setLiveMessage('id', 'Nomor Unik', selected.dataset.id);
+                setLiveMessage('alamat', 'Alamat', selected.dataset.alamat);
+            });
 
-            function updateUI() {
-                if (toggle.checked) {
-                    card.classList.remove('off');
-                    card.classList.add('on');
-
-                    icon.className = 'bi bi-link-45deg fs-5 text-success';
-                    status.textContent = '*Mengikuti Nominal Data Transaksi SSB';
-                    status.className = 'text-success';
-                } else {
-                    card.classList.remove('on');
-                    card.classList.add('off');
-
-                    icon.className = 'bi bi-unlink fs-5 text-secondary';
-                    status.textContent = '*Input manual Nilai BPHTB';
-                    status.className = 'text-secondary';
-                }
-            }
-
-            toggle.addEventListener('change', updateUI);
-            updateUI(); // init
-        });
-
-        // FORMAT TRANSAKSI AUTO Dan MANUAL
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const hargaView = document.getElementById('harga_transaksi_view');
-            const hargaReal = document.getElementById('harga_transaksi');
-
-            const sspView = document.getElementById('ssp_view');
-            const sspReal = document.getElementById('ssp');
-
-            const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
-
-            function formatRupiah(angka) {
-                if (!angka || angka === '0') return '';
+            function formatRupiahLive(val) {
+                if (!val) return '-';
+                let angka = val.replace(/[^0-9]/g, '');
+                if (angka === '') return '-';
                 return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             }
 
-            function hitungSSP() {
-                const harga = parseInt(hargaReal.value || 0);
-                const tarif = document.querySelector('input[name="tarif_ssp"]:checked').value;
+            // TANGGAL SURAT
+            tanggalSurat?.addEventListener('input', function () {
+                setLiveMessage(
+                    'tanggal_surat',
+                    'Tanggal Surat',
+                    formatTanggalIndo(this.value)
+                );
+            });
 
-                // MODE MANUAL
-                if (tarif === '0') {
-                    sspView.readOnly = false;
-                    sspView.classList.remove('bg-light');
+            function resetLiveChat() {
+                liveChatContainer.innerHTML = '';
+
+                // optional placeholder
+                const empty = document.createElement('div');
+                empty.className = 'live-chat-empty';
+                empty.textContent = 'Belum ada data…';
+                liveChatContainer.appendChild(empty);
+            }
+
+
+            // JUMLAH LAPORAN
+            jumlahLaporan?.addEventListener('input', function () {
+                setLiveMessage('jumlah_laporan', 'Jumlah Laporan', this.value);
+            });
+
+            // KETERANGAN
+            keteranganInput?.addEventListener('input', function () {
+                setLiveMessage('keterangan', 'Keterangan', this.value);
+            });
+
+            // NOMINAL SSB
+            sspdInput.addEventListener('input', function () {
+                let angka = this.value.replace(/\D/g, '');
+
+                if (!angka) {
+                    setLiveMessage('ssb', 'Nominal SSB', '-');
                     return;
                 }
 
-                // MODE AUTO
-                const nilai = Math.round(harga * (tarif / 100));
+                const formatted = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+                setLiveMessage('ssb', 'Nominal SSB', formatted);
+            });
 
-                sspReal.value = nilai;
-                sspView.value = formatRupiah(String(nilai));
-                sspView.readOnly = true;
-                sspView.classList.add('bg-light');
+            const agreeCheck = document.getElementById('agreeCheck');
+
+            /* =====================
+               VALIDASI CHECKBOX
+            ===================== */
+            function validateAgree() {
+                if (!agreeCheck.checked) {
+                    agreeCheck.classList.add('is-invalid');
+                    agreeCheck.classList.remove('is-valid');
+                    return false;
+                } else {
+                    agreeCheck.classList.remove('is-invalid');
+                    agreeCheck.classList.add('is-valid');
+                    return true;
+                }
             }
 
-            // Harga diketik → SSP update
-            hargaView.addEventListener('input', hitungSSP);
+            /* real-time feedback */
+            agreeCheck.addEventListener('change', validateAgree);
 
-            // Tarif diubah → SSP update
-            tarifRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
+            /* reset bersih */
+            form.addEventListener('reset', function () {
+                setTimeout(() => {
+                    agreeCheck.checked = false;
+                    agreeCheck.classList.remove('is-valid', 'is-invalid');
+                }, 50);
+            });
 
-                    if (this.value === '0') {
-                        // manual
-                        sspView.value = '';
-                        sspReal.value = '';
+            form.addEventListener('submit', function (e) {
+                if (
+                    !form.checkValidity() ||
+                    !prosesKeterangan() ||
+                    !validateAgree()
+                ) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                } else {
+                    setTimeout(() => {
+                        form.reset();
+                        resetKeterangan();
+                    }, 200);
+                }
+            });
+
+            form.addEventListener('submit', function (e) {
+                const nomorAktaVal = document.getElementById('nomor_akta').value.trim();
+
+                if (nomorAktaVal !== '') {
+                    const polaAkta = /^\d{2,4}\/\d{4}$/;
+                    if (!polaAkta.test(nomorAktaVal)) {
+                        alert('⚠️ Nomor Akta harus format 00/2024, 000/2024, atau 0000/2024');
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            });
+
+            function scrollToAgree() {
+                agreeCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (!validateAgree()) {
+                scrollToAgree();
+            }
+
+            /* =====================
+                 PENGHUBUNG DATA
+              ===================== */
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const ssbView = document.getElementById('ssb_view');
+                const ssbReal = document.getElementById('ssb');
+
+                const bphtbView = document.getElementById('sspd_bphtb_view');
+                const bphtbReal = document.getElementById('sspd_bphtb');
+
+                const toggle = document.getElementById('autoBPHTB');
+
+                if (!ssbView || !bphtbView || !toggle) return;
+
+                function formatRupiah(angka) {
+                    return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',00';
+                }
+
+                function syncBPHTB() {
+                    if (!toggle.checked) return;
+
+                    let angka = ssbReal.value || ssbView.value.replace(/\D/g, '');
+                    bphtbReal.value = angka;
+                    bphtbView.value = angka ? formatRupiah(angka) : '';
+                }
+
+                /* =============================
+                   SAAT SSB DIKETIK → BPHTB IKUT
+                ============================== */
+                ssbView.addEventListener('input', syncBPHTB);
+
+                /* =============================
+                   TOGGLE ON / OFF
+                ============================== */
+                toggle.addEventListener('change', function () {
+
+                    if (this.checked) {
+                        // ON → kunci & sinkron
+                        bphtbView.readOnly = true;
+                        bphtbView.classList.add('bg-light');
+                        syncBPHTB();
+                    } else {
+                        // OFF → bebas edit manual
+                        bphtbView.readOnly = false;
+                        bphtbView.classList.remove('bg-light');
+                        bphtbView.value = '';
+                        bphtbReal.value = '';
+                    }
+                });
+
+                // default ON
+                bphtbView.readOnly = true;
+                bphtbView.classList.add('bg-light');
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const toggle = document.getElementById('autoBPHTB');
+                const card = document.querySelector('.auto-sync-card');
+                const icon = document.getElementById('syncIcon');
+                const status = document.getElementById('syncStatus');
+
+                function updateUI() {
+                    if (toggle.checked) {
+                        card.classList.remove('off');
+                        card.classList.add('on');
+
+                        icon.className = 'bi bi-link-45deg fs-5 text-success';
+                        status.textContent = '*Mengikuti Nominal Data Transaksi SSB';
+                        status.className = 'text-success';
+                    } else {
+                        card.classList.remove('on');
+                        card.classList.add('off');
+
+                        icon.className = 'bi bi-unlink fs-5 text-secondary';
+                        status.textContent = '*Input manual Nilai BPHTB';
+                        status.className = 'text-secondary';
+                    }
+                }
+
+                toggle.addEventListener('change', updateUI);
+                updateUI(); // init
+            });
+
+            // FORMAT TRANSAKSI AUTO Dan MANUAL
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const hargaView = document.getElementById('harga_transaksi_view');
+                const hargaReal = document.getElementById('harga_transaksi');
+
+                const sspView = document.getElementById('ssp_view');
+                const sspReal = document.getElementById('ssp');
+
+                const tarifRadios = document.querySelectorAll('input[name="tarif_ssp"]');
+
+                function formatRupiah(angka) {
+                    if (!angka || angka === '0') return '';
+                    return 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                }
+
+                function hitungSSP() {
+                    const harga = parseInt(hargaReal.value || 0);
+                    const tarif = document.querySelector('input[name="tarif_ssp"]:checked').value;
+
+                    // MODE MANUAL
+                    if (tarif === '0') {
                         sspView.readOnly = false;
                         sspView.classList.remove('bg-light');
-                        sspView.focus();
+                        return;
+                    }
+
+                    // MODE AUTO
+                    const nilai = Math.round(harga * (tarif / 100));
+
+                    sspReal.value = nilai;
+                    sspView.value = formatRupiah(String(nilai));
+                    sspView.readOnly = true;
+                    sspView.classList.add('bg-light');
+                }
+
+                // Harga diketik → SSP update
+                hargaView.addEventListener('input', hitungSSP);
+
+                // Tarif diubah → SSP update
+                tarifRadios.forEach(radio => {
+                    radio.addEventListener('change', function () {
+
+                        if (this.value === '0') {
+                            // manual
+                            sspView.value = '';
+                            sspReal.value = '';
+                            sspView.readOnly = false;
+                            sspView.classList.remove('bg-light');
+                            sspView.focus();
+                        } else {
+                            hitungSSP();
+                        }
+                    });
+                });
+
+                // FORMAT SSP MANUAL JIKA 0%
+                sspView.addEventListener('input', function () {
+                    if (document.querySelector('input[name="tarif_ssp"]:checked').value !== '0') return;
+
+                    let angka = this.value.replace(/\D/g, '');
+                    sspReal.value = angka;
+                    this.value = formatRupiah(angka);
+                });
+
+            });
+
+            // ============================================
+            // STATUS SURAT: Tepat Waktu | Terlambat | Tidak Menyampaikan Laporan (Manual)
+            // ============================================
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const tanggalInput = document.getElementById('tanggal_diterima');
+                const statusInput = document.getElementById('status_surat');
+                const trxYa = document.getElementById('trx_ya');
+                const trxTidak = document.getElementById('trx_tidak');
+                const jumlahLaporan = document.getElementById('jumlah_laporan');
+
+                if (!tanggalInput || !statusInput) return;
+
+                let modeManualTidakLapor = false;
+
+                // Fungsi utama update status
+                function updateStatusSurat() {
+                    // JIKA MODE MANUAL AKTIF
+                    if (modeManualTidakLapor) {
+                        statusInput.value = 'Tidak Menyampaikan Laporan';
+                        statusInput.classList.remove('status-menyampaikan', 'status-terlambat');
+                        statusInput.classList.add('status-terlambat');
+                        statusInput.style.backgroundColor = '#f8d7da';
+                        statusInput.style.color = '#721c24';
+                        return;
+                    }
+
+                    // MODE OTOMATIS (KODE ASLI ANDA)
+                    if (!tanggalInput.value) {
+                        statusInput.value = '';
+                        statusInput.style.backgroundColor = '';
+                        statusInput.style.color = '';
+                        return;
+                    }
+
+                    const tanggal = new Date(tanggalInput.value);
+                    const hari = tanggal.getDate();
+
+                    if (hari <= 10) {
+                        statusInput.value = 'Tepat Waktu';
+                        statusInput.classList.remove('status-terlambat');
+                        statusInput.classList.add('status-menyampaikan');
+                        statusInput.style.backgroundColor = '';
+                        statusInput.style.color = '';
                     } else {
-                        hitungSSP();
+                        statusInput.value = 'Menyampaikan/Terlambat';
+                        statusInput.classList.remove('status-menyampaikan');
+                        statusInput.classList.add('status-terlambat');
+                        statusInput.style.backgroundColor = '';
+                        statusInput.style.color = '';
                     }
-                });
-            });
-
-            // FORMAT SSP MANUAL JIKA 0%
-            sspView.addEventListener('input', function () {
-                if (document.querySelector('input[name="tarif_ssp"]:checked').value !== '0') return;
-
-                let angka = this.value.replace(/\D/g, '');
-                sspReal.value = angka;
-                this.value = formatRupiah(angka);
-            });
-
-        });
-
-        // ============================================
-        // STATUS SURAT: Tepat Waktu | Terlambat | Tidak Menyampaikan Laporan (Manual)
-        // ============================================
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const tanggalInput = document.getElementById('tanggal_diterima');
-            const statusInput = document.getElementById('status_surat');
-            const trxYa = document.getElementById('trx_ya');
-            const trxTidak = document.getElementById('trx_tidak');
-            const jumlahLaporan = document.getElementById('jumlah_laporan');
-
-            if (!tanggalInput || !statusInput) return;
-
-            let modeManualTidakLapor = false;
-
-            // Fungsi utama update status
-            function updateStatusSurat() {
-                // JIKA MODE MANUAL AKTIF
-                if (modeManualTidakLapor) {
-                    statusInput.value = 'Tidak Menyampaikan Laporan';
-                    statusInput.classList.remove('status-menyampaikan', 'status-terlambat');
-                    statusInput.classList.add('status-terlambat');
-                    statusInput.style.backgroundColor = '#f8d7da';
-                    statusInput.style.color = '#721c24';
-                    return;
                 }
 
-                // MODE OTOMATIS (KODE ASLI ANDA)
-                if (!tanggalInput.value) {
-                    statusInput.value = '';
-                    statusInput.style.backgroundColor = '';
-                    statusInput.style.color = '';
-                    return;
-                }
+                // Event listener untuk tanggal (kode asli Anda)
+                tanggalInput.addEventListener('change', updateStatusSurat);
+                tanggalInput.addEventListener('input', updateStatusSurat);
 
-                const tanggal = new Date(tanggalInput.value);
-                const hari = tanggal.getDate();
+                // ========================================
+                // TAMBAHAN: TOMBOL MANUAL "TIDAK MENYAMPAIKAN LAPORAN"
+                // ========================================
 
-                if (hari <= 10) {
-                    statusInput.value = 'Tepat Waktu';
-                    statusInput.classList.remove('status-terlambat');
-                    statusInput.classList.add('status-menyampaikan');
-                    statusInput.style.backgroundColor = '';
-                    statusInput.style.color = '';
-                } else {
-                    statusInput.value = 'Menyampaikan/Terlambat';
-                    statusInput.classList.remove('status-menyampaikan');
-                    statusInput.classList.add('status-terlambat');
-                    statusInput.style.backgroundColor = '';
-                    statusInput.style.color = '';
-                }
-            }
+                // Cek apakah tombol sudah ada
+                if (!document.getElementById('btnTidakLapor')) {
+                    const statusContainer = statusInput.closest('.col-12');
 
-            // Event listener untuk tanggal (kode asli Anda)
-            tanggalInput.addEventListener('change', updateStatusSurat);
-            tanggalInput.addEventListener('input', updateStatusSurat);
+                    const btnWrapper = document.createElement('div');
+                    btnWrapper.className = 'mt-2';
+                    btnWrapper.id = 'btnTidakLapor';
 
-            // ========================================
-            // TAMBAHAN: TOMBOL MANUAL "TIDAK MENYAMPAIKAN LAPORAN"
-            // ========================================
+                    const btnManual = document.createElement('button');
+                    btnManual.type = 'button';
+                    btnManual.className = 'btn btn-sm btn-danger me-2';
+                    btnManual.innerHTML = '<i class="bi bi-x-circle"></i> Set Tidak Menyampaikan Laporan';
 
-            // Cek apakah tombol sudah ada
-            if (!document.getElementById('btnTidakLapor')) {
-                const statusContainer = statusInput.closest('.col-12');
+                    const btnReset = document.createElement('button');
+                    btnReset.type = 'button';
+                    btnReset.className = 'btn btn-sm btn-outline-secondary';
+                    btnReset.innerHTML = '<i class="bi bi-arrow-repeat"></i> Reset ke Auto';
 
-                const btnWrapper = document.createElement('div');
-                btnWrapper.className = 'mt-2';
-                btnWrapper.id = 'btnTidakLapor';
+                    btnManual.onclick = function () {
+                        modeManualTidakLapor = true;
+                        updateStatusSurat();
+                        btnManual.disabled = true;
+                        btnReset.disabled = false;
+                    };
 
-                const btnManual = document.createElement('button');
-                btnManual.type = 'button';
-                btnManual.className = 'btn btn-sm btn-danger me-2';
-                btnManual.innerHTML = '<i class="bi bi-x-circle"></i> Set Tidak Menyampaikan Laporan';
+                    btnReset.onclick = function () {
+                        modeManualTidakLapor = false;
+                        updateStatusSurat();
+                        btnManual.disabled = false;
+                        btnReset.disabled = true;
+                    };
 
-                const btnReset = document.createElement('button');
-                btnReset.type = 'button';
-                btnReset.className = 'btn btn-sm btn-outline-secondary';
-                btnReset.innerHTML = '<i class="bi bi-arrow-repeat"></i> Reset ke Auto';
-
-                btnManual.onclick = function () {
-                    modeManualTidakLapor = true;
-                    updateStatusSurat();
-                    btnManual.disabled = true;
-                    btnReset.disabled = false;
-                };
-
-                btnReset.onclick = function () {
-                    modeManualTidakLapor = false;
-                    updateStatusSurat();
-                    btnManual.disabled = false;
                     btnReset.disabled = true;
-                };
 
-                btnReset.disabled = true;
+                    btnWrapper.appendChild(btnManual);
+                    btnWrapper.appendChild(btnReset);
+                    statusContainer.appendChild(btnWrapper);
+                }
 
-                btnWrapper.appendChild(btnManual);
-                btnWrapper.appendChild(btnReset);
-                statusContainer.appendChild(btnWrapper);
-            }
-
-            // Auto-reset mode manual jika user mengisi transaksi atau jumlah laporan
-            if (trxYa) {
-                trxYa.addEventListener('change', function () {
-                    if (this.checked && modeManualTidakLapor) {
-                        modeManualTidakLapor = false;
-                        updateStatusSurat();
-                        const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
-                        const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
-                        if (btnManual) btnManual.disabled = false;
-                        if (btnReset) btnReset.disabled = true;
-                    }
-                });
-            }
-
-            if (trxTidak) {
-                trxTidak.addEventListener('change', function () {
-                    // Optional: Jika pilih "TIDAK ADA", bisa auto set ke mode manual?
-                    // Biarkan sesuai keinginan
-                });
-            }
-
-            if (jumlahLaporan) {
-                jumlahLaporan.addEventListener('input', function () {
-                    if (parseInt(this.value) > 0 && modeManualTidakLapor) {
-                        modeManualTidakLapor = false;
-                        updateStatusSurat();
-                        const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
-                        const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
-                        if (btnManual) btnManual.disabled = false;
-                        if (btnReset) btnReset.disabled = true;
-                    }
-                });
-            }
-
-            // Jalankan pertama kali
-            updateStatusSurat();
-        });
-
-        // ============================================
-        // FUNGSI STATISTIK NOTARIS
-        // DENGAN PEMILIH BULAN MANUAL
-        // ============================================
-
-        // Buat tombol Info (i) di navbar
-        document.addEventListener('DOMContentLoaded', function () {
-            // Cari container navbar bagian kanan
-            const navbarContainer = document.querySelector('#mainNavbar .container');
-            if (!navbarContainer) return;
-
-            // Cek apakah tombol info sudah ada
-            if (document.getElementById('btnInfoNotaris')) return;
-
-            // Buat tombol info
-            const infoBtn = document.createElement('a');
-            infoBtn.href = '#';
-            infoBtn.id = 'btnInfoNotaris';
-            infoBtn.className = 'nav-link';
-            infoBtn.title = 'Lihat Statistik Notaris';
-            infoBtn.innerHTML = '<i class="bi bi-info-circle-fill"></i>';
-
-            infoBtn.onclick = function (e) {
-                e.preventDefault();
-                tampilkanModalStatistikDariSheet();
-            };
-
-            // Sisipkan sebelum tombol LOGOUT
-            const logoutBtn = document.querySelector('a[title="Logout"]');
-            if (logoutBtn) {
-                navbarContainer.insertBefore(infoBtn, logoutBtn);
-            } else {
-                navbarContainer.appendChild(infoBtn);
-            }
-        });
-
-        // Fungsi untuk mendapatkan semua notaris dari dropdown HTML
-        function getAllNotarisFromDropdown() {
-            const notarisSelect = document.getElementById('notaris');
-            const notarisList = [];
-
-            for (let i = 0; i < notarisSelect.options.length; i++) {
-                const option = notarisSelect.options[i];
-                if (option.value && option.value !== "Pilih Nama Di Daftar Ini") {
-                    notarisList.push({
-                        nama: option.value,
-                        id: option.getAttribute('data-id') || '',
-                        alamat: option.getAttribute('data-alamat') || ''
+                // Auto-reset mode manual jika user mengisi transaksi atau jumlah laporan
+                if (trxYa) {
+                    trxYa.addEventListener('change', function () {
+                        if (this.checked && modeManualTidakLapor) {
+                            modeManualTidakLapor = false;
+                            updateStatusSurat();
+                            const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
+                            const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
+                            if (btnManual) btnManual.disabled = false;
+                            if (btnReset) btnReset.disabled = true;
+                        }
                     });
                 }
-            }
-            return notarisList;
-        }
 
-        // Fungsi untuk mengambil data laporan dari Google Sheet
-        async function getDataLaporanDariSheet() {
-            try {
-                const response = await fetch(scriptURL);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Gagal mengambil data dari sheet:', error);
-                return [];
-            }
-        }
+                if (trxTidak) {
+                    trxTidak.addEventListener('change', function () {
+                        // Optional: Jika pilih "TIDAK ADA", bisa auto set ke mode manual?
+                        // Biarkan sesuai keinginan
+                    });
+                }
 
-        // Fungsi untuk mendapatkan semua bulan yang tersedia dari data laporan
-        function getAvailableMonths(dataLaporan) {
-            const monthsSet = new Set();
-            dataLaporan.forEach(laporan => {
-                const bulan = laporan["laporan_bulanan"];
-                if (bulan && bulan !== "Pilih Bulan Laporan") {
-                    monthsSet.add(bulan);
+                if (jumlahLaporan) {
+                    jumlahLaporan.addEventListener('input', function () {
+                        if (parseInt(this.value) > 0 && modeManualTidakLapor) {
+                            modeManualTidakLapor = false;
+                            updateStatusSurat();
+                            const btnManual = document.querySelector('#btnTidakLapor .btn-danger');
+                            const btnReset = document.querySelector('#btnTidakLapor .btn-outline-secondary');
+                            if (btnManual) btnManual.disabled = false;
+                            if (btnReset) btnReset.disabled = true;
+                        }
+                    });
+                }
+
+                // Jalankan pertama kali
+                updateStatusSurat();
+            });
+
+            // ============================================
+            // FUNGSI STATISTIK NOTARIS
+            // DENGAN PEMILIH BULAN MANUAL
+            // ============================================
+
+            // Buat tombol Info (i) di navbar
+            document.addEventListener('DOMContentLoaded', function () {
+                // Cari container navbar bagian kanan
+                const navbarContainer = document.querySelector('#mainNavbar .container');
+                if (!navbarContainer) return;
+
+                // Cek apakah tombol info sudah ada
+                if (document.getElementById('btnInfoNotaris')) return;
+
+                // Buat tombol info
+                const infoBtn = document.createElement('a');
+                infoBtn.href = '#';
+                infoBtn.id = 'btnInfoNotaris';
+                infoBtn.className = 'nav-link';
+                infoBtn.title = 'Lihat Statistik Notaris';
+                infoBtn.innerHTML = '<i class="bi bi-info-circle-fill"></i>';
+
+                infoBtn.onclick = function (e) {
+                    e.preventDefault();
+                    tampilkanModalStatistikDariSheet();
+                };
+
+                // Sisipkan sebelum tombol LOGOUT
+                const logoutBtn = document.querySelector('a[title="Logout"]');
+                if (logoutBtn) {
+                    navbarContainer.insertBefore(infoBtn, logoutBtn);
+                } else {
+                    navbarContainer.appendChild(infoBtn);
                 }
             });
-            // Urutkan berdasarkan tahun dan bulan
-            const monthsArray = Array.from(monthsSet);
-            monthsArray.sort((a, b) => {
-                const getDate = (str) => {
-                    const [bulan, tahun] = str.split(' ');
-                    const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
-                    return new Date(parseInt(tahun), bulanIndex);
-                };
-                return getDate(a) - getDate(b);
-            });
-            return monthsArray;
-        }
 
-        // Fungsi untuk mendapatkan notaris yang sudah lapor (UNIQUE per notaris)
-        function getNotarisSudahLapor(dataLaporan, bulanTerpilih) {
-            const sudahLaporMap = new Map(); // Gunakan Map untuk memastikan unique
+            // Fungsi untuk mendapatkan semua notaris dari dropdown HTML
+            function getAllNotarisFromDropdown() {
+                const notarisSelect = document.getElementById('notaris');
+                const notarisList = [];
 
-            dataLaporan.forEach(laporan => {
-                const namaNotaris = laporan["nama_notaris_&_ppat"];
-                const bulanLaporan = laporan["laporan_bulanan"];
-
-                // Filter berdasarkan bulan yang dipilih
-                if (bulanLaporan === bulanTerpilih && namaNotaris) {
-                    if (!sudahLaporMap.has(namaNotaris)) {
-                        sudahLaporMap.set(namaNotaris, {
-                            nama: namaNotaris,
-                            status: laporan["status_surat"] || '-',
-                            tanggal: laporan["tanggal_diterima"] || '-',
-                            id: laporan["id"] || ''
+                for (let i = 0; i < notarisSelect.options.length; i++) {
+                    const option = notarisSelect.options[i];
+                    if (option.value && option.value !== "Pilih Nama Di Daftar Ini") {
+                        notarisList.push({
+                            nama: option.value,
+                            id: option.getAttribute('data-id') || '',
+                            alamat: option.getAttribute('data-alamat') || ''
                         });
                     }
                 }
-            });
-
-            return Array.from(sudahLaporMap.values());
-        }
-
-        // Fungsi untuk mendapatkan notaris yang BELUM lapor
-        function getNotarisBelumLapor(semuaNotaris, sudahLapor) {
-            const sudahLaporNama = sudahLapor.map(s => s.nama);
-            return semuaNotaris.filter(notaris => !sudahLaporNama.includes(notaris.nama));
-        }
-
-        // Tampilkan modal statistik
-        async function tampilkanModalStatistikDariSheet(bulanPilihan = null) {
-            // Hapus modal yang sudah ada
-            const existingModal = document.getElementById('modalStatistikNotaris');
-            if (existingModal) {
-                existingModal.remove();
+                return notarisList;
             }
 
-            // Tampilkan loading
-            const loadingModal = document.createElement('div');
-            loadingModal.id = 'loadingStatistik';
-            loadingModal.className = 'modal fade';
-            loadingModal.innerHTML = `
+            // Fungsi untuk mengambil data laporan dari Google Sheet
+            async function getDataLaporanDariSheet() {
+                try {
+                    const response = await fetch(scriptURL);
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Gagal mengambil data dari sheet:', error);
+                    return [];
+                }
+            }
+
+            // Fungsi untuk mendapatkan semua bulan yang tersedia dari data laporan
+            function getAvailableMonths(dataLaporan) {
+                const monthsSet = new Set();
+                dataLaporan.forEach(laporan => {
+                    const bulan = laporan["laporan_bulanan"];
+                    if (bulan && bulan !== "Pilih Bulan Laporan") {
+                        monthsSet.add(bulan);
+                    }
+                });
+                // Urutkan berdasarkan tahun dan bulan
+                const monthsArray = Array.from(monthsSet);
+                monthsArray.sort((a, b) => {
+                    const getDate = (str) => {
+                        const [bulan, tahun] = str.split(' ');
+                        const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                        return new Date(parseInt(tahun), bulanIndex);
+                    };
+                    return getDate(a) - getDate(b);
+                });
+                return monthsArray;
+            }
+
+            // Fungsi untuk mendapatkan notaris yang sudah lapor (UNIQUE per notaris)
+            function getNotarisSudahLapor(dataLaporan, bulanTerpilih) {
+                const sudahLaporMap = new Map(); // Gunakan Map untuk memastikan unique
+
+                dataLaporan.forEach(laporan => {
+                    const namaNotaris = laporan["nama_notaris_&_ppat"];
+                    const bulanLaporan = laporan["laporan_bulanan"];
+
+                    // Filter berdasarkan bulan yang dipilih
+                    if (bulanLaporan === bulanTerpilih && namaNotaris) {
+                        if (!sudahLaporMap.has(namaNotaris)) {
+                            sudahLaporMap.set(namaNotaris, {
+                                nama: namaNotaris,
+                                status: laporan["status_surat"] || '-',
+                                tanggal: laporan["tanggal_diterima"] || '-',
+                                id: laporan["id"] || ''
+                            });
+                        }
+                    }
+                });
+
+                return Array.from(sudahLaporMap.values());
+            }
+
+            // Fungsi untuk mendapatkan notaris yang BELUM lapor
+            function getNotarisBelumLapor(semuaNotaris, sudahLapor) {
+                const sudahLaporNama = sudahLapor.map(s => s.nama);
+                return semuaNotaris.filter(notaris => !sudahLaporNama.includes(notaris.nama));
+            }
+
+            // Tampilkan modal statistik
+            async function tampilkanModalStatistikDariSheet(bulanPilihan = null) {
+                // Hapus modal yang sudah ada
+                const existingModal = document.getElementById('modalStatistikNotaris');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Tampilkan loading
+                const loadingModal = document.createElement('div');
+                loadingModal.id = 'loadingStatistik';
+                loadingModal.className = 'modal fade';
+                loadingModal.innerHTML = `
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center py-5">
@@ -3336,42 +3374,42 @@
             </div>
         </div>
     `;
-            document.body.appendChild(loadingModal);
-            const loadingModalInstance = new bootstrap.Modal(loadingModal);
-            loadingModalInstance.show();
+                document.body.appendChild(loadingModal);
+                const loadingModalInstance = new bootstrap.Modal(loadingModal);
+                loadingModalInstance.show();
 
-            try {
-                // Ambil data dari Google Sheet
-                const dataLaporan = await getDataLaporanDariSheet();
-                const semuaNotaris = getAllNotarisFromDropdown();
+                try {
+                    // Ambil data dari Google Sheet
+                    const dataLaporan = await getDataLaporanDariSheet();
+                    const semuaNotaris = getAllNotarisFromDropdown();
 
-                // Dapatkan semua bulan yang tersedia
-                const availableMonths = getAvailableMonths(dataLaporan);
+                    // Dapatkan semua bulan yang tersedia
+                    const availableMonths = getAvailableMonths(dataLaporan);
 
-                // Tentukan bulan yang dipilih (default: bulan dari form atau bulan terbaru)
-                let selectedMonth = bulanPilihan;
-                if (!selectedMonth) {
-                    selectedMonth = document.getElementById('laporan_bulanan')?.value || '';
-                    if (!selectedMonth && availableMonths.length > 0) {
-                        selectedMonth = availableMonths[availableMonths.length - 1]; // bulan terbaru
+                    // Tentukan bulan yang dipilih (default: bulan dari form atau bulan terbaru)
+                    let selectedMonth = bulanPilihan;
+                    if (!selectedMonth) {
+                        selectedMonth = document.getElementById('laporan_bulanan')?.value || '';
+                        if (!selectedMonth && availableMonths.length > 0) {
+                            selectedMonth = availableMonths[availableMonths.length - 1]; // bulan terbaru
+                        }
                     }
-                }
 
-                // Dapatkan notaris yang sudah lapor (UNIQUE)
-                const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
-                const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
+                    // Dapatkan notaris yang sudah lapor (UNIQUE)
+                    const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
+                    const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
 
-                // Tutup loading
-                loadingModalInstance.hide();
-                loadingModal.remove();
+                    // Tutup loading
+                    loadingModalInstance.hide();
+                    loadingModal.remove();
 
-                // Buat opsi dropdown bulan
-                const monthOptions = availableMonths.map(month => `
+                    // Buat opsi dropdown bulan
+                    const monthOptions = availableMonths.map(month => `
             <option value="${month}" ${month === selectedMonth ? 'selected' : ''}>${month}</option>
         `).join('');
 
-                // Buat modal statistik dengan dropdown pemilih bulan
-                const modalHTML = `
+                    // Buat modal statistik dengan dropdown pemilih bulan
+                    const modalHTML = `
             <div class="modal fade" id="modalStatistikNotaris" tabindex="-1" data-bs-backdrop="static">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
@@ -3495,12 +3533,12 @@
                                             </thead>
                                             <tbody id="sudahLaporBody">
                                                 ${sudahLapor.map((l, idx) => {
-                    let statusClass = '';
-                    if (l.status === 'Tepat Waktu') statusClass = 'text-success';
-                    else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
-                    else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
+                        let statusClass = '';
+                        if (l.status === 'Tepat Waktu') statusClass = 'text-success';
+                        else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
+                        else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
 
-                    return `
+                        return `
                                                         <tr>
                                                             <td>${idx + 1}</td>
                                                             <td>${l.nama}</td>
@@ -3508,7 +3546,7 @@
                                                             <td><small>${l.tanggal || '-'}</small></td>
                                                         </tr>
                                                     `;
-                }).join('')}
+                    }).join('')}
                                             </tbody>
                                         </table>
                                     </div>
@@ -3528,85 +3566,85 @@
             </div>
         `;
 
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                // Tampilkan modal
-                const modal = new bootstrap.Modal(document.getElementById('modalStatistikNotaris'));
-                modal.show();
+                    // Tampilkan modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalStatistikNotaris'));
+                    modal.show();
 
-                // Event listener untuk tombol terapkan bulan
-                const btnTerapkan = document.getElementById('btnTerapkanBulan');
-                const pilihBulan = document.getElementById('pilihBulanStatistik');
+                    // Event listener untuk tombol terapkan bulan
+                    const btnTerapkan = document.getElementById('btnTerapkanBulan');
+                    const pilihBulan = document.getElementById('pilihBulanStatistik');
 
-                if (btnTerapkan && pilihBulan) {
-                    btnTerapkan.onclick = async function () {
-                        const bulanBaru = pilihBulan.value;
-                        if (bulanBaru) {
-                            // Update tampilan dengan data baru tanpa menutup modal
-                            await updateStatistikDalamModal(dataLaporan, semuaNotaris, bulanBaru);
-                        } else {
-                            alert('Silakan pilih bulan terlebih dahulu');
-                        }
-                    };
+                    if (btnTerapkan && pilihBulan) {
+                        btnTerapkan.onclick = async function () {
+                            const bulanBaru = pilihBulan.value;
+                            if (bulanBaru) {
+                                // Update tampilan dengan data baru tanpa menutup modal
+                                await updateStatistikDalamModal(dataLaporan, semuaNotaris, bulanBaru);
+                            } else {
+                                alert('Silakan pilih bulan terlebih dahulu');
+                            }
+                        };
+                    }
+
+                } catch (error) {
+                    loadingModalInstance.hide();
+                    loadingModal.remove();
+                    console.error('Error:', error);
+                    alert('Gagal mengambil data statistik. Silakan coba lagi.');
                 }
-
-            } catch (error) {
-                loadingModalInstance.hide();
-                loadingModal.remove();
-                console.error('Error:', error);
-                alert('Gagal mengambil data statistik. Silakan coba lagi.');
             }
-        }
 
-        // Fungsi untuk update statistik dalam modal tanpa reload modal
-        async function updateStatistikDalamModal(dataLaporan, semuaNotaris, selectedMonth) {
-            // Tampilkan loading di dalam modal
-            const belumLaporContainer = document.getElementById('belumLaporContainer');
-            const sudahLaporContainer = document.getElementById('sudahLaporContainer');
+            // Fungsi untuk update statistik dalam modal tanpa reload modal
+            async function updateStatistikDalamModal(dataLaporan, semuaNotaris, selectedMonth) {
+                // Tampilkan loading di dalam modal
+                const belumLaporContainer = document.getElementById('belumLaporContainer');
+                const sudahLaporContainer = document.getElementById('sudahLaporContainer');
 
-            if (belumLaporContainer) {
-                belumLaporContainer.innerHTML = `
+                if (belumLaporContainer) {
+                    belumLaporContainer.innerHTML = `
             <div class="text-center py-4">
                 <div class="spinner-border text-primary" role="status"></div>
                 <p class="mt-2">Memuat data...</p>
             </div>
         `;
-            }
-            if (sudahLaporContainer) {
-                sudahLaporContainer.innerHTML = '';
-            }
+                }
+                if (sudahLaporContainer) {
+                    sudahLaporContainer.innerHTML = '';
+                }
 
-            // Simulasi delay sedikit untuk efek loading
-            await new Promise(resolve => setTimeout(resolve, 500));
+                // Simulasi delay sedikit untuk efek loading
+                await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Dapatkan notaris yang sudah lapor (UNIQUE)
-            const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
-            const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
+                // Dapatkan notaris yang sudah lapor (UNIQUE)
+                const sudahLapor = getNotarisSudahLapor(dataLaporan, selectedMonth);
+                const belumLapor = getNotarisBelumLapor(semuaNotaris, sudahLapor);
 
-            // Update display bulan
-            const selectedMonthDisplay = document.getElementById('selectedMonthDisplay');
-            if (selectedMonthDisplay) {
-                selectedMonthDisplay.textContent = selectedMonth;
-            }
+                // Update display bulan
+                const selectedMonthDisplay = document.getElementById('selectedMonthDisplay');
+                if (selectedMonthDisplay) {
+                    selectedMonthDisplay.textContent = selectedMonth;
+                }
 
-            // Update angka
-            const jumlahSudahLapor = document.getElementById('jumlahSudahLapor');
-            const jumlahBelumLapor = document.getElementById('jumlahBelumLapor');
-            const progressBar = document.getElementById('progressBar');
+                // Update angka
+                const jumlahSudahLapor = document.getElementById('jumlahSudahLapor');
+                const jumlahBelumLapor = document.getElementById('jumlahBelumLapor');
+                const progressBar = document.getElementById('progressBar');
 
-            if (jumlahSudahLapor) jumlahSudahLapor.textContent = sudahLapor.length;
-            if (jumlahBelumLapor) jumlahBelumLapor.textContent = belumLapor.length;
+                if (jumlahSudahLapor) jumlahSudahLapor.textContent = sudahLapor.length;
+                if (jumlahBelumLapor) jumlahBelumLapor.textContent = belumLapor.length;
 
-            const persen = semuaNotaris.length > 0 ? (sudahLapor.length / semuaNotaris.length * 100) : 0;
-            if (progressBar) {
-                progressBar.style.width = `${persen}%`;
-                progressBar.textContent = `${Math.round(persen)}%`;
-            }
+                const persen = semuaNotaris.length > 0 ? (sudahLapor.length / semuaNotaris.length * 100) : 0;
+                if (progressBar) {
+                    progressBar.style.width = `${persen}%`;
+                    progressBar.textContent = `${Math.round(persen)}%`;
+                }
 
-            // Update container BELUM LAPOR
-            if (belumLaporContainer) {
-                if (belumLapor.length > 0) {
-                    belumLaporContainer.innerHTML = `
+                // Update container BELUM LAPOR
+                if (belumLaporContainer) {
+                    if (belumLapor.length > 0) {
+                        belumLaporContainer.innerHTML = `
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <strong>${belumLapor.length} Notaris</strong> belum menyampaikan laporan:
@@ -3632,20 +3670,20 @@
                     </table>
                 </div>
             `;
-                } else {
-                    belumLaporContainer.innerHTML = `
+                    } else {
+                        belumLaporContainer.innerHTML = `
                 <div class="alert alert-success">
                     <i class="bi bi-check-circle-fill"></i>
                     <strong>Semua notaris sudah melaporkan!</strong>
                 </div>
             `;
+                    }
                 }
-            }
 
-            // Update container SUDAH LAPOR
-            if (sudahLaporContainer) {
-                if (sudahLapor.length > 0) {
-                    sudahLaporContainer.innerHTML = `
+                // Update container SUDAH LAPOR
+                if (sudahLaporContainer) {
+                    if (sudahLapor.length > 0) {
+                        sudahLaporContainer.innerHTML = `
                 <hr>
                 <h6 class="mt-3">
                     <i class="bi bi-check-circle text-success"></i> 
@@ -3663,12 +3701,12 @@
                         </thead>
                         <tbody>
                             ${sudahLapor.map((l, idx) => {
-                        let statusClass = '';
-                        if (l.status === 'Tepat Waktu') statusClass = 'text-success';
-                        else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
-                        else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
+                            let statusClass = '';
+                            if (l.status === 'Tepat Waktu') statusClass = 'text-success';
+                            else if (l.status === 'Menyampaikan/Terlambat') statusClass = 'text-warning';
+                            else if (l.status === 'Tidak Menyampaikan Laporan') statusClass = 'text-danger';
 
-                        return `
+                            return `
                                     <tr>
                                         <td>${idx + 1}</td>
                                         <td>${l.nama}</td>
@@ -3676,58 +3714,58 @@
                                         <td><small>${l.tanggal || '-'}</small></td>
                                     </tr>
                                 `;
-                    }).join('')}
+                        }).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
-                } else {
-                    sudahLaporContainer.innerHTML = '';
+                    } else {
+                        sudahLaporContainer.innerHTML = '';
+                    }
                 }
             }
-        }
 
-        // Tambahkan tombol petunjuk di navbar
-        const petunjukBtn = document.createElement('a');
-        petunjukBtn.href = '#';
-        petunjukBtn.className = 'nav-link';
-        petunjukBtn.title = 'Petunjuk Formulir';
-        petunjukBtn.innerHTML = '<i class="bi bi-question-circle-fill"></i>';
-        petunjukBtn.onclick = function (e) {
-            e.preventDefault();
-            tampilkanPetunjukKeterangan();
-        };
-
-        // Tambahkan di dalam DOMContentLoaded
-        const navbarContainer = document.querySelector('#mainNavbar .container div:last-child');
-        if (navbarContainer && !document.getElementById('btnPetunjukForm')) {
-            const btn = document.createElement('a');
-            btn.href = '#';
-            btn.className = 'nav-link';
-            btn.id = 'btnPetunjukForm';
-            btn.title = 'Petunjuk Pengisian Formulir';
-            btn.innerHTML = '<i class="bi bi-question-circle-fill"></i> Petunjuk';
-            btn.onclick = function (e) {
+            // Tambahkan tombol petunjuk di navbar
+            const petunjukBtn = document.createElement('a');
+            petunjukBtn.href = '#';
+            petunjukBtn.className = 'nav-link';
+            petunjukBtn.title = 'Petunjuk Formulir';
+            petunjukBtn.innerHTML = '<i class="bi bi-question-circle-fill"></i>';
+            petunjukBtn.onclick = function (e) {
                 e.preventDefault();
                 tampilkanPetunjukKeterangan();
             };
-            navbarContainer.insertBefore(btn, navbarContainer.firstChild);
-        }
 
-        // ============================================
-        // FUNGSI PETUNJUK KETERANGAN FORMULIR
-        // ============================================
-
-        // Fungsi untuk menampilkan petunjuk pengisian form
-        function tampilkanPetunjukKeterangan() {
-            // Hapus modal petunjuk jika sudah ada
-            const existingModal = document.getElementById('modalPetunjukForm');
-            if (existingModal) {
-                existingModal.remove();
+            // Tambahkan di dalam DOMContentLoaded
+            const navbarContainer = document.querySelector('#mainNavbar .container div:last-child');
+            if (navbarContainer && !document.getElementById('btnPetunjukForm')) {
+                const btn = document.createElement('a');
+                btn.href = '#';
+                btn.className = 'nav-link';
+                btn.id = 'btnPetunjukForm';
+                btn.title = 'Petunjuk Pengisian Formulir';
+                btn.innerHTML = '<i class="bi bi-question-circle-fill"></i> Petunjuk';
+                btn.onclick = function (e) {
+                    e.preventDefault();
+                    tampilkanPetunjukKeterangan();
+                };
+                navbarContainer.insertBefore(btn, navbarContainer.firstChild);
             }
 
-            // Buat modal petunjuk
-            const modalHTML = `
+            // ============================================
+            // FUNGSI PETUNJUK KETERANGAN FORMULIR
+            // ============================================
+
+            // Fungsi untuk menampilkan petunjuk pengisian form
+            function tampilkanPetunjukKeterangan() {
+                // Hapus modal petunjuk jika sudah ada
+                const existingModal = document.getElementById('modalPetunjukForm');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Buat modal petunjuk
+                const modalHTML = `
         <div class="modal fade" id="modalPetunjukForm" tabindex="-1" data-bs-backdrop="static">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
@@ -3989,51 +4027,52 @@
         </div>
     `;
 
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-            // Tampilkan modal
-            const modal = new bootstrap.Modal(document.getElementById('modalPetunjukForm'));
-            modal.show();
-        }
-
-        // Fungsi untuk scroll ke form
-        function scrollKeForm() {
-            const modalElement = document.getElementById('modalPetunjukForm');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            modal.hide();
-
-            // Scroll ke form utama
-            const formElement = document.querySelector('form[name="LAPORAN NOTARIS"]');
-            if (formElement) {
-                formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Tampilkan modal
+                const modal = new bootstrap.Modal(document.getElementById('modalPetunjukForm'));
+                modal.show();
             }
-        }
 
-        // Ekspor fungsi ke global
-        window.tampilkanPetunjukKeterangan = tampilkanPetunjukKeterangan;
-        window.scrollKeForm = scrollKeForm;
+            // Fungsi untuk scroll ke form
+            function scrollKeForm() {
+                const modalElement = document.getElementById('modalPetunjukForm');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
 
-        // ============================================
-        // TAMBAHAN: EVENT LISTENER UNTUK TOMBOL PETUNJUK
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function () {
-            const btnPetunjuk = document.getElementById('btnPetunjukForm');
-            if (btnPetunjuk) {
-                btnPetunjuk.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    tampilkanPetunjukKeterangan();
-                });
+                // Scroll ke form utama
+                const formElement = document.querySelector('form[name="LAPORAN NOTARIS"]');
+                if (formElement) {
+                    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
+
+            // Ekspor fungsi ke global
+            window.tampilkanPetunjukKeterangan = tampilkanPetunjukKeterangan;
+            window.scrollKeForm = scrollKeForm;
+
+            // ============================================
+            // TAMBAHAN: EVENT LISTENER UNTUK TOMBOL PETUNJUK
+            // ============================================
+            document.addEventListener('DOMContentLoaded', function () {
+                const btnPetunjuk = document.getElementById('btnPetunjukForm');
+                if (btnPetunjuk) {
+                    btnPetunjuk.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        tampilkanPetunjukKeterangan();
+                    });
+                }
+            });
+
+            console.log = function () { };
+            console.warn = function () { };
+            console.error = function () { };
+            console.clear();
+
+            setInterval(() => {
+                debugger;
+            }, 1000);
         });
-
-        console.log = function () { };
-        console.warn = function () { };
-        console.error = function () { };
-        console.clear();
-
-        setInterval(() => {
-            debugger;
-        }, 1000);
     </script>
 
 </body>
