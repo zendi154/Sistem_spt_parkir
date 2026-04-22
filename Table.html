@@ -732,39 +732,140 @@
     </div>
 
     <script>
-        /* =========================
-           FUNGSI LOGIN DAN LOGOUT
-        ========================= */
-        const URL = "https://script.google.com/macros/s/AKfycbzowWO-hNgGMr3UDA-9Nn4z8_4HfhIDGGVLc_bG9_eNyCieTzQxzR_MKcIdLJzjOpUg/exec";
+        // ============================================
+        // FUNGSI PEMBATASAN AKSES (TAMBAHKAN INI)
+        // ============================================
 
-        function cekLogin() {
+        const URL_API = "https://script.google.com/macros/s/AKfycbwXsh3qJO8w1hvrroyI71-UIyxbK6TOhYyPezJnH7PofB2DB3b6h6Yk69EZ8bVbSGAH/exec";
+        let currentUserRole = null;
+        let currentUserName = null;
+        let currentUserEmail = null;
+
+        async function checkLoginAndRole() {
             const token = localStorage.getItem("token");
-
             if (!token) {
                 window.location.href = "table.html";
-                return;
+                return false;
             }
 
-            fetch(`${URL}?action=check&token=${token}`)
-                .then(res => res.json())
-                .then(res => {
-                    if (res.status !== "valid") {
-                        localStorage.removeItem("token");
-                        window.location.href = "table.html";
-                    }
-                })
-                .catch(() => {
+            try {
+                const response = await fetch(`${URL_API}?action=getUserData&token=${token}`);
+                const userData = await response.json();
+
+                if (userData.status !== "success") {
+                    localStorage.removeItem("token");
                     window.location.href = "table.html";
-                });
+                    return false;
+                }
+
+                currentUserRole = userData.role;
+                currentUserName = userData.name;
+                currentUserEmail = userData.email;
+
+                localStorage.setItem("userRole", userData.role);
+                localStorage.setItem("userName", userData.name);
+
+                updateNavbarForRole(userData.role, userData.name);
+
+                return true;
+
+            } catch (error) {
+                console.error("Error checking login:", error);
+                return false;
+            }
         }
 
-        // jalankan saat halaman dibuka
-        cekLogin();
+        function updateNavbarForRole(role, name) {
+            const navbarContainer = document.querySelector('#mainNavbar .container');
+            if (navbarContainer && !document.getElementById('roleBadgeNav')) {
+                const roleBadge = document.createElement('div');
+                roleBadge.id = 'roleBadgeNav';
+                roleBadge.className = 'ms-3 me-2';
 
-        // Fungsi LogOut
+                if (role === 'admin') {
+                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-shield-lock-fill"></i> ADMIN</span>';
+                } else {
+                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-eye-fill"></i> USER (Print Only)</span>';
+                }
+
+                const logoutBtn = document.querySelector('a[title="Logout"]');
+                if (logoutBtn) {
+                    navbarContainer.insertBefore(roleBadge, logoutBtn);
+                } else {
+                    navbarContainer.appendChild(roleBadge);
+                }
+            }
+        }
+
+        function disableEditingForUser() {
+            const editButtons = document.querySelectorAll('.btn-primary, .btn-success, .btn-warning');
+            editButtons.forEach(btn => {
+                const btnText = btn.innerText.toLowerCase();
+                if (btnText.includes('simpan') || btnText.includes('edit') || btnText.includes('tambah') ||
+                    btnText.includes('update') || btnText.includes('kirim') || btnText.includes('upload')) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.title = 'Fitur hanya untuk ADMIN';
+                }
+            });
+
+            const inputs = document.querySelectorAll('input:not([readonly]), textarea:not([readonly]), select:not([disabled])');
+            inputs.forEach(input => {
+                input.setAttribute('readonly', true);
+                input.setAttribute('disabled', true);
+                input.style.backgroundColor = '#f0f0f0';
+                input.style.cursor = 'not-allowed';
+            });
+        }
+
+        function showPrintOnlyNotification() {
+            const notification = document.createElement('div');
+            notification.id = 'printOnlyNotification';
+            notification.innerHTML = `
+        <div style="position: fixed; top: 70px; right: 20px; z-index: 9999; 
+                    background: linear-gradient(135deg, #ffa502, #ff7f50); 
+                    color: white; padding: 12px 20px; border-radius: 30px; 
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+                    display: flex; align-items: center; gap: 10px;
+                    animation: slideInRight 0.5s ease;">
+            <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
+            <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
+            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
+        </div>
+        <style>
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        </style>
+    `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                const notif = document.getElementById('printOnlyNotification');
+                if (notif) notif.remove();
+            }, 5000);
+        }
+
         function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "table.html";
+            Swal.fire({
+                title: 'Konfirmasi Logout',
+                text: 'Apakah Anda yakin ingin keluar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Logout!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userRole");
+                    localStorage.removeItem("userName");
+                    window.location.href = "table.html";
+                }
+            });
         }
 
         // FUNGSI DATA
