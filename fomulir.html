@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
 </head>
 
 <style>
@@ -1332,24 +1331,21 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="mb-8">
-                                                        <label for="validationCustom02" class="form-label">Tanggal
-                                                            Surat PPAT</label>
+                                                        <label for="validationCustom02" class="form-label">Tanggal Surat
+                                                            PPAT</label>
                                                         <input type="date" class="form-control" id="tanggal_surat"
-                                                            name="tanggal_surat" value="" required
-                                                            placeholder="*Input Nomor Surat Notaris dan PPAT">
-                                                        <div class="valid-feedback">
-                                                        </div>
+                                                            name="tanggal_surat">
+                                                        <div class="valid-feedback"></div>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-12">
                                                     <div class="mb-8">
-                                                        <label for="validationCustom02" class="form-label">
-                                                            Tanggal Surat Masuk
-                                                        </label>
-                                                        <input type="date" class="form-control" pelceholder="dd-mm-yyyy"
-                                                            id="tanggal_diterima" name="tanggal_diterima" value="input"
-                                                            min="2023-01-01" max="2030-12-31">
-                                                        </select>
+                                                        <label for="validationCustom02" class="form-label">Tanggal Surat
+                                                            Masuk</label>
+                                                        <input type="date" class="form-control" id="tanggal_diterima"
+                                                            name="tanggal_diterima">
+                                                        <div class="valid-feedback"></div>
                                                     </div>
                                                 </div>
                                                 <!-- STATUS SURAT (AUTO) -->
@@ -1813,15 +1809,19 @@
         <!-- Akhir Navbar -->
 
         <script>
+            // HAPUS ATAU KOMENTARI SELURUH BLOK TERSEBUT
+            // Karena variabel offcanvas tidak didefinisikan
+            /*
             const hamburger = document.querySelector('.navbar-toggler');
             const stikyTop = document.querySelector('.sticky-top');
-
+            
             offcanvas.addEventListener('show.bs.offcanvas', function () {
                 stikyTop.style.overflow = 'visible';
             });
             offcanvas.addEventListener('hidden.bs.offcanvas', function () {
                 stikyTop.style.overflow = 'hidden';
             });
+            */
         </script>
 
     </section>
@@ -1969,7 +1969,7 @@
            FUNGSI FOMULIR
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXsh3qJO8w1hvrroyI71-UIyxbK6TOhYyPezJnH7PofB2DB3b6h6Yk69EZ8bVbSGAH/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNXHj30_lpjVY9wpyz1ORvPijlqpH4ZKvroGkE3HOxRYQP0k8ohsMzxXjz508W5gzqVQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         let transaksiList = [];
 
