@@ -1704,6 +1704,8 @@
             }
         }
 
+        /* Tombol Data Pengaturan Transkasi */
+
         .btn-pengaturan {
             background: linear-gradient(135deg, #166aef, #042572);
             color: white;
@@ -1758,17 +1760,21 @@
             transform: rotate(30deg);
         }
 
-        /* Tombol Data Nihil - Khusus */
+        /* Tombol Data Nihil */
         .btn-nihil {
             background: linear-gradient(135deg, #dc2626, #ef4444);
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-            transition: all 0.3s ease;
-            border-radius: 30px;
-            padding: 8px 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border: none;
             color: white;
+            border: none;
+            border-radius: 12px;
+            /* Ubah dari 30px ke 12px agar sama */
+            padding: 10px 20px;
+            /* Ubah dari 8px ke 10px agar sama */
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+            position: relative;
+            overflow: hidden;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -1776,10 +1782,41 @@
             width: 100%;
         }
 
+        /* Efek Shine (SAMA dengan btn-pengaturan) */
+        .btn-nihil::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
         .btn-nihil:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, #b91c1c, #dc2626);
             box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+        }
+
+        .btn-nihil:hover::before {
+            left: 100%;
+        }
+
+        .btn-nihil:active {
+            transform: translateY(1px);
+        }
+
+        /* Efek Ikon Berputar (SAMA dengan btn-pengaturan) */
+        .btn-nihil i {
+            margin-right: 8px;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-nihil:hover i {
+            transform: rotate(30deg);
         }
 
         .btn-nihil:active {
@@ -1975,7 +2012,8 @@
                         <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
                             <i class="bi bi-person-x-fill"></i> Pensiun
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()"
+                            id="btnKelolaPensiun">
                             <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
                         </button>
                     </div>
@@ -2454,73 +2492,142 @@
         }
 
         function renderTable(data) {
-            let seen = new Set();
             const tbody = document.querySelector("#dataNotaris");
             if (!tbody) return;
             tbody.innerHTML = "";
+
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
                 hitungTotal();
+                updateGrafik(data);
                 return;
             }
 
+            // ============================================
+            // STEP 1: GROUPING untuk menentukan status per NOTARIS
+            // ============================================
+            const notarisStatusMap = new Map(); // key: id notaris
+
             data.forEach(row => {
-                let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
-                let isFirst = !seen.has(key);
-                if (isFirst) seen.add(key);
+                const id = row["id"] || "";
+                const hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                const statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                const statusEmail = row["status_email"] || "";
+
+                if (!notarisStatusMap.has(id)) {
+                    notarisStatusMap.set(id, {
+                        id: id,
+                        nama: row["nama_notaris_&_ppat"] || "",
+                        hasUpload: false,
+                        hasTerlambat: false,
+                        hasWaitingResend: false,
+                        sudahKirimEmail: false
+                    });
+                }
+
+                const notaris = notarisStatusMap.get(id);
+                if (hasUpload) notaris.hasUpload = true;
+                if (statusTerlambat === "TIDAK VALID") notaris.hasTerlambat = true;
+                if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                    notaris.hasWaitingResend = true;
+                }
+            });
+
+            // ============================================
+            // STEP 2: RENDER TABLE - tombol hanya untuk ADMIN
+            // ============================================
+            let notarisSudahDapatEmail = new Set();
+
+            data.forEach(row => {
+                const idNotaris = row["id"] || "";
+                const notarisStatus = notarisStatusMap.get(idNotaris);
+                const isFirstForNotaris = !notarisSudahDapatEmail.has(idNotaris);
 
                 let tr = document.createElement("tr");
                 let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
-                let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
                 let statusEmail = row["status_email"] || "";
                 let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
                 let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
                 let actionHTML = "";
 
-                // CEK APAKAH SUDAH LUNAS (ADA UPLOAD)
-                if (hasUpload) {
-                    actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                    tr.style.backgroundColor = "#d4edda";
-                }
-                // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
-                else if (statusTerlambat === "TIDAK VALID") {
-                    // TAMPILKAN TOMBOL EMAIL UNTUK DATA TERLAMBAT
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                    tr.style.backgroundColor = "#ff0000";
-                }
-                // CEK APAKAH WAITING_RESEND ATAU EMAIL_TERKIRIM
-                else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                    tr.style.backgroundColor = "#fff3cd";
-                }
-                // DATA VALID (TEPAT WAKTU) - TIDAK ADA TOMBOL EMAIL
-                else {
-                    actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
-                    tr.style.backgroundColor = "transparent";
+                // === TOMBOL HANYA UNTUK ADMIN ===
+                const isAdmin = (currentUserRole === 'admin');
+
+                // === TOMBOL EMAIL HANYA UNTUK BARIS PERTAMA PER NOTARIS ===
+                if (isFirstForNotaris) {
+                    if (notarisStatus.hasUpload) {
+                        // SUDAH LUNAS - TIDAK ADA TOMBOL
+                        if (isAdmin) {
+                            actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
+                        } else {
+                            actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
+                        }
+                        tr.style.backgroundColor = "#d4edda";
+                        notarisSudahDapatEmail.add(idNotaris);
+                    }
+                    else if (notarisStatus.hasTerlambat) {
+                        if (isAdmin) {
+                            // ADMIN: lihat tombol EMAIL + HAPUS
+                            actionHTML = `<div class="text-center">
+                        <button type="button" onclick="bukaModalEmailByNama('${escapeHtml(row["id"])}', '${escapeHtml(row["nama_notaris_&_ppat"] || "")}')" class="btn btn-primary btn-sm" title="Kirim Email">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <button type="button" onclick="hapusDataById('${escapeHtml(row["id"])}')" class="btn btn-danger btn-sm" title="Hapus Semua Data Notaris">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>`;
+                        } else {
+                            // USER: TIDAK ADA TOMBOL (hanya teks)
+                            actionHTML = `<div class="text-center"><span class="text-danger" style="font-size: 11px;">❌ Terlambat</span></div>`;
+                        }
+                        tr.style.backgroundColor = "#ffcccc";
+                        notarisSudahDapatEmail.add(idNotaris);
+                    }
+                    else if (notarisStatus.hasWaitingResend) {
+                        if (isAdmin) {
+                            // ADMIN: lihat tombol EMAIL + HAPUS
+                            actionHTML = `<div class="text-center">
+                        <button type="button" onclick="bukaModalEmailByNama('${escapeHtml(row["id"])}', '${escapeHtml(row["nama_notaris_&_ppat"] || "")}')" class="btn btn-warning btn-sm" title="Kirim Email Ulang">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <button type="button" onclick="hapusDataById('${escapeHtml(row["id"])}')" class="btn btn-danger btn-sm" title="Hapus Semua Data Notaris">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>`;
+                        } else {
+                            // USER: TIDAK ADA TOMBOL (hanya teks)
+                            actionHTML = `<div class="text-center"><span class="text-warning" style="font-size: 11px;">⏳ Menunggu</span></div>`;
+                        }
+                        tr.style.backgroundColor = "#fff3cd";
+                        notarisSudahDapatEmail.add(idNotaris);
+                    }
+                    else {
+                        // VALID
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                        tr.style.backgroundColor = "transparent";
+                        notarisSudahDapatEmail.add(idNotaris);
+                    }
+                } else {
+                    // BUKAN BARIS PERTAMA - TIDAK ADA TOMBOL
+                    if (hasUpload) {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 14px;" title="LUNAS"></i></div>`;
+                    }
+                    else if (statusTerlambat === "TIDAK VALID" || statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                        actionHTML = `<div class="text-center"><span class="text-muted" style="font-size: 10px;">-</span></div>`;
+                    }
+                    else {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                    }
                 }
 
-                // KOLOM BUKTI SURAT
+                // KOLOM BUKTI SURAT - HANYA BISA UPLOAD OLEH ADMIN
                 let buktiSuratHTML = '';
                 let tgl = getTanggal(row["tanggal_diterima"]);
-                let bolehUpload = isFirst && tgl > 10;
+                let bolehUpload = isFirstForNotaris && tgl > 10 && isAdmin; // HANYA ADMIN BISA UPLOAD
 
                 if (row["file_surat_upload"]) {
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                } else if (bolehUpload) {
+                } else if (bolehUpload && isAdmin) {
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
@@ -2536,7 +2643,7 @@
 
                 tr.innerHTML = `
             <td>${row["id"] || ""}</td>
-            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
+            <td>${namaHtml}${!isFirstForNotaris ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
             <td>${row["alamat"] || ""}</td>
             <td>${row["nomor_surat"] || ""}</td>
             <td>${row["tanggal_surat"] || ""}</td>
@@ -2557,6 +2664,7 @@
         `;
                 tbody.appendChild(tr);
             });
+
             hitungTotal();
             updateGrafik(data);
         }
@@ -2571,6 +2679,7 @@
                 if (!dataBulan[bulan]) dataBulan[bulan] = new Set();
                 dataBulan[bulan].add(nama);
             });
+
             let labels = [], values = [];
             for (let b in dataBulan) { labels.push(b); values.push(dataBulan[b].size); }
             const canvasBulanan = document.getElementById("grafikBulanan");
@@ -2976,6 +3085,17 @@
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
         async function uploadBuktiBayar(input, id) {
+            // Tambahkan proteksi di awal
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
             const file = input.files[0];
             if (!file) return;
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
@@ -3005,9 +3125,20 @@
         }
 
         // ===============================
-        // FUNGSI HAPUS DATA
+        // FUNGSI HAPUS DATA - HANYA ADMIN
         // ===============================
         async function hapusData(btn) {
+            // CEK APAKAH USER ADALAH ADMIN
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Anda tidak memiliki izin untuk menghapus data. Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
             const confirmed = await showConfirm('Hapus Data', 'Yakin ingin menghapus data ini?');
             if (!confirmed) return;
             showLoading('Menghapus data...');
@@ -3018,13 +3149,27 @@
                 hideLoading();
                 showSuccess('Data Terhapus', 'Data berhasil dihapus.');
                 loadDataSheet();
-            } catch (err) { hideLoading(); showError('Gagal Hapus', 'Terjadi kesalahan.'); }
+            } catch (err) {
+                hideLoading();
+                showError('Gagal Hapus', 'Terjadi kesalahan.');
+            }
         }
 
         // ===============================
-        // FUNGSI BUKA MODAL EMAIL (CEK APAKAH SUDAH LUNAS)
+        // FUNGSI BUKA MODAL EMAIL - HANYA ADMIN
         // ===============================
         function bukaModalEmail(row) {
+            // CEK APAKAH USER ADALAH ADMIN
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Anda tidak memiliki izin untuk mengirim email. Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
             const [id, nama, , , , , , bulan] = [...row.cells].map(c => c.innerText);
             const uploadCell = row.cells[row.cells.length - 2];
             const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
@@ -3048,9 +3193,9 @@
                     <div class="row">
                         <div class="icon">👤</div>
                         <div>
-                            <div class="nama">${nama}</div>
-                            <div class="sub">ID: ${id}</div>
-                            <div class="sub">Periode: ${bulan}</div>
+                            <div class="nama">${escapeHtml(nama)}</div>
+                            <div class="sub">ID: ${escapeHtml(id)}</div>
+                            <div class="sub">Periode: ${escapeHtml(bulan)}</div>
                         </div>
                     </div>
                 </div>
@@ -3105,8 +3250,8 @@
                         jenis: document.getElementById('jenisPelanggaran').value
                     };
                 }
+
             }).then((result) => {
-                // INI YANG PALING PENTING - Memanggil kirimEmail
                 if (result.isConfirmed && result.value) {
                     kirimEmail(
                         row,
@@ -3123,6 +3268,13 @@
         // ===============================
         let isSending = false;
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
+
+            // ========== TAMBAHKAN 3 BARIS INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
+                return;
+            }
+
             if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
             const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
@@ -5513,6 +5665,17 @@
 
         // Tandai notaris sebagai pensiun (DENGAN LOADING YANG BENAR)
         async function tandaiPensiun() {
+            // ========== TAMBAHKAN PROTEKSI INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
             const select = document.getElementById('selectNotarisPensiun');
             const fileInput = document.getElementById('fileSKPensiun');
             const namaNotaris = select ? select.value : '';
@@ -5762,6 +5925,17 @@
 
         // Hapus notaris pensiun
         async function hapusPensiun(id) {
+            // ========== TAMBAHKAN PROTEKSI INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            // ===========================================
             if (!id) {
                 showError('Error', 'ID notaris tidak valid');
                 return;
@@ -5896,8 +6070,20 @@
             });
         }
 
-        // Buka modal pensiun
+        // Buka modal pensiun - HANYA ADMIN
         async function bukaModalPensiun() {
+            // ========== TAMBAHKAN PROTEKSI INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            // ===========================================
+
             // Load data pensiun terbaru
             await getNotarisPensiun();
 
@@ -6223,8 +6409,7 @@
         }
 
         // Update fungsi renderTable (tambahkan badge pensiun)
-        // CARI fungsi renderTable yang sudah ada dan PASTIKAN ada kode ini:
-        // Di dalam renderTable, pada bagian namaHtml:
+
         const isPensiun = isNotarisPensiunCheck(row["id"]);
         let namaHtml = row["nama_notaris_&_ppat"] || "";
         if (isPensiun) {
@@ -7629,6 +7814,15 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
             if (btnDeteksi) {
                 btnDeteksi.style.display = 'block';
             }
+        }
+
+        // Di dalam DOMContentLoaded atau setelah currentUserRole diketahui
+        if (currentUserRole === 'admin') {
+            const btnKelola = document.getElementById('btnKelolaPensiun');
+            if (btnKelola) btnKelola.style.display = 'inline-block';
+        } else {
+            const btnKelola = document.getElementById('btnKelolaPensiun');
+            if (btnKelola) btnKelola.style.display = 'none';
         }
 
         async function deteksiOtomatisTidakLapor() {
