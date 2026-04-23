@@ -1704,8 +1704,6 @@
             }
         }
 
-        /* Tombol Data Pengaturan Transkasi */
-
         .btn-pengaturan {
             background: linear-gradient(135deg, #166aef, #042572);
             color: white;
@@ -1760,21 +1758,17 @@
             transform: rotate(30deg);
         }
 
-        /* Tombol Data Nihil */
+        /* Tombol Data Nihil - Khusus */
         .btn-nihil {
             background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            /* Ubah dari 30px ke 12px agar sama */
-            padding: 10px 20px;
-            /* Ubah dari 8px ke 10px agar sama */
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: none;
+            color: white;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -1782,41 +1776,10 @@
             width: 100%;
         }
 
-        /* Efek Shine (SAMA dengan btn-pengaturan) */
-        .btn-nihil::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
         .btn-nihil:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
             background: linear-gradient(135deg, #b91c1c, #dc2626);
-        }
-
-        .btn-nihil:hover::before {
-            left: 100%;
-        }
-
-        .btn-nihil:active {
-            transform: translateY(1px);
-        }
-
-        /* Efek Ikon Berputar (SAMA dengan btn-pengaturan) */
-        .btn-nihil i {
-            margin-right: 8px;
-            font-size: 1rem;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-nihil:hover i {
-            transform: rotate(30deg);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
         }
 
         .btn-nihil:active {
@@ -2012,8 +1975,7 @@
                         <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
                             <i class="bi bi-person-x-fill"></i> Pensiun
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()"
-                            id="btnKelolaPensiun">
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
                             <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
                         </button>
                     </div>
@@ -2403,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwYakiLIVmf_hJOXNKTwsa7ZcfYNCkgmv1W0q0RhJHcglugF5zzluB_ZNVyzcWGAiI/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2tYO1RBEl2dY9_ctSApZxmcQJdZkyu6SwG85SIZXmj7UnRmeLVB6JGhTxdqPRgr0CUw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2492,319 +2454,111 @@
         }
 
         function renderTable(data) {
+            let seen = new Set();
             const tbody = document.querySelector("#dataNotaris");
             if (!tbody) return;
             tbody.innerHTML = "";
-
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
                 hitungTotal();
-                updateGrafik(data);
                 return;
             }
 
-            // ============================================
-            // GROUPING PER NAMA + BULAN (BUKAN PER BARIS)
-            // ============================================
-            const groupedData = new Map(); // key: "nama|bulan"
-
             data.forEach(row => {
-                const nama = row["nama_notaris_&_ppat"] || "";
-                const bulan = row["laporan_bulanan"] || "";
-                const key = `${nama}|${bulan}`;
+                let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
+                let isFirst = !seen.has(key);
+                if (isFirst) seen.add(key);
 
-                if (!groupedData.has(key)) {
-                    groupedData.set(key, {
-                        id: row["id"] || "",
-                        nama: nama,
-                        bulan: bulan,
-                        alamat: row["alamat"] || "",
-                        hasUpload: false,
-                        hasTerlambat: false,
-                        statusEmail: "",
-                        file_surat_upload: "",
-                        file_pdf: "",
-                        file_pdf_denda: "",
-                        nomor_std: "",
-                        nomor_surat_denda: "",
-                        jumlah_laporan: 0,
-                        sspd_bphtb: 0,
-                        data_transaksi: [],
-                        semuaBaris: [] // simpan semua baris untuk digabung
-                    });
-                }
-
-                const group = groupedData.get(key);
-
-                // Cek upload
-                if (row["file_surat_upload"] && row["file_surat_upload"].trim() !== "") {
-                    group.hasUpload = true;
-                    group.file_surat_upload = row["file_surat_upload"];
-                }
-
-                // Cek terlambat
-                if (cekTerlambat(row["tanggal_diterima"]) === "TIDAK VALID") {
-                    group.hasTerlambat = true;
-                }
-
-                // Status email
-                const statusEmail = row["status_email"] || "";
-                if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                    group.statusEmail = statusEmail;
-                }
-
-                // Akumulasi
-                group.jumlah_laporan += parseInt(row["jumlah_laporan"]) || 0;
-                group.sspd_bphtb += parseInt(String(row["sspd_bphtb"]).replace(/[^0-9]/g, '')) || 0;
-
-                // Kumpulkan data transaksi
-                if (row["data_transaksi"]) {
-                    try {
-                        let transaksi = JSON.parse(row["data_transaksi"]);
-                        if (Array.isArray(transaksi)) {
-                            group.data_transaksi.push(...transaksi);
-                        }
-                    } catch (e) { }
-                }
-
-                group.semuaBaris.push(row);
-            });
-
-            // ============================================
-            // RENDER TABLE - 1 BARIS PER NAMA + BULAN
-            // ============================================
-            const isAdmin = (currentUserRole === 'admin');
-
-            for (const [key, group] of groupedData) {
                 let tr = document.createElement("tr");
+                let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
+                let statusEmail = row["status_email"] || "";
+                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
                 let actionHTML = "";
-                let rowBgColor = "transparent";
-                let catatanAuto = "";
 
-                // Format data transaksi gabungan untuk bulan ini
-                let totalSSP = 0, totalSSB = 0;
-                group.data_transaksi.forEach(item => {
-                    if (item.ssp) totalSSP += parseInt(String(item.ssp).replace(/[^0-9]/g, '')) || 0;
-                    if (item.ssb) totalSSB += parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
-                });
-                const dataTransaksiHTML = group.data_transaksi.length > 0 ?
-                    `<span class="badge bg-info">${group.data_transaksi.length} Transaksi</span><br>
-            <small class="text-muted">SSP: ${formatRupiahTabel(String(totalSSP))}</small><br>
-            <small class="text-muted">SSB: ${formatRupiahTabel(String(totalSSB))}</small>` : '-';
-
-                // Tentukan status dan action (HANYA 1 TOMBOL PER GROUP)
-                if (group.hasUpload) {
+                // CEK APAKAH SUDAH LUNAS (ADA UPLOAD)
+                if (hasUpload) {
                     actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                    rowBgColor = "#d4edda";
-                    catatanAuto = '<span style="color:green; font-weight:bold;">💰 LUNAS</span>';
+                    tr.style.backgroundColor = "#d4edda";
                 }
-                else if (group.hasTerlambat) {
-                    if (isAdmin) {
-                        // HANYA 1 TOMBOL EMAIL untuk group (nama + bulan ini)
-                        actionHTML = `<div class="text-center">
-                    <button type="button" onclick="bukaModalEmailByGroup('${escapeHtml(group.id)}', '${escapeHtml(group.nama)}', '${escapeHtml(group.bulan)}')" class="btn btn-primary btn-sm" title="Kirim Email">
-                        <i class="bi bi-envelope-fill"></i>
-                    </button>
-                    <button type="button" onclick="hapusDataByGroup('${escapeHtml(group.id)}', '${escapeHtml(group.bulan)}')" class="btn btn-danger btn-sm" title="Hapus Data Bulan Ini">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </div>`;
-                    } else {
-                        actionHTML = `<div class="text-center"><span class="text-danger" style="font-size: 11px;">❌ Terlambat</span></div>`;
-                    }
-                    rowBgColor = "#ffcccc";
-                    catatanAuto = '<span style="color:red; font-weight:bold;">⚠️ TERLAMBAT</span>';
+                // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
+                else if (statusTerlambat === "TIDAK VALID") {
+                    // TAMPILKAN TOMBOL EMAIL UNTUK DATA TERLAMBAT
+                    actionHTML = `<div class="text-center">
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
+                    tr.style.backgroundColor = "#ff0000";
                 }
-                else if (group.statusEmail === "WAITING_RESEND" || group.statusEmail === "EMAIL_TERKIRIM") {
-                    if (isAdmin) {
-                        actionHTML = `<div class="text-center">
-                    <button type="button" onclick="bukaModalEmailByGroup('${escapeHtml(group.id)}', '${escapeHtml(group.nama)}', '${escapeHtml(group.bulan)}')" class="btn btn-warning btn-sm" title="Kirim Email Ulang">
-                        <i class="bi bi-envelope-fill"></i>
-                    </button>
-                    <button type="button" onclick="hapusDataByGroup('${escapeHtml(group.id)}', '${escapeHtml(group.bulan)}')" class="btn btn-danger btn-sm" title="Hapus Data Bulan Ini">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </div>`;
-                    } else {
-                        actionHTML = `<div class="text-center"><span class="text-warning" style="font-size: 11px;">⏳ Menunggu</span></div>`;
-                    }
-                    rowBgColor = "#fff3cd";
-                    catatanAuto = '<span style="color:orange;">⏳ Menunggu Kirim Ulang</span>';
+                // CEK APAKAH WAITING_RESEND ATAU EMAIL_TERKIRIM
+                else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                    actionHTML = `<div class="text-center">
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
+                    tr.style.backgroundColor = "#fff3cd";
                 }
+                // DATA VALID (TEPAT WAKTU) - TIDAK ADA TOMBOL EMAIL
                 else {
                     actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
-                    rowBgColor = "transparent";
-                    catatanAuto = '<span style="color:green; font-weight:bold;">✅ VALID</span>';
+                    tr.style.backgroundColor = "transparent";
                 }
 
                 // KOLOM BUKTI SURAT
                 let buktiSuratHTML = '';
-                if (group.file_surat_upload) {
-                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${group.file_surat_upload}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                } else if (isAdmin && group.hasTerlambat) {
-                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayarByGroup(this, '${escapeHtml(group.id)}', '${escapeHtml(group.bulan)}')" style="display:none;"></label>`;
+                let tgl = getTanggal(row["tanggal_diterima"]);
+                let bolehUpload = isFirst && tgl > 10;
+
+                if (row["file_surat_upload"]) {
+                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                } else if (bolehUpload) {
+                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
                 }
 
                 // CEK PENSIUN
-                const isPensiun = isNotarisPensiunCheck(group.id);
-                let namaHtml = group.nama;
+                const isPensiun = isNotarisPensiunCheck(row["id"]);
+                let namaHtml = row["nama_notaris_&_ppat"] || "";
                 if (isPensiun) {
-                    const dataP = getDataPensiunById(group.id);
+                    const dataP = getDataPensiunById(row["id"]);
                     namaHtml += `<span class="badge-pensiun">📅 Pensiun ${dataP?.tahunPensiun || ''}</span>`;
                 }
 
-                tr.style.backgroundColor = rowBgColor;
                 tr.innerHTML = `
-            <td>${escapeHtml(group.id)}</td>
-            <td>${namaHtml}</td>
-            <td>${escapeHtml(group.alamat)}</td>
-            <td colspan="2" style="text-align:center;">-</td>
-            <td style="text-align:center;">-</td>
-            <td style="text-align:center;">-</td>
-            <td style="text-align:center;">${escapeHtml(group.bulan)}</td>
-            <td style="text-align:center;">${dataTransaksiHTML}</td>
-            <td>${group.jumlah_laporan}</td>
-            <td>${formatRupiahTabel(String(group.sspd_bphtb))}</td>
-            <td>-</td>
-            <td style="text-align:center;">${group.nomor_std && group.nomor_std.trim() !== "" ? `<b>${escapeHtml(group.nomor_std)}</b>` : '-'}</td>
-            <td style="text-align:center;">${group.file_pdf ? `<a href="${group.file_pdf}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${group.nomor_surat_denda && group.nomor_surat_denda.trim() !== "" ? `<b>${escapeHtml(group.nomor_surat_denda)}</b>` : '-'}</td>
-            <td style="text-align:center;">${group.file_pdf_denda ? `<a href="${group.file_pdf_denda}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a>` : '-'}</td>
+            <td>${row["id"] || ""}</td>
+            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
+            <td>${row["alamat"] || ""}</td>
+            <td>${row["nomor_surat"] || ""}</td>
+            <td>${row["tanggal_surat"] || ""}</td>
+            <td>${row["tanggal_diterima"] || ""}</td>
+            <td>${row["status_surat"] || ""}</td>
+            <td>${row["laporan_bulanan"] || ""}</td>
+            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
+            <td>${row["jumlah_laporan"] || ""}</td>
+            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
+            <td>${row["keterangan"] || ""}</td>
+            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
         `;
                 tbody.appendChild(tr);
-            }
-
+            });
             hitungTotal();
             updateGrafik(data);
-        }
-
-        // Buka modal email untuk 1 group (1 nama + 1 bulan)
-        function bukaModalEmailByGroup(id, nama, bulan) {
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
-                return;
-            }
-
-            // Cari data laporan untuk group ini
-            const dataLaporan = allData.filter(row =>
-                row["id"] === id &&
-                row["laporan_bulanan"] === bulan
-            );
-
-            if (dataLaporan.length === 0) {
-                Swal.fire({ title: 'Info', text: 'Data tidak ditemukan!', icon: 'info' });
-                return;
-            }
-
-            const firstData = dataLaporan[0];
-            const hasUpload = dataLaporan.some(row => row["file_surat_upload"] && row["file_surat_upload"].trim() !== "");
-
-            if (hasUpload) {
-                Swal.fire({ title: 'Status LUNAS', html: '<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 48px;"></i><h3>Sudah LUNAS</h3></div>', icon: 'success' });
-                return;
-            }
-
-            Swal.fire({
-                title: 'Kirim Email Denda',
-                html: `
-            <div class="swal-modern">
-                <div class="card-header">
-                    <div><strong>${escapeHtml(nama)}</strong><br><small>ID: ${escapeHtml(id)}</small><br><small>Periode: ${escapeHtml(bulan)}</small></div>
-                </div>
-                <div class="form-group"><label>Email PPAT</label><input id="emailPpat" type="email" placeholder="contoh: notaris@email.com"></div>
-                <div class="form-group"><label>Nomor SPL</label><input id="nomorSpl" type="text" placeholder="Contoh: 0001"></div>
-                <div class="form-group">
-                    <label>Jenis Pelanggaran</label>
-                    <select id="jenisPelanggaran">
-                        <option value="Terlambat Menyampaikan Laporan">Terlambat Menyampaikan Laporan</option>
-                        <option value="Tidak Menyampaikan Laporan">Tidak Menyampaikan Laporan</option>
-                    </select>
-                </div>
-            </div>
-        `,
-                width: 420,
-                confirmButtonText: 'Kirim',
-                cancelButtonText: 'Batal',
-                preConfirm: () => {
-                    const email = document.getElementById('emailPpat').value.trim();
-                    const nomor = document.getElementById('nomorSpl').value.trim();
-                    if (!email) { Swal.showValidationMessage('Email wajib diisi'); return false; }
-                    if (!email.includes('@')) { Swal.showValidationMessage('Email tidak valid'); return false; }
-                    if (!nomor) { Swal.showValidationMessage('Nomor SPL wajib diisi'); return false; }
-                    return { email: email, nomor: nomor, jenis: document.getElementById('jenisPelanggaran').value };
-                }
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    kirimEmailByGroup(id, nama, bulan, result.value.email, result.value.jenis, result.value.nomor);
-                }
-            });
-        }
-
-        async function kirimEmailByGroup(id, nama, bulan, emailUser, jenis, nomorSPL) {
-            const dataLaporan = allData.find(row => row["id"] === id && row["laporan_bulanan"] === bulan);
-            if (!dataLaporan) {
-                Swal.close(); // Tutup loading jika error
-                showError('Error', 'Data tidak ditemukan');
-                return;
-            }
-
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Mengirim Email...',
-                text: 'Mohon tunggu, sedang mengirim email...',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(nama)}&id=${encodeURIComponent(id)}&alamat=${encodeURIComponent(dataLaporan["alamat"] || '')}&bulan=${encodeURIComponent(bulan)}&jumlah=${encodeURIComponent(dataLaporan["jumlah_laporan"] || '0')}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(nomorSPL)}`;
-
-            try {
-                // Kirim request
-                await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
-
-                // TUTUP LOADING
-                Swal.close();
-
-                // Tampilkan sukses
-                Swal.fire({
-                    icon: 'success',
-                    title: '✅ Email Terkirim!',
-                    text: `Email ke ${emailUser} berhasil dikirim.`,
-                    confirmButtonColor: '#28a745',
-                    timer: 2000
-                });
-
-                // Update status email
-                for (const row of allData.filter(r => r["id"] === id && r["laporan_bulanan"] === bulan)) {
-                    await updateStatusEmail(row["id"], "WAITING_RESEND");
-                }
-
-                // Refresh data
-                setTimeout(() => loadDataSheet(), 2000);
-
-            } catch (error) {
-                // TUTUP LOADING SAAT ERROR
-                Swal.close();
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Gagal Kirim',
-                    text: 'Gagal terhubung ke server. Coba lagi nanti.',
-                    confirmButtonColor: '#dc3545'
-                });
-            }
         }
 
         // Update grafik
@@ -2817,7 +2571,6 @@
                 if (!dataBulan[bulan]) dataBulan[bulan] = new Set();
                 dataBulan[bulan].add(nama);
             });
-
             let labels = [], values = [];
             for (let b in dataBulan) { labels.push(b); values.push(dataBulan[b].size); }
             const canvasBulanan = document.getElementById("grafikBulanan");
@@ -3219,22 +2972,10 @@
             }
         }
 
-
         // ===============================
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
         async function uploadBuktiBayar(input, id) {
-            // Tambahkan proteksi di awal
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-
             const file = input.files[0];
             if (!file) return;
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
@@ -3267,10 +3008,6 @@
         // FUNGSI HAPUS DATA
         // ===============================
         async function hapusData(btn) {
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
-                return;
-            }
             const confirmed = await showConfirm('Hapus Data', 'Yakin ingin menghapus data ini?');
             if (!confirmed) return;
             showLoading('Menghapus data...');
@@ -3288,10 +3025,6 @@
         // FUNGSI BUKA MODAL EMAIL (CEK APAKAH SUDAH LUNAS)
         // ===============================
         function bukaModalEmail(row) {
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
-                return;
-            }
             const [id, nama, , , , , , bulan] = [...row.cells].map(c => c.innerText);
             const uploadCell = row.cells[row.cells.length - 2];
             const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
@@ -3386,106 +3119,42 @@
         }
 
         // ===============================
-        // FUNGSI KIRIM EMAIL (DENGAN CORS FIX)
+        // FUNGSI KIRIM EMAIL
         // ===============================
         let isSending = false;
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
             if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
-
-            const data = {
-                id: row.cells[0].innerText,
-                nama: row.cells[1].innerText,
-                alamat: row.cells[2].innerText,
-                nomor: row.cells[3].innerText,
-                tgl_surat: row.cells[4].innerText,
-                tgl_diterima: row.cells[5].innerText,
-                status: row.cells[6].innerText,
-                bulan: row.cells[7].innerText,
-                transaksi: row.cells[8].innerText,
-                jumlah: row.cells[9].innerText,
-                sspd: row.cells[10].innerText,
-                keterangan: row.cells[11].innerText,
-                nomor_std: nomorSPL
-            };
-
+            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
-
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Mengirim Email...',
-                text: 'Mohon tunggu, sedang mengirim email...',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
+            showLoading('Mengirim email...');
             const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
-
             try {
-                await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
+                const response = await fetch(url);
+                const result = await response.text();
+                hideLoading();
+                if (response.ok || result.includes("success")) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+                    let actionCell = row.cells[row.cells.length - 1];
+                    let uploadCell = row.cells[row.cells.length - 2];
+                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
 
-                // TUTUP LOADING
-                Swal.close();
-
-                // Tampilkan sukses
-                Swal.fire({
-                    icon: 'success',
-                    title: '✅ Email Terkirim!',
-                    text: `Email ke ${emailUser} berhasil dikirim.`,
-                    confirmButtonColor: '#28a745',
-                    timer: 2000
-                });
-
-                let actionCell = row.cells[row.cells.length - 1];
-                let uploadCell = row.cells[row.cells.length - 2];
-                let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
-
-                if (hasUpload) {
-                    actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
-                    row.style.backgroundColor = "#d4edda";
-                    await updateStatusEmail(data.id, "SELESAI");
-                } else {
-                    actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
-                    row.style.backgroundColor = "#fff3cd";
-                    await updateStatusEmail(data.id, "WAITING_RESEND");
-                }
-
-                setTimeout(() => loadDataSheet(), 2000);
-
-            } catch (error) {
-                // TUTUP LOADING SAAT ERROR
-                Swal.close();
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Gagal Kirim',
-                    text: 'Gagal terhubung ke server. Coba lagi nanti.',
-                    confirmButtonColor: '#dc3545'
-                });
-            } finally {
-                isSending = false;
-            }
+                    if (hasUpload) {
+                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
+                        row.style.backgroundColor = "#d4edda";
+                        await updateStatusEmail(data.id, "SELESAI");
+                    } else {
+                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
+                        row.style.backgroundColor = "#fff3cd";
+                        await updateStatusEmail(data.id, "WAITING_RESEND");
+                    }
+                    setTimeout(() => loadDataSheet(), 1000);
+                } else { showError('❌ Gagal Kirim', result); }
+            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
         }
 
-        // ===============================
-        // UPDATE STATUS EMAIL (DENGAN CORS FIX)
-        // ===============================
+        // UPDATE STATUS EMAIL
         async function updateStatusEmail(id, status) {
-            try {
-                await fetch(`${scriptURL}?update_status=${id}&status=${status}`, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
-            } catch (err) {
-                console.error(err);
-            }
+            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
         }
 
         // Data Baru
@@ -5844,17 +5513,6 @@
 
         // Tandai notaris sebagai pensiun (DENGAN LOADING YANG BENAR)
         async function tandaiPensiun() {
-            // ========== TAMBAHKAN PROTEKSI INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-
             const select = document.getElementById('selectNotarisPensiun');
             const fileInput = document.getElementById('fileSKPensiun');
             const namaNotaris = select ? select.value : '';
@@ -6104,17 +5762,6 @@
 
         // Hapus notaris pensiun
         async function hapusPensiun(id) {
-            // ========== TAMBAHKAN PROTEKSI INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-            // ===========================================
             if (!id) {
                 showError('Error', 'ID notaris tidak valid');
                 return;
@@ -6249,20 +5896,8 @@
             });
         }
 
-        // Buka modal pensiun - HANYA ADMIN
+        // Buka modal pensiun
         async function bukaModalPensiun() {
-            // ========== TAMBAHKAN PROTEKSI INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-            // ===========================================
-
             // Load data pensiun terbaru
             await getNotarisPensiun();
 
@@ -6588,7 +6223,8 @@
         }
 
         // Update fungsi renderTable (tambahkan badge pensiun)
-
+        // CARI fungsi renderTable yang sudah ada dan PASTIKAN ada kode ini:
+        // Di dalam renderTable, pada bagian namaHtml:
         const isPensiun = isNotarisPensiunCheck(row["id"]);
         let namaHtml = row["nama_notaris_&_ppat"] || "";
         if (isPensiun) {
@@ -7993,15 +7629,6 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
             if (btnDeteksi) {
                 btnDeteksi.style.display = 'block';
             }
-        }
-
-        // Di dalam DOMContentLoaded atau setelah currentUserRole diketahui
-        if (currentUserRole === 'admin') {
-            const btnKelola = document.getElementById('btnKelolaPensiun');
-            if (btnKelola) btnKelola.style.display = 'inline-block';
-        } else {
-            const btnKelola = document.getElementById('btnKelolaPensiun');
-            if (btnKelola) btnKelola.style.display = 'none';
         }
 
         async function deteksiOtomatisTidakLapor() {
