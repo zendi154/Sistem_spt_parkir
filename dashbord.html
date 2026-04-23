@@ -1489,54 +1489,219 @@
             opacity: 0.5;
         }
 
-        /* Tombol Pengaturan Modern */
-        .btn-pengaturan {
-            background: linear-gradient(135deg, #166aef, #042572);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        /* Tombol Umum */
+        .btn-modern {
             position: relative;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        .btn-pengaturan::before {
+        .btn-modern::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s ease;
         }
 
-        .btn-pengaturan:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(135deg, #0f172a, #020617);
-        }
-
-        .btn-pengaturan:hover::before {
+        .btn-modern:hover::before {
             left: 100%;
         }
 
-        .btn-pengaturan:active {
-            transform: translateY(1px);
+        .btn-modern:active {
+            transform: scale(0.96);
         }
 
-        .btn-pengaturan i {
+        /* Tombol Info (Deteksi) - Biru Modern */
+        .btn-info-modern {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info-modern:hover {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Tombol WhatsApp - Hijau Modern */
+        .btn-success-modern {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success-modern:hover {
+            background: linear-gradient(135deg, #20BD59, #075E54);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Tombol Danger - Merah Modern */
+        .btn-danger-modern {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger-modern:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Tombol Primary - Biru Tua */
+        .btn-primary-modern {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+        }
+
+        /* Tombol Secondary */
+        .btn-secondary-modern {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+
+        /* Efek Pulse untuk Tombol Penting */
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        /* Kartu Modern dengan efek glassmorphism */
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Tabel Modern */
+        .table-modern {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        .table-modern thead th {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-modern tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table-modern tbody tr:hover {
+            background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
+            transform: scale(1.01);
+        }
+
+        .table-modern tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Icon dalam tombol */
+        .btn-modern i {
             margin-right: 8px;
-            font-size: 1rem;
-            transition: transform 0.3s ease;
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
         }
 
-        .btn-pengaturan:hover i {
-            transform: rotate(30deg);
+        .btn-modern:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Loading state tombol */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            right: 15px;
+            margin-top: -8px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Progress bar styling untuk loading */
@@ -1613,282 +1778,283 @@
                         </button>
                     </div>
 
-                    <!-- BUTTON KIRIM NOTIFIKASI BELUM LAPOR (HANYA UNTUK ADMIN) -->
+                    <!-- BUTTON KIRIM NOTIFIKASI VIA WHATSAPP (HANYA UNTUK ADMIN) -->
                     <div class="col-md-2" id="btnBelumLaporContainer" style="display: none;">
-                        <button type="button" class="btn btn-danger w-100" onclick="deteksiDanKirimTidakMelapor()">
-                            <i class="bi bi-bell-fill"></i> Kirim Notifikasi
-                        </button>
-                    </div>
-                </div>
-
-                <!-- FLOATING FOOTER CONTROL -->
-                <div class="floating-footer">
-                    <button class="btn-control" id="btnPlayPause" onclick="togglePlayPause()"
-                        title="Aktifkan Notifikasi">
-                        <i class="bi bi-play-fill" id="playPauseIcon"></i>
-                        <span id="playPauseText">PLAY</span>
-                    </button>
-                </div>
-
-                <!-- CONTAINER BULAN -->
-                <div id="listBulan" class="row g-2 mb-3"></div>
-
-                <!-- FILTER -->
-                <div class="row g-2 mb-3">
-
-                    <div class="col-md-3">
-                        <input type="date" id="tglAwal" class="form-control">
-                    </div>
-
-                    <div class="col-md-3">
-                        <input type="date" id="tglAkhir" class="form-control">
-                    </div>
-
-                    <div class="col-md-3">
-                        <button type="button" class="btn btn-primary w-100" onclick="filterTanggal()">
-                            <i class="bi bi-funnel"></i> Filter Tanggal
+                        <button type="button" class="btn btn-success w-100" onclick="deteksiDanKirimTidakMelapor()">
+                            <i class="bi bi-whatsapp"></i> Kirim WA Notifikasi
                         </button>
                     </div>
 
-                    <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
-                    <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
-                        <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
-                            <i class="bi bi-robot"></i> Deteksi Tidak Lapor
+                    <!-- FLOATING FOOTER CONTROL -->
+                    <div class="floating-footer">
+                        <button class="btn-control" id="btnPlayPause" onclick="togglePlayPause()"
+                            title="Aktifkan Notifikasi">
+                            <i class="bi bi-play-fill" id="playPauseIcon"></i>
+                            <span id="playPauseText">PLAY</span>
                         </button>
                     </div>
 
-                    <div class="col-md-3">
-                        <button type="button" class="btn btn-secondary w-100" onclick="resetAllFilters()">
-                            <i class="bi bi-arrow-repeat"></i> Reset Filter
+                    <!-- CONTAINER BULAN -->
+                    <div id="listBulan" class="row g-2 mb-3"></div>
+
+                    <!-- FILTER -->
+                    <div class="row g-2 mb-3">
+
+                        <div class="col-md-3">
+                            <input type="date" id="tglAwal" class="form-control">
+                        </div>
+
+                        <div class="col-md-3">
+                            <input type="date" id="tglAkhir" class="form-control">
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" onclick="filterTanggal()">
+                                <i class="bi bi-funnel"></i> Filter Tanggal
+                            </button>
+                        </div>
+
+                        <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
+                        <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
+                            <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
+                                <i class="bi bi-robot"></i> Deteksi Tidak Lapor
+                            </button>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-secondary w-100" onclick="resetAllFilters()">
+                                <i class="bi bi-arrow-repeat"></i> Reset Filter
+                            </button>
+                        </div>
+
+                        <!-- EXSPOR EXCEL -->
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-success w-100" onclick="exportExcel()">
+                                <i class="bi bi-file-earmark-excel"></i> Export Data Excel
+                            </button>
+                        </div>
+
+                        <!-- PENGATURAN DATA -->
+                        <div class="col-md-3">
+                            <button type="button" class="btn-pengaturan w-100" onclick="bukaModalPrintTransaksi()">
+                                <i class="bi bi-gear-fill"></i> Data Transaksi
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                    <!-- FILTER NOTARIS PENSIUN -->
+                    <div class="filter-pensiun mb-3">
+                        <span class="fw-bold me-2">Status Notaris:</span>
+                        <button class="btn-filter active" onclick="filterNotarisStatus('all')">
+                            <i class="bi bi-people-fill"></i> Semua
+                        </button>
+                        <button class="btn-filter" onclick="filterNotarisStatus('active')">
+                            <i class="bi bi-person-check-fill"></i> Aktif
+                        </button>
+                        <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
+                            <i class="bi bi-person-x-fill"></i> Pensiun
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
+                            <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
                         </button>
                     </div>
 
-                    <!-- EXSPOR EXCEL -->
-                    <div class="col-md-3">
-                        <button type="button" class="btn btn-success w-100" onclick="exportExcel()">
-                            <i class="bi bi-file-earmark-excel"></i> Export Data Excel
-                        </button>
-                    </div>
+                    <!-- MODAL KELOLA NOTARIS PENSIUN - PERBAIKI DENGAN MENAMBAHKAN INPUT FILE -->
+                    <div class="modal fade" id="modalPensiun" tabindex="-1" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content modal-pensiun">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="bi bi-person-x-fill me-2"></i> Kelola Notaris Pensiun
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-header bg-light">
+                                                    <b><i class="bi bi-person-plus-fill"></i> Tandai Pensiun</b>
+                                                </div>
+                                                <div class="card-body">
+                                                    <label class="form-label">Pilih Notaris</label>
+                                                    <select id="selectNotarisPensiun" class="form-select mb-2">
+                                                        <option value="">-- Pilih Notaris --</option>
+                                                    </select>
+                                                    <label class="form-label">Tahun Pensiun</label>
+                                                    <input type="text" id="tahunPensiun" class="form-control mb-2"
+                                                        placeholder="Tahun Pensiun (contoh: 2024)">
+                                                    <label class="form-label">Keterangan</label>
+                                                    <textarea id="keteranganPensiun" class="form-control mb-2" rows="2"
+                                                        placeholder="Keterangan (opsional)"></textarea>
 
-                    <!-- PENGATURAN DATA -->
-                    <div class="col-md-3">
-                        <button type="button" class="btn-pengaturan w-100" onclick="bukaModalPrintTransaksi()">
-                            <i class="bi bi-gear-fill"></i> Data Transaksi
-                        </button>
-                    </div>
+                                                    <!-- ============================================ -->
+                                                    <!-- TAMBAHKAN INI - INPUT FILE UPLOAD SK PENSIUN -->
+                                                    <!-- ============================================ -->
+                                                    <label class="form-label mt-2">Upload SK Pensiun (PDF)</label>
+                                                    <input type="file" id="fileSKPensiun" class="form-control mb-2"
+                                                        accept="application/pdf">
+                                                    <small class="text-muted">*Upload file PDF SK Pensiun</small>
 
-                </div>
-
-
-                <!-- FILTER NOTARIS PENSIUN -->
-                <div class="filter-pensiun mb-3">
-                    <span class="fw-bold me-2">Status Notaris:</span>
-                    <button class="btn-filter active" onclick="filterNotarisStatus('all')">
-                        <i class="bi bi-people-fill"></i> Semua
-                    </button>
-                    <button class="btn-filter" onclick="filterNotarisStatus('active')">
-                        <i class="bi bi-person-check-fill"></i> Aktif
-                    </button>
-                    <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
-                        <i class="bi bi-person-x-fill"></i> Pensiun
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
-                        <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
-                    </button>
-                </div>
-
-                <!-- MODAL KELOLA NOTARIS PENSIUN - PERBAIKI DENGAN MENAMBAHKAN INPUT FILE -->
-                <div class="modal fade" id="modalPensiun" tabindex="-1" data-bs-backdrop="static">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                        <div class="modal-content modal-pensiun">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    <i class="bi bi-person-x-fill me-2"></i> Kelola Notaris Pensiun
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white"
-                                    data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="card mb-3">
-                                            <div class="card-header bg-light">
-                                                <b><i class="bi bi-person-plus-fill"></i> Tandai Pensiun</b>
-                                            </div>
-                                            <div class="card-body">
-                                                <label class="form-label">Pilih Notaris</label>
-                                                <select id="selectNotarisPensiun" class="form-select mb-2">
-                                                    <option value="">-- Pilih Notaris --</option>
-                                                </select>
-                                                <label class="form-label">Tahun Pensiun</label>
-                                                <input type="text" id="tahunPensiun" class="form-control mb-2"
-                                                    placeholder="Tahun Pensiun (contoh: 2024)">
-                                                <label class="form-label">Keterangan</label>
-                                                <textarea id="keteranganPensiun" class="form-control mb-2" rows="2"
-                                                    placeholder="Keterangan (opsional)"></textarea>
-
-                                                <!-- ============================================ -->
-                                                <!-- TAMBAHKAN INI - INPUT FILE UPLOAD SK PENSIUN -->
-                                                <!-- ============================================ -->
-                                                <label class="form-label mt-2">Upload SK Pensiun (PDF)</label>
-                                                <input type="file" id="fileSKPensiun" class="form-control mb-2"
-                                                    accept="application/pdf">
-                                                <small class="text-muted">*Upload file PDF SK Pensiun</small>
-
-                                                <button class="btn btn-pensiun w-100 mt-3" onclick="tandaiPensiun()">
-                                                    <i class="bi bi-check-circle"></i> Tandai Pensiun
-                                                </button>
+                                                    <button class="btn btn-pensiun w-100 mt-3"
+                                                        onclick="tandaiPensiun()">
+                                                        <i class="bi bi-check-circle"></i> Tandai Pensiun
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="card">
-                                            <div class="card-header bg-light">
-                                                <b><i class="bi bi-list-check"></i> Daftar Notaris Pensiun</b>
-                                            </div>
-                                            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                                                <div id="daftarNotarisPensiun">
-                                                    <div class="text-center text-muted">Memuat data...</div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-header bg-light">
+                                                    <b><i class="bi bi-list-check"></i> Daftar Notaris Pensiun</b>
+                                                </div>
+                                                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                                    <div id="daftarNotarisPensiun">
+                                                        <div class="text-center text-muted">Memuat data...</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer" style="background: #f8f9fa;">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card untuk menampilkan daftar notaris pensiun -->
-            <div id="cardPensiun" style="display: none; margin-top: 20px;">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">
-                        <i class="bi bi-person-x-fill"></i> <strong>DAFTAR NOTARIS PENSIUN</strong>
-                        <button type="button" class="btn-close btn-close-white float-end"
-                            onclick="tutupTablePensiun()"></button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 5%;">No</th>
-                                        <th style="width: 15%;">ID Notaris</th>
-                                        <th style="width: 20%;">Nama Notaris</th>
-                                        <th style="width: 25%;">Alamat</th>
-                                        <th style="width: 10%;">Tahun Pensiun</th>
-                                        <th style="width: 10%;">Keterangan</th>
-                                        <th style="width: 10%;">SK Pensiun</th> <!-- KOLOM BARU -->
-                                        <th style="width: 5%;">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyPensiun">
-                                    <tr>
-                                        <td colspan="8" class="text-center">Memuat数据...<\ /td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABLE -->
-            <div class="table-wrapper">
-
-                <table id="tableLaporan">
-                    <thead>
-                        <tr>
-                            <th>Nomor Unik</th>
-                            <th>Nama</th>
-                            <th>Alamat Kantor</th>
-                            <th>Nomor Surat</th>
-                            <th>Tanggal Surat</th>
-                            <th>Tanggal Diterima</th>
-                            <th>Status Surat</th>
-                            <th>Laporan Bulanan</th>
-                            <th>Data Transaksi</th>
-                            <th>Jumlah Laporan</th>
-                            <th>SSPD BPHTB (Rp)</th>
-                            <th>Bentuk Perbuatan Hukum</th>
-                            <th>Nomor Surat Denda (STD)</th>
-                            <th>Lihat PDF STD</th>
-                            <th>Nomor Surat Pemberitahuan Denda</th>
-                            <th>Lihat PDF Pemberitahuan Denda</th>
-                            <th>Bukti Bayar Denda</th>
-                            <th>Catatan (Auto)</th>
-                            <th>Aksi Email</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="dataNotaris">
-
-                </table>
-
-                <div class="row mt-3 p-3 bg-light rounded shadow-sm">
-
-                    <div class="col-md-6">
-                        <h6 class="fw-bold text-primary">
-                            Jumlah Laporan Diterima :
-                            <span id="totalLaporan">0</span>
-                        </h6>
-                    </div>
-
-                    <div class="col-md-6 text-end">
-                        <h6 class="fw-bold text-success">
-                            Nominal Bphtb Total :
-                            <span id="totalSSPD">Rp. 0</span>
-                        </h6>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-wrapper">
-
-                <div class="grafik-box">
-                    <h6>📊 Notaris Melapor per Bulan</h6>
-                    <canvas id="grafikBulanan"></canvas>
-                </div>
-
-                <div class="grafik-box">
-                    <h6>⏱ Status Laporan PPAT</h6>
-                    <canvas id="grafikStatus"></canvas>
-                </div>
-
-                <div class="grafik-box">
-                    <h6>🏆 PPAT Paling Aktif</h6>
-                    <canvas id="grafikTopNotaris"></canvas>
-                </div>
-
-                <!-- TOTAL BPHTB PER BULAN -->
-                <div class="row mt-4 mb-4 ringkasan-bphtb">
-                    <div class="col-md-12">
-                        <div class="card border-info">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title text-info mb-0">
-                                        <i class="bi bi-calculator-fill"></i> Nominal Bphtb PPAT
-                                    </h5>
-                                    <button class="btn btn-sm btn-primary" onclick="printRingkasanBPHTB()">
-                                        <i class="bi bi-printer-fill"></i>
-                                    </button>
-                                </div>
-                                <div id="ringkasanBulanan">
-                                    <!-- Data akan diisi oleh Otomatis -->
+                                <div class="modal-footer" style="background: #f8f9fa;">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-            </div>
+                <!-- Card untuk menampilkan daftar notaris pensiun -->
+                <div id="cardPensiun" style="display: none; margin-top: 20px;">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <i class="bi bi-person-x-fill"></i> <strong>DAFTAR NOTARIS PENSIUN</strong>
+                            <button type="button" class="btn-close btn-close-white float-end"
+                                onclick="tutupTablePensiun()"></button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 5%;">No</th>
+                                            <th style="width: 15%;">ID Notaris</th>
+                                            <th style="width: 20%;">Nama Notaris</th>
+                                            <th style="width: 25%;">Alamat</th>
+                                            <th style="width: 10%;">Tahun Pensiun</th>
+                                            <th style="width: 10%;">Keterangan</th>
+                                            <th style="width: 10%;">SK Pensiun</th> <!-- KOLOM BARU -->
+                                            <th style="width: 5%;">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyPensiun">
+                                        <tr>
+                                            <td colspan="8" class="text-center">Memuat数据...<\ /td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- TABLE -->
+                <div class="table-wrapper">
+
+                    <table id="tableLaporan">
+                        <thead>
+                            <tr>
+                                <th>Nomor Unik</th>
+                                <th>Nama</th>
+                                <th>Alamat Kantor</th>
+                                <th>Nomor Surat</th>
+                                <th>Tanggal Surat</th>
+                                <th>Tanggal Diterima</th>
+                                <th>Status Surat</th>
+                                <th>Laporan Bulanan</th>
+                                <th>Data Transaksi</th>
+                                <th>Jumlah Laporan</th>
+                                <th>SSPD BPHTB (Rp)</th>
+                                <th>Bentuk Perbuatan Hukum</th>
+                                <th>Nomor Surat Denda (STD)</th>
+                                <th>Lihat PDF STD</th>
+                                <th>Nomor Surat Pemberitahuan Denda</th>
+                                <th>Lihat PDF Pemberitahuan Denda</th>
+                                <th>Bukti Bayar Denda</th>
+                                <th>Catatan (Auto)</th>
+                                <th>Aksi Email</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="dataNotaris">
+
+                    </table>
+
+                    <div class="row mt-3 p-3 bg-light rounded shadow-sm">
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">
+                                Jumlah Laporan Diterima :
+                                <span id="totalLaporan">0</span>
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6 text-end">
+                            <h6 class="fw-bold text-success">
+                                Nominal Bphtb Total :
+                                <span id="totalSSPD">Rp. 0</span>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-wrapper">
+
+                    <div class="grafik-box">
+                        <h6>📊 Notaris Melapor per Bulan</h6>
+                        <canvas id="grafikBulanan"></canvas>
+                    </div>
+
+                    <div class="grafik-box">
+                        <h6>⏱ Status Laporan PPAT</h6>
+                        <canvas id="grafikStatus"></canvas>
+                    </div>
+
+                    <div class="grafik-box">
+                        <h6>🏆 PPAT Paling Aktif</h6>
+                        <canvas id="grafikTopNotaris"></canvas>
+                    </div>
+
+                    <!-- TOTAL BPHTB PER BULAN -->
+                    <div class="row mt-4 mb-4 ringkasan-bphtb">
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title text-info mb-0">
+                                            <i class="bi bi-calculator-fill"></i> Nominal Bphtb PPAT
+                                        </h5>
+                                        <button class="btn btn-sm btn-primary" onclick="printRingkasanBPHTB()">
+                                            <i class="bi bi-printer-fill"></i>
+                                        </button>
+                                    </div>
+                                    <div id="ringkasanBulanan">
+                                        <!-- Data akan diisi oleh Otomatis -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
-    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
