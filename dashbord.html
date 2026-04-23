@@ -1704,6 +1704,60 @@
             }
         }
 
+        .btn-pengaturan {
+            background: linear-gradient(135deg, #166aef, #042572);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-pengaturan::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-pengaturan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #0f172a, #020617);
+        }
+
+        .btn-pengaturan:hover::before {
+            left: 100%;
+        }
+
+        .btn-pengaturan:active {
+            transform: translateY(1px);
+        }
+
+        .btn-pengaturan i {
+            margin-right: 8px;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-pengaturan:hover i {
+            transform: rotate(30deg);
+        }
+
         /* Progress bar styling untuk loading */
         .progress {
             background-color: #e9ecef;
