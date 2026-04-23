@@ -2080,7 +2080,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzSHaD3uk4XipStLwrgjfEpVgVEf7kwvRENsQri9V7FeSVQop-ovGbHPkvB79ZiWVII5Q/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx2tYO1RBEl2dY9_ctSApZxmcQJdZkyu6SwG85SIZXmj7UnRmeLVB6JGhTxdqPRgr0CUw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -7222,22 +7222,21 @@
 
         // Fungsi generate pesan WhatsApp
         function generateWAMessage(nama, periode) {
-            return `*PEMBERITAHUAN LAPORAN BULANAN PPAT*
+            return `*PEMBERITAHUAN LAPORAN BULANAN ${periode}*
 
-Kepada Yth. ${nama}
+            Kepada Yth. ${nama}<br>
+            di<br>
+            Tempat
 
-Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima.
+            Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima sampai saat ini. sistem kami mendeteksi otomatis yang terlambat menyampaikan laporan ataupun yang tidak menyampaikan laporan, silahkan ce Email anda untuk mengetahui surat pemberitahuan denda dan surat tagihan denda.
 
-Mohon segera menyampaikan laporan melalui sistem yang tersedia di:
-https://zendi154.github.io/fomulir.html
+            Terima kasih atas perhatian dan kerjasamanya.
 
-Terima kasih atas perhatian dan kerjasamanya.
+            *Hormat kami,*
+            Bidang Pengendalian dan Evaluasi Pendapatan Daerah
+            Bapenda Kota Bengkulu
 
-*Hormat kami,*
-Bidang Pengendalian dan Evaluasi Pendapatan Daerah
-Bapenda Kota Bengkulu
-
-_*Pesan ini dikirim secara otomatis oleh sistem*_`;
+            _*Pesan ini dikirim secara otomatis oleh sistem tidak perlu dibalas*_`;
         }
 
         // Fungsi mencari nomor WA notaris
