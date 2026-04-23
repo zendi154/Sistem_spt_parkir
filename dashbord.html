@@ -2080,7 +2080,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzVSIHLNB0BYfCLgN1TZ6kraux_Lg6lSBi6aJ3zJvz_r8KR3ckrc3aZq5iX7vOuPF42ZQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzSHaD3uk4XipStLwrgjfEpVgVEf7kwvRENsQri9V7FeSVQop-ovGbHPkvB79ZiWVII5Q/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -7127,29 +7127,202 @@
             return null;
         }
 
-        // Fungsi untuk mengirim email notifikasi
-        async function kirimEmailNotifikasi(notaris, periode, emailTujuan) {
-            const subject = `Peringatan: Laporan Bulanan PPAT Periode ${periode}`;
-            const body = `
-        Kepada Yth. ${notaris.nama},
-        
-        Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode ${periode} belum kami terima.
-        
-        Mohon segera menyampaikan laporan melalui sistem yang tersedia di:
-        ${window.location.origin}/fomulir.html
-        
-        Terima kasih atas perhatian dan kerjasamanya.
-        
-        Hormat kami,
-        Bidang Pengendalian dan Evaluasi Pendapatan Daerah
-        Bapenda Kota Bengkulu
+        // Fungsi untuk mengirim notifikasi via WhatsApp
+        async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Memproses...',
+                text: 'Menyiapkan daftar notaris...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            let daftarWa = [];
+
+            // Cari nomor WA untuk setiap notaris
+            for (let i = 0; i < daftarNotaris.length; i++) {
+                const notaris = daftarNotaris[i];
+
+                // Cari nomor WA dari data laporan atau sheet NOTARIS
+                let nomorWa = await cariNomorWA(notaris.nama);
+
+                daftarWa.push({
+                    nama: notaris.nama,
+                    id: notaris.id,
+                    nomor_wa: nomorWa
+                });
+            }
+
+            Swal.close();
+
+            // Tampilkan daftar notaris dengan nomor WA
+            let daftarHtml = `
+        <div style="max-height: 500px; overflow-y: auto; font-size: 12px;">
+            <table class="table table-sm table-hover" style="font-size: 12px;">
+                <thead class="table-primary">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Notaris</th>
+                        <th>Nomor WA</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
 
-            // Panggil API Apps Script untuk kirim email
-            const response = await fetch(`${scriptURL}?action=kirim_notifikasi&email=${encodeURIComponent(emailTujuan)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
-            const result = await response.json();
+            daftarWa.forEach((item, idx) => {
+                const waUrl = item.nomor_wa ? `https://wa.me/${item.nomor_wa}?text=${encodeURIComponent(generateWAMessage(item.nama, periode))}` : '#';
+                const waStatus = item.nomor_wa ? '✅ Ada' : '❌ Tidak ada';
 
-            return result.success === true;
+                daftarHtml += `
+            <tr>
+                <td class="text-center">${idx + 1}</td>
+                <td><strong>${escapeHtml(item.nama)}</strong><br><small class="text-muted">${item.id}</small></td>
+                <td class="text-center">
+                    ${item.nomor_wa ? `<code>${item.nomor_wa}</code>` : '<span class="text-danger">-</span>'}
+                </td>
+                <td class="text-center">
+                    ${item.nomor_wa ?
+                        `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm" style="padding: 4px 10px;">
+                            <i class="bi bi-whatsapp"></i> Kirim WA
+                         </a>` :
+                        `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')" style="padding: 4px 10px;">
+                            <i class="bi bi-pencil"></i> Input No
+                         </button>`
+                    }
+                </td>
+            </tr>
+        `;
+            });
+
+            daftarHtml += `
+                </tbody>
+            </table>
+            <hr>
+            <div class="alert alert-info small">
+                <i class="bi bi-info-circle"></i> 
+                <strong>Petunjuk:</strong><br>
+                1. Klik tombol <i class="bi bi-whatsapp text-success"></i> <strong>Kirim WA</strong> untuk membuka WhatsApp<br>
+                2. Pesan akan otomatis terisi, tinggal kirim<br>
+                3. Jika nomor tidak ada, klik <strong>Input No</strong> untuk mengisi nomor WA
+            </div>
+        </div>
+    `;
+
+            const result = await Swal.fire({
+                title: `📱 Kirim Notifikasi WhatsApp`,
+                html: daftarHtml,
+                icon: 'info',
+                width: '900px',
+                showCloseButton: true,
+                showConfirmButton: false,
+                footer: '<button class="btn btn-primary" onclick="copySemuaNomorWA()"><i class="bi bi-clipboard"></i> Copy Semua Nomor WA</button>'
+            });
+        }
+
+        // Fungsi generate pesan WhatsApp
+        function generateWAMessage(nama, periode) {
+            return `*PEMBERITAHUAN LAPORAN BULANAN PPAT*
+
+Kepada Yth. ${nama}
+
+Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima.
+
+Mohon segera menyampaikan laporan melalui sistem yang tersedia di:
+https://zendi154.github.io/fomulir.html
+
+Terima kasih atas perhatian dan kerjasamanya.
+
+*Hormat kami,*
+Bidang Pengendalian dan Evaluasi Pendapatan Daerah
+Bapenda Kota Bengkulu
+
+_*Pesan ini dikirim secara otomatis oleh sistem*_`;
+        }
+
+        // Fungsi mencari nomor WA notaris
+        async function cariNomorWA(namaNotaris) {
+            // Coba cari dari data laporan
+            const dataLaporan = await getDataLaporanDariSheet();
+            for (const laporan of dataLaporan) {
+                if (laporan["nama_notaris_&_ppat"] === namaNotaris && laporan["nomor_wa"]) {
+                    return laporan["nomor_wa"];
+                }
+            }
+
+            // Coba cari dari sheet NOTARIS via API
+            try {
+                const response = await fetch(`${scriptURL}?action=get_nomor_wa&nama=${encodeURIComponent(namaNotaris)}`);
+                const result = await response.json();
+                if (result.nomor_wa) {
+                    return result.nomor_wa;
+                }
+            } catch (error) {
+                console.error("Gagal ambil nomor WA:", error);
+            }
+
+            return null;
+        }
+
+        // Fungsi input nomor WA manual
+        async function inputNomorWA(nama, id) {
+            const { value: nomorWa } = await Swal.fire({
+                title: `Input Nomor WhatsApp`,
+                html: `
+            <div class="text-start">
+                <p><strong>Notaris:</strong> ${nama}</p>
+                <p><strong>ID:</strong> ${id}</p>
+                <hr>
+                <label class="form-label">Nomor WhatsApp (format: 628xxxxxxxxxx):</label>
+                <input type="tel" id="nomorWaInput" class="form-control" placeholder="Contoh: 6281234567890">
+                <small class="text-muted">*Gunakan kode negara 62, tanpa tanda + atau 0 di awal</small>
+            </div>
+        `,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                preConfirm: () => {
+                    const nomor = document.getElementById('nomorWaInput').value;
+                    if (!nomor) {
+                        Swal.showValidationMessage('Nomor WA harus diisi!');
+                        return false;
+                    }
+                    if (!/^62\d{9,13}$/.test(nomor)) {
+                        Swal.showValidationMessage('Format nomor salah! Gunakan format 628xxxxxxxxxx');
+                        return false;
+                    }
+                    return nomor;
+                }
+            });
+
+            if (nomorWa) {
+                // Simpan nomor WA ke sheet NOTARIS
+                const response = await fetch(`${scriptURL}?action=simpan_nomor_wa&id=${encodeURIComponent(id)}&nomor=${encodeURIComponent(nomorWa)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire('Berhasil!', `Nomor WA ${nama} berhasil disimpan`, 'success');
+                    // Refresh daftar
+                    deteksiDanKirimTidakMelapor();
+                } else {
+                    Swal.fire('Gagal!', result.message, 'error');
+                }
+            }
+        }
+
+        // Copy semua nomor WA ke clipboard
+        function copySemuaNomorWA() {
+            // Ambil semua nomor WA dari tabel
+            const nomorElements = document.querySelectorAll('#swal2-html-container code');
+            const nomorList = Array.from(nomorElements).map(el => el.innerText).filter(n => n && n !== '-');
+
+            if (nomorList.length === 0) {
+                Swal.fire('Info', 'Tidak ada nomor WA yang tersedia', 'info');
+                return;
+            }
+
+            const textToCopy = nomorList.join('\n');
+            navigator.clipboard.writeText(textToCopy);
+            Swal.fire('Berhasil!', `${nomorList.length} nomor WA telah dicopy`, 'success');
         }
 
         // Tampilkan tombol hanya untuk ADMIN
