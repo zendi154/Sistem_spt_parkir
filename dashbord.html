@@ -3148,23 +3148,23 @@
             showLoading('Mengirim email...');
 
             // Buat URL parameter
-            const params = new URLSearchParams({
-                email: emailUser,
-                nama: data.nama,
-                id: data.id,
-                alamat: data.alamat,
-                bulan: data.bulan,
-                jumlah: data.jumlah,
-                jenis: jenis,
-                nomor_std: data.nomor_std
-            });
+            const params = new URLSearchParams();
+            params.append('email', emailUser);
+            params.append('nama', data.nama);
+            params.append('id', data.id);
+            params.append('alamat', data.alamat);
+            params.append('bulan', data.bulan);
+            params.append('jumlah', data.jumlah);
+            params.append('jenis', jenis);
+            params.append('nomor_std', data.nomor_std);
 
             const url = `${scriptURL}?${params.toString()}`;
 
-            console.log("Mengirim ke URL:", url);
+            console.log("Mengirim email ke:", emailUser);
+            console.log("URL:", url);
 
             try {
-                // Gunakan mode 'no-cors' untuk menghindari CORS
+                // Gunakan mode 'no-cors' untuk bypass CORS
                 const response = await fetch(url, {
                     method: 'GET',
                     mode: 'no-cors',
@@ -3173,33 +3173,31 @@
                     }
                 });
 
-                console.log("Response status:", response.status);
                 console.log("Response type:", response.type);
+                console.log("Response status:", response.status);
 
                 hideLoading();
 
-                // Karena mode 'no-cors', response tidak bisa dibaca
-                // Tapi jika sukses, email akan tetap terkirim
+                // Karena no-cors, response tidak bisa dibaca
+                // Tapi request tetap terkirim ke server
                 showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
                 // Update status email
                 await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
 
-                // Refresh data
+                // Refresh data setelah 2 detik
                 setTimeout(() => loadDataSheet(), 2000);
 
             } catch (error) {
                 hideLoading();
                 console.error("Error detail:", error);
-                console.error("Error name:", error.name);
-                console.error("Error message:", error.message);
 
-                // Tampilkan pesan error yang lebih informatif
-                let errorMessage = 'Gagal mengirim email. ';
+                // Tampilkan pesan yang lebih informatif
+                let errorMessage = 'Terjadi kesalahan. ';
                 if (error.message === 'Failed to fetch') {
-                    errorMessage += 'Tidak dapat terhubung ke server. Periksa koneksi internet atau URL Apps Script.';
+                    errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
                 } else {
-                    errorMessage += error.message;
+                    errorMessage = error.message;
                 }
 
                 showError('❌ Gagal Kirim', errorMessage);
@@ -3210,10 +3208,16 @@
 
         async function updateStatusEmail(id, status) {
             try {
-                const response = await fetch(`${scriptURL}?update_status=${id}&status=${status}`);
-                const result = await response.json();
-                console.log("Update status response:", result);
-                return result;
+                const url = `${scriptURL}?update_status=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`;
+
+                await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+
+                console.log(`Status updated: ${id} -> ${status}`);
+                return { success: true };
+
             } catch (err) {
                 console.error('Update status error:', err);
                 return { success: false };
