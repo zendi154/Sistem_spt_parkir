@@ -7185,7 +7185,6 @@
         }
 
         // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
-        // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
         async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
             // Tampilkan loading dengan progress
             Swal.fire({
@@ -7442,23 +7441,29 @@
 
         // Fungsi generate pesan WhatsApp
         function generateWAMessage(nama, periode) {
-            return `*PEMBERITAHUAN LAPORAN BULANAN ${periode}*
+            return `*📢 PEMBERITAHUAN PERIODE ${periode}*
 
-            Kepada Yth. ${nama}<br>
-            di<br>
-            Tempat
+Kepada Yth.🔗 *${nama}*
+di Tempat
 
-            Kami dari Bapenda Kota Bengkulu mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima sampai saat ini. sistem kami mendeteksi otomatis yang terlambat menyampaikan laporan ataupun yang tidak menyampaikan laporan, silahkan ce Email anda untuk mengetahui surat pemberitahuan denda dan surat tagihan denda.
+Kami dari *Badan Pendapatan Daerah Kota Bengkulu* mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima sampai saat ini sistem aku memproeses secara otomatis .
 
-            Terima kasih atas perhatian dan kerjasamanya.
+Sistem kami mendeteksi otomatis:
+• Terlambat menyampaikan laporan
+• Tidak menyampaikan laporan
 
-            *Hormat kami,*
-            Bidang Pengendalian dan Evaluasi Pendapatan Daerah
-            Bapenda Kota Bengkulu
+Silakan cek 📧 *Email* Anda untuk mengetahui:
+1. Surat Pemberitahuan Denda
+2. Surat Tagihan Denda (STD)
 
-            _*Pesan ini dikirim secara otomatis oleh sistem tidak perlu dibalas*_`;
+Atas perhatian dan kerjasama yang baik terimakasih.
+
+*Hormat kami,*
+Bidang Pengendalian dan Evaluasi Pendapatan Daerah
+Bapenda Kota Bengkulu
+
+_*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
         }
-
         // Fungsi mencari nomor WA notaris
         async function cariNomorWA(namaNotaris) {
             // Coba cari dari data laporan
