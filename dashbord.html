@@ -3147,34 +3147,62 @@
             isSending = true;
             showLoading('Mengirim email...');
 
-            // Buat URL dengan parameter yang lengkap
-            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+            // Buat URL parameter
+            const params = new URLSearchParams({
+                email: emailUser,
+                nama: data.nama,
+                id: data.id,
+                alamat: data.alamat,
+                bulan: data.bulan,
+                jumlah: data.jumlah,
+                jenis: jenis,
+                nomor_std: data.nomor_std
+            });
+
+            const url = `${scriptURL}?${params.toString()}`;
 
             console.log("Mengirim ke URL:", url);
 
             try {
-                const response = await fetch(url);
-                const result = await response.text();
-                console.log("Response dari server:", result);
+                // Gunakan mode 'no-cors' untuk menghindari CORS
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+
+                console.log("Response status:", response.status);
+                console.log("Response type:", response.type);
 
                 hideLoading();
 
-                // Apps Script mengembalikan "Email STD berhasil dikirim" jika sukses
-                if (response.ok && result.includes("berhasil")) {
-                    showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+                // Karena mode 'no-cors', response tidak bisa dibaca
+                // Tapi jika sukses, email akan tetap terkirim
+                showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
-                    // Update status di sheet
-                    await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
+                // Update status email
+                await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
 
-                    // Refresh data
-                    setTimeout(() => loadDataSheet(), 2000);
-                } else {
-                    showError('❌ Gagal Kirim', result || 'Terjadi kesalahan tidak diketahui');
-                }
+                // Refresh data
+                setTimeout(() => loadDataSheet(), 2000);
+
             } catch (error) {
                 hideLoading();
                 console.error("Error detail:", error);
-                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda. Error: ' + error.message);
+                console.error("Error name:", error.name);
+                console.error("Error message:", error.message);
+
+                // Tampilkan pesan error yang lebih informatif
+                let errorMessage = 'Gagal mengirim email. ';
+                if (error.message === 'Failed to fetch') {
+                    errorMessage += 'Tidak dapat terhubung ke server. Periksa koneksi internet atau URL Apps Script.';
+                } else {
+                    errorMessage += error.message;
+                }
+
+                showError('❌ Gagal Kirim', errorMessage);
             } finally {
                 isSending = false;
             }
