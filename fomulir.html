@@ -1841,16 +1841,23 @@
 
         async function checkLoginAndRole() {
             const token = localStorage.getItem("token");
+            console.log("=== CHECK LOGIN ===");
+            console.log("1. Token dari localStorage:", token);
+
             if (!token) {
+                console.log("2. Token TIDAK DITEMUKAN! Redirect ke table.html");
                 window.location.href = "table.html";
                 return false;
             }
 
             try {
+                console.log("3. Memanggil API getUserData...");
                 const response = await fetch(`${URL_API}?action=getUserData&token=${token}`);
                 const userData = await response.json();
+                console.log("4. Response dari server:", userData);
 
                 if (userData.status !== "success") {
+                    console.log("5. Status tidak success! Hapus token dan redirect");
                     localStorage.removeItem("token");
                     window.location.href = "table.html";
                     return false;
@@ -1860,15 +1867,19 @@
                 currentUserName = userData.name;
                 currentUserEmail = userData.email;
 
+                console.log("6. Role yang didapat:", currentUserRole);
+                console.log("7. Nama:", currentUserName);
+
                 localStorage.setItem("userRole", userData.role);
                 localStorage.setItem("userName", userData.name);
 
                 updateNavbarForRole(userData.role, userData.name);
 
+                console.log("8. Login BERHASIL untuk role:", currentUserRole);
                 return true;
 
             } catch (error) {
-                console.error("Error checking login:", error);
+                console.error("9. ERROR:", error);
                 return false;
             }
         }
