@@ -7456,6 +7456,32 @@
             await updateNotifikasiBelumLapor();
         }
 
+        async function kirimEmailNotifikasi(notaris, periode, email) {
+            try {
+                const params = new URLSearchParams();
+                params.append('email', email);
+                params.append('nama', notaris.nama);
+                params.append('id', notaris.id);
+                params.append('bulan', periode);
+                params.append('jenis', 'Tidak Menyampaikan Laporan');
+                params.append('nomor_std', '001');
+
+                const url = `${scriptURL}?${params.toString()}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+
+                console.log(`Notifikasi terkirim ke ${notaris.nama} (${email})`);
+                return true;
+
+            } catch (error) {
+                console.error(`Gagal kirim notifikasi ke ${notaris.nama}:`, error);
+                return false;
+            }
+        }
+
         // Fungsi untuk mencari email notaris
         async function cariEmailNotaris(namaNotaris) {
             // Coba cari dari data laporan yang ada
