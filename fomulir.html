@@ -1834,7 +1834,7 @@
         // FUNGSI PEMBATASAN AKSES
         // ============================================
 
-        const URL_API = "https://script.google.com/macros/s/AKfycbwfxdued9Es7bYHd4MRmg9rKSVBx1VaNIo5rPNYDbUEGmrGaj2xrw6VmAtxdRV_94Xpzg/exec";
+        const URL_API = "https://script.google.com/macros/s/AKfycbwXsh3qJO8w1hvrroyI71-UIyxbK6TOhYyPezJnH7PofB2DB3b6h6Yk69EZ8bVbSGAH/exec";
         let currentUserRole = null;
         let currentUserName = null;
         let currentUserEmail = null;
@@ -1881,9 +1881,9 @@
                 roleBadge.className = 'ms-3 me-2';
 
                 if (role === 'admin') {
-                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-shield-lock-fill"></i> ADMIN</span>';
+                    roleBadge.innerHTML = '<span class="badge bg-danger"><i class="bi bi-suitcase-lg-fill"></i> Hello! Administrator</span>';
                 } else {
-                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-eye-fill"></i> USER (Print Only)</span>';
+                    roleBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-person-arms-up"></i> Hello! User</span>';
                 }
 
                 const logoutBtn = document.querySelector('a[title="Logout"]');
@@ -1966,7 +1966,7 @@
         }
 
         /* =========================
-           FUNGSI ISI FOMULIR
+           FUNGSI FOMULIR
         ========================= */
 
         const scriptURL = 'https://script.google.com/macros/s/AKfycbx2tYO1RBEl2dY9_ctSApZxmcQJdZkyu6SwG85SIZXmj7UnRmeLVB6JGhTxdqPRgr0CUw/exec';
