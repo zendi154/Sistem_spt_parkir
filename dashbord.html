@@ -3203,51 +3203,62 @@
                 const response = await fetch(url);
                 const result = await response.json();
 
-                if (result.success) {
-                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
-                } else {
-                    showError('❌ Gagal', result.message);
-                }
-
                 hideLoading();
 
-                // anggap sukses
+                if (!result.success) {
+                    showError('❌ Gagal', result.message);
+                    isSending = false;
+                    return;
+                }
+
+                // ✅ HANYA SEKALI
                 showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
 
             } catch (error) {
                 hideLoading();
                 showError('❌ Gagal Kirim', 'Koneksi gagal');
+                isSending = false;
+                return;
             }
 
-            hideLoading();
-
-            // ✅ LANGSUNG ANGGAP SUKSES
-            showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
-
+            // ===============================
+            // UPDATE UI + STATUS
+            // ===============================
             let actionCell = row.cells[row.cells.length - 1];
             let uploadCell = row.cells[row.cells.length - 2];
             let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
 
             if (hasUpload) {
                 actionCell.innerHTML = `
-                <div class="text-center">
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                </div>`;
+        <div class="text-center">
+            <i class="bi bi-check-circle-fill text-success"></i>
+        </div>`;
                 row.style.backgroundColor = "#d4edda";
-                await updateStatusEmail(data.id, "SELESAI");
+                await updateStatus(data.id, "SELESAI");
             } else {
                 actionCell.innerHTML = `
-                <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
-                    <i class="bi bi-trash-fill"></i>
-                </button>`;
+        <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+            <i class="bi bi-envelope-fill"></i>
+        </button>
+        <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
+            <i class="bi bi-trash-fill"></i>
+        </button>`;
                 row.style.backgroundColor = "#fff3cd";
-                await updateStatusEmail(data.id, "WAITING_RESEND");
+                await updateStatus(data.id, "WAITING_RESEND");
             }
 
-            setTimeout(() => loadDataSheet(), 1000);
+            isSending = false;
+            setTimeout(() => loadDataSheet(), 800);
+        }
+
+        // UPDATE STATUS 
+        async function updateStatus(id, status) {
+            try {
+                const res = await fetch(scriptURL + "?update_status=" + id + "&status=" + status);
+                return await res.json();
+            } catch (err) {
+                console.error("Update status gagal:", err);
+            }
         }
 
         // PREVIEW PDF
