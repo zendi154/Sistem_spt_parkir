@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxtbPW0dy9pkyGxzcESRE14NhM_L-uUX1B-Kas09c7lWiAG3z-Jbm2ckcn7SCk1kFhatw/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxrbu-q6E7ASHT9XiccbaSLMvSNruyZXKlI8I1s4oUFl1y1m-x5Xmt1xR89fzP7YWrMlA/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2459,32 +2459,46 @@
             if (!tbody) return;
             tbody.innerHTML = "";
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada data</td></tr>';
                 hitungTotal();
                 return;
             }
 
             data.forEach(row => {
-                let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
+                // PAKAI SAFE HELPER
+                const id = safeString(row["id"]);
+                const nama = safeString(row["nama_notaris_&_ppat"]);
+                const alamat = safeString(row["alamat"]);
+                const nomorSurat = safeString(row["nomor_surat"]);
+                const tanggalSurat = safeString(row["tanggal_surat"]);
+                const tanggalDiterima = safeString(row["tanggal_diterima"]);
+                const statusSurat = safeString(row["status_surat"]);
+                const laporanBulanan = safeString(row["laporan_bulanan"]);
+                const jumlahLaporan = safeString(row["jumlah_laporan"]);
+                const sspdBphtb = safeString(row["sspd_bphtb"]);
+                const keterangan = safeString(row["keterangan"]);
+                const nomorStd = safeString(row["nomor_std"]);
+                const filePdf = safeString(row["file_pdf"]);
+                const nomorSuratDenda = safeString(row["nomor_surat_denda"]);
+                const filePdfDenda = safeString(row["file_pdf_denda"]);
+                const fileSuratUpload = safeString(row["file_surat_upload"]);
+                const statusEmail = safeString(row["status_email"]);
+
+                // Cek unique
+                let key = nama.toLowerCase() + "|" + laporanBulanan;
                 let isFirst = !seen.has(key);
                 if (isFirst) seen.add(key);
 
-                let tr = document.createElement("tr");
-                let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
-                let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
-                let statusEmail = row["status_email"] || "";
-                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                let statusTerlambat = cekTerlambat(tanggalDiterima);
+                let hasUpload = isNotEmpty(fileSuratUpload);
                 let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
+
+                // Action HTML
                 let actionHTML = "";
 
-                // CEK APAKAH SUDAH LUNAS (ADA UPLOAD)
                 if (hasUpload) {
                     actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                    tr.style.backgroundColor = "#d4edda";
-                }
-                // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
-                else if (statusTerlambat === "TIDAK VALID") {
-                    // TAMPILKAN TOMBOL EMAIL UNTUK DATA TERLAMBAT
+                } else if (statusTerlambat === "TIDAK VALID") {
                     actionHTML = `<div class="text-center">
                 <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
                     <i class="bi bi-envelope-fill"></i>
@@ -2493,10 +2507,7 @@
                     <i class="bi bi-trash-fill"></i>
                 </button>
             </div>`;
-                    tr.style.backgroundColor = "#ff0000";
-                }
-                // CEK APAKAH WAITING_RESEND ATAU EMAIL_TERKIRIM
-                else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
                     actionHTML = `<div class="text-center">
                 <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
                     <i class="bi bi-envelope-fill"></i>
@@ -2505,52 +2516,52 @@
                     <i class="bi bi-trash-fill"></i>
                 </button>
             </div>`;
-                    tr.style.backgroundColor = "#fff3cd";
-                }
-                // DATA VALID (TEPAT WAKTU) - TIDAK ADA TOMBOL EMAIL
-                else {
+                } else {
                     actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
-                    tr.style.backgroundColor = "transparent";
                 }
 
-                // KOLOM BUKTI SURAT
+                // Bukti surat
                 let buktiSuratHTML = '';
-                let tgl = getTanggal(row["tanggal_diterima"]);
+                let tgl = getTanggal(tanggalDiterima);
                 let bolehUpload = isFirst && tgl > 10;
 
-                if (row["file_surat_upload"]) {
-                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                if (isNotEmpty(fileSuratUpload)) {
+                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${fileSuratUpload}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
                 } else if (bolehUpload) {
-                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
+                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
+                <i class="bi bi-cloud-upload-fill"></i>
+                <input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${id}')" style="display:none;">
+            </label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
                 }
 
-                // CEK PENSIUN
-                const isPensiun = isNotarisPensiunCheck(row["id"]);
-                let namaHtml = row["nama_notaris_&_ppat"] || "";
+                // Cek pensiun
+                const isPensiun = isNotarisPensiunCheck(id);
+                let namaHtml = nama;
                 if (isPensiun) {
-                    const dataP = getDataPensiunById(row["id"]);
-                    namaHtml += `<span class="badge-pensiun">📅 Pensiun ${dataP?.tahunPensiun || ''}</span>`;
+                    const dataP = getDataPensiunById(id);
+                    namaHtml += `<span class="badge-pensiun">📅 Pensiun ${safeString(dataP?.tahunPensiun)}</span>`;
                 }
 
+                let tr = document.createElement("tr");
                 tr.innerHTML = `
-            <td>${row["id"] || ""}</td>
+            <td>${id}</td>
             <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
-            <td>${row["alamat"] || ""}</td>
-            <td>${row["nomor_surat"] || ""}</td>
-            <td>${row["tanggal_surat"] || ""}</td>
-            <td>${row["tanggal_diterima"] || ""}</td>
-            <td>${row["status_surat"] || ""}</td>
-            <td>${row["laporan_bulanan"] || ""}</td>
+            <td>${alamat}</td>
+            <td>${nomorSurat}</td>
+            <td>${tanggalSurat}</td>
+            <td>${tanggalDiterima}</td>
+            <td>${statusSurat}</td>
+            <td>${laporanBulanan}</td>
             <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
-            <td>${row["jumlah_laporan"] || ""}</td>
-            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
-            <td>${row["keterangan"] || ""}</td>
-            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
-            <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
-            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td>${jumlahLaporan}</td>
+            <td>${formatRupiahTabel(sspdBphtb)}</td>
+            <td>${keterangan}</td>
+            <td style="text-align:center;">${isNotEmpty(nomorStd) ? `<b>${nomorStd}</b>` : '-'}</td>
+            <td style="text-align:center;">${isNotEmpty(filePdf) ? `<a href="${filePdf}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${filePdf}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td style="text-align:center;">${isNotEmpty(nomorSuratDenda) ? `<b>${nomorSuratDenda}</b>` : '-'}</td>
+            <td style="text-align:center;">${isNotEmpty(filePdfDenda) ? `<a href="${filePdfDenda}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${filePdfDenda}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
