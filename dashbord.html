@@ -2461,10 +2461,16 @@
             if (!tbody) return;
             tbody.innerHTML = "";
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada data</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
                 hitungTotal();
+                updateGrafik(data);
                 return;
             }
+
+            // ============================================
+            // TAMBAHKAN: CEK APAKAH USER ADALAH ADMIN
+            // ============================================
+            const isAdmin = (currentUserRole === 'admin');
 
             data.forEach(row => {
                 let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
@@ -2486,26 +2492,35 @@
                 }
                 // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
                 else if (statusTerlambat === "TIDAK VALID") {
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                    tr.style.backgroundColor = "#ff0000";
+                    // HANYA ADMIN YANG LIHAT TOMBOL EMAIL
+                    if (isAdmin) {
+                        actionHTML = `<div class="text-center">
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
+                    } else {
+                        actionHTML = `<div class="text-center"><span class="text-danger" style="font-size: 11px;">❌ Terlambat</span></div>`;
+                    }
+                    tr.style.backgroundColor = "#ffcccc";
                 }
                 // CEK APAKAH WAITING_RESEND ATAU EMAIL_TERKIRIM
                 else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
+                    if (isAdmin) {
+                        actionHTML = `<div class="text-center">
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
+                    } else {
+                        actionHTML = `<div class="text-center"><span class="text-warning" style="font-size: 11px;">⏳ Menunggu</span></div>`;
+                    }
                     tr.style.backgroundColor = "#fff3cd";
                 }
                 // DATA VALID (TEPAT WAKTU) - TIDAK ADA TOMBOL EMAIL
@@ -2514,14 +2529,16 @@
                     tr.style.backgroundColor = "transparent";
                 }
 
-                // KOLOM BUKTI SURAT
+                // ============================================
+                // KOLOM BUKTI SURAT - HANYA ADMIN BISA UPLOAD
+                // ============================================
                 let buktiSuratHTML = '';
                 let tgl = getTanggal(row["tanggal_diterima"]);
-                let bolehUpload = isFirst && tgl > 10;
+                let bolehUpload = isFirst && tgl > 10 && isAdmin;  // TAMBAHKAN isAdmin
 
                 if (row["file_surat_upload"]) {
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                } else if (bolehUpload) {
+                } else if (bolehUpload && isAdmin) {  // TAMBAHKAN isAdmin
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
@@ -3014,7 +3031,7 @@
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
         async function uploadBuktiBayar(input, id) {
-            // Tambahkan proteksi di awal
+            // CEK APAKAH USER ADALAH ADMIN
             if (currentUserRole !== 'admin') {
                 Swal.fire({
                     icon: 'error',
@@ -3024,6 +3041,7 @@
                 });
                 return;
             }
+
             const file = input.files[0];
             if (!file) return;
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
