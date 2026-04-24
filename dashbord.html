@@ -2982,29 +2982,76 @@
         async function uploadBuktiBayar(input, id) {
             const file = input.files[0];
             if (!file) return;
-            if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
+
+            if (
+                file.type !== "application/pdf" &&
+                file.type !== "image/jpeg" &&
+                file.type !== "image/png"
+            ) {
                 showError('Format Salah', 'Hanya PDF, JPG, atau PNG!');
                 input.value = "";
                 return;
             }
-            const confirmed = await showConfirm('Upload Bukti Bayar', `Upload bukti bayar "${file.name}"?`);
-            if (!confirmed) { input.value = ""; return; }
+
+            const confirmed = await showConfirm(
+                'Upload Bukti Bayar',
+                `Upload bukti bayar "${file.name}"?`
+            );
+
+            if (!confirmed) {
+                input.value = "";
+                return;
+            }
+
             showLoading('Mengupload bukti bayar...');
+
             const reader = new FileReader();
+
             reader.onload = async function (e) {
                 const base64 = e.target.result.split(",")[1];
+
                 try {
-                    const response = await fetch(scriptURL, { method: "POST", body: new URLSearchParams({ action: "upload_pdf", id: id, file: base64, filename: file.name }) });
+                    const response = await fetch(scriptURL, {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            action: "upload_pdf",
+                            id: id,
+                            file: base64,
+                            filename: file.name
+                        })
+                    });
+
                     const res = await response.json();
                     hideLoading();
+
                     if (res.result === "success") {
                         showSuccess('✅ LUNAS!', 'Bukti bayar terupload. Status menjadi LUNAS.');
                         input.value = "";
-                        await updateStatusEmail(id, "SELESAI");
+
+                        // ✅ UPDATE STATUS KE APPS SCRIPT
+                        try {
+                            const updateRes = await fetch(
+                                scriptURL + "?update_status=" + id + "&status=SELESAI"
+                            );
+                            const updateData = await updateRes.json();
+                            console.log("Status berhasil diupdate", updateData);
+                        } catch (err) {
+                            console.error("Gagal update status:", err);
+                        }
+
                         setTimeout(() => loadDataSheet(), 500);
-                    } else { showError('Upload Gagal', res.message || 'Terjadi kesalahan.'); }
-                } catch (err) { hideLoading(); showError('Error Koneksi', 'Gagal terhubung ke server.'); }
+
+                    } else {
+                        showError('Upload Gagal', res.message || 'Terjadi kesalahan.');
+                    }
+
+                } catch (err) {
+                    hideLoading();
+                    showError('Error Koneksi', 'Gagal terhubung ke server.');
+                }
             };
+
+            // WAJIB DI LUAR onload
             reader.readAsDataURL(file);
         }
 
