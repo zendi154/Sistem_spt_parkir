@@ -3184,6 +3184,43 @@
             });
         }
 
+        // ============================================
+        // FUNGSI PEMBANTU PENGECEKAN KONEKSI
+        // ============================================
+
+        async function isServerReachable() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const response = await fetch(`${scriptURL}?action=ping`, {
+                    method: 'GET',
+                    signal: controller.signal,
+                    cache: 'no-cache'
+                });
+
+                clearTimeout(timeoutId);
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function checkConnectionBeforeAction(actionName) {
+            if (!navigator.onLine) {
+                showError('Tidak Ada Koneksi', `Tidak dapat ${actionName}. Periksa koneksi internet Anda.`);
+                return false;
+            }
+
+            const serverReachable = await isServerReachable();
+            if (!serverReachable) {
+                showError('Server Tidak Merespon', `Tidak dapat ${actionName}. Server sedang bermasalah.`);
+                return false;
+            }
+
+            return true;
+        }
+
         // ===============================
         // FUNGSI KIRIM EMAIL (DENGAN PENGECEKAN KONEKSI)
         // ===============================
