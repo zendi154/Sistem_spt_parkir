@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzf4-_PHOj_cXOA3t2dm2iQ6MdBcgk9nnTNdG__Kcnpwhx4Ida5PuJ0JbHxAQkMlnQmzw/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwgvZjCDJQXkP_5fsldys0j8KqxpqsMOd-TPslwvjkXSCFzAopRUWCDSxxyfJvgSJrufQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3185,21 +3185,57 @@
         }
 
         // ===============================
-        // FUNGSI KIRIM EMAIL
+        // FUNGSI KIRIM EMAIL (DENGAN PENGECEKAN KONEKSI)
         // ===============================
         let isSending = false;
+
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
-            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
-            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
+            // CEK KONEKSI INTERNET SEBELUM MENGIRIM
+            if (!navigator.onLine) {
+                showError('Tidak Ada Koneksi', 'Periksa koneksi internet Anda terlebih dahulu!');
+                return;
+            }
+
+            if (isSending) {
+                showError('Proses Berjalan', 'Tunggu sebentar...');
+                return;
+            }
+
+            const data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText,
+                nomor_std: nomorSPL
+            };
+
             isSending = true;
             showLoading('Mengirim email...');
+
             const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+
             try {
-                const response = await fetch(url);
+                // TAMBAHKAN TIMEOUT UNTUK FETCH
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 const result = await response.text();
                 hideLoading();
+
                 if (response.ok || result.includes("success")) {
                     showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
                     let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
@@ -3213,14 +3249,44 @@
                         row.style.backgroundColor = "#fff3cd";
                         await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
-                    setTimeout(() => loadDataSheet(), 1000);
-                } else { showError('❌ Gagal Kirim', result); }
-            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
+
+                    // REFRESH DATA SETELAH EMAIL TERKIRIM (CEK KONEKSI DULU)
+                    setTimeout(() => {
+                        if (navigator.onLine) {
+                            loadDataSheet();
+                        } else {
+                            console.warn("Tidak bisa refresh data: koneksi offline");
+                        }
+                    }, 1000);
+
+                } else {
+                    showError('❌ Gagal Kirim', result);
+                }
+
+            } catch (error) {
+                hideLoading();
+
+                // BEDAKAN JENIS ERROR
+                if (error.name === 'AbortError') {
+                    showError('❌ Timeout', 'Server tidak merespon. Cek koneksi internet Anda.');
+                } else if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+                    showError('❌ Koneksi Gagal', 'Periksa koneksi internet Anda dan coba lagi.');
+                } else {
+                    showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.');
+                }
+
+            } finally {
+                isSending = false;
+            }
         }
 
         // UPDATE STATUS EMAIL
         async function updateStatusEmail(id, status) {
-            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
+            try {
+                await fetch(`${scriptURL}?update_status=${id}&status=${status}`);
+            } catch (err) {
+                console.error(err);
+            }
         }
 
         // Data Baru
@@ -3230,7 +3296,7 @@
             newData.forEach(row => {
                 let tr = document.createElement("tr");
                 tr.innerHTML = `<td>${row["id"]}</td><td>${row["nama_notaris_&_ppat"]}</td>`;
-                tbody.prepend(tr); // masuk ke atas
+                tbody.prepend(tr);
             });
         }
 
@@ -3332,6 +3398,24 @@
             if (currentUserRole !== 'admin') {
                 disableEditingForUser();
                 showPrintOnlyNotification();
+            }
+
+            // ============================================
+            // INIT KONEKSI MONITORING (Tambahkan ini)
+            // ============================================
+            initConnectionMonitoring();
+
+            // Cek koneksi awal
+            const isConnected = await cekKoneksiLengkap();
+            if (!isConnected) {
+                console.warn("⚠️ Peringatan: Koneksi internet bermasalah");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Koneksi Bermasalah',
+                    text: 'Periksa koneksi internet Anda. Beberapa fitur mungkin tidak berfungsi.',
+                    confirmButtonColor: '#ffc107',
+                    timer: 5000
+                });
             }
 
             // ============================================
