@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyP_68K9zLZmRrePG8gV7UiDBWVOwUEoU-1-4WZFpUBEsgOskMcZXXBYhirPvApOPAaAA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzDkUTV0HbslpavQDltq2VDlp0Kf3DlQehK0mY7GWZkqPZpZIlxbZQ7Ww11GlQyduV4eQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3170,8 +3170,6 @@
         }
 
 
-        let isSending = false;
-
         async function kirimEmail(row, email, jenis, nomorSPL) {
             if (isSending) {
                 showError('Proses Berjalan', 'Tunggu sebentar...');
@@ -3190,9 +3188,8 @@
             isSending = true;
             showLoading('Mengirim email...');
 
-            // Gunakan scriptURL yang sudah dideploy (bukan URL_API)
-            const url = `${scriptURL}?action=kirim_email`
-                + `&email=${encodeURIComponent(email)}`
+            // Gunakan GET seperti kode lama yang berfungsi
+            const url = `${scriptURL}?email=${encodeURIComponent(email)}`
                 + `&nama=${encodeURIComponent(data.nama)}`
                 + `&id=${encodeURIComponent(data.id)}`
                 + `&alamat=${encodeURIComponent(data.alamat)}`
@@ -3202,18 +3199,19 @@
                 + `&nomor_std=${encodeURIComponent(data.nomor_std)}`;
 
             try {
+                // PERHATIAN: Response berupa TEXT, bukan JSON!
                 const response = await fetch(url);
-                const result = await response.json();
+                const textResponse = await response.text();
 
                 hideLoading();
 
-                if (!result.success) {
-                    showError('❌ Gagal', result.message);
+                if (textResponse.includes("berhasil")) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+                } else {
+                    showError('❌ Gagal', textResponse);
                     isSending = false;
                     return;
                 }
-
-                showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
 
                 // Update UI setelah email terkirim
                 let actionCell = row.cells[row.cells.length - 1];
@@ -3249,7 +3247,6 @@
                 isSending = false;
             }
         }
-
 
         // ===============================
         // UPDATE UI + STATUS
