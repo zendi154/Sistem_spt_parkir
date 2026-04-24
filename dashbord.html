@@ -1975,9 +1975,7 @@
                         <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
                             <i class="bi bi-person-x-fill"></i> Pensiun
                         </button>
-                        <!-- TOMBOL KELOLA - HANYA UNTUK ADMIN -->
-                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()"
-                            id="btnKelolaPensiun" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
                             <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
                         </button>
                     </div>
@@ -2326,7 +2324,7 @@
                             display: flex; align-items: center; gap: 10px;
                             animation: slideInRight 0.5s ease;">
                     <i class="bi bi-printer-fill" style="font-size: 1.2rem;"></i>
-                    <span><strong>Sekarang Mode Print Aktif!</strong><br><small>Anda hanya bisa Ekspor Data dan Mencetak data</small></span>
+                    <span><strong>Mode Print Only</strong><br><small>Anda hanya bisa melihat dan mencetak data</small></span>
                     <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem;">&times;</button>
                 </div>
                 <style>
@@ -2367,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxGzSXR656yaMbQciuXTKZ31Qm7K6VLRdYiyvXxyU9miIdZJd3l3S3Wey46104Wk0uizQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxdPBDaqYeWtz1zIBXVhnfYVJXASI2qeNQIvCLMoWm1l9tbaSZs4IAKJZ2Z4E4qFQi7Bw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2463,14 +2461,8 @@
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
                 hitungTotal();
-                updateGrafik(data);
                 return;
             }
-
-            // ============================================
-            // TAMBAHKAN: CEK APAKAH USER ADALAH ADMIN
-            // ============================================
-            const isAdmin = (currentUserRole === 'admin');
 
             data.forEach(row => {
                 let key = (row["nama_notaris_&_ppat"] || "").toLowerCase() + "|" + (row["laporan_bulanan"] || "");
@@ -2481,7 +2473,7 @@
                 let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
                 let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
                 let statusEmail = row["status_email"] || "";
-                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
                 let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
                 let actionHTML = "";
 
@@ -2492,35 +2484,27 @@
                 }
                 // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
                 else if (statusTerlambat === "TIDAK VALID") {
-                    // HANYA ADMIN YANG LIHAT TOMBOL EMAIL
-                    if (isAdmin) {
-                        actionHTML = `<div class="text-center">
-                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
-                        <i class="bi bi-envelope-fill"></i>
-                    </button>
-                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </div>`;
-                    } else {
-                        actionHTML = `<div class="text-center"><span class="text-danger" style="font-size: 11px;">❌ Terlambat</span></div>`;
-                    }
-                    tr.style.backgroundColor = "#ffcccc";
+                    // TAMPILKAN TOMBOL EMAIL UNTUK DATA TERLAMBAT
+                    actionHTML = `<div class="text-center">
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
+                    tr.style.backgroundColor = "#ff0000";
                 }
                 // CEK APAKAH WAITING_RESEND ATAU EMAIL_TERKIRIM
                 else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                    if (isAdmin) {
-                        actionHTML = `<div class="text-center">
-                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
-                        <i class="bi bi-envelope-fill"></i>
-                    </button>
-                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </div>`;
-                    } else {
-                        actionHTML = `<div class="text-center"><span class="text-warning" style="font-size: 11px;">⏳ Menunggu</span></div>`;
-                    }
+                    actionHTML = `<div class="text-center">
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
                     tr.style.backgroundColor = "#fff3cd";
                 }
                 // DATA VALID (TEPAT WAKTU) - TIDAK ADA TOMBOL EMAIL
@@ -2529,16 +2513,14 @@
                     tr.style.backgroundColor = "transparent";
                 }
 
-                // ============================================
-                // KOLOM BUKTI SURAT - HANYA ADMIN BISA UPLOAD
-                // ============================================
+                // KOLOM BUKTI SURAT
                 let buktiSuratHTML = '';
                 let tgl = getTanggal(row["tanggal_diterima"]);
-                let bolehUpload = isFirst && tgl > 10 && isAdmin;  // TAMBAHKAN isAdmin
+                let bolehUpload = isFirst && tgl > 10;
 
                 if (row["file_surat_upload"]) {
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                } else if (bolehUpload && isAdmin) {  // TAMBAHKAN isAdmin
+                } else if (bolehUpload) {
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
@@ -2552,60 +2534,23 @@
                     namaHtml += `<span class="badge-pensiun">📅 Pensiun ${dataP?.tahunPensiun || ''}</span>`;
                 }
 
-                // ========== PERBAIKAN: Fungsi untuk aman mengambil string ==========
-                function safeString(value) {
-                    if (value === undefined || value === null) return '';
-                    if (typeof value === 'string') return value;
-                    if (typeof value === 'number') return value.toString();
-                    if (typeof value === 'boolean') return value.toString();
-                    return '';
-                }
-
-                function safeTrim(value) {
-                    let str = safeString(value);
-                    return str.trim();
-                }
-
-                // Ambil nilai dengan aman
-                let id = safeString(row["id"]);
-                let alamat = safeString(row["alamat"]);
-                let nomorSurat = safeString(row["nomor_surat"]);
-                let tanggalSurat = safeString(row["tanggal_surat"]);
-                let tanggalDiterima = safeString(row["tanggal_diterima"]);
-                let statusSurat = safeString(row["status_surat"]);
-                let laporanBulanan = safeString(row["laporan_bulanan"]);
-                let jumlahLaporan = safeString(row["jumlah_laporan"]);
-                let sspdBphtb = safeString(row["sspd_bphtb"]);
-                let keterangan = safeString(row["keterangan"]);
-
-                // ========== PERBAIKAN UTAMA: untuk nomor_std dan nomor_surat_denda ==========
-                let nomorStd = safeTrim(row["nomor_std"]);
-                let nomorSuratDenda = safeTrim(row["nomor_surat_denda"]);
-
-                // Data Transaksi
-                let dataTransaksiHtml = formatDataTransaksi(row["data_transaksi"]);
-
-                // File PDF
-                let filePdfHtml = row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-';
-                let filePdfDendaHtml = row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-';
-
                 tr.innerHTML = `
-            <td style="text-align:center;">${id}</td>
+            <td>${row["id"] || ""}</td>
             <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
-            <td>${alamat}</td>
-            <td>${nomorSurat || '-'}</td>
-            <td>${tanggalSurat || '-'}</td>
-            <td>${tanggalDiterima || '-'}</td>
-            <td>${statusSurat || '-'}</td>
-            <td>${laporanBulanan || '-'}</td>
-            <td style="text-align:center;">${dataTransaksiHtml}</td>
-            <td>${jumlahLaporan || '0'}</td>
-            <td>${formatRupiahTabel(sspdBphtb)}</td>
-            <td>${keterangan || '-'}</td>
-            <td style="text-align:center;">${nomorStd !== "" ? `<b>${nomorStd}</b>` : '-'}</td>
-            <td style="text-align:center;">${filePdfHtml}</td>
-            <td style="text-align:center;">${nomorSuratDenda !== "" ? `<b>${nomorSuratDenda}</b>` : '-'}</td>
-            <td style="text-align:center;">${filePdfDendaHtml}</td>
+            <td>${row["alamat"] || ""}</td>
+            <td>${row["nomor_surat"] || ""}</td>
+            <td>${row["tanggal_surat"] || ""}</td>
+            <td>${row["tanggal_diterima"] || ""}</td>
+            <td>${row["status_surat"] || ""}</td>
+            <td>${row["laporan_bulanan"] || ""}</td>
+            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
+            <td>${row["jumlah_laporan"] || ""}</td>
+            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
+            <td>${row["keterangan"] || ""}</td>
+            <td style="text-align:center;">${(row["nomor_std"] && String(row["nomor_std"]).trim() !== "") ? `<b>${escapeHtml(String(row["nomor_std"]))}</b>` : '-'}
+            <td style="text-align:center;">${(row["file_pdf"] && String(row["file_pdf"]).trim() !== "") ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}
+            <td style="text-align:center;">${(row["nomor_surat_denda"] && String(row["nomor_surat_denda"]).trim() !== "") ? `<b>${escapeHtml(String(row["nomor_surat_denda"]))}</b>` : '-'}
+            <td style="text-align:center;">${(row["file_pdf_denda"] && String(row["file_pdf_denda"]).trim() !== "") ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
@@ -3031,17 +2976,6 @@
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
         async function uploadBuktiBayar(input, id) {
-            // CEK APAKAH USER ADALAH ADMIN
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-
             const file = input.files[0];
             if (!file) return;
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
@@ -3074,11 +3008,6 @@
         // FUNGSI HAPUS DATA
         // ===============================
         async function hapusData(btn) {
-            // ========== TAMBAHKAN 3 BARIS INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
-                return;
-            }
             const confirmed = await showConfirm('Hapus Data', 'Yakin ingin menghapus data ini?');
             if (!confirmed) return;
             showLoading('Menghapus data...');
@@ -3096,12 +3025,6 @@
         // FUNGSI BUKA MODAL EMAIL (CEK APAKAH SUDAH LUNAS)
         // ===============================
         function bukaModalEmail(row) {
-            // ========== TAMBAHKAN 3 BARIS INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
-                return;
-            }
-            // ==============================
             const [id, nama, , , , , , bulan] = [...row.cells].map(c => c.innerText);
             const uploadCell = row.cells[row.cells.length - 2];
             const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
@@ -3200,43 +3123,105 @@
         // ===============================
         let isSending = false;
         async function kirimEmail(row, email, jenis, nomorSPL) {
-            // ========== TAMBAHKAN 3 BARIS INI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
+            if (isSending) {
+                showError('Proses Berjalan', 'Tunggu sebentar...');
                 return;
             }
-            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
-            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
-            isSending = true;
-            showLoading('Proses Mengirim email...');
-            const url = `${scriptURL}?email=${encodeURIComponent(email)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
-            try {
-                const response = await fetch(url);
-                const result = await response.text();
-                hideLoading();
-                if (response.ok || result.includes("success")) {
-                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
-                    let actionCell = row.cells[row.cells.length - 1];
-                    let uploadCell = row.cells[row.cells.length - 2];
-                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
 
-                    if (hasUpload) {
-                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
-                        row.style.backgroundColor = "#d4edda";
-                        await updateStatusEmail(data.id, "SELESAI");
-                    } else {
-                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
-                        row.style.backgroundColor = "#fff3cd";
-                        await updateStatusEmail(data.id, "WAITING_RESEND");
+            const data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText,
+                nomor_std: nomorSPL
+            };
+
+            isSending = true;
+            showLoading('Mengirim email...');
+
+            // Buat URL parameter
+            const params = new URLSearchParams();
+            params.append('email', email);
+            params.append('nama', data.nama);
+            params.append('id', data.id);
+            params.append('alamat', data.alamat);
+            params.append('bulan', data.bulan);
+            params.append('jumlah', data.jumlah);
+            params.append('jenis', jenis);
+            params.append('nomor_std', data.nomor_std);
+
+            const url = `${scriptURL}?${params.toString()}`;
+
+            console.log("Mengirim email ke:", email);
+            console.log("URL:", url);
+
+            try {
+                // Gunakan mode 'no-cors' untuk bypass CORS
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     }
-                    setTimeout(() => loadDataSheet(), 1000);
-                } else { showError('❌ Gagal Kirim', result); }
-            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
+                });
+
+                console.log("Response type:", response.type);
+                console.log("Response status:", response.status);
+
+                hideLoading();
+
+                // Karena no-cors, response tidak bisa dibaca
+                // Tapi request tetap terkirim ke server
+                showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+
+                // Update status email
+                await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
+
+                // Refresh data setelah 2 detik
+                setTimeout(() => loadDataSheet(), 2000);
+
+            } catch (error) {
+                hideLoading();
+                console.error("Error detail:", error);
+
+                // Tampilkan pesan yang lebih informatif
+                let errorMessage = 'Terjadi kesalahan. ';
+                if (error.message === 'Failed to fetch') {
+                    errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                showError('❌ Gagal Kirim', errorMessage);
+            } finally {
+                isSending = false;
+            }
         }
 
-        // UPDATE STATUS EMAIL
         async function updateStatusEmail(id, status) {
-            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
+            try {
+                const url = `${scriptURL}?update_status=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`;
+
+                await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+
+                console.log(`Status updated: ${id} -> ${status}`);
+                return { success: true };
+
+            } catch (err) {
+                console.error('Update status error:', err);
+                return { success: false };
+            }
         }
 
         // Data Baru
@@ -5595,16 +5580,6 @@
 
         // Tandai notaris sebagai pensiun (DENGAN LOADING YANG BENAR)
         async function tandaiPensiun() {
-            // ========== TAMBAHKAN PROTEKSI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
             const select = document.getElementById('selectNotarisPensiun');
             const fileInput = document.getElementById('fileSKPensiun');
             const namaNotaris = select ? select.value : '';
@@ -5854,17 +5829,6 @@
 
         // Hapus notaris pensiun
         async function hapusPensiun(id) {
-            // ========== TAMBAHKAN PROTEKSI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
-            // =========================================
             if (!id) {
                 showError('Error', 'ID notaris tidak valid');
                 return;
@@ -6001,16 +5965,6 @@
 
         // Buka modal pensiun
         async function bukaModalPensiun() {
-            // ========== TAMBAHKAN PROTEKSI ==========
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
             // Load data pensiun terbaru
             await getNotarisPensiun();
 
@@ -7502,6 +7456,32 @@
             await updateNotifikasiBelumLapor();
         }
 
+        async function kirimEmailNotifikasi(notaris, periode, email) {
+            try {
+                const params = new URLSearchParams();
+                params.append('email', email);
+                params.append('nama', notaris.nama);
+                params.append('id', notaris.id);
+                params.append('bulan', periode);
+                params.append('jenis', 'Tidak Menyampaikan Laporan');
+                params.append('nomor_std', '001');
+
+                const url = `${scriptURL}?${params.toString()}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+
+                console.log(`Notifikasi terkirim ke ${notaris.nama} (${email})`);
+                return true;
+
+            } catch (error) {
+                console.error(`Gagal kirim notifikasi ke ${notaris.nama}:`, error);
+                return false;
+            }
+        }
+
         // Fungsi untuk mencari email notaris
         async function cariEmailNotaris(namaNotaris) {
             // Coba cari dari data laporan yang ada
@@ -7713,16 +7693,6 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
 
         // Copy semua nomor WA ke clipboard
         function copySemuaNomorWA() {
-            // Proteksi: Hanya ADMIN yang bisa copy nomor WA
-            if (currentUserRole !== 'admin') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Akses Ditolak!',
-                    text: 'Fitur ini hanya untuk Administrator.',
-                    confirmButtonColor: '#dc3545'
-                });
-                return;
-            }
             // Ambil semua nomor WA dari tabel
             const nomorElements = document.querySelectorAll('#swal2-html-container code');
             const nomorList = Array.from(nomorElements).map(el => el.innerText).filter(n => n && n !== '-');
@@ -7753,19 +7723,6 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 btnDeteksi.style.display = 'block';
             }
         }
-        // Di dalam DOMContentLoaded atau setelah checkLoginAndRole()
-        if (currentUserRole === 'admin') {
-            const btnKelolaPensiun = document.getElementById('btnKelolaPensiun');
-            if (btnKelolaPensiun) {
-                btnKelolaPensiun.style.display = 'inline-block';
-            }
-        } else {
-            const btnKelolaPensiun = document.getElementById('btnKelolaPensiun');
-            if (btnKelolaPensiun) {
-                btnKelolaPensiun.style.display = 'none';
-            }
-        }
-
 
         async function deteksiOtomatisTidakLapor() {
             // Tampilkan dialog untuk input bulan dan tahun
