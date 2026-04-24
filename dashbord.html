@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwBj00xdqQQBpPNpN5Fwkz1YRpSNg1hHPnU3zXESDsydq2eC84GOkoYMt0y4yYj-bi6SA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz1fk3toTFd-Fm5mRrJ643pdbLnxhUgCsnuoQl9L-Labgkn-P1d_QlfHVJTlYyT60G3Gw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3153,45 +3153,54 @@
                 + `&nomor_std=${encodeURIComponent(data.nomor_std)}`;
 
             try {
-                // 🔥 WAJIB no-cors
-                await fetch(url, { method: "GET", mode: "no-cors" });
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+                } else {
+                    showError('❌ Gagal', result.message);
+                }
 
                 hideLoading();
 
-                // ✅ LANGSUNG ANGGAP SUKSES
+                // anggap sukses
                 showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
 
-                let actionCell = row.cells[row.cells.length - 1];
-                let uploadCell = row.cells[row.cells.length - 2];
-                let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
+            } catch (error) {
+                hideLoading();
+                showError('❌ Gagal Kirim', 'Koneksi gagal');
+            }
 
-                if (hasUpload) {
-                    actionCell.innerHTML = `
+            hideLoading();
+
+            // ✅ LANGSUNG ANGGAP SUKSES
+            showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+
+            let actionCell = row.cells[row.cells.length - 1];
+            let uploadCell = row.cells[row.cells.length - 2];
+            let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
+
+            if (hasUpload) {
+                actionCell.innerHTML = `
                 <div class="text-center">
                     <i class="bi bi-check-circle-fill text-success"></i>
                 </div>`;
-                    row.style.backgroundColor = "#d4edda";
-                    await updateStatusEmail(data.id, "SELESAI");
-                } else {
-                    actionCell.innerHTML = `
+                row.style.backgroundColor = "#d4edda";
+                await updateStatusEmail(data.id, "SELESAI");
+            } else {
+                actionCell.innerHTML = `
                 <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
                     <i class="bi bi-envelope-fill"></i>
                 </button>
                 <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
                     <i class="bi bi-trash-fill"></i>
                 </button>`;
-                    row.style.backgroundColor = "#fff3cd";
-                    await updateStatusEmail(data.id, "WAITING_RESEND");
-                }
-
-                setTimeout(() => loadDataSheet(), 1000);
-
-            } catch (error) {
-                hideLoading();
-                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.');
-            } finally {
-                isSending = false;
+                row.style.backgroundColor = "#fff3cd";
+                await updateStatusEmail(data.id, "WAITING_RESEND");
             }
+
+            setTimeout(() => loadDataSheet(), 1000);
         }
 
         // PREVIEW PDF
