@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzG63HhEoAq2OOrBsizxX2qu3C-7SPveaiVvYgnDuJZNRBN5l0jxMDkJsnyjSndKIC_/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxtIrHeI1eLATuOJQCgXRsagGMuhYH-vsa_3nF4i_HW7s9E2LzoVawdDeLCBNbTibux0w/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2489,82 +2489,82 @@
         }
 
         function renderTable(data) {
-                let seen = new Set();
-                const tbody = document.querySelector("#dataNotaris");
-                if (!tbody) return;
-                tbody.innerHTML = "";
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
-                    hitungTotal();
-                    return;
-                }
+            let seen = new Set();
+            const tbody = document.querySelector("#dataNotaris");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
+                hitungTotal();
+                return;
+            }
 
-                data.forEach(row => {
-                    try {
-                        // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
-                        const id = safeString(row["id"], '');
-                        const nama = safeString(row["nama_notaris_&_ppat"], '');
-                        const alamat = safeString(row["alamat"], '');
-                        const nomorSurat = safeString(row["nomor_surat"], '');
-                        const tanggalSurat = safeString(row["tanggal_surat"], '');
-                        const tanggalDiterima = safeString(row["tanggal_diterima"], '');
-                        const statusSurat = safeString(row["status_surat"], '');
-                        const laporanBulanan = safeString(row["laporan_bulanan"], '');
-                        const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
-                        const sspdBphtb = safeString(row["sspd_bphtb"], '0');
-                        const keterangan = safeString(row["keterangan"], '');
-                        const nomorStd = safeString(row["nomor_std"], '');
-                        const filePdf = safeString(row["file_pdf"], '');
-                        const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
-                        const filePdfDenda = safeString(row["file_pdf_denda"], '');
-                        const fileSuratUpload = safeString(row["file_surat_upload"], '');
-                        const statusEmail = safeString(row["status_email"], '');
-                        const dataTransaksi = row["data_transaksi"] || '';
+            data.forEach(row => {
+                try {
+                    // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
+                    const id = safeString(row["id"], '');
+                    const nama = safeString(row["nama_notaris_&_ppat"], '');
+                    const alamat = safeString(row["alamat"], '');
+                    const nomorSurat = safeString(row["nomor_surat"], '');
+                    const tanggalSurat = safeString(row["tanggal_surat"], '');
+                    const tanggalDiterima = safeString(row["tanggal_diterima"], '');
+                    const statusSurat = safeString(row["status_surat"], '');
+                    const laporanBulanan = safeString(row["laporan_bulanan"], '');
+                    const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
+                    const sspdBphtb = safeString(row["sspd_bphtb"], '0');
+                    const keterangan = safeString(row["keterangan"], '');
+                    const nomorStd = safeString(row["nomor_std"], '');
+                    const filePdf = safeString(row["file_pdf"], '');
+                    const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
+                    const filePdfDenda = safeString(row["file_pdf_denda"], '');
+                    const fileSuratUpload = safeString(row["file_surat_upload"], '');
+                    const statusEmail = safeString(row["status_email"], '');
+                    const dataTransaksi = row["data_transaksi"] || '';
 
-                        // Cek unique
-                        let key = nama.toLowerCase() + "|" + laporanBulanan;
-                        let isFirst = !seen.has(key);
-                        if (isFirst) seen.add(key);
+                    // Cek unique
+                    let key = nama.toLowerCase() + "|" + laporanBulanan;
+                    let isFirst = !seen.has(key);
+                    if (isFirst) seen.add(key);
 
-                        let statusTerlambat = cekTerlambat(tanggalDiterima) || "";
-                        let hasUpload = isNotEmpty(fileSuratUpload);
-                        let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
+                    let statusTerlambat = cekTerlambat(tanggalDiterima) || "";
+                    let hasUpload = isNotEmpty(fileSuratUpload);
+                    let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
 
-                        // ============================================
-                        // TENTUKAN WARNA BARIS BERDASARKAN STATUS
-                        // ============================================
-                        let rowBackgroundColor = "";
-                        let rowTextColor = "";
+                    // ============================================
+                    // TENTUKAN WARNA BARIS BERDASARKAN STATUS
+                    // ============================================
+                    let rowBackgroundColor = "";
+                    let rowTextColor = "";
 
-                        // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN
-                        const isTerlambat = (statusTerlambat === "TIDAK VALID");
-                        const isTidakMenyampaikan = (statusSurat === "Tidak Menyampaikan Laporan");
+                    // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN
+                    const isTerlambat = (statusTerlambat === "TIDAK VALID");
+                    const isTidakMenyampaikan = (statusSurat === "Tidak Menyampaikan Laporan");
 
-                        if (isTerlambat || isTidakMenyampaikan) {
-                            // WARNA MERAH untuk TERLAMBAT atau TIDAK MENYAMPAIKAN
-                            rowBackgroundColor = "#ffebee";  // merah muda terang
-                            rowTextColor = "#c62828";        // merah gelap untuk teks
-                        } else if (hasUpload) {
-                            // WARNA HIJAU untuk LUNAS
-                            rowBackgroundColor = "#e8f5e9";  // hijau muda
-                            rowTextColor = "#2e7d32";        // hijau gelap
-                        } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                            // WARNA KUNING untuk menunggu resend
-                            rowBackgroundColor = "#fff8e1";  // kuning muda
-                            rowTextColor = "#f57f17";        // orange
-                        } else {
-                            // WARNA DEFAULT
-                            rowBackgroundColor = "#ffffff";
-                            rowTextColor = "#000000";
-                        }
+                    if (isTerlambat || isTidakMenyampaikan) {
+                        // WARNA MERAH untuk TERLAMBAT atau TIDAK MENYAMPAIKAN
+                        rowBackgroundColor = "#ffebee";  // merah muda terang
+                        rowTextColor = "#c62828";        // merah gelap untuk teks
+                    } else if (hasUpload) {
+                        // WARNA HIJAU untuk LUNAS
+                        rowBackgroundColor = "#e8f5e9";  // hijau muda
+                        rowTextColor = "#2e7d32";        // hijau gelap
+                    } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                        // WARNA KUNING untuk menunggu resend
+                        rowBackgroundColor = "#fff8e1";  // kuning muda
+                        rowTextColor = "#f57f17";        // orange
+                    } else {
+                        // WARNA DEFAULT
+                        rowBackgroundColor = "#ffffff";
+                        rowTextColor = "#000000";
+                    }
 
-                        // Action HTML
-                        let actionHTML = "";
+                    // Action HTML
+                    let actionHTML = "";
 
-                        if (hasUpload) {
-                            actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                        } else if (statusTerlambat === "TIDAK VALID") {
-                            actionHTML = `<div class="text-center">
+                    if (hasUpload) {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
+                    } else if (statusTerlambat === "TIDAK VALID") {
+                        actionHTML = `<div class="text-center">
                     <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
                         <i class="bi bi-envelope-fill"></i>
                     </button>
@@ -2572,8 +2572,8 @@
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>`;
-                        } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                            actionHTML = `<div class="text-center">
+                    } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                        actionHTML = `<div class="text-center">
                     <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
                         <i class="bi bi-envelope-fill"></i>
                     </button>
@@ -2581,66 +2581,66 @@
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>`;
-                        } else {
-                            actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
-                        }
+                    } else {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                    }
 
-                        // Bukti surat
-                        let buktiSuratHTML = '';
-                        let tgl = getTanggal(tanggalDiterima) || 0;
-                        let bolehUpload = isFirst && tgl > 10;
+                    // Bukti surat
+                    let buktiSuratHTML = '';
+                    let tgl = getTanggal(tanggalDiterima) || 0;
+                    let bolehUpload = isFirst && tgl > 10;
 
-                        if (isNotEmpty(fileSuratUpload)) {
-                            buktiSuratHTML = `<a href="#" onclick="previewPDF('${escapeHtml(fileSuratUpload)}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                        } else if (bolehUpload) {
-                            buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
+                    if (isNotEmpty(fileSuratUpload)) {
+                        buktiSuratHTML = `<a href="#" onclick="previewPDF('${escapeHtml(fileSuratUpload)}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                    } else if (bolehUpload) {
+                        buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
                     <i class="bi bi-cloud-upload-fill"></i>
                     <input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${escapeHtml(id)}')" style="display:none;">
                 </label>`;
-                        } else {
-                            buktiSuratHTML = `<span style="color:gray;">-</span>`;
+                    } else {
+                        buktiSuratHTML = `<span style="color:gray;">-</span>`;
+                    }
+
+                    // Cek pensiun dengan safe check
+                    let namaHtml = escapeHtml(nama);
+                    try {
+                        const isPensiun = isNotarisPensiunCheck(id);
+                        if (isPensiun) {
+                            const dataP = getDataPensiunById(id);
+                            const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '';
+                            namaHtml += `<span class="badge-pensiun">📅 Pensiun ${escapeHtml(tahunPensiun)}</span>`;
                         }
+                    } catch (e) {
+                        console.warn("Error cek pensiun:", e);
+                    }
 
-                        // Cek pensiun dengan safe check
-                        let namaHtml = escapeHtml(nama);
-                        try {
-                            const isPensiun = isNotarisPensiunCheck(id);
-                            if (isPensiun) {
-                                const dataP = getDataPensiunById(id);
-                                const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '';
-                                namaHtml += `<span class="badge-pensiun">📅 Pensiun ${escapeHtml(tahunPensiun)}</span>`;
-                            }
-                        } catch (e) {
-                            console.warn("Error cek pensiun:", e);
-                        }
+                    // Format data transaksi dengan safe fallback
+                    let formattedTransaksi = '-';
+                    try {
+                        formattedTransaksi = formatDataTransaksi(dataTransaksi);
+                    } catch (e) {
+                        console.warn("Error format transaksi:", e);
+                        formattedTransaksi = '<span class="text-danger">Error data</span>';
+                    }
 
-                        // Format data transaksi dengan safe fallback
-                        let formattedTransaksi = '-';
-                        try {
-                            formattedTransaksi = formatDataTransaksi(dataTransaksi);
-                        } catch (e) {
-                            console.warn("Error format transaksi:", e);
-                            formattedTransaksi = '<span class="text-danger">Error data</span>';
-                        }
+                    // ============================================
+                    // BUAT ELEMENT TR DENGAN WARNA
+                    // ============================================
+                    let tr = document.createElement("tr");
 
-                        // ============================================
-                        // BUAT ELEMENT TR DENGAN WARNA
-                        // ============================================
-                        let tr = document.createElement("tr");
+                    // Terapkan warna background dan text
+                    tr.style.backgroundColor = rowBackgroundColor;
+                    tr.style.transition = "background-color 0.3s ease";
 
-                        // Terapkan warna background dan text
-                        tr.style.backgroundColor = rowBackgroundColor;
-                        tr.style.transition = "background-color 0.3s ease";
+                    // Tambahkan class untuk efek hover yang berbeda
+                    if (isTerlambat || isTidakMenyampaikan) {
+                        tr.style.borderLeft = "4px solid #dc3545";
+                        tr.setAttribute("data-status", "danger");
+                    } else if (hasUpload) {
+                        tr.setAttribute("data-status", "success");
+                    }
 
-                        // Tambahkan class untuk efek hover yang berbeda
-                        if (isTerlambat || isTidakMenyampaikan) {
-                            tr.style.borderLeft = "4px solid #dc3545";
-                            tr.setAttribute("data-status", "danger");
-                        } else if (hasUpload) {
-                            tr.setAttribute("data-status", "success");
-                        }
-
-                        tr.innerHTML = `
+                    tr.innerHTML = `
                 <td>${escapeHtml(id)}</td>
                 <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
                 <td>${escapeHtml(alamat)}</td>
@@ -2661,14 +2661,14 @@
                 <td style="text-align:center;">${catatanAuto}</td>
                 <td style="text-align:center;">${actionHTML}</td>
             `;
-                        tbody.appendChild(tr);
-                    } catch (rowError) {
-                        console.error("Error rendering row:", rowError, row);
-                    }
-                });
-                hitungTotal();
-                updateGrafik(data);
-            }
+                    tbody.appendChild(tr);
+                } catch (rowError) {
+                    console.error("Error rendering row:", rowError, row);
+                }
+            });
+            hitungTotal();
+            updateGrafik(data);
+        }
 
         // Update grafik
         function updateGrafik(data) {
