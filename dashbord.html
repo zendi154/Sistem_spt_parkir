@@ -3336,6 +3336,16 @@
 
         // INISIALISASI
         document.addEventListener("DOMContentLoaded", async function () {
+            // ============================================
+            // DEKLARASI VARIABEL GLOBAL
+            // ============================================
+            let allData = [];
+            let currentFilteredData = [];
+            let lastDataGlobal = "";
+            let firstLoadGlobal = true;
+            let dataPensiunGlobal = [];
+            let currentFilterStatus = 'all';
+            let isSending = false;
 
             // ============================================
             // TAMBAHKAN INI DI AWAL - CEK LOGIN DAN ROLE
@@ -3400,12 +3410,29 @@
                 document.body.appendChild(hiddenInput);
             }
 
-            loadDataSheet();
+            // ============================================
+            // ✅ PERBAIKAN: JANGAN DEKLARASI ULANG variabel global
+            // Gunakan variabel global yang sudah dideklarasikan di atas
+            // ============================================
+            // HAPUS 3 baris ini:
+            // let lastData = "";
+            // let firstLoad = true;
+            // let allData = [];
+            // let currentFilteredData = [];
 
-            let lastData = "";
-            let firstLoad = true;
-            let allData = [];
-            let currentFilteredData = [];
+            // ✅ Gunakan variabel global yang sudah ada (deklarasikan di awal file jika belum)
+            // Pastikan variabel global ini sudah dideklarasikan SEBELUM kode ini
+            if (typeof window.lastDataGlobal === 'undefined') {
+                window.lastDataGlobal = "";
+                window.firstLoadGlobal = true;
+            }
+
+            // Set nilai awal
+            window.lastDataGlobal = "";
+            window.firstLoadGlobal = true;
+
+            // allData dan currentFilteredData sudah dideklarasikan di global (sebelum DOMContentLoaded)
+            // Jangan deklarasi ulang dengan 'let'!
 
             // ============================================
             // SORT SUPER RAPI (KODE ASLI ANDA)
@@ -3515,27 +3542,28 @@
             }, { once: true });
 
             // ============================================
-            // AUTO CEK GOOGLE SHEET (KODE ASLI ANDA)
+            // AUTO CEK GOOGLE SHEET (KODE ASLI ANDA) - DIPERBAIKI
             // ============================================
             setInterval(() => {
                 fetch(scriptURL)
                     .then(res => res.json())
                     .then(async (data) => {
                         let newData = JSON.stringify(data);
-                        if (firstLoad) {
-                            lastData = newData;
-                            firstLoad = false;
+                        if (window.firstLoadGlobal) {
+                            window.lastDataGlobal = newData;
+                            window.firstLoadGlobal = false;
                             return;
                         }
-                        if (newData !== lastData) {
+                        if (newData !== window.lastDataGlobal) {
                             console.log("📊 DATA BARU MASUK!");
                             if (isPlaying) {
                                 await playNotif();
                             }
-                            lastData = newData;
+                            window.lastDataGlobal = newData;
                             let sorted = sortSuperRapi(data);
-                            allData = sorted;
-                            currentFilteredData = sorted;
+                            // Gunakan variabel global
+                            window.allData = sorted;
+                            window.currentFilteredData = sorted;
                             renderTable(sorted);
                             tampilkanRingkasanBulanan();
                             Toast.fire({
