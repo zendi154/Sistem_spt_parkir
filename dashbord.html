@@ -2092,7 +2092,6 @@
                     <table id="tableLaporan">
                         <thead>
                             <tr>
-                                <th>Tanggal</th>
                                 <th>Nomor Unik</th>
                                 <th>Nama</th>
                                 <th>Alamat Kantor</th>
@@ -2104,13 +2103,14 @@
                                 <th>Data Transaksi</th>
                                 <th>Jumlah Laporan</th>
                                 <th>SSPD BPHTB (Rp)</th>
-                                <th>Keterangan</th>
-                                <th>Nomor STD</th>
+                                <th>Bentuk Perbuatan Hukum</th>
+                                <th>Nomor Surat Denda (STD)</th>
                                 <th>Lihat PDF STD</th>
-                                <th>Bukti Bayar</th>
-                                <th>Status Email</th>
-                                <th>Nomor Surat Pemberitahuan</th>
-                                <th>Lihat PDF Pemberitahuan</th>
+                                <th>Nomor Surat Pemberitahuan Denda</th>
+                                <th>Lihat PDF Pemberitahuan Denda</th>
+                                <th>Bukti Bayar Denda</th>
+                                <th>Catatan (Auto)</th>
+                                <th>Aksi Email</th>
                             </tr>
                         </thead>
 
@@ -2498,7 +2498,7 @@
             if (!tbody) return;
             tbody.innerHTML = "";
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="19" class="text-center">Tidak ada数据数据</td><\ /tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
                 hitungTotal();
                 return;
             }
@@ -2506,7 +2506,6 @@
             data.forEach(row => {
                 try {
                     // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
-                    const tanggal = safeString(row["Tanggal"], '');
                     const id = safeString(row["id"], '');
                     const nama = safeString(row["nama_notaris_&_ppat"], '');
                     const alamat = safeString(row["alamat"], '');
@@ -2515,16 +2514,16 @@
                     const tanggalDiterima = safeString(row["tanggal_diterima"], '');
                     const statusSurat = safeString(row["status_surat"], '');
                     const laporanBulanan = safeString(row["laporan_bulanan"], '');
-                    const dataTransaksi = row["data_transaksi"] || '';
                     const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
                     const sspdBphtb = safeString(row["sspd_bphtb"], '0');
                     const keterangan = safeString(row["keterangan"], '');
                     const nomorStd = safeString(row["nomor_std"], '');
                     const filePdf = safeString(row["file_pdf"], '');
-                    const fileSuratUpload = safeString(row["file_surat_upload"], '');
-                    const statusEmail = safeString(row["status_email"], '');
                     const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
                     const filePdfDenda = safeString(row["file_pdf_denda"], '');
+                    const fileSuratUpload = safeString(row["file_surat_upload"], '');
+                    const statusEmail = safeString(row["status_email"], '');
+                    const dataTransaksi = row["data_transaksi"] || '';
 
                     // Cek unique
                     let key = nama.toLowerCase() + "|" + laporanBulanan;
@@ -2535,23 +2534,37 @@
                     let hasUpload = isNotEmpty(fileSuratUpload);
                     let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
 
-                    // TENTUKAN WARNA BARIS
+                    // ============================================
+                    // TENTUKAN WARNA BARIS BERDASARKAN STATUS
+                    // ============================================
                     let rowBackgroundColor = "";
+                    let rowTextColor = "";
+
+                    // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN
                     const isTerlambat = (statusTerlambat === "TIDAK VALID");
                     const isTidakMenyampaikan = (statusSurat === "Tidak Menyampaikan Laporan");
 
                     if (isTerlambat || isTidakMenyampaikan) {
-                        rowBackgroundColor = "#ffebee";
+                        // WARNA MERAH untuk TERLAMBAT atau TIDAK MENYAMPAIKAN
+                        rowBackgroundColor = "#ffebee";  // merah muda terang
+                        rowTextColor = "#c62828";        // merah gelap untuk teks
                     } else if (hasUpload) {
-                        rowBackgroundColor = "#e8f5e9";
+                        // WARNA HIJAU untuk LUNAS
+                        rowBackgroundColor = "#e8f5e9";  // hijau muda
+                        rowTextColor = "#2e7d32";        // hijau gelap
                     } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                        rowBackgroundColor = "#fff8e1";
+                        // WARNA KUNING untuk menunggu resend
+                        rowBackgroundColor = "#fff8e1";  // kuning muda
+                        rowTextColor = "#f57f17";        // orange
                     } else {
+                        // WARNA DEFAULT
                         rowBackgroundColor = "#ffffff";
+                        rowTextColor = "#000000";
                     }
 
                     // Action HTML
                     let actionHTML = "";
+
                     if (hasUpload) {
                         actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
                     } else if (statusTerlambat === "TIDAK VALID") {
@@ -2592,7 +2605,7 @@
                         buktiSuratHTML = `<span style="color:gray;">-</span>`;
                     }
 
-                    // Cek pensiun
+                    // Cek pensiun dengan safe check
                     let namaHtml = escapeHtml(nama);
                     try {
                         const isPensiun = isNotarisPensiunCheck(id);
@@ -2605,7 +2618,7 @@
                         console.warn("Error cek pensiun:", e);
                     }
 
-                    // Format data transaksi
+                    // Format data transaksi dengan safe fallback
                     let formattedTransaksi = '-';
                     try {
                         formattedTransaksi = formatDataTransaksi(dataTransaksi);
@@ -2614,31 +2627,43 @@
                         formattedTransaksi = '<span class="text-danger">Error data</span>';
                     }
 
-                    // BUAT BARIS TABEL DENGAN 19 KOLOM
+                    // ============================================
+                    // BUAT ELEMENT TR DENGAN WARNA
+                    // ============================================
                     let tr = document.createElement("tr");
+
+                    // Terapkan warna background dan text
                     tr.style.backgroundColor = rowBackgroundColor;
                     tr.style.transition = "background-color 0.3s ease";
 
+                    // Tambahkan class untuk efek hover yang berbeda
+                    if (isTerlambat || isTidakMenyampaikan) {
+                        tr.style.borderLeft = "4px solid #dc3545";
+                        tr.setAttribute("data-status", "danger");
+                    } else if (hasUpload) {
+                        tr.setAttribute("data-status", "success");
+                    }
+
                     tr.innerHTML = `
-                <td style="text-align:center;">${escapeHtml(tanggal)}</td>
-                <td style="text-align:center;">${escapeHtml(id)}</td>
+                <td>${escapeHtml(id)}</td>
                 <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
                 <td>${escapeHtml(alamat)}</td>
-                <td style="text-align:center;">${escapeHtml(nomorSurat)}</td>
-                <td style="text-align:center;">${escapeHtml(tanggalSurat)}</td>
-                <td style="text-align:center;">${escapeHtml(tanggalDiterima)}</td>
-                <td style="text-align:center;">${escapeHtml(statusSurat)}</td>
-                <td style="text-align:center;">${escapeHtml(laporanBulanan)}</td>
+                <td>${escapeHtml(nomorSurat)}</td>
+                <td>${escapeHtml(tanggalSurat)}</td>
+                <td>${escapeHtml(tanggalDiterima)}</td>
+                <td>${escapeHtml(statusSurat)}</td>
+                <td>${escapeHtml(laporanBulanan)}</td>
                 <td style="text-align:center;">${formattedTransaksi}</td>
-                <td style="text-align:center;">${escapeHtml(jumlahLaporan)}</td>
-                <td style="text-align:right; font-weight:600; color:#059669;">${formatRupiahTabel(sspdBphtb)}</td>
+                <td>${escapeHtml(jumlahLaporan)}</td>
+                <td>${formatRupiahTabel(sspdBphtb)}</td>
                 <td>${escapeHtml(keterangan)}</td>
                 <td style="text-align:center;">${isNotEmpty(nomorStd) ? `<b>${escapeHtml(nomorStd)}</b>` : '-'}</td>
                 <td style="text-align:center;">${isNotEmpty(filePdf) ? `<a href="${escapeHtml(filePdf)}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${escapeHtml(filePdf)}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-                <td style="text-align:center;">${buktiSuratHTML}</td>
-                <td style="text-align:center;">${escapeHtml(statusEmail)}</td>
                 <td style="text-align:center;">${isNotEmpty(nomorSuratDenda) ? `<b>${escapeHtml(nomorSuratDenda)}</b>` : '-'}</td>
                 <td style="text-align:center;">${isNotEmpty(filePdfDenda) ? `<a href="${escapeHtml(filePdfDenda)}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${escapeHtml(filePdfDenda)}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+                <td style="text-align:center;">${buktiSuratHTML}</td>
+                <td style="text-align:center;">${catatanAuto}</td>
+                <td style="text-align:center;">${actionHTML}</td>
             `;
                     tbody.appendChild(tr);
                 } catch (rowError) {
@@ -3207,96 +3232,42 @@
         }
 
         // ===============================
-        // FUNGSI KIRIM EMAIL (FIXED - NO CORS) - DENGAN INDEKS YANG BENAR
+        // FUNGSI KIRIM EMAIL
         // ===============================
         let isSending = false;
-
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
-            // CEK KONEKSI INTERNET
-            if (!navigator.onLine) {
-                showError('Tidak Ada Koneksi', 'Periksa koneksi internet Anda terlebih dahulu!');
-                return;
-            }
-
-            if (isSending) {
-                showError('Proses Berjalan', 'Tunggu sebentar...');
-                return;
-            }
-
-            // Ambil data dari row (19 kolom) - INDEX YANG BENAR!
-            const cells = row.cells;
-            const data = {
-                id: cells[1]?.innerText || '',          // kolom indeks 1 = Nomor Unik
-                nama: cells[2]?.innerText || '',        // kolom indeks 2 = Nama
-                alamat: cells[3]?.innerText || '',      // kolom indeks 3 = Alamat
-                tgl_surat: cells[5]?.innerText || '',   // kolom indeks 5 = Tanggal Surat
-                tgl_diterima: cells[6]?.innerText || '',// kolom indeks 6 = Tanggal Diterima
-                status: cells[7]?.innerText || '',      // kolom indeks 7 = Status Surat
-                bulan: cells[8]?.innerText || '',       // kolom indeks 8 = Laporan Bulanan
-                keterangan: cells[12]?.innerText || '', // kolom indeks 12 = Keterangan
-                nomor_std: nomorSPL || ''
-            };
-
-            console.log("📧 Mengirim email untuk:", data.nama, "| Bulan:", data.bulan);
-            console.log("📧 Alamat email:", emailUser);
-            console.log("📧 Jenis pelanggaran:", jenis);
-
+            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
+            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
             showLoading('Mengirim email...');
-
-            // Buat URL dengan semua parameter
-            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=0&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}&tanggal_surat=${encodeURIComponent(data.tgl_surat)}&tanggal_diterima=${encodeURIComponent(data.tgl_diterima)}&status_surat=${encodeURIComponent(data.status)}`;
-
+            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
             try {
-                // PAKAI mode: 'no-cors' UNTUK MENGATASI CORS
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
-
+                const response = await fetch(url);
+                const result = await response.text();
                 hideLoading();
+                if (response.ok || result.includes("success")) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+                    let actionCell = row.cells[row.cells.length - 1];
+                    let uploadCell = row.cells[row.cells.length - 2];
+                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
 
-                console.log("✅ Email terkirim (mode no-cors) ke:", emailUser);
-
-                showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.\n\nSurat Pemberitahuan dan STD akan diproses oleh sistem.`);
-
-                // Update tampilan row
-                const actionCell = cells[18]; // kolom indeks 18 = Aksi Email (kolom TERAKHIR)
-                const uploadCell = cells[15];  // kolom indeks 15 = Bukti Bayar (file_surat_upload)
-                const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
-
-                if (hasUpload) {
-                    actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;" title="LUNAS"></i></div>`;
-                    row.style.backgroundColor = "#d4edda";
-                    await updateStatusEmail(data.id, "SELESAI");
-                } else {
-                    actionCell.innerHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                    row.style.backgroundColor = "#fff3cd";
-                    await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
-                }
-
-                // Refresh data setelah 3 detik
-                setTimeout(() => {
-                    if (navigator.onLine) {
-                        loadDataSheet();
+                    if (hasUpload) {
+                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
+                        row.style.backgroundColor = "#d4edda";
+                        await updateStatusEmail(data.id, "SELESAI");
+                    } else {
+                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
+                        row.style.backgroundColor = "#fff3cd";
+                        await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
-                }, 3000);
+                    setTimeout(() => loadDataSheet(), 1000);
+                } else { showError('❌ Gagal Kirim', result); }
+            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
+        }
 
-            } catch (error) {
-                hideLoading();
-                console.error("❌ Error kirim email:", error);
-                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.\nError: ' + (error.message || 'Unknown error'));
-            } finally {
-                isSending = false;
-            }
+        // UPDATE STATUS EMAIL
+        async function updateStatusEmail(id, status) {
+            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
         }
 
         // Data Baru
