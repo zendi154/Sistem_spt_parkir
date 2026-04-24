@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwgvZjCDJQXkP_5fsldys0j8KqxpqsMOd-TPslwvjkXSCFzAopRUWCDSxxyfJvgSJrufQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzG63HhEoAq2OOrBsizxX2qu3C-7SPveaiVvYgnDuJZNRBN5l0jxMDkJsnyjSndKIC_/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2489,54 +2489,82 @@
         }
 
         function renderTable(data) {
-            let seen = new Set();
-            const tbody = document.querySelector("#dataNotaris");
-            if (!tbody) return;
-            tbody.innerHTML = "";
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada data</td></tr>';
-                hitungTotal();
-                return;
-            }
+                let seen = new Set();
+                const tbody = document.querySelector("#dataNotaris");
+                if (!tbody) return;
+                tbody.innerHTML = "";
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
+                    hitungTotal();
+                    return;
+                }
 
-            data.forEach(row => {
-                try {
-                    // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
-                    const id = safeString(row["id"], '');
-                    const nama = safeString(row["nama_notaris_&_ppat"], '');
-                    const alamat = safeString(row["alamat"], '');
-                    const nomorSurat = safeString(row["nomor_surat"], '');
-                    const tanggalSurat = safeString(row["tanggal_surat"], '');
-                    const tanggalDiterima = safeString(row["tanggal_diterima"], '');
-                    const statusSurat = safeString(row["status_surat"], '');
-                    const laporanBulanan = safeString(row["laporan_bulanan"], '');
-                    const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
-                    const sspdBphtb = safeString(row["sspd_bphtb"], '0');
-                    const keterangan = safeString(row["keterangan"], '');
-                    const nomorStd = safeString(row["nomor_std"], '');
-                    const filePdf = safeString(row["file_pdf"], '');
-                    const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
-                    const filePdfDenda = safeString(row["file_pdf_denda"], '');
-                    const fileSuratUpload = safeString(row["file_surat_upload"], '');
-                    const statusEmail = safeString(row["status_email"], '');
-                    const dataTransaksi = row["data_transaksi"] || '';
+                data.forEach(row => {
+                    try {
+                        // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
+                        const id = safeString(row["id"], '');
+                        const nama = safeString(row["nama_notaris_&_ppat"], '');
+                        const alamat = safeString(row["alamat"], '');
+                        const nomorSurat = safeString(row["nomor_surat"], '');
+                        const tanggalSurat = safeString(row["tanggal_surat"], '');
+                        const tanggalDiterima = safeString(row["tanggal_diterima"], '');
+                        const statusSurat = safeString(row["status_surat"], '');
+                        const laporanBulanan = safeString(row["laporan_bulanan"], '');
+                        const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
+                        const sspdBphtb = safeString(row["sspd_bphtb"], '0');
+                        const keterangan = safeString(row["keterangan"], '');
+                        const nomorStd = safeString(row["nomor_std"], '');
+                        const filePdf = safeString(row["file_pdf"], '');
+                        const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
+                        const filePdfDenda = safeString(row["file_pdf_denda"], '');
+                        const fileSuratUpload = safeString(row["file_surat_upload"], '');
+                        const statusEmail = safeString(row["status_email"], '');
+                        const dataTransaksi = row["data_transaksi"] || '';
 
-                    // Cek unique
-                    let key = nama.toLowerCase() + "|" + laporanBulanan;
-                    let isFirst = !seen.has(key);
-                    if (isFirst) seen.add(key);
+                        // Cek unique
+                        let key = nama.toLowerCase() + "|" + laporanBulanan;
+                        let isFirst = !seen.has(key);
+                        if (isFirst) seen.add(key);
 
-                    let statusTerlambat = cekTerlambat(tanggalDiterima) || "";
-                    let hasUpload = isNotEmpty(fileSuratUpload);
-                    let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
+                        let statusTerlambat = cekTerlambat(tanggalDiterima) || "";
+                        let hasUpload = isNotEmpty(fileSuratUpload);
+                        let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
 
-                    // Action HTML
-                    let actionHTML = "";
+                        // ============================================
+                        // TENTUKAN WARNA BARIS BERDASARKAN STATUS
+                        // ============================================
+                        let rowBackgroundColor = "";
+                        let rowTextColor = "";
 
-                    if (hasUpload) {
-                        actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                    } else if (statusTerlambat === "TIDAK VALID") {
-                        actionHTML = `<div class="text-center">
+                        // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN
+                        const isTerlambat = (statusTerlambat === "TIDAK VALID");
+                        const isTidakMenyampaikan = (statusSurat === "Tidak Menyampaikan Laporan");
+
+                        if (isTerlambat || isTidakMenyampaikan) {
+                            // WARNA MERAH untuk TERLAMBAT atau TIDAK MENYAMPAIKAN
+                            rowBackgroundColor = "#ffebee";  // merah muda terang
+                            rowTextColor = "#c62828";        // merah gelap untuk teks
+                        } else if (hasUpload) {
+                            // WARNA HIJAU untuk LUNAS
+                            rowBackgroundColor = "#e8f5e9";  // hijau muda
+                            rowTextColor = "#2e7d32";        // hijau gelap
+                        } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                            // WARNA KUNING untuk menunggu resend
+                            rowBackgroundColor = "#fff8e1";  // kuning muda
+                            rowTextColor = "#f57f17";        // orange
+                        } else {
+                            // WARNA DEFAULT
+                            rowBackgroundColor = "#ffffff";
+                            rowTextColor = "#000000";
+                        }
+
+                        // Action HTML
+                        let actionHTML = "";
+
+                        if (hasUpload) {
+                            actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
+                        } else if (statusTerlambat === "TIDAK VALID") {
+                            actionHTML = `<div class="text-center">
                     <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
                         <i class="bi bi-envelope-fill"></i>
                     </button>
@@ -2544,8 +2572,8 @@
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>`;
-                    } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                        actionHTML = `<div class="text-center">
+                        } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                            actionHTML = `<div class="text-center">
                     <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
                         <i class="bi bi-envelope-fill"></i>
                     </button>
@@ -2553,50 +2581,66 @@
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>`;
-                    } else {
-                        actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
-                    }
+                        } else {
+                            actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                        }
 
-                    // Bukti surat
-                    let buktiSuratHTML = '';
-                    let tgl = getTanggal(tanggalDiterima) || 0;
-                    let bolehUpload = isFirst && tgl > 10;
+                        // Bukti surat
+                        let buktiSuratHTML = '';
+                        let tgl = getTanggal(tanggalDiterima) || 0;
+                        let bolehUpload = isFirst && tgl > 10;
 
-                    if (isNotEmpty(fileSuratUpload)) {
-                        buktiSuratHTML = `<a href="#" onclick="previewPDF('${escapeHtml(fileSuratUpload)}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                    } else if (bolehUpload) {
-                        buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
+                        if (isNotEmpty(fileSuratUpload)) {
+                            buktiSuratHTML = `<a href="#" onclick="previewPDF('${escapeHtml(fileSuratUpload)}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                        } else if (bolehUpload) {
+                            buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
                     <i class="bi bi-cloud-upload-fill"></i>
                     <input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${escapeHtml(id)}')" style="display:none;">
                 </label>`;
-                    } else {
-                        buktiSuratHTML = `<span style="color:gray;">-</span>`;
-                    }
-
-                    // Cek pensiun dengan safe check
-                    let namaHtml = escapeHtml(nama);
-                    try {
-                        const isPensiun = isNotarisPensiunCheck(id);
-                        if (isPensiun) {
-                            const dataP = getDataPensiunById(id);
-                            const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '';
-                            namaHtml += `<span class="badge-pensiun">📅 Pensiun ${escapeHtml(tahunPensiun)}</span>`;
+                        } else {
+                            buktiSuratHTML = `<span style="color:gray;">-</span>`;
                         }
-                    } catch (e) {
-                        console.warn("Error cek pensiun:", e);
-                    }
 
-                    // Format data transaksi dengan safe fallback
-                    let formattedTransaksi = '-';
-                    try {
-                        formattedTransaksi = formatDataTransaksi(dataTransaksi);
-                    } catch (e) {
-                        console.warn("Error format transaksi:", e);
-                        formattedTransaksi = '<span class="text-danger">Error data</span>';
-                    }
+                        // Cek pensiun dengan safe check
+                        let namaHtml = escapeHtml(nama);
+                        try {
+                            const isPensiun = isNotarisPensiunCheck(id);
+                            if (isPensiun) {
+                                const dataP = getDataPensiunById(id);
+                                const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '';
+                                namaHtml += `<span class="badge-pensiun">📅 Pensiun ${escapeHtml(tahunPensiun)}</span>`;
+                            }
+                        } catch (e) {
+                            console.warn("Error cek pensiun:", e);
+                        }
 
-                    let tr = document.createElement("tr");
-                    tr.innerHTML = `
+                        // Format data transaksi dengan safe fallback
+                        let formattedTransaksi = '-';
+                        try {
+                            formattedTransaksi = formatDataTransaksi(dataTransaksi);
+                        } catch (e) {
+                            console.warn("Error format transaksi:", e);
+                            formattedTransaksi = '<span class="text-danger">Error data</span>';
+                        }
+
+                        // ============================================
+                        // BUAT ELEMENT TR DENGAN WARNA
+                        // ============================================
+                        let tr = document.createElement("tr");
+
+                        // Terapkan warna background dan text
+                        tr.style.backgroundColor = rowBackgroundColor;
+                        tr.style.transition = "background-color 0.3s ease";
+
+                        // Tambahkan class untuk efek hover yang berbeda
+                        if (isTerlambat || isTidakMenyampaikan) {
+                            tr.style.borderLeft = "4px solid #dc3545";
+                            tr.setAttribute("data-status", "danger");
+                        } else if (hasUpload) {
+                            tr.setAttribute("data-status", "success");
+                        }
+
+                        tr.innerHTML = `
                 <td>${escapeHtml(id)}</td>
                 <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
                 <td>${escapeHtml(alamat)}</td>
@@ -2617,15 +2661,14 @@
                 <td style="text-align:center;">${catatanAuto}</td>
                 <td style="text-align:center;">${actionHTML}</td>
             `;
-                    tbody.appendChild(tr);
-                } catch (rowError) {
-                    console.error("Error rendering row:", rowError, row);
-                    // Lanjutkan ke row berikutnya
-                }
-            });
-            hitungTotal();
-            updateGrafik(data);
-        }
+                        tbody.appendChild(tr);
+                    } catch (rowError) {
+                        console.error("Error rendering row:", rowError, row);
+                    }
+                });
+                hitungTotal();
+                updateGrafik(data);
+            }
 
         // Update grafik
         function updateGrafik(data) {
@@ -3184,95 +3227,22 @@
             });
         }
 
-        // ============================================
-        // FUNGSI PEMBANTU PENGECEKAN KONEKSI
-        // ============================================
-
-        async function isServerReachable() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-                const response = await fetch(`${scriptURL}?action=ping`, {
-                    method: 'GET',
-                    signal: controller.signal,
-                    cache: 'no-cache'
-                });
-
-                clearTimeout(timeoutId);
-                return response.ok;
-            } catch (error) {
-                return false;
-            }
-        }
-
-        async function checkConnectionBeforeAction(actionName) {
-            if (!navigator.onLine) {
-                showError('Tidak Ada Koneksi', `Tidak dapat ${actionName}. Periksa koneksi internet Anda.`);
-                return false;
-            }
-
-            const serverReachable = await isServerReachable();
-            if (!serverReachable) {
-                showError('Server Tidak Merespon', `Tidak dapat ${actionName}. Server sedang bermasalah.`);
-                return false;
-            }
-
-            return true;
-        }
-
         // ===============================
-        // FUNGSI KIRIM EMAIL (DENGAN PENGECEKAN KONEKSI)
+        // FUNGSI KIRIM EMAIL
         // ===============================
         let isSending = false;
-
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
-            // CEK KONEKSI INTERNET SEBELUM MENGIRIM
-            if (!navigator.onLine) {
-                showError('Tidak Ada Koneksi', 'Periksa koneksi internet Anda terlebih dahulu!');
-                return;
-            }
-
-            if (isSending) {
-                showError('Proses Berjalan', 'Tunggu sebentar...');
-                return;
-            }
-
-            const data = {
-                id: row.cells[0].innerText,
-                nama: row.cells[1].innerText,
-                alamat: row.cells[2].innerText,
-                nomor: row.cells[3].innerText,
-                tgl_surat: row.cells[4].innerText,
-                tgl_diterima: row.cells[5].innerText,
-                status: row.cells[6].innerText,
-                bulan: row.cells[7].innerText,
-                transaksi: row.cells[8].innerText,
-                jumlah: row.cells[9].innerText,
-                sspd: row.cells[10].innerText,
-                keterangan: row.cells[11].innerText,
-                nomor_std: nomorSPL
-            };
-
+            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
+            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
             showLoading('Mengirim email...');
-
             const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
-
             try {
-                // TAMBAHKAN TIMEOUT UNTUK FETCH
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-                const response = await fetch(url, { signal: controller.signal });
-                clearTimeout(timeoutId);
-
+                const response = await fetch(url);
                 const result = await response.text();
                 hideLoading();
-
                 if (response.ok || result.includes("success")) {
                     showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
-
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
                     let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
@@ -3286,44 +3256,14 @@
                         row.style.backgroundColor = "#fff3cd";
                         await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
-
-                    // REFRESH DATA SETELAH EMAIL TERKIRIM (CEK KONEKSI DULU)
-                    setTimeout(() => {
-                        if (navigator.onLine) {
-                            loadDataSheet();
-                        } else {
-                            console.warn("Tidak bisa refresh data: koneksi offline");
-                        }
-                    }, 1000);
-
-                } else {
-                    showError('❌ Gagal Kirim', result);
-                }
-
-            } catch (error) {
-                hideLoading();
-
-                // BEDAKAN JENIS ERROR
-                if (error.name === 'AbortError') {
-                    showError('❌ Timeout', 'Server tidak merespon. Cek koneksi internet Anda.');
-                } else if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
-                    showError('❌ Koneksi Gagal', 'Periksa koneksi internet Anda dan coba lagi.');
-                } else {
-                    showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.');
-                }
-
-            } finally {
-                isSending = false;
-            }
+                    setTimeout(() => loadDataSheet(), 1000);
+                } else { showError('❌ Gagal Kirim', result); }
+            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
         }
 
         // UPDATE STATUS EMAIL
         async function updateStatusEmail(id, status) {
-            try {
-                await fetch(`${scriptURL}?update_status=${id}&status=${status}`);
-            } catch (err) {
-                console.error(err);
-            }
+            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
         }
 
         // Data Baru
@@ -3333,7 +3273,7 @@
             newData.forEach(row => {
                 let tr = document.createElement("tr");
                 tr.innerHTML = `<td>${row["id"]}</td><td>${row["nama_notaris_&_ppat"]}</td>`;
-                tbody.prepend(tr);
+                tbody.prepend(tr); // masuk ke atas
             });
         }
 
@@ -3435,24 +3375,6 @@
             if (currentUserRole !== 'admin') {
                 disableEditingForUser();
                 showPrintOnlyNotification();
-            }
-
-            // ============================================
-            // INIT KONEKSI MONITORING (Tambahkan ini)
-            // ============================================
-            initConnectionMonitoring();
-
-            // Cek koneksi awal
-            const isConnected = await cekKoneksiLengkap();
-            if (!isConnected) {
-                console.warn("⚠️ Peringatan: Koneksi internet bermasalah");
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Koneksi Bermasalah',
-                    text: 'Periksa koneksi internet Anda. Beberapa fitur mungkin tidak berfungsi.',
-                    confirmButtonColor: '#ffc107',
-                    timer: 5000
-                });
             }
 
             // ============================================
