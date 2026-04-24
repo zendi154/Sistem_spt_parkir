@@ -32,6 +32,8 @@
             background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
             background-attachment: fixed;
             position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         body::before {
@@ -41,7 +43,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><path fill="white" d="M20,20 L80,20 L80,80 L20,80 Z"/><circle cx="50" cy="50" r="10"/></svg>') repeat;
+            background: url('data:image/svg+xml,...') repeat;
+            opacity: 0.05;
+            /* Pastikan opacity kecil */
             pointer-events: none;
             z-index: 0;
         }
