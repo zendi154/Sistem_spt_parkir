@@ -1975,7 +1975,9 @@
                         <button class="btn-filter" onclick="filterNotarisStatus('pensiun')">
                             <i class="bi bi-person-x-fill"></i> Pensiun
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()">
+                        <!-- TOMBOL KELOLA - HANYA UNTUK ADMIN -->
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="bukaModalPensiun()"
+                            id="btnKelolaPensiun" style="display: none;">
                             <i class="bi bi-plus-circle"></i> Kelola Notaris Pensiun
                         </button>
                     </div>
@@ -2976,6 +2978,16 @@
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
         async function uploadBuktiBayar(input, id) {
+            // Tambahkan proteksi di awal
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
             const file = input.files[0];
             if (!file) return;
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
@@ -3008,6 +3020,11 @@
         // FUNGSI HAPUS DATA
         // ===============================
         async function hapusData(btn) {
+            // ========== TAMBAHKAN 3 BARIS INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
+                return;
+            }
             const confirmed = await showConfirm('Hapus Data', 'Yakin ingin menghapus data ini?');
             if (!confirmed) return;
             showLoading('Menghapus data...');
@@ -3025,6 +3042,12 @@
         // FUNGSI BUKA MODAL EMAIL (CEK APAKAH SUDAH LUNAS)
         // ===============================
         function bukaModalEmail(row) {
+            // ========== TAMBAHKAN 3 BARIS INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
+                return;
+            }
+            // ==============================
             const [id, nama, , , , , , bulan] = [...row.cells].map(c => c.innerText);
             const uploadCell = row.cells[row.cells.length - 2];
             const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
@@ -3123,10 +3146,15 @@
         // ===============================
         let isSending = false;
         async function kirimEmail(row, email, jenis, nomorSPL) {
+            // ========== TAMBAHKAN 3 BARIS INI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak!', text: 'Fitur ini hanya untuk Administrator.', confirmButtonColor: '#dc3545' });
+                return;
+            }
             if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
             const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
-            showLoading('Mengirim email...');
+            showLoading('Proses Mengirim email...');
             const url = `${scriptURL}?email=${encodeURIComponent(email)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
             try {
                 const response = await fetch(url);
@@ -5513,6 +5541,16 @@
 
         // Tandai notaris sebagai pensiun (DENGAN LOADING YANG BENAR)
         async function tandaiPensiun() {
+            // ========== TAMBAHKAN PROTEKSI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
             const select = document.getElementById('selectNotarisPensiun');
             const fileInput = document.getElementById('fileSKPensiun');
             const namaNotaris = select ? select.value : '';
@@ -5762,6 +5800,17 @@
 
         // Hapus notaris pensiun
         async function hapusPensiun(id) {
+            // ========== TAMBAHKAN PROTEKSI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            // =========================================
             if (!id) {
                 showError('Error', 'ID notaris tidak valid');
                 return;
@@ -5898,6 +5947,16 @@
 
         // Buka modal pensiun
         async function bukaModalPensiun() {
+            // ========== TAMBAHKAN PROTEKSI ==========
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
             // Load data pensiun terbaru
             await getNotarisPensiun();
 
@@ -7600,6 +7659,16 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
 
         // Copy semua nomor WA ke clipboard
         function copySemuaNomorWA() {
+            // Proteksi: Hanya ADMIN yang bisa copy nomor WA
+            if (currentUserRole !== 'admin') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Fitur ini hanya untuk Administrator.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
             // Ambil semua nomor WA dari tabel
             const nomorElements = document.querySelectorAll('#swal2-html-container code');
             const nomorList = Array.from(nomorElements).map(el => el.innerText).filter(n => n && n !== '-');
@@ -7630,6 +7699,19 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 btnDeteksi.style.display = 'block';
             }
         }
+        // Di dalam DOMContentLoaded atau setelah checkLoginAndRole()
+        if (currentUserRole === 'admin') {
+            const btnKelolaPensiun = document.getElementById('btnKelolaPensiun');
+            if (btnKelolaPensiun) {
+                btnKelolaPensiun.style.display = 'inline-block';
+            }
+        } else {
+            const btnKelolaPensiun = document.getElementById('btnKelolaPensiun');
+            if (btnKelolaPensiun) {
+                btnKelolaPensiun.style.display = 'none';
+            }
+        }
+
 
         async function deteksiOtomatisTidakLapor() {
             // Tampilkan dialog untuk input bulan dan tahun
