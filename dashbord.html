@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxrbu-q6E7ASHT9XiccbaSLMvSNruyZXKlI8I1s4oUFl1y1m-x5Xmt1xR89fzP7YWrMlA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzf4-_PHOj_cXOA3t2dm2iQ6MdBcgk9nnTNdG__Kcnpwhx4Ida5PuJ0JbHxAQkMlnQmzw/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2400,6 +2400,41 @@
         async function showConfirm(title, text) {
             const result = await Swal.fire({ title: title, text: text, icon: 'question', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Ya, lanjutkan!', cancelButtonText: 'Batal' });
             return result.isConfirmed;
+        }
+
+        // ============================================
+        // FUNGSI SAFE STRING HELPER (Tambahkan ini!)
+        // ============================================
+
+        function safeString(value, defaultValue = '') {
+            if (value === null || value === undefined) return defaultValue;
+            if (typeof value === 'string') return value;
+            if (typeof value === 'number') return value.toString();
+            if (typeof value === 'boolean') return value.toString();
+            if (typeof value === 'object') {
+                try {
+                    return JSON.stringify(value);
+                } catch (e) {
+                    return defaultValue;
+                }
+            }
+            return defaultValue;
+        }
+
+        function safeTrim(value) {
+            if (value === null || value === undefined) return '';
+            if (typeof value === 'string') return value.trim();
+            if (typeof value === 'number') return value.toString().trim();
+            return '';
+        }
+
+        function isNotEmpty(value) {
+            if (value === null || value === undefined) return false;
+            if (typeof value === 'string') return value.trim() !== '';
+            if (typeof value === 'number') return value !== 0;
+            if (typeof value === 'boolean') return value;
+            if (Array.isArray(value)) return value.length > 0;
+            return false;
         }
 
         // ===============================
@@ -2465,108 +2500,128 @@
             }
 
             data.forEach(row => {
-                // PAKAI SAFE HELPER
-                const id = safeString(row["id"]);
-                const nama = safeString(row["nama_notaris_&_ppat"]);
-                const alamat = safeString(row["alamat"]);
-                const nomorSurat = safeString(row["nomor_surat"]);
-                const tanggalSurat = safeString(row["tanggal_surat"]);
-                const tanggalDiterima = safeString(row["tanggal_diterima"]);
-                const statusSurat = safeString(row["status_surat"]);
-                const laporanBulanan = safeString(row["laporan_bulanan"]);
-                const jumlahLaporan = safeString(row["jumlah_laporan"]);
-                const sspdBphtb = safeString(row["sspd_bphtb"]);
-                const keterangan = safeString(row["keterangan"]);
-                const nomorStd = safeString(row["nomor_std"]);
-                const filePdf = safeString(row["file_pdf"]);
-                const nomorSuratDenda = safeString(row["nomor_surat_denda"]);
-                const filePdfDenda = safeString(row["file_pdf_denda"]);
-                const fileSuratUpload = safeString(row["file_surat_upload"]);
-                const statusEmail = safeString(row["status_email"]);
+                try {
+                    // PAKAI SAFE HELPER DENGAN DEFAULT VALUE
+                    const id = safeString(row["id"], '');
+                    const nama = safeString(row["nama_notaris_&_ppat"], '');
+                    const alamat = safeString(row["alamat"], '');
+                    const nomorSurat = safeString(row["nomor_surat"], '');
+                    const tanggalSurat = safeString(row["tanggal_surat"], '');
+                    const tanggalDiterima = safeString(row["tanggal_diterima"], '');
+                    const statusSurat = safeString(row["status_surat"], '');
+                    const laporanBulanan = safeString(row["laporan_bulanan"], '');
+                    const jumlahLaporan = safeString(row["jumlah_laporan"], '0');
+                    const sspdBphtb = safeString(row["sspd_bphtb"], '0');
+                    const keterangan = safeString(row["keterangan"], '');
+                    const nomorStd = safeString(row["nomor_std"], '');
+                    const filePdf = safeString(row["file_pdf"], '');
+                    const nomorSuratDenda = safeString(row["nomor_surat_denda"], '');
+                    const filePdfDenda = safeString(row["file_pdf_denda"], '');
+                    const fileSuratUpload = safeString(row["file_surat_upload"], '');
+                    const statusEmail = safeString(row["status_email"], '');
+                    const dataTransaksi = row["data_transaksi"] || '';
 
-                // Cek unique
-                let key = nama.toLowerCase() + "|" + laporanBulanan;
-                let isFirst = !seen.has(key);
-                if (isFirst) seen.add(key);
+                    // Cek unique
+                    let key = nama.toLowerCase() + "|" + laporanBulanan;
+                    let isFirst = !seen.has(key);
+                    if (isFirst) seen.add(key);
 
-                let statusTerlambat = cekTerlambat(tanggalDiterima);
-                let hasUpload = isNotEmpty(fileSuratUpload);
-                let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
+                    let statusTerlambat = cekTerlambat(tanggalDiterima) || "";
+                    let hasUpload = isNotEmpty(fileSuratUpload);
+                    let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
 
-                // Action HTML
-                let actionHTML = "";
+                    // Action HTML
+                    let actionHTML = "";
 
-                if (hasUpload) {
-                    actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
-                } else if (statusTerlambat === "TIDAK VALID") {
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
-                    actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
-                } else {
-                    actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                    if (hasUpload) {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i></div>`;
+                    } else if (statusTerlambat === "TIDAK VALID") {
+                        actionHTML = `<div class="text-center">
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
+                    } else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
+                        actionHTML = `<div class="text-center">
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
+                    } else {
+                        actionHTML = `<div class="text-center"><i class="bi bi-check-lg text-success" title="Valid"></i></div>`;
+                    }
+
+                    // Bukti surat
+                    let buktiSuratHTML = '';
+                    let tgl = getTanggal(tanggalDiterima) || 0;
+                    let bolehUpload = isFirst && tgl > 10;
+
+                    if (isNotEmpty(fileSuratUpload)) {
+                        buktiSuratHTML = `<a href="#" onclick="previewPDF('${escapeHtml(fileSuratUpload)}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                    } else if (bolehUpload) {
+                        buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                    <input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${escapeHtml(id)}')" style="display:none;">
+                </label>`;
+                    } else {
+                        buktiSuratHTML = `<span style="color:gray;">-</span>`;
+                    }
+
+                    // Cek pensiun dengan safe check
+                    let namaHtml = escapeHtml(nama);
+                    try {
+                        const isPensiun = isNotarisPensiunCheck(id);
+                        if (isPensiun) {
+                            const dataP = getDataPensiunById(id);
+                            const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '';
+                            namaHtml += `<span class="badge-pensiun">📅 Pensiun ${escapeHtml(tahunPensiun)}</span>`;
+                        }
+                    } catch (e) {
+                        console.warn("Error cek pensiun:", e);
+                    }
+
+                    // Format data transaksi dengan safe fallback
+                    let formattedTransaksi = '-';
+                    try {
+                        formattedTransaksi = formatDataTransaksi(dataTransaksi);
+                    } catch (e) {
+                        console.warn("Error format transaksi:", e);
+                        formattedTransaksi = '<span class="text-danger">Error data</span>';
+                    }
+
+                    let tr = document.createElement("tr");
+                    tr.innerHTML = `
+                <td>${escapeHtml(id)}</td>
+                <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
+                <td>${escapeHtml(alamat)}</td>
+                <td>${escapeHtml(nomorSurat)}</td>
+                <td>${escapeHtml(tanggalSurat)}</td>
+                <td>${escapeHtml(tanggalDiterima)}</td>
+                <td>${escapeHtml(statusSurat)}</td>
+                <td>${escapeHtml(laporanBulanan)}</td>
+                <td style="text-align:center;">${formattedTransaksi}</td>
+                <td>${escapeHtml(jumlahLaporan)}</td>
+                <td>${formatRupiahTabel(sspdBphtb)}</td>
+                <td>${escapeHtml(keterangan)}</td>
+                <td style="text-align:center;">${isNotEmpty(nomorStd) ? `<b>${escapeHtml(nomorStd)}</b>` : '-'}</td>
+                <td style="text-align:center;">${isNotEmpty(filePdf) ? `<a href="${escapeHtml(filePdf)}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${escapeHtml(filePdf)}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+                <td style="text-align:center;">${isNotEmpty(nomorSuratDenda) ? `<b>${escapeHtml(nomorSuratDenda)}</b>` : '-'}</td>
+                <td style="text-align:center;">${isNotEmpty(filePdfDenda) ? `<a href="${escapeHtml(filePdfDenda)}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${escapeHtml(filePdfDenda)}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+                <td style="text-align:center;">${buktiSuratHTML}</td>
+                <td style="text-align:center;">${catatanAuto}</td>
+                <td style="text-align:center;">${actionHTML}</td>
+            `;
+                    tbody.appendChild(tr);
+                } catch (rowError) {
+                    console.error("Error rendering row:", rowError, row);
+                    // Lanjutkan ke row berikutnya
                 }
-
-                // Bukti surat
-                let buktiSuratHTML = '';
-                let tgl = getTanggal(tanggalDiterima);
-                let bolehUpload = isFirst && tgl > 10;
-
-                if (isNotEmpty(fileSuratUpload)) {
-                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${fileSuratUpload}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
-                } else if (bolehUpload) {
-                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
-                <i class="bi bi-cloud-upload-fill"></i>
-                <input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${id}')" style="display:none;">
-            </label>`;
-                } else {
-                    buktiSuratHTML = `<span style="color:gray;">-</span>`;
-                }
-
-                // Cek pensiun
-                const isPensiun = isNotarisPensiunCheck(id);
-                let namaHtml = nama;
-                if (isPensiun) {
-                    const dataP = getDataPensiunById(id);
-                    namaHtml += `<span class="badge-pensiun">📅 Pensiun ${safeString(dataP?.tahunPensiun)}</span>`;
-                }
-
-                let tr = document.createElement("tr");
-                tr.innerHTML = `
-            <td>${id}</td>
-            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
-            <td>${alamat}</td>
-            <td>${nomorSurat}</td>
-            <td>${tanggalSurat}</td>
-            <td>${tanggalDiterima}</td>
-            <td>${statusSurat}</td>
-            <td>${laporanBulanan}</td>
-            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
-            <td>${jumlahLaporan}</td>
-            <td>${formatRupiahTabel(sspdBphtb)}</td>
-            <td>${keterangan}</td>
-            <td style="text-align:center;">${isNotEmpty(nomorStd) ? `<b>${nomorStd}</b>` : '-'}</td>
-            <td style="text-align:center;">${isNotEmpty(filePdf) ? `<a href="${filePdf}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${filePdf}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${isNotEmpty(nomorSuratDenda) ? `<b>${nomorSuratDenda}</b>` : '-'}</td>
-            <td style="text-align:center;">${isNotEmpty(filePdfDenda) ? `<a href="${filePdfDenda}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${filePdfDenda}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${buktiSuratHTML}</td>
-            <td style="text-align:center;">${catatanAuto}</td>
-            <td style="text-align:center;">${actionHTML}</td>
-        `;
-                tbody.appendChild(tr);
             });
             hitungTotal();
             updateGrafik(data);
@@ -4154,15 +4209,24 @@
         // Fungsi untuk mengambil data laporan dari Google Sheet
         async function getDataLaporanDariSheet() {
             try {
+                // HAPUS AbortController, gunakan timeout sederhana
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
-                const response = await fetch(scriptURL, { signal: controller.signal, method: 'GET' });
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // Naikkan jadi 30 detik
+
+                const response = await fetch(scriptURL, {
+                    signal: controller.signal,
+                    method: 'GET',
+                    cache: 'no-cache'
+                });
+
                 clearTimeout(timeoutId);
+
                 if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
                 const data = await response.json();
                 return data && Array.isArray(data) ? data : [];
             } catch (error) {
                 console.error('Gagal mengambil data:', error);
+                // Jangan return error, return array kosong
                 return [];
             }
         }
@@ -6168,28 +6232,59 @@
         }
 
         // Update fungsi loadDataSheet yang sudah ada (tambahkan ini)
-        // CARI fungsi loadDataSheet yang sudah ada dan TAMBAHKAN kode ini di dalamnya
         async function loadDataSheet() {
             showLoading("Memuat data...");
 
             try {
-                const [data, pensiunData] = await Promise.all([
-                    fetch(scriptURL).then(res => res.json()),
+                // Gunakan Promise.allSettled agar tidak gagal total
+                const [dataResult, pensiunResult] = await Promise.allSettled([
+                    fetch(scriptURL).then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        return res.json();
+                    }).catch(err => {
+                        console.error("Gagal fetch data utama:", err);
+                        return [];
+                    }),
                     getNotarisPensiun()
                 ]);
 
+                let data = [];
+                if (dataResult.status === 'fulfilled' && Array.isArray(dataResult.value)) {
+                    data = dataResult.value;
+                } else {
+                    console.error("Gagal ambil data utama:", dataResult.reason);
+                    data = [];
+                }
+
+                if (pensiunResult.status === 'fulfilled') {
+                    dataPensiunGlobal = Array.isArray(pensiunResult.value) ? pensiunResult.value : [];
+                } else {
+                    console.error("Gagal ambil data pensiun:", pensiunResult.reason);
+                    dataPensiunGlobal = [];
+                }
+
                 hideLoading();
+
+                if (!data || data.length === 0) {
+                    console.warn("Data kosong dari server");
+                    allData = [];
+                    currentFilteredData = [];
+                    renderTable([]);
+                    tampilkanRingkasanBulanan();
+                    return;
+                }
 
                 lastData = JSON.stringify(data);
                 allData = sortDataByMonth(data);
                 currentFilteredData = allData;
 
+                // Terapkan filter jika ada
                 if (currentFilterStatus === 'active') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p.id));
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
                     currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
                     renderTable(currentFilteredData);
                 } else if (currentFilterStatus === 'pensiun') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p.id));
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
                     currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
                     renderTable(currentFilteredData);
                 } else {
@@ -6228,8 +6323,10 @@
 
             } catch (error) {
                 hideLoading();
-                console.error(error);
-                showError("Error", "Gagal memuat data!");
+                console.error("Error loadDataSheet:", error);
+                showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
+                // Tampilkan data kosong
+                renderTable([]);
             }
         }
 
