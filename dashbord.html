@@ -2461,7 +2461,7 @@
             if (!tbody) return;
             tbody.innerHTML = "";
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada数据数据</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak ada data</td></tr>';
                 hitungTotal();
                 return;
             }
@@ -2475,7 +2475,7 @@
                 let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
                 let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
                 let statusEmail = row["status_email"] || "";
-                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
+                let hasUpload = row["file_surat_upload"] && row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
                 let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
                 let actionHTML = "";
 
@@ -2486,7 +2486,6 @@
                 }
                 // CEK APAKAH TERLAMBAT ATAU TIDAK MENYAMPAIKAN LAPORAN
                 else if (statusTerlambat === "TIDAK VALID") {
-                    // TAMPILKAN TOMBOL EMAIL UNTUK DATA TERLAMBAT
                     actionHTML = `<div class="text-center">
                 <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
                     <i class="bi bi-envelope-fill"></i>
@@ -2536,23 +2535,60 @@
                     namaHtml += `<span class="badge-pensiun">📅 Pensiun ${dataP?.tahunPensiun || ''}</span>`;
                 }
 
+                // ========== PERBAIKAN: Fungsi untuk aman mengambil string ==========
+                function safeString(value) {
+                    if (value === undefined || value === null) return '';
+                    if (typeof value === 'string') return value;
+                    if (typeof value === 'number') return value.toString();
+                    if (typeof value === 'boolean') return value.toString();
+                    return '';
+                }
+
+                function safeTrim(value) {
+                    let str = safeString(value);
+                    return str.trim();
+                }
+
+                // Ambil nilai dengan aman
+                let id = safeString(row["id"]);
+                let alamat = safeString(row["alamat"]);
+                let nomorSurat = safeString(row["nomor_surat"]);
+                let tanggalSurat = safeString(row["tanggal_surat"]);
+                let tanggalDiterima = safeString(row["tanggal_diterima"]);
+                let statusSurat = safeString(row["status_surat"]);
+                let laporanBulanan = safeString(row["laporan_bulanan"]);
+                let jumlahLaporan = safeString(row["jumlah_laporan"]);
+                let sspdBphtb = safeString(row["sspd_bphtb"]);
+                let keterangan = safeString(row["keterangan"]);
+
+                // ========== PERBAIKAN UTAMA: untuk nomor_std dan nomor_surat_denda ==========
+                let nomorStd = safeTrim(row["nomor_std"]);
+                let nomorSuratDenda = safeTrim(row["nomor_surat_denda"]);
+
+                // Data Transaksi
+                let dataTransaksiHtml = formatDataTransaksi(row["data_transaksi"]);
+
+                // File PDF
+                let filePdfHtml = row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-';
+                let filePdfDendaHtml = row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-';
+
                 tr.innerHTML = `
-            <td>${row["id"] || ""}</td>
+            <td style="text-align:center;">${id}</td>
             <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
-            <td>${row["alamat"] || ""}</td>
-            <td>${row["nomor_surat"] || ""}</td>
-            <td>${row["tanggal_surat"] || ""}</td>
-            <td>${row["tanggal_diterima"] || ""}</td>
-            <td>${row["status_surat"] || ""}</td>
-            <td>${row["laporan_bulanan"] || ""}</td>
-            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
-            <td>${row["jumlah_laporan"] || ""}</td>
-            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
-            <td>${row["keterangan"] || ""}</td>
-            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
-            <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
-            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td>${alamat}</td>
+            <td>${nomorSurat || '-'}</td>
+            <td>${tanggalSurat || '-'}</td>
+            <td>${tanggalDiterima || '-'}</td>
+            <td>${statusSurat || '-'}</td>
+            <td>${laporanBulanan || '-'}</td>
+            <td style="text-align:center;">${dataTransaksiHtml}</td>
+            <td>${jumlahLaporan || '0'}</td>
+            <td>${formatRupiahTabel(sspdBphtb)}</td>
+            <td>${keterangan || '-'}</td>
+            <td style="text-align:center;">${nomorStd !== "" ? `<b>${nomorStd}</b>` : '-'}</td>
+            <td style="text-align:center;">${filePdfHtml}</td>
+            <td style="text-align:center;">${nomorSuratDenda !== "" ? `<b>${nomorSuratDenda}</b>` : '-'}</td>
+            <td style="text-align:center;">${filePdfDendaHtml}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
