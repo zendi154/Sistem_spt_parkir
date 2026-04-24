@@ -2090,29 +2090,29 @@
                 <div class="table-wrapper">
 
                     <table id="tableLaporan">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Nomor Unik</th>
-                            <th>Nama</th>
-                            <th>Alamat Kantor</th>
-                            <th>Nomor Surat</th>
-                            <th>Tanggal Surat</th>
-                            <th>Tanggal Diterima</th>
-                            <th>Status Surat</th>
-                            <th>Laporan Bulanan</th>
-                            <th>Data Transaksi</th>
-                            <th>Jumlah Laporan</th>
-                            <th>SSPD BPHTB (Rp)</th>
-                            <th>Keterangan</th>
-                            <th>Nomor STD</th>
-                            <th>Lihat PDF STD</th>
-                            <th>Bukti Bayar</th>
-                            <th>Status Email</th>
-                            <th>Nomor Surat Pemberitahuan</th>
-                            <th>Lihat PDF Pemberitahuan</th>
-                        </tr>
-                    </thead>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nomor Unik</th>
+                                <th>Nama</th>
+                                <th>Alamat Kantor</th>
+                                <th>Nomor Surat</th>
+                                <th>Tanggal Surat</th>
+                                <th>Tanggal Diterima</th>
+                                <th>Status Surat</th>
+                                <th>Laporan Bulanan</th>
+                                <th>Data Transaksi</th>
+                                <th>Jumlah Laporan</th>
+                                <th>SSPD BPHTB (Rp)</th>
+                                <th>Keterangan</th>
+                                <th>Nomor STD</th>
+                                <th>Lihat PDF STD</th>
+                                <th>Bukti Bayar</th>
+                                <th>Status Email</th>
+                                <th>Nomor Surat Pemberitahuan</th>
+                                <th>Lihat PDF Pemberitahuan</th>
+                            </tr>
+                        </thead>
 
                         <tbody id="dataNotaris">
 
@@ -3207,10 +3207,7 @@
         }
 
         // ===============================
-        // FUNGSI KIRIM EMAIL
-        // ===============================
-        // ===============================
-        // FUNGSI KIRIM EMAIL (FIXED - NO CORS)
+        // FUNGSI KIRIM EMAIL (FIXED - NO CORS) - DENGAN INDEKS YANG BENAR
         // ===============================
         let isSending = false;
 
@@ -3226,27 +3223,18 @@
                 return;
             }
 
-            // Ambil data dari row (19 kolom)
+            // Ambil data dari row (19 kolom) - INDEX YANG BENAR!
             const cells = row.cells;
             const data = {
-                tanggal: cells[0]?.innerText || '',
-                id: cells[1]?.innerText || '',
-                nama: cells[2]?.innerText || '',
-                alamat: cells[3]?.innerText || '',
-                nomor_surat: cells[4]?.innerText || '',
-                tgl_surat: cells[5]?.innerText || '',
-                tgl_diterima: cells[6]?.innerText || '',
-                status: cells[7]?.innerText || '',
-                bulan: cells[8]?.innerText || '',
-                transaksi: cells[9]?.innerText || '',
-                jumlah: cells[10]?.innerText || '0',
-                sspd: cells[11]?.innerText || '0',
-                keterangan: cells[12]?.innerText || '',
-                nomor_std: nomorSPL || '',
-                file_pdf: cells[14]?.innerText || '',
-                status_email: cells[16]?.innerText || '',
-                nomor_surat_denda: cells[17]?.innerText || '',
-                file_pdf_denda: cells[18]?.innerText || ''
+                id: cells[1]?.innerText || '',          // kolom indeks 1 = Nomor Unik
+                nama: cells[2]?.innerText || '',        // kolom indeks 2 = Nama
+                alamat: cells[3]?.innerText || '',      // kolom indeks 3 = Alamat
+                tgl_surat: cells[5]?.innerText || '',   // kolom indeks 5 = Tanggal Surat
+                tgl_diterima: cells[6]?.innerText || '',// kolom indeks 6 = Tanggal Diterima
+                status: cells[7]?.innerText || '',      // kolom indeks 7 = Status Surat
+                bulan: cells[8]?.innerText || '',       // kolom indeks 8 = Laporan Bulanan
+                keterangan: cells[12]?.innerText || '', // kolom indeks 12 = Keterangan
+                nomor_std: nomorSPL || ''
             };
 
             console.log("📧 Mengirim email untuk:", data.nama, "| Bulan:", data.bulan);
@@ -3257,42 +3245,40 @@
             showLoading('Mengirim email...');
 
             // Buat URL dengan semua parameter
-            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}&tanggal_surat=${encodeURIComponent(data.tgl_surat)}&tanggal_diterima=${encodeURIComponent(data.tgl_diterima)}&status_surat=${encodeURIComponent(data.status)}`;
+            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=0&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}&tanggal_surat=${encodeURIComponent(data.tgl_surat)}&tanggal_diterima=${encodeURIComponent(data.tgl_diterima)}&status_surat=${encodeURIComponent(data.status)}`;
 
             try {
-                // ============================================
                 // PAKAI mode: 'no-cors' UNTUK MENGATASI CORS
-                // ============================================
                 const response = await fetch(url, {
                     method: 'GET',
-                    mode: 'no-cors',  // ← INI KUNCI UTAMA UNTUK CORS!
+                    mode: 'no-cors',
                     cache: 'no-cache'
                 });
 
                 hideLoading();
 
-                // Karena mode no-cors, response tidak bisa dibaca
-                // Kita anggap berhasil jika tidak ada error
                 console.log("✅ Email terkirim (mode no-cors) ke:", emailUser);
 
                 showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.\n\nSurat Pemberitahuan dan STD akan diproses oleh sistem.`);
 
                 // Update tampilan row
-                let actionCell = cells[cells.length - 1];
-                let uploadCell = cells[15]; // kolom file_surat_upload (index 15)
-                let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
+                const actionCell = cells[18]; // kolom indeks 18 = Aksi Email (kolom TERAKHIR)
+                const uploadCell = cells[15];  // kolom indeks 15 = Bukti Bayar (file_surat_upload)
+                const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
 
                 if (hasUpload) {
                     actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;" title="LUNAS"></i></div>`;
                     row.style.backgroundColor = "#d4edda";
                     await updateStatusEmail(data.id, "SELESAI");
                 } else {
-                    actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm" title="Kirim Email">
-                <i class="bi bi-envelope-fill"></i>
-            </button>
-            <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
-                <i class="bi bi-trash-fill"></i>
-            </button>`;
+                    actionCell.innerHTML = `<div class="text-center">
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-primary btn-sm" title="Kirim Email">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm" title="Hapus">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
                     row.style.backgroundColor = "#fff3cd";
                     await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
                 }
@@ -3310,21 +3296,6 @@
                 showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.\nError: ' + (error.message || 'Unknown error'));
             } finally {
                 isSending = false;
-            }
-        }
-
-        // UPDATE STATUS EMAIL (DIPERBAIKI DENGAN NO-CORS)
-        async function updateStatusEmail(id, status) {
-            try {
-                const url = `${scriptURL}?update_status=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`;
-                await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
-                console.log(`✅ Status updated: ${id} -> ${status}`);
-            } catch (err) {
-                console.error("❌ Error update status:", err);
             }
         }
 
