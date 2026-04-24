@@ -2547,9 +2547,13 @@
             <td>${row["jumlah_laporan"] || ""}</td>
             <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
             <td>${row["keterangan"] || ""}</td>
-            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
+           <td style="text-align:center;">
+            ${(row["nomor_std"] || "").toString().trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}
+            </td>
             <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
-            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
+            <td style="text-align:center;">
+            ${(row["nomor_surat_denda"] || "").toString().trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}
+            </td>
             <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
