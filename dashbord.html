@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwM3eCKK3t-qFA5564K1DiEN6ePBqLtPDWDoobZFEjbNK0QbCSiUA-Fl8ULPEyP-7gaYg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwIYlWIhlrduc0fa77H3PHqfJwRDmqGxYiPSWHqvdfbnlsxO4dsflI-Nx3r5kHR2pbStQ/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2547,10 +2547,10 @@
             <td>${row["jumlah_laporan"] || ""}</td>
             <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
             <td>${row["keterangan"] || ""}</td>
-            <td style="text-align:center;">${(row["nomor_std"] && String(row["nomor_std"]).trim() !== "") ? `<b>${escapeHtml(String(row["nomor_std"]))}</b>` : '-'}
-            <td style="text-align:center;">${(row["file_pdf"] && String(row["file_pdf"]).trim() !== "") ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}
-            <td style="text-align:center;">${(row["nomor_surat_denda"] && String(row["nomor_surat_denda"]).trim() !== "") ? `<b>${escapeHtml(String(row["nomor_surat_denda"]))}</b>` : '-'}
-            <td style="text-align:center;">${(row["file_pdf_denda"] && String(row["file_pdf_denda"]).trim() !== "") ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}
+            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf"] ? `<a href="${row["file_pdf"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td style="text-align:center;">${row["nomor_surat_denda"] && row["nomor_surat_denda"].trim() !== "" ? `<b>${row["nomor_surat_denda"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
             <td style="text-align:center;">${catatanAuto}</td>
             <td style="text-align:center;">${actionHTML}</td>
@@ -3122,106 +3122,39 @@
         // FUNGSI KIRIM EMAIL
         // ===============================
         let isSending = false;
-        async function kirimEmail(row, emailUser, jenis, nomorSPL) {
-            if (isSending) {
-                showError('Proses Berjalan', 'Tunggu sebentar...');
-                return;
-            }
-
-            const data = {
-                id: row.cells[0].innerText,
-                nama: row.cells[1].innerText,
-                alamat: row.cells[2].innerText,
-                nomor: row.cells[3].innerText,
-                tgl_surat: row.cells[4].innerText,
-                tgl_diterima: row.cells[5].innerText,
-                status: row.cells[6].innerText,
-                bulan: row.cells[7].innerText,
-                transaksi: row.cells[8].innerText,
-                jumlah: row.cells[9].innerText,
-                sspd: row.cells[10].innerText,
-                keterangan: row.cells[11].innerText,
-                nomor_std: nomorSPL
-            };
-
+        async function kirimEmail(row, email, jenis, nomorSPL) {
+            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
+            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
             isSending = true;
             showLoading('Mengirim email...');
-
-            // Buat URL parameter
-            const params = new URLSearchParams();
-            params.append('email', emailUser);
-            params.append('nama', data.nama);
-            params.append('id', data.id);
-            params.append('alamat', data.alamat);
-            params.append('bulan', data.bulan);
-            params.append('jumlah', data.jumlah);
-            params.append('jenis', jenis);
-            params.append('nomor_std', data.nomor_std);
-
-            const url = `${scriptURL}?${params.toString()}`;
-
-            console.log("Mengirim email ke:", emailUser);
-            console.log("URL:", url);
-
+            const url = `${scriptURL}?email=${encodeURIComponent(email)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
             try {
-                // Gunakan mode 'no-cors' untuk bypass CORS
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                const response = await fetch(url);
+                const result = await response.text();
+                hideLoading();
+                if (response.ok || result.includes("success")) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+                    let actionCell = row.cells[row.cells.length - 1];
+                    let uploadCell = row.cells[row.cells.length - 2];
+                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
+
+                    if (hasUpload) {
+                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
+                        row.style.backgroundColor = "#d4edda";
+                        await updateStatusEmail(data.id, "SELESAI");
+                    } else {
+                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
+                        row.style.backgroundColor = "#fff3cd";
+                        await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
-                });
-
-                console.log("Response type:", response.type);
-                console.log("Response status:", response.status);
-
-                hideLoading();
-
-                // Karena no-cors, response tidak bisa dibaca
-                // Tapi request tetap terkirim ke server
-                showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
-
-                // Update status email
-                await updateStatusEmail(data.id, "EMAIL_TERKIRIM");
-
-                // Refresh data setelah 2 detik
-                setTimeout(() => loadDataSheet(), 2000);
-
-            } catch (error) {
-                hideLoading();
-                console.error("Error detail:", error);
-
-                // Tampilkan pesan yang lebih informatif
-                let errorMessage = 'Terjadi kesalahan. ';
-                if (error.message === 'Failed to fetch') {
-                    errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
-                } else {
-                    errorMessage = error.message;
-                }
-
-                showError('❌ Gagal Kirim', errorMessage);
-            } finally {
-                isSending = false;
-            }
+                    setTimeout(() => loadDataSheet(), 1000);
+                } else { showError('❌ Gagal Kirim', result); }
+            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
         }
 
+        // UPDATE STATUS EMAIL
         async function updateStatusEmail(id, status) {
-            try {
-                const url = `${scriptURL}?update_status=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`;
-
-                await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-
-                console.log(`Status updated: ${id} -> ${status}`);
-                return { success: true };
-
-            } catch (err) {
-                console.error('Update status error:', err);
-                return { success: false };
-            }
+            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
         }
 
         // Data Baru
@@ -7454,32 +7387,6 @@
 
             // Refresh data untuk update badge notifikasi
             await updateNotifikasiBelumLapor();
-        }
-
-        async function kirimEmailNotifikasi(notaris, periode, email) {
-            try {
-                const params = new URLSearchParams();
-                params.append('email', email);
-                params.append('nama', notaris.nama);
-                params.append('id', notaris.id);
-                params.append('bulan', periode);
-                params.append('jenis', 'Tidak Menyampaikan Laporan');
-                params.append('nomor_std', '001');
-
-                const url = `${scriptURL}?${params.toString()}`;
-
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-
-                console.log(`Notifikasi terkirim ke ${notaris.nama} (${email})`);
-                return true;
-
-            } catch (error) {
-                console.error(`Gagal kirim notifikasi ke ${notaris.nama}:`, error);
-                return false;
-            }
         }
 
         // Fungsi untuk mencari email notaris
