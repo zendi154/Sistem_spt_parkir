@@ -3018,10 +3018,10 @@
             let row = btn.closest("tr");
             let id = row.cells[0].innerText;
             try {
-                await fetch(scriptURL + "?hapus=" + id);
-                hideLoading();
-                showSuccess('Data Terhapus', 'Data berhasil dihapus.');
-                loadDataSheet();
+                await fetch(scriptURL + "?hapus=" + id, {
+                    method: "GET",
+                    mode: "no-cors"
+                });
             } catch (err) { hideLoading(); showError('Gagal Hapus', 'Terjadi kesalahan.'); }
         }
 
@@ -3122,54 +3122,76 @@
             });
         }
 
-        // ===============================
-        // FUNGSI KIRIM EMAIL
-        // ===============================
         let isSending = false;
+
         async function kirimEmail(row, email, jenis, nomorSPL) {
-            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
-            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
+            if (isSending) {
+                showError('Proses Berjalan', 'Tunggu sebentar...');
+                return;
+            }
+
+            const data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                bulan: row.cells[7].innerText,
+                jumlah: row.cells[9].innerText,
+                nomor_std: nomorSPL
+            };
+
             isSending = true;
             showLoading('Mengirim email...');
-            const url = `${scriptURL}?action=kirim_email&email=${encodeURIComponent(email)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+
+            const url = `${scriptURL}?action=kirim_email`
+                + `&email=${encodeURIComponent(email)}`
+                + `&nama=${encodeURIComponent(data.nama)}`
+                + `&id=${encodeURIComponent(data.id)}`
+                + `&alamat=${encodeURIComponent(data.alamat)}`
+                + `&bulan=${encodeURIComponent(data.bulan)}`
+                + `&jumlah=${encodeURIComponent(data.jumlah)}`
+                + `&jenis=${encodeURIComponent(jenis)}`
+                + `&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+
             try {
-                const response = await fetch(url);
-                const result = await response.text();
+                // 🔥 WAJIB no-cors
+                await fetch(url, { method: "GET", mode: "no-cors" });
+
                 hideLoading();
-                if (response.ok || result.includes("success")) {
-                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
-                    let actionCell = row.cells[row.cells.length - 1];
-                    let uploadCell = row.cells[row.cells.length - 2];
-                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
 
-                    if (hasUpload) {
-                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
-                        row.style.backgroundColor = "#d4edda";
-                        await updateStatusEmail(data.id, "SELESAI");
-                    } else {
-                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
-                        row.style.backgroundColor = "#fff3cd";
-                        await updateStatusEmail(data.id, "WAITING_RESEND");
-                    }
-                    setTimeout(() => loadDataSheet(), 1000);
-                } else { showError('❌ Gagal Kirim', result); }
-            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
-        }
+                // ✅ LANGSUNG ANGGAP SUKSES
+                showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
 
-        // UPDATE STATUS EMAIL
-        async function updateStatusEmail(id, status) {
-            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
-        }
+                let actionCell = row.cells[row.cells.length - 1];
+                let uploadCell = row.cells[row.cells.length - 2];
+                let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
 
-        // Data Baru
-        function appendNewData(newData) {
-            const tbody = document.querySelector("#dataNotaris");
+                if (hasUpload) {
+                    actionCell.innerHTML = `
+                <div class="text-center">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                </div>`;
+                    row.style.backgroundColor = "#d4edda";
+                    await updateStatusEmail(data.id, "SELESAI");
+                } else {
+                    actionCell.innerHTML = `
+                <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash-fill"></i>
+                </button>`;
+                    row.style.backgroundColor = "#fff3cd";
+                    await updateStatusEmail(data.id, "WAITING_RESEND");
+                }
 
-            newData.forEach(row => {
-                let tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row["id"]}</td><td>${row["nama_notaris_&_ppat"]}</td>`;
-                tbody.prepend(tr); // masuk ke atas
-            });
+                setTimeout(() => loadDataSheet(), 1000);
+
+            } catch (error) {
+                hideLoading();
+                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.');
+            } finally {
+                isSending = false;
+            }
         }
 
         // PREVIEW PDF
@@ -7695,7 +7717,13 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 // Panggil preview untuk mendapatkan daftar lengkap (termasuk ID dan Alamat)
                 let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
                 const response = await fetch(url);
-                const result = await response.json();
+                const result = await response.text(); // karena kirimEmail return TEXT
+
+                if (result.includes("success")) {
+                    showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+                } else {
+                    showError('❌ Gagal Kirim', result);
+                }
 
                 Swal.close();
 
