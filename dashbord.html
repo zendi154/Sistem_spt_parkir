@@ -2365,7 +2365,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx1pauFS6usWHGTfGbmsz7g8IxzMkKzDewEjDfr8m-oFHJBR8QKW1BJmbi-P_iAwY27ig/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyP_68K9zLZmRrePG8gV7UiDBWVOwUEoU-1-4WZFpUBEsgOskMcZXXBYhirPvApOPAaAA/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3169,6 +3169,7 @@
             });
         }
 
+
         let isSending = false;
 
         async function kirimEmail(row, email, jenis, nomorSPL) {
@@ -3189,6 +3190,7 @@
             isSending = true;
             showLoading('Mengirim email...');
 
+            // Gunakan scriptURL yang sudah dideploy (bukan URL_API)
             const url = `${scriptURL}?action=kirim_email`
                 + `&email=${encodeURIComponent(email)}`
                 + `&nama=${encodeURIComponent(data.nama)}`
@@ -3211,45 +3213,72 @@
                     return;
                 }
 
-                // ✅ HANYA SEKALI
                 showSuccess('✅ Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+
+                // Update UI setelah email terkirim
+                let actionCell = row.cells[row.cells.length - 1];
+                let uploadCell = row.cells[row.cells.length - 2];
+                let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
+
+                if (hasUpload) {
+                    actionCell.innerHTML = `
+                <div class="text-center">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                </div>`;
+                    row.style.backgroundColor = "#d4edda";
+                    await updateStatus(data.id, "SELESAI");
+                } else {
+                    actionCell.innerHTML = `
+                <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash-fill"></i>
+                </button>`;
+                    row.style.backgroundColor = "#fff3cd";
+                    await updateStatus(data.id, "WAITING_RESEND");
+                }
+
+                isSending = false;
+                setTimeout(() => loadDataSheet(), 800);
 
             } catch (error) {
                 hideLoading();
-                showError('❌ Gagal Kirim', 'Koneksi gagal');
+                console.error('Error:', error);
+                showError('❌ Gagal Kirim', 'Koneksi gagal: ' + error.message);
                 isSending = false;
-                return;
             }
+        }
 
-            // ===============================
-            // UPDATE UI + STATUS
-            // ===============================
-            let actionCell = row.cells[row.cells.length - 1];
-            let uploadCell = row.cells[row.cells.length - 2];
-            let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
 
-            if (hasUpload) {
-                actionCell.innerHTML = `
+        // ===============================
+        // UPDATE UI + STATUS
+        // ===============================
+        let actionCell = row.cells[row.cells.length - 1];
+        let uploadCell = row.cells[row.cells.length - 2];
+        let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
+
+        if (hasUpload) {
+            actionCell.innerHTML = `
         <div class="text-center">
             <i class="bi bi-check-circle-fill text-success"></i>
         </div>`;
-                row.style.backgroundColor = "#d4edda";
-                await updateStatus(data.id, "SELESAI");
-            } else {
-                actionCell.innerHTML = `
+            row.style.backgroundColor = "#d4edda";
+            await updateStatus(data.id, "SELESAI");
+        } else {
+            actionCell.innerHTML = `
         <button onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
             <i class="bi bi-envelope-fill"></i>
         </button>
         <button onclick="hapusData(this)" class="btn btn-danger btn-sm">
             <i class="bi bi-trash-fill"></i>
         </button>`;
-                row.style.backgroundColor = "#fff3cd";
-                await updateStatus(data.id, "WAITING_RESEND");
-            }
-
-            isSending = false;
-            setTimeout(() => loadDataSheet(), 800);
+            row.style.backgroundColor = "#fff3cd";
+            await updateStatus(data.id, "WAITING_RESEND");
         }
+
+        isSending = false;
+        setTimeout(() => loadDataSheet(), 800);
 
         // UPDATE STATUS 
         async function updateStatus(id, status) {
@@ -7174,6 +7203,36 @@
                     title: 'Error',
                     text: 'Terjadi kesalahan: ' + error.message
                 });
+            }
+        }
+
+        // ============================================
+        // FUNGSI KIRIM EMAIL NOTIFIKASI (WA/EMAIL)
+        // ============================================
+        async function kirimEmailNotifikasi(notaris, periode, email) {
+            try {
+                // Kirim email via scriptURL (bukan URL_API)
+                const response = await fetch(`${scriptURL}?action=kirim_notifikasi_wa`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        email: email,
+                        nama: notaris.nama,
+                        id: notaris.id,
+                        periode: periode,
+                        pesan: generateWAMessage(notaris.nama, periode)
+                    })
+                });
+
+                const result = await response.json();
+                console.log(`Hasil kirim ke ${email}:`, result);
+                return result;
+
+            } catch (error) {
+                console.error('Gagal kirim email notifikasi:', error);
+                throw error;
             }
         }
 
