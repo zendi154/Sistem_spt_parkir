@@ -3295,9 +3295,13 @@
         // FUNGSI LAINNYA
         function cekTerlambat(tanggal) {
             if (!tanggal) return "";
-            let tgl = new Date(tanggal);
-            if (isNaN(tgl)) return "";
-            return tgl.getDate() > 10 ? "TIDAK VALID" : "VALID";
+            try {
+                let tgl = new Date(tanggal);
+                if (isNaN(tgl.getTime())) return "";
+                return tgl.getDate() > 10 ? "TIDAK VALID" : "VALID";
+            } catch (e) {
+                return "";
+            }
         }
         function getTanggal(tgl) {
             if (!tgl) return 0;
@@ -3685,7 +3689,9 @@
         // Fungsi update notifikasi email
         async function updateNotifikasiEmail() {
             try {
-                const jumlahEmail = hitungEmailBelumTerkirim();
+                const daftar = getDaftarEmailBelumTerkirim();
+                const jumlahEmail = daftar.length;
+
                 const badgeEmail = document.getElementById('badgeEmail');
                 const tooltipEmailText = document.getElementById('tooltipEmailText');
 
@@ -3707,6 +3713,8 @@
                         tooltipEmailText.innerHTML = `⚠️ ${jumlahEmail} email denda belum terkirim`;
                     }
                 }
+
+                console.log(`Email belum terkirim: ${jumlahEmail}`);
             } catch (error) {
                 console.error('Gagal update notifikasi email:', error);
                 const badgeEmail = document.getElementById('badgeEmail');
@@ -4062,22 +4070,30 @@
         // Fungsi untuk mendapatkan daftar unique notaris yang emailnya belum terkirim
         function getDaftarEmailBelumTerkirim() {
             try {
-                const dataLaporan = allData.length > 0 ? allData : window._statistikData?.dataLaporan || [];
-                const emailMap = new Map(); // Gunakan Map untuk memastikan unique
+                // Gunakan allData yang sudah ada, bukan window._statistikData
+                const dataLaporan = (typeof allData !== 'undefined' && allData.length > 0) ? allData : [];
+                const emailMap = new Map();
 
                 if (dataLaporan && Array.isArray(dataLaporan)) {
                     dataLaporan.forEach(row => {
                         const statusEmail = row["status_email"] || "";
                         const hasUpload = row["file_surat_upload"] && row["file_surat_upload"].trim() !== "";
-                        const statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+                        const tanggalDiterima = row["tanggal_diterima"];
+
+                        // Hitung keterlambatan
+                        let statusTerlambat = "";
+                        if (tanggalDiterima) {
+                            let tgl = new Date(tanggalDiterima);
+                            if (!isNaN(tgl)) {
+                                statusTerlambat = tgl.getDate() > 10 ? "TIDAK VALID" : "VALID";
+                            }
+                        }
+
                         const nama = row["nama_notaris_&_ppat"] || "";
                         const id = row["id"] || "";
                         const bulan = row["laporan_bulanan"] || "";
 
                         // Email dianggap BELUM TERKIRIM jika:
-                        // 1. Status TIDAK VALID (terlambat)
-                        // 2. Belum upload bukti
-                        // 3. Status email bukan SELESAI
                         if (statusTerlambat === "TIDAK VALID" && !hasUpload && statusEmail !== "SELESAI" && nama) {
                             const key = normalisasiNama(nama);
                             if (!emailMap.has(key)) {
