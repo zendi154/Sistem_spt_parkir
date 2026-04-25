@@ -2369,7 +2369,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzu3cQweyJz47xLhcKhp-XxCaURq41D_hkaLtzUlyP8J5-npuUaIBehrdIPX8zI3DvPGQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzHVUai7XmoGn_pXAlHTAdjv6DB9fUAsfCgEwli3Bhe3TA9emOeEu4RSYGHh_N3hPHJiA/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3232,21 +3232,43 @@
         }
 
         // ===============================
-        // FUNGSI KIRIM EMAIL
+        // FUNGSI KIRIM EMAIL (TANPA CORS - PAKAI TEXT RESPONSE)
         // ===============================
         let isSending = false;
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
             if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
-            const data = { id: row.cells[0].innerText, nama: row.cells[1].innerText, alamat: row.cells[2].innerText, nomor: row.cells[3].innerText, tgl_surat: row.cells[4].innerText, tgl_diterima: row.cells[5].innerText, status: row.cells[6].innerText, bulan: row.cells[7].innerText, transaksi: row.cells[8].innerText, jumlah: row.cells[9].innerText, sspd: row.cells[10].innerText, keterangan: row.cells[11].innerText, nomor_std: nomorSPL };
+
+            const data = {
+                id: row.cells[0].innerText,
+                nama: row.cells[1].innerText,
+                alamat: row.cells[2].innerText,
+                nomor: row.cells[3].innerText,
+                tgl_surat: row.cells[4].innerText,
+                tgl_diterima: row.cells[5].innerText,
+                status: row.cells[6].innerText,
+                bulan: row.cells[7].innerText,
+                transaksi: row.cells[8].innerText,
+                jumlah: row.cells[9].innerText,
+                sspd: row.cells[10].innerText,
+                keterangan: row.cells[11].innerText,
+                nomor_std: nomorSPL
+            };
+
             isSending = true;
             showLoading('Mengirim email...');
+
             const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+
             try {
                 const response = await fetch(url);
+                // PERUBAHAN: PAKAI .text() BUKAN .json() KARENA APPS SCRIPT KEMBALIKAN TEXT
                 const result = await response.text();
                 hideLoading();
-                if (response.ok || result.includes("success")) {
+
+                // CEK APAKAH RESPONSE MENGANDUNG "berhasil"
+                if (response.ok && result.includes("berhasil")) {
                     showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
                     let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
@@ -3261,13 +3283,25 @@
                         await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
                     setTimeout(() => loadDataSheet(), 1000);
-                } else { showError('❌ Gagal Kirim', result); }
-            } catch (error) { hideLoading(); showError('❌ Gagal Kirim', 'Cek koneksi internet Anda.'); } finally { isSending = false; }
+                } else {
+                    showError('❌ Gagal Kirim', result || 'Terjadi kesalahan');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error:', error);
+                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda. Error: ' + error.message);
+            } finally {
+                isSending = false;
+            }
         }
 
-        // UPDATE STATUS EMAIL
+        // UPDATE STATUS EMAIL (TETAP SAMA)
         async function updateStatusEmail(id, status) {
-            try { await fetch(`${scriptURL}?update_status=${id}&status=${status}`); } catch (err) { console.error(err); }
+            try {
+                await fetch(`${scriptURL}?update_status=${id}&status=${status}`);
+            } catch (err) {
+                console.error(err);
+            }
         }
 
         // Data Baru
