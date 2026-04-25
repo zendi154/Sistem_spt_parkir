@@ -3234,9 +3234,15 @@
         // ===============================
         // FUNGSI KIRIM EMAIL (TANPA CORS - PAKAI TEXT RESPONSE)
         // ===============================
+        // ===============================
+        // FUNGSI KIRIM EMAIL (BEACON - PALING AMAN)
+        // ===============================
         let isSending = false;
         async function kirimEmail(row, emailUser, jenis, nomorSPL) {
-            if (isSending) { showError('Proses Berjalan', 'Tunggu sebentar...'); return; }
+            if (isSending) {
+                showError('Proses Berjalan', 'Tunggu sebentar...');
+                return;
+            }
 
             const data = {
                 id: row.cells[0].innerText,
@@ -3257,42 +3263,36 @@
             isSending = true;
             showLoading('Mengirim email...');
 
-            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}`;
+            // Buat URL dengan parameter
+            const url = `${scriptURL}?email=${encodeURIComponent(emailUser)}&nama=${encodeURIComponent(data.nama)}&id=${encodeURIComponent(data.id)}&alamat=${encodeURIComponent(data.alamat)}&bulan=${encodeURIComponent(data.bulan)}&jumlah=${encodeURIComponent(data.jumlah)}&jenis=${encodeURIComponent(jenis)}&nomor_std=${encodeURIComponent(data.nomor_std)}&t=${Date.now()}`;
 
-            try {
-                const response = await fetch(url);
-                // PERUBAHAN: PAKAI .text() BUKAN .json() KARENA APPS SCRIPT KEMBALIKAN TEXT
-                const result = await response.text();
-                hideLoading();
+            // Gunakan navigator.sendBeacon - TIDAK KENA CORS!
+            const beaconSent = navigator.sendBeacon(url);
 
-                // CEK APAKAH RESPONSE MENGANDUNG "berhasil"
-                if (response.ok && result.includes("berhasil")) {
-                    showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+            hideLoading();
 
-                    let actionCell = row.cells[row.cells.length - 1];
-                    let uploadCell = row.cells[row.cells.length - 2];
-                    let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
+            if (beaconSent) {
+                showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
-                    if (hasUpload) {
-                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
-                        row.style.backgroundColor = "#d4edda";
-                        await updateStatusEmail(data.id, "SELESAI");
-                    } else {
-                        actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
-                        row.style.backgroundColor = "#fff3cd";
-                        await updateStatusEmail(data.id, "WAITING_RESEND");
-                    }
-                    setTimeout(() => loadDataSheet(), 1000);
+                let actionCell = row.cells[row.cells.length - 1];
+                let uploadCell = row.cells[row.cells.length - 2];
+                let hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill"));
+
+                if (hasUpload) {
+                    actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
+                    row.style.backgroundColor = "#d4edda";
+                    await updateStatusEmail(data.id, "SELESAI");
                 } else {
-                    showError('❌ Gagal Kirim', result || 'Terjadi kesalahan');
+                    actionCell.innerHTML = `<button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm"><i class="bi bi-envelope-fill"></i></button><button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>`;
+                    row.style.backgroundColor = "#fff3cd";
+                    await updateStatusEmail(data.id, "WAITING_RESEND");
                 }
-            } catch (error) {
-                hideLoading();
-                console.error('Error:', error);
-                showError('❌ Gagal Kirim', 'Cek koneksi internet Anda. Error: ' + error.message);
-            } finally {
-                isSending = false;
+                setTimeout(() => loadDataSheet(), 1000);
+            } else {
+                showError('❌ Gagal Kirim', 'Gagal mengirim request');
             }
+
+            isSending = false;
         }
 
         // UPDATE STATUS EMAIL (TETAP SAMA)
