@@ -2356,7 +2356,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXfWKBhVdG2jUBYrmTDVEsiNSYjNEx9OWKMucDUz2ylH6Ga_NE_YjSOVea9wKiWBt8/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-rm5_9MLfgSrcO32zNAFEC0Wfb434_Iwg0zUinuXZiMN0KreUq-A1yNWaTuxlQFBg/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3189,19 +3189,9 @@
 
             try {
                 const response = await fetch(url);
-
-                // 🔥 LEBIH AMAN (hindari error JSON)
-                const text = await response.text();
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch {
-                    throw new Error("Response bukan JSON: " + text);
-                }
+                const result = await response.json(); // ✅ FIX UTAMA
 
                 hideLoading();
-
-                // 🔥 WAJIB: reset overlay
                 resetOverlay();
 
                 if (result.result === "success") {
@@ -3210,7 +3200,9 @@
 
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
-                    let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
+
+                    // ✅ lebih aman: cek isi cell bukan icon
+                    let hasUpload = uploadCell && uploadCell.innerText.trim() !== "";
 
                     if (hasUpload) {
                         actionCell.innerHTML = `
@@ -3219,6 +3211,7 @@
                     </div>`;
                         row.style.backgroundColor = "#d4edda";
                         await updateStatusEmail(data.id, "SELESAI");
+
                     } else {
                         actionCell.innerHTML = `
                     <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
@@ -3239,10 +3232,7 @@
 
             } catch (err) {
                 hideLoading();
-
-                // 🔥 reset juga saat error
                 resetOverlay();
-
                 showError('❌ Gagal Kirim', err.message);
             }
 
