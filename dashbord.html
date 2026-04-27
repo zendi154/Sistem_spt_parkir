@@ -3124,10 +3124,6 @@
                         Swal.showValidationMessage('Email tidak valid');
                         return false;
                     }
-                    if (!nomor) {
-                        Swal.showValidationMessage('Nomor SPL wajib diisi');
-                        return false;
-                    }
                     return {
                         email: email,
                         nomor: nomor,
@@ -3150,7 +3146,7 @@
         // ===============================
         // FUNGSI KIRIM EMAIL
         // ===============================
-        async function kirimEmail(row, emailUser, jenis, nomorSPL) {
+        async function kirimEmail(row, emailUser, jenis) {
             if (isSending) {
                 showError('Proses Berjalan', 'Tunggu sebentar...');
                 return;
