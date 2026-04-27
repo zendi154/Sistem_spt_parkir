@@ -2359,7 +2359,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzrWBr1bJwPPiYAp6t2yoOoOaBJO2PICJuuqCzxg9YC5Khc-z9l8z_RZeQXIie7XojZ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXfWKBhVdG2jUBYrmTDVEsiNSYjNEx9OWKMucDUz2ylH6Ga_NE_YjSOVea9wKiWBt8/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3063,7 +3063,7 @@
             const uploadCell = row.cells[row.cells.length - 2];
             const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
 
-            // JIKA SUDAH UPLOAD (LUNAS), TIDAK BISA KIRIM EMAIL LAGI
+            // CEK LUNAS
             if (hasUpload && uploadCell.innerHTML.includes("eye-fill")) {
                 Swal.fire({
                     title: 'Status LUNAS',
@@ -3088,15 +3088,23 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label>Email PPAT</label>
                     <input id="emailPpat" type="email" placeholder="contoh: notaris@email.com">
                 </div>
+
+                <div class="form-group">
+                    <label>Nomor SPL</label>
+                    <input id="nomorSpl" type="text" placeholder="Contoh: 0001">
+                </div>
+
                 <div class="form-group">
                     <label>Jenis Pelanggaran</label>
                     <select id="jenisPelanggaran">
                         <option value="Terlambat Menyampaikan Laporan">Terlambat Menyampaikan Laporan</option>
                         <option value="Tidak Menyampaikan Laporan">Tidak Menyampaikan Laporan</option>
+                        <option value="Pelanggaran : 0 / Denda Lunas">Pelanggaran : 0 / Denda Lunas</option>
                     </select>
                 </div>
             </div>
@@ -3104,49 +3112,56 @@
                 width: 420,
                 confirmButtonText: 'Kirim',
                 cancelButtonText: 'Batal',
-                confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#6b7280',
                 showCancelButton: true,
                 showCloseButton: true,
-                heightAuto: false,
                 customClass: {
                     popup: 'swal-modern-popup'
                 },
+
                 preConfirm: () => {
-                    const email = document.getElementById('emailPpat').value.trim();
-                    const nomor = document.getElementById('nomorSpl').value.trim();
+                    const emailEl = document.getElementById('emailPpat');
+                    const nomorEl = document.getElementById('nomorSpl');
+                    const jenisEl = document.getElementById('jenisPelanggaran');
+
+                    const email = emailEl?.value.trim();
+                    const nomor = nomorEl?.value.trim();
+                    const jenis = jenisEl?.value;
 
                     if (!email) {
                         Swal.showValidationMessage('Email wajib diisi');
                         return false;
                     }
+
                     if (!email.includes('@')) {
                         Swal.showValidationMessage('Email tidak valid');
                         return false;
                     }
+
+                    if (!nomor) {
+                        Swal.showValidationMessage('Nomor SPL wajib diisi');
+                        return false;
+                    }
+
                     return {
-                        email: email,
-                        nomor: nomor,
-                        jenis: document.getElementById('jenisPelanggaran').value
+                        email,
+                        spl: nomor,
+                        jenis
                     };
                 }
-            }).then((result) => {
-                // INI YANG PALING PENTING - Memanggil kirimEmail
-                if (result.isConfirmed && result.value) {
-                    kirimEmail(
-                        row,
-                        result.value.email,
-                        result.value.jenis,
-                        result.value.nomor
-                    );
-                }
-            });
+            })
+                .then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        kirimEmail(
+                            row,
+                            result.value.email,
+                            result.value.jenis,
+                            result.value.spl
+                        );
+                    }
+                });
         }
 
-        // ===============================
-        // FUNGSI KIRIM EMAIL
-        // ===============================
-        async function kirimEmail(row, emailUser, jenis) {
+        async function kirimEmail(row, emailUser, jenis, nomorSPL) {
             if (isSending) {
                 showError('Proses Berjalan', 'Tunggu sebentar...');
                 return;
@@ -3163,7 +3178,6 @@
             isSending = true;
             showLoading('Mengirim email...');
 
-            // ✅ URL SUDAH SESUAI BACKEND
             const url = `${scriptURL}?action=kirim_email`
                 + `&email=${encodeURIComponent(emailUser)}`
                 + `&nama=${encodeURIComponent(data.nama)}`
@@ -3172,13 +3186,25 @@
                 + `&bulan=${encodeURIComponent(data.bulan)}`
                 + `&jumlah=${encodeURIComponent(data.jumlah)}`
                 + `&jenis=${encodeURIComponent(jenis)}`
+                + `&spl=${encodeURIComponent(nomorSPL)}`
                 + `&t=${Date.now()}`;
 
             try {
                 const response = await fetch(url);
-                const result = await response.json(); // ✅ FIX
+
+                // 🔥 LEBIH AMAN (hindari error JSON)
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    throw new Error("Response bukan JSON: " + text);
+                }
 
                 hideLoading();
+
+                // 🔥 WAJIB: reset overlay
+                resetOverlay();
 
                 if (result.result === "success") {
 
@@ -3189,20 +3215,21 @@
                     let hasUpload = uploadCell && uploadCell.innerHTML.includes("eye-fill");
 
                     if (hasUpload) {
-                        actionCell.innerHTML = `<div class="text-center">
-                  <i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i>
-                 </div>`;
+                        actionCell.innerHTML = `
+                    <div class="text-center">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i>
+                    </div>`;
                         row.style.backgroundColor = "#d4edda";
                         await updateStatusEmail(data.id, "SELESAI");
                     } else {
                         actionCell.innerHTML = `
-               <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
-            <i class="bi bi-envelope-fill"></i>
-           </button>
-         <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
-            <i class="bi bi-trash-fill"></i>
-         </button>`;
-                        row.style.backgroundColor = "#fff3cd"; //
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>`;
+                        row.style.backgroundColor = "#fff3cd";
                         await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
 
@@ -3214,30 +3241,14 @@
 
             } catch (err) {
                 hideLoading();
+
+                // 🔥 reset juga saat error
+                resetOverlay();
+
                 showError('❌ Gagal Kirim', err.message);
             }
 
             isSending = false;
-        }
-
-        // UPDATE STATUS EMAIL (TETAP SAMA)
-        async function updateStatusEmail(id, status) {
-            try {
-                await fetch(`${scriptURL}?update_status=${id}&status=${status}`);
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        // Data Baru
-        function appendNewData(newData) {
-            const tbody = document.querySelector("#dataNotaris");
-
-            newData.forEach(row => {
-                let tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row["id"]}</td><td>${row["nama_notaris_&_ppat"]}</td>`;
-                tbody.prepend(tr); // masuk ke atas
-            });
         }
 
         // PREVIEW PDF
