@@ -32,29 +32,19 @@
             background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
             background-attachment: fixed;
             position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,...') repeat;
-            opacity: 0.05;
-            /* Pastikan opacity kecil */
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* CONTAINER */
+        /* Pastikan container bisa di-scroll */
         .container {
             max-width: 98%;
             position: relative;
             z-index: 1;
+            margin-bottom: 100px;
+            /* Beri ruang untuk floating footer */
+            min-height: 100vh;
         }
 
         /* CARD MODERN - BIRU MUDA */
@@ -1021,7 +1011,7 @@
         .floating-footer {
             position: fixed;
             bottom: 20px;
-            left: 30px;
+            left: 20px;
             z-index: 9999;
             backdrop-filter: blur(12px);
             background: rgba(255, 255, 255, 0.2);
@@ -3258,46 +3248,11 @@
         function previewPDF(url) {
             let old = document.getElementById("pdfModal");
             if (old) old.remove();
-
-            // MATIKAN SCROLL SAAT MODAL BUKA
-            document.body.style.overflow = "hidden";
-
             let modal = document.createElement("div");
             modal.id = "pdfModal";
-            modal.style = `
-                position:fixed;
-                top:0;left:0;
-                width:100%;height:100%;
-                background:rgba(0,0,0,0.7);
-                z-index:9999;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-            `;
-
-            modal.innerHTML = `
-                <div style="width:90%;height:90%;background:#fff;border-radius:10px;overflow:hidden;position:relative;">
-                    
-                    <button onclick="tutupPDF()" 
-                        style="position:absolute;top:10px;right:10px;z-index:10000;
-                        background:red;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">
-                        ✖
-                    </button>
-
-                    <iframe src="${url}" width="100%" height="100%"></iframe>
-                </div>
-            `;
-
+            modal.style = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;`;
+            modal.innerHTML = `<div style="width:90%;height:90%;background:#fff;border-radius:10px;overflow:hidden;position:relative;"><button onclick="this.closest('#pdfModal').remove()" style="position:absolute;top:10px;right:10px;background:red;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">✖</button><iframe src="${url}" width="100%" height="100%"></iframe></div>`;
             document.body.appendChild(modal);
-        }
-
-        // FUNGSI TUTUP (PENTING)
-        function tutupPDF() {
-            let modal = document.getElementById("pdfModal");
-            if (modal) modal.remove();
-
-            // BALIKKAN SCROLL
-            document.body.style.overflow = "auto";
         }
 
         // FUNGSI LAINNYA
