@@ -3159,7 +3159,22 @@
                 });
         }
 
-        async function kirimEmail(row, email, jenis, nomorSPL) {
+        async function simpanSPL(id, nomorSPL) {
+            const url = `${scriptURL}?action=proses_spl`
+                + `&id=${encodeURIComponent(id)}`
+                + `&spl=${encodeURIComponent(nomorSPL)}`;
+
+            const response = await fetch(url);
+            const text = await response.text();
+
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error("Response SPL bukan JSON: " + text);
+            }
+        }
+
+        async function kirimEmail(row, emailUser, jenis, nomorSPL) {
             if (isSending) {
                 showError('Proses Berjalan', 'Tunggu sebentar...');
                 return;
@@ -3177,7 +3192,7 @@
             showLoading('Mengirim email...');
 
             const url = `${scriptURL}?action=kirim_email`
-                + `&email=${encodeURIComponent(email)}`
+                + `&email=${encodeURIComponent(emailUser)}`
                 + `&nama=${encodeURIComponent(data.nama)}`
                 + `&id=${encodeURIComponent(data.id)}`
                 + `&alamat=${encodeURIComponent(data.alamat)}`
@@ -3203,7 +3218,7 @@
 
                 if (result.result === "success") {
 
-                    showSuccess('Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
+                    showSuccess('Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
