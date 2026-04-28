@@ -2356,7 +2356,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyuz0kOzmKB5NvU3o025jxdRWy1rn90pPj59FyZ5gbKYpCcHdhYGqyQA6P4Jv5951Gh/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwUb7YHHu_IbSusvGz7p-NKZIzayvgUy_8ldJzMbbUuVx9_4hXFBPJp5cuBhcomK5F_/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3054,21 +3054,16 @@
         }
 
         function bukaModalEmail(row) {
-
             const id = row.cells[0].innerText;
             const nama = row.cells[1].innerText;
             const alamat = row.cells[2].innerText;
             const bulan = row.cells[7].innerText;
 
             const uploadCell = row.cells[row.cells.length - 2];
-
-            const hasUpload = uploadCell &&
-                (uploadCell.innerHTML.includes("eye-fill") ||
-                    uploadCell.innerHTML.includes("icon-btn"));
+            const hasUpload = uploadCell && (uploadCell.innerHTML.includes("eye-fill") || uploadCell.innerHTML.includes("icon-btn"));
 
             // CEK LUNAS
             if (hasUpload && uploadCell.innerHTML.includes("eye-fill")) {
-
                 Swal.fire({
                     title: 'Status LUNAS',
                     html: `
@@ -3081,73 +3076,133 @@
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
-
                 return;
             }
 
+            // TAMPILKAN LOADING SAAT GENERATE NOMOR
             Swal.fire({
-                title: 'Kirim Email Denda',
-                html: `
-            <div class="swal-modern">
-
-                <div class="card-header">
-                    <div class="row">
-                        <div class="icon">👤</div>
-                        <div>
-                            <div class="nama">${nama}</div>
-                            <div class="sub">ID: ${id}</div>
-                            <div class="sub">Periode: ${bulan}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Email PPAT</label>
-                    <input id="emailPpat" type="email" placeholder="contoh@email.com">
-                </div>
-
-                <div class="form-group">
-                    <label>Nomor SPL</label>
-                    <input id="nomorSpl" type="text" placeholder="0001">
-                </div>
-
-                <div class="form-group">
-                    <label>Jenis Pelanggaran</label>
-                    <select id="jenisPelanggaran">
-                        <option value="Terlambat Menyampaikan Laporan">Terlambat</option>
-                        <option value="Tidak Menyampaikan Laporan">Tidak Lapor</option>
-                        <option value="Pelanggaran : 0 / Denda Lunas">Lunas</option>
-                    </select>
-                </div>
-
-            </div>
-        `,
-                width: 420,
-                showCancelButton: true,
-                confirmButtonText: 'Kirim',
-
-                preConfirm: () => {
-                    const email = document.getElementById('emailPpat').value.trim();
-                    const nomor = document.getElementById('nomorSpl').value.trim();
-                    const jenis = document.getElementById('jenisPelanggaran').value;
-
-                    if (!email) return Swal.showValidationMessage('Email wajib diisi');
-                    if (!email.includes('@')) return Swal.showValidationMessage('Email tidak valid');
-                    if (!nomor) return Swal.showValidationMessage('Nomor SPL wajib diisi');
-
-                    return { email, spl: nomor, jenis };
-                }
-
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    kirimEmail(row, result.value.email, result.value.jenis, result.value.spl);
+                title: 'Memproses...',
+                text: 'Menyiapkan nomor surat...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
+
+            // ✅ GENERATE NOMOR SURAT DARI BACKEND TERLEBIH DAHULU
+            fetch(`${scriptURL}?action=proses_std&id=${id}`, {
+                method: 'GET',
+                cache: 'no-cache'
+            })
+                .then(response => response.json())
+                .then(result => {
+                    Swal.close(); // Tutup loading
+
+                    if (result.result === "success") {
+                        const nomorSTD = result.nomor_std;
+                        const nomorPemberitahuan = result.nomor_pemberitahuan;
+
+                        // TAMPILKAN FORM DENGAN NOMOR YANG SUDAH DIGENERATE
+                        Swal.fire({
+                            title: 'Kirim Email Denda',
+                            html: `
+                    <div class="swal-modern">
+                        <div class="card-header" style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 32px;">👤</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: bold; font-size: 14px;">${escapeHtml(nama)}</div>
+                                    <div style="font-size: 11px; color: #666;">ID: ${escapeHtml(id)}</div>
+                                    <div style="font-size: 11px; color: #666;">Periode: ${escapeHtml(bulan)}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #e8f4fd; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; color: #0d6efd;">
+                                <strong>📄 Nomor Surat yang akan dikirim:</strong><br>
+                                STD: <span id="displayNomorSTD" style="font-family: monospace;">${escapeHtml(nomorSTD)}</span><br>
+                                Pemberitahuan: <span id="displayNomorPemberitahuan" style="font-family: monospace;">${escapeHtml(nomorPemberitahuan)}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email PPAT</label>
+                            <input id="emailPpat" type="email" class="form-control" placeholder="contoh@email.com" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nomor SPL</label>
+                            <input id="nomorSpl" type="text" class="form-control" placeholder="Contoh: 0001" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Jenis Pelanggaran</label>
+                            <select id="jenisPelanggaran" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                                <option value="Terlambat Menyampaikan Laporan">⚠️ Terlambat Menyampaikan Laporan</option>
+                                <option value="Tidak Menyampaikan Laporan">❌ Tidak Menyampaikan Laporan</option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" id="nomorSTD" value="${escapeHtml(nomorSTD)}">
+                        <input type="hidden" id="nomorPemberitahuan" value="${escapeHtml(nomorPemberitahuan)}">
+                    </div>
+                `,
+                            width: 500,
+                            showCancelButton: true,
+                            confirmButtonText: '📧 Kirim Email',
+                            cancelButtonText: 'Batal',
+                            confirmButtonColor: '#0d6efd',
+                            preConfirm: () => {
+                                const email = document.getElementById('emailPpat').value.trim();
+                                const nomorSpl = document.getElementById('nomorSpl').value.trim();
+                                const jenis = document.getElementById('jenisPelanggaran').value;
+                                const nomorSTD = document.getElementById('nomorSTD').value;
+                                const nomorPemberitahuan = document.getElementById('nomorPemberitahuan').value;
+
+                                if (!email) {
+                                    Swal.showValidationMessage('Email wajib diisi');
+                                    return false;
+                                }
+                                if (!email.includes('@')) {
+                                    Swal.showValidationMessage('Email tidak valid');
+                                    return false;
+                                }
+                                if (!nomorSpl) {
+                                    Swal.showValidationMessage('Nomor SPL wajib diisi');
+                                    return false;
+                                }
+
+                                return { email, spl: nomorSpl, jenis, nomorSTD, nomorPemberitahuan };
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                kirimEmail(
+                                    row,
+                                    result.value.email,
+                                    result.value.jenis,
+                                    result.value.spl,
+                                    result.value.nomorSTD,
+                                    result.value.nomorPemberitahuan
+                                );
+                            }
+                        });
+                    } else {
+                        showError('Gagal', result.message || 'Gagal memproses nomor surat');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
+                    showError('Error Koneksi', 'Gagal terhubung ke server');
+                });
         }
 
-        async function kirimEmail(row, emailUser, jenis, nomorSPL, nomorSTD, nomorPemberitahuan,) {
-
-            if (isSending) return;
+        async function kirimEmail(row, emailUser, jenis, nomorSPL, nomorSTD, nomorPemberitahuan) {
+            if (isSending) {
+                showError('Info', 'Pengiriman sedang berlangsung, tunggu sebentar...');
+                return;
+            }
 
             const data = {
                 id: row.cells[0].innerText,
@@ -3157,63 +3212,67 @@
                 jumlah: row.cells[9].innerText
             };
 
-            const url = `${scriptURL}?action=kirim_email`
-                + `&email=${encodeURIComponent(emailUser)}`
-                + `&nama=${encodeURIComponent(data.nama)}`
-                + `&id=${encodeURIComponent(data.id)}`
-                + `&alamat=${encodeURIComponent(data.alamat)}`
-                + `&bulan=${encodeURIComponent(data.bulan)}`
-                + `&jumlah=${encodeURIComponent(data.jumlah)}`
-                + `&jenis=${encodeURIComponent(jenis)}`
-                + `&spl=${encodeURIComponent(nomorSPL)}`
-                + `&nomor_std=${encodeURIComponent(nomorSTD)}`
-                + `&nomor_pemberitahuan=${encodeURIComponent(nomorPemberitahuan)}`
-                + `&t=${Date.now()}`;
+            // ✅ Gunakan POST untuk mengirim data yang lebih kompleks
+            const formData = new URLSearchParams();
+            formData.append('action', 'kirim_email');
+            formData.append('email', emailUser);
+            formData.append('nama', data.nama);
+            formData.append('id', data.id);
+            formData.append('alamat', data.alamat);
+            formData.append('bulan', data.bulan);
+            formData.append('jumlah', data.jumlah);
+            formData.append('jenis', jenis);
+            formData.append('spl', nomorSPL);
+            formData.append('nomor_std', nomorSTD);
+            formData.append('nomor_pemberitahuan', nomorPemberitahuan);
 
             isSending = true;
             showLoading('Mengirim email...');
 
             try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
 
-                const response = await fetch(url);
                 const text = await response.text();
-                const result = JSON.parse(text);
+                let result;
 
                 try {
                     result = JSON.parse(text);
                 } catch (err) {
-                    throw new Error("Response bukan JSON: " + text);
+                    console.error('Response text:', text);
+                    throw new Error("Response bukan JSON: " + text.substring(0, 200));
                 }
 
                 hideLoading();
-                resetOverlay();
 
                 if (result.result === "success") {
-
                     showSuccess('Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
-                    // UPDATE SHEET
-                    await fetch(scriptURL + "?action=update_status"
-                        + "&id=" + data.id
-                        + "&status=TERKIRIM"
-                        + "&file=" + encodeURIComponent(result.linkSTD || "")
-                    );
+                    // UPDATE STATUS DI SHEET
+                    try {
+                        await fetch(`${scriptURL}?action=update_status&id=${data.id}&status=TERKIRIM&file=${encodeURIComponent(result.linkSTD || '')}`);
+                    } catch (err) {
+                        console.warn('Gagal update status:', err);
+                    }
 
-                    setTimeout(() => loadDataSheet(), 1000);
-
+                    // Refresh tabel
+                    setTimeout(() => loadDataSheet(), 1500);
                 } else {
-
                     showError('Gagal Kirim', result.message || 'Unknown error dari server');
                 }
 
             } catch (err) {
-
+                console.error('Error kirim email:', err);
                 hideLoading();
-                resetOverlay();
-                showError('Gagal Kirim', err.message);
+                showError('Gagal Kirim', err.message || 'Terjadi kesalahan koneksi');
+            } finally {
+                isSending = false;
             }
-
-            isSending = false;
         }
 
         function resetOverlay() {
@@ -4369,17 +4428,17 @@
                     const tahunPensiun = (dataP && dataP.tahunPensiun) ? dataP.tahunPensiun : '-';
                     const keterangan = (dataP && dataP.keterangan) ? dataP.keterangan : '-';
                     return `
-            <tr>
-                <td style="text-align: center;">${idx + 1}</td>
-                <td>
-                    <strong>${escapeHtml(n.nama)}</strong>
-                    <span class="badge-pensiun ms-2"> Pensiun</span>
-                </td>
-                <td style="text-align: center;"><code class="bg-light px-2 py-1 rounded">${escapeHtml(n.id)}</code></td>
-                <td style="text-align: center;"><span class="badge bg-secondary">${escapeHtml(tahunPensiun)}</span></td>
-                <td><small class="text-muted">${escapeHtml(keterangan)}</small></td>
-            </tr>
-        `;
+                        <tr>
+                            <td style="text-align: center;">${idx + 1}</td>
+                            <td>
+                                <strong>${escapeHtml(n.nama)}</strong>
+                                <span class="badge-pensiun ms-2"> Pensiun</span>
+                            </td>
+                            <td style="text-align: center;"><code class="bg-light px-2 py-1 rounded">${escapeHtml(n.id)}</code></td>
+                            <td style="text-align: center;"><span class="badge bg-secondary">${escapeHtml(tahunPensiun)}</span></td>
+                            <td><small class="text-muted">${escapeHtml(keterangan)}</small></td>
+                        </tr>
+                    `;
                 }
 
                 // Buat HTML untuk tabel pensiun
@@ -5973,6 +6032,8 @@
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
+                if (m === '>') return '&quot;';
+                if (m === '>') return '&#39;;';
                 return m;
             });
         }
