@@ -2356,7 +2356,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzITajAvxZvTUBJSbF5FN-0cGa6czUWsIieJIOP655RZHqdGlrlsFDl1PnjAGdQ0m99/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby3B7BQrLeHaHMk0MxYwy_eCUZQ2-T9f8rS2qVwAfwfiLQFQp6PWzEA3KoACLmz1pNG/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3053,11 +3053,13 @@
             } catch (err) { hideLoading(); showError('Gagal Hapus', 'Terjadi kesalahan.'); }
         }
 
-        // ===============================
-        // FUNGSI BUKA MODAL EMAIL (CEK APAKAH SUDAH LUNAS)
-        // ===============================
         function bukaModalEmail(row) {
-            const [id, nama, , , , , , bulan] = [...row.cells].map(c => c.innerText);
+
+            const id = row.cells[0].innerText;
+            const nama = row.cells[1].innerText;
+            const alamat = row.cells[2].innerText;
+            const bulan = row.cells[7].innerText;
+
             const uploadCell = row.cells[row.cells.length - 2];
 
             const hasUpload = uploadCell &&
@@ -3066,6 +3068,7 @@
 
             // CEK LUNAS
             if (hasUpload && uploadCell.innerHTML.includes("eye-fill")) {
+
                 Swal.fire({
                     title: 'Status LUNAS',
                     html: `
@@ -3078,6 +3081,7 @@
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+
                 return;
             }
 
@@ -3085,6 +3089,7 @@
                 title: 'Kirim Email Denda',
                 html: `
             <div class="swal-modern">
+
                 <div class="card-header">
                     <div class="row">
                         <div class="icon">👤</div>
@@ -3098,12 +3103,12 @@
 
                 <div class="form-group">
                     <label>Email PPAT</label>
-                    <input id="emailPpat" type="email" placeholder="contoh: notaris@email.com">
+                    <input id="emailPpat" type="email" placeholder="contoh@email.com">
                 </div>
 
                 <div class="form-group">
                     <label>Nomor SPL</label>
-                    <input id="nomorSpl" type="text" placeholder="Contoh: 0001">
+                    <input id="nomorSpl" type="text" placeholder="0001">
                 </div>
 
                 <div class="form-group">
@@ -3114,18 +3119,17 @@
                         <option value="Pelanggaran : 0 / Denda Lunas">Lunas</option>
                     </select>
                 </div>
+
             </div>
         `,
                 width: 420,
-                confirmButtonText: 'Kirim',
-                cancelButtonText: 'Batal',
                 showCancelButton: true,
-                showCloseButton: true,
+                confirmButtonText: 'Kirim',
 
                 preConfirm: () => {
-                    const email = document.getElementById('emailPpat')?.value.trim();
-                    const nomor = document.getElementById('nomorSpl')?.value.trim();
-                    const jenis = document.getElementById('jenisPelanggaran')?.value;
+                    const email = document.getElementById('emailPpat').value.trim();
+                    const nomor = document.getElementById('nomorSpl').value.trim();
+                    const jenis = document.getElementById('jenisPelanggaran').value;
 
                     if (!email) return Swal.showValidationMessage('Email wajib diisi');
                     if (!email.includes('@')) return Swal.showValidationMessage('Email tidak valid');
@@ -3133,8 +3137,9 @@
 
                     return { email, spl: nomor, jenis };
                 }
+
             }).then((result) => {
-                if (result.isConfirmed && result.value) {
+                if (result.isConfirmed) {
                     kirimEmail(row, result.value.email, result.value.jenis, result.value.spl);
                 }
             });
@@ -3167,22 +3172,42 @@
             showLoading('Mengirim email...');
 
             try {
+
                 const response = await fetch(url);
+
                 const text = await response.text();
 
-                const result = JSON.parse(text);
+                let result;
+
+                try {
+                    result = JSON.parse(text);
+                } catch (err) {
+                    throw new Error("Response bukan JSON: " + text);
+                }
 
                 hideLoading();
                 resetOverlay();
 
                 if (result.result === "success") {
+
                     showSuccess('Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+
+                    // UPDATE SHEET
+                    await fetch(scriptURL + "?action=update_status"
+                        + "&id=" + data.id
+                        + "&status=TERKIRIM"
+                        + "&file=" + encodeURIComponent(result.linkSTD || "")
+                    );
+
                     setTimeout(() => loadDataSheet(), 1000);
+
                 } else {
-                    showError('Gagal', result.message || 'Gagal kirim email');
+
+                    showError('Gagal Kirim', result.message || 'Unknown error dari server');
                 }
 
             } catch (err) {
+
                 hideLoading();
                 resetOverlay();
                 showError('Gagal Kirim', err.message);
@@ -7798,9 +7823,8 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 // Panggil preview untuk mendapatkan daftar lengkap (termasuk ID dan Alamat)
                 let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
                 const response = await fetch(url);
-                const text = await response.text();
+                const result = await response.json();
 
-                let result;
                 try {
                     result = JSON.parse(text);
                 } catch (e) {
