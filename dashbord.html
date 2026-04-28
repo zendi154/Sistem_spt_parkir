@@ -2356,7 +2356,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzn9vXSHmgiyvETzdPE6dZhB1T9E-ygrpSZ9nwZ0S6xjj39dDBm5HNtJvAxAO9tA2H9/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw2xYKq-3qUiKTJsJkPfsmcmosY8Ja9oi0BITBEAp6fZrfSFPNimTE4NDBspzj_yMRN/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3159,7 +3159,7 @@
                 });
         }
 
-        async function kirimEmail(row, emailUser, jenis, nomorSPL) {
+        async function kirimEmail(row, email, jenis, nomorSPL) {
             if (isSending) {
                 showError('Proses Berjalan', 'Tunggu sebentar...');
                 return;
@@ -3177,7 +3177,7 @@
             showLoading('Mengirim email...');
 
             const url = `${scriptURL}?action=kirim_email`
-                + `&email=${encodeURIComponent(emailUser)}`
+                + `&email=${encodeURIComponent(email)}`
                 + `&nama=${encodeURIComponent(data.nama)}`
                 + `&id=${encodeURIComponent(data.id)}`
                 + `&alamat=${encodeURIComponent(data.alamat)}`
@@ -3189,37 +3189,39 @@
 
             try {
                 const response = await fetch(url);
-                const result = await response.json(); // ✅ FIX UTAMA
+                const text = await response.text();
+
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Response bukan JSON: " + text);
+                }
 
                 hideLoading();
                 resetOverlay();
 
                 if (result.result === "success") {
 
-                    showSuccess('✅ Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
+                    showSuccess('Email Terkirim!', `Email ke ${email} berhasil dikirim.`);
 
                     let actionCell = row.cells[row.cells.length - 1];
                     let uploadCell = row.cells[row.cells.length - 2];
 
-                    // ✅ lebih aman: cek isi cell bukan icon
-                    let hasUpload = uploadCell && uploadCell.innerText.trim() !== "";
+                    let hasUpload = uploadCell && uploadCell.innerText.trim().length > 5;
 
                     if (hasUpload) {
-                        actionCell.innerHTML = `
-                    <div class="text-center">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i>
-                    </div>`;
+                        actionCell.innerHTML = `<div class="text-center"><i class="bi bi-check-circle-fill text-success" style="font-size: 20px;"></i></div>`;
                         row.style.backgroundColor = "#d4edda";
                         await updateStatusEmail(data.id, "SELESAI");
-
                     } else {
                         actionCell.innerHTML = `
-                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
-                        <i class="bi bi-envelope-fill"></i>
-                    </button>
-                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>`;
+                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+                    <i class="bi bi-envelope-fill"></i>
+                </button>
+                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash-fill"></i>
+                </button>`;
                         row.style.backgroundColor = "#fff3cd";
                         await updateStatusEmail(data.id, "WAITING_RESEND");
                     }
@@ -3227,25 +3229,21 @@
                     setTimeout(() => loadDataSheet(), 1000);
 
                 } else {
-                    showError('❌ Gagal', result.message || 'Gagal kirim email');
+                    showError('Gagal', result.message || 'Gagal kirim email');
                 }
 
             } catch (err) {
                 hideLoading();
                 resetOverlay();
-                showError('❌ Gagal Kirim', err.message);
+                showError('Gagal Kirim', err.message);
             }
 
             isSending = false;
         }
 
         function resetOverlay() {
-            // kalau kamu pakai SweetAlert / loading overlay
-            Swal.close?.(); // aman kalau Swal ada
-
-            // optional kalau kamu punya overlay manual
-            const overlay = document.getElementById("overlay");
-            if (overlay) overlay.style.display = "none";
+            Swal.close?.();
+            document.getElementById("overlay")?.style && (document.getElementById("overlay").style.display = "none");
         }
 
         // PREVIEW PDF
@@ -7829,7 +7827,14 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 // Panggil preview untuk mendapatkan daftar lengkap (termasuk ID dan Alamat)
                 let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
                 const response = await fetch(url);
-                const result = await response.json();
+                const text = await response.text();
+
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Server bukan JSON: " + text);
+                }
 
                 Swal.close();
 
