@@ -2356,7 +2356,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycby3B7BQrLeHaHMk0MxYwy_eCUZQ2-T9f8rS2qVwAfwfiLQFQp6PWzEA3KoACLmz1pNG/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbysZJCXpD-4BG-EG5mIq75Uy-eE361DsT269SMk1opbO55MGukEtHsfWse4buqjuiBb/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3174,10 +3174,8 @@
             try {
 
                 const response = await fetch(url);
-
                 const text = await response.text();
-
-                let result;
+                const result = JSON.parse(text);
 
                 try {
                     result = JSON.parse(text);
@@ -7823,7 +7821,8 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 // Panggil preview untuk mendapatkan daftar lengkap (termasuk ID dan Alamat)
                 let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
                 const response = await fetch(url);
-                const result = await response.json();
+                const text = await response.text();
+                const result = JSON.parse(text);
 
                 try {
                     result = JSON.parse(text);
