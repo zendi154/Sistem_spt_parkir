@@ -1865,12 +1865,7 @@
                     <!-- PILIH TAHUN -->
                     <div class="col-md-2">
                         <select id="filterTahun" class="form-control">
-                            <option selected disabled value>Pilih Tahun</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
+                            <option value="">-- Pilih Tahun --</option>
                         </select>
                     </div>
 
@@ -1887,7 +1882,7 @@
                             <i class="bi bi-whatsapp"></i> Kirim WA Notifikasi
                         </button>
                     </div>
-
+                    <br><br>
                     <!-- FLOATING FOOTER CONTROL -->
                     <div class="floating-footer">
                         <button class="btn-control" id="btnPlayPause" onclick="togglePlayPause()"
@@ -2712,17 +2707,21 @@
                 getNotarisPensiun()
             ]).then(([data, pensiunData]) => {
                 hideLoading();
+
+                // Simpan data pensiun ke global
+                dataPensiunGlobal = pensiunData || [];
+
                 lastData = JSON.stringify(data);
                 allData = sortDataByMonth(data);
                 currentFilteredData = allData;
 
                 // Terapkan filter jika ada
                 if (currentFilterStatus === 'active') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p.id));
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
                     currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
                     renderTable(currentFilteredData);
                 } else if (currentFilterStatus === 'pensiun') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p.id));
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
                     currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
                     renderTable(currentFilteredData);
                 } else {
@@ -2731,26 +2730,36 @@
 
                 tampilkanRingkasanBulanan();
 
-                const tahunSelect = document.getElementById("filterTahun");
-                if (tahunSelect && allData.length > 0) {
-                    let tahunTerbaru = "";
-                    for (let row of allData) {
-                        let bulanLaporan = row["laporan_bulanan"] || "";
-                        if (bulanLaporan) {
-                            let parts = bulanLaporan.split(" ");
-                            if (parts.length === 2) { tahunTerbaru = parts[1]; break; }
-                        }
-                    }
-                    if (tahunTerbaru && tahunSelect.querySelector(`option[value="${tahunTerbaru}"]`)) {
-                        tahunSelect.value = tahunTerbaru;
-                    }
-                }
+                // ============================================
+                // ISI DROPDOWN TAHUN OTOMATIS DARI DATA (LENGKAP)
+                // ============================================
+                isiDropdownTahunOtomatis();
+
             }).catch(error => {
                 hideLoading();
                 console.error(error);
                 showError("Error", "Gagal memuat data!");
             });
         }
+
+        // Tambahkan event listener untuk auto generate saat ganti tahun
+        // Letakkan di dalam DOMContentLoaded atau setelah halaman load
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => {
+                const tahunSelect = document.getElementById('filterTahun');
+                if (tahunSelect) {
+                    // Event saat tahun berubah
+                    tahunSelect.addEventListener('change', function () {
+                        if (this.value) {
+                            generateBulan();
+                        } else {
+                            const container = document.getElementById("listBulan");
+                            if (container) container.innerHTML = '';
+                        }
+                    });
+                }
+            }, 500);
+        });
 
         // ===============================
         // FUNGSI RINGKASAN BPHTB PER BULAN
@@ -6352,6 +6361,149 @@
                 // Tampilkan data kosong
                 renderTable([]);
             }
+        }
+
+        // ============================================
+        // FUNGSI MENGISI DROPDOWN TAHUN OTOMATIS DARI DATA
+        // ============================================
+
+        function isiDropdownTahunOtomatis() {
+            const tahunSelect = document.getElementById('filterTahun');
+            if (!tahunSelect) return;
+
+            // Kumpulkan SEMUA tahun dari data laporan_bulanan
+            const tahunSet = new Set();
+
+            if (allData && allData.length > 0) {
+                allData.forEach(row => {
+                    const bulanLaporan = row["laporan_bulanan"];
+                    if (bulanLaporan) {
+                        // Ambil tahun dari format "Bulan Tahun" (contoh: "Januari 2026")
+                        const match = bulanLaporan.match(/\d{4}/); // Cari angka 4 digit (tahun)
+                        if (match) {
+                            tahunSet.add(parseInt(match[0]));
+                        }
+                    }
+                });
+            }
+
+            // Jika tidak ada data, gunakan tahun saat ini dan tahun depan
+            if (tahunSet.size === 0) {
+                const tahunSekarang = new Date().getFullYear();
+                tahunSet.add(tahunSekarang);
+                tahunSet.add(tahunSekarang + 1);
+            }
+
+            // Urutkan tahun dari yang TERBARU ke yang LAMA
+            const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+
+            // Isi dropdown
+            tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+            tahunList.forEach(tahun => {
+                tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+            });
+
+            console.log(`✅ Dropdown tahun diisi dengan: ${tahunList.join(', ')} (${tahunList.length} tahun)`);
+
+            // Auto-pilih tahun terbaru
+            if (tahunList.length > 0) {
+                tahunSelect.value = tahunList[0];
+                // Panggil generateBulan untuk menampilkan bulan berdasarkan tahun terpilih
+                if (typeof generateBulan === 'function') {
+                    generateBulan();
+                }
+            }
+        }
+
+        // ============================================
+        // FUNGSI GENERATE BULAN (PERBAIKAN)
+        // ============================================
+
+        function generateBulan() {
+            const tahunSelect = document.getElementById('filterTahun');
+            const tahun = tahunSelect ? tahunSelect.value : '';
+
+            const container = document.getElementById("listBulan");
+            if (!container) {
+                console.error("Container listBulan tidak ditemukan");
+                return;
+            }
+
+            if (!tahun) {
+                if (typeof Toast !== 'undefined') {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Pilih tahun terlebih dahulu!',
+                        timer: 2000
+                    });
+                } else {
+                    alert("Pilih tahun terlebih dahulu!");
+                }
+                return;
+            }
+
+            container.innerHTML = "";
+
+            // Dapatkan bulan-bulan yang TERSEDIA di data untuk tahun ini
+            const bulanTersedia = new Set();
+            let adaDataUntukTahunIni = false;
+
+            if (allData && allData.length > 0) {
+                allData.forEach(row => {
+                    const bulanLaporan = row["laporan_bulanan"];
+                    if (bulanLaporan && bulanLaporan.includes(tahun)) {
+                        const bulan = bulanLaporan.split(' ')[0];
+                        bulanTersedia.add(bulan);
+                        adaDataUntukTahunIni = true;
+                    }
+                });
+            }
+
+            // Daftar semua bulan
+            const semuaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+            // Tentukan bulan yang akan ditampilkan
+            let bulanYangDitampilkan = semuaBulan;
+
+            // Jika ada data untuk tahun ini, hanya tampilkan bulan yang ada datanya
+            if (adaDataUntukTahunIni) {
+                bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
+            }
+
+            // Tampilkan tombol bulan
+            bulanYangDitampilkan.forEach(bulan => {
+                let col = document.createElement("div");
+                col.className = "col-md-2 mb-2";
+                col.innerHTML = `<button class="btn btn-outline-primary w-100 btn-bulan" 
+                                onclick="filterByMonth('${bulan} ${tahun}', this)">
+                            <i class="bi bi-calendar-month"></i> ${bulan}
+                        </button>`;
+                container.appendChild(col);
+            });
+
+            // Jika tidak ada data untuk tahun ini, tampilkan pesan
+            if (!adaDataUntukTahunIni) {
+                container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle"></i> 
+                    Belum ada data laporan untuk tahun ${tahun}
+                </div>
+            </div>
+        `;
+            } else if (container.children.length === 0) {
+                container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    Tidak ada bulan dengan data untuk tahun ${tahun}
+                </div>
+            </div>
+        `;
+            }
+
+            console.log(`📅 Menampilkan ${container.children.length} bulan untuk tahun ${tahun}${adaDataUntukTahunIni ? ' (ada data)' : ' (belum ada data)'}`);
         }
 
         // Update fungsi renderTable (tambahkan badge pensiun)
