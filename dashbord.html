@@ -2697,70 +2697,6 @@
             tampilkanRingkasanBulanan(); // <-- TAMBAHKAN INI
         }
 
-        // LOAD DATA
-        function loadDataSheet() {
-            showLoading("Memuat data...");
-
-            // Load data utama dan data pensiun bersamaan
-            Promise.all([
-                fetch(scriptURL).then(res => res.json()),
-                getNotarisPensiun()
-            ]).then(([data, pensiunData]) => {
-                hideLoading();
-
-                // Simpan data pensiun ke global
-                dataPensiunGlobal = pensiunData || [];
-
-                lastData = JSON.stringify(data);
-                allData = sortDataByMonth(data);
-                currentFilteredData = allData;
-
-                // Terapkan filter jika ada
-                if (currentFilterStatus === 'active') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else if (currentFilterStatus === 'pensiun') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else {
-                    renderTable(allData);
-                }
-
-                tampilkanRingkasanBulanan();
-
-                // ============================================
-                // ISI DROPDOWN TAHUN OTOMATIS DARI DATA (LENGKAP)
-                // ============================================
-                isiDropdownTahunOtomatis();
-
-            }).catch(error => {
-                hideLoading();
-                console.error(error);
-                showError("Error", "Gagal memuat data!");
-            });
-        }
-
-        // Tambahkan event listener untuk auto generate saat ganti tahun
-        // Letakkan di dalam DOMContentLoaded atau setelah halaman load
-        document.addEventListener('DOMContentLoaded', function () {
-            setTimeout(() => {
-                const tahunSelect = document.getElementById('filterTahun');
-                if (tahunSelect) {
-                    // Event saat tahun berubah
-                    tahunSelect.addEventListener('change', function () {
-                        if (this.value) {
-                            generateBulan();
-                        } else {
-                            const container = document.getElementById("listBulan");
-                            if (container) container.innerHTML = '';
-                        }
-                    });
-                }
-            }, 500);
-        });
-
         // ===============================
         // FUNGSI RINGKASAN BPHTB PER BULAN
         // ===============================
@@ -6304,6 +6240,8 @@
                     currentFilteredData = [];
                     renderTable([]);
                     tampilkanRingkasanBulanan();
+                    // Tetap isi dropdown tahun meskipun data kosong
+                    isiDropdownTahunOtomatis();
                     return;
                 }
 
@@ -6327,23 +6265,10 @@
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
 
-                const tahunSelect = document.getElementById("filterTahun");
-                if (tahunSelect && allData.length > 0) {
-                    let tahunTerbaru = "";
-                    for (let row of allData) {
-                        let bulanLaporan = row["laporan_bulanan"] || "";
-                        if (bulanLaporan) {
-                            let parts = bulanLaporan.split(" ");
-                            if (parts.length === 2) {
-                                tahunTerbaru = parts[1];
-                                break;
-                            }
-                        }
-                    }
-                    if (tahunTerbaru && tahunSelect.querySelector(`option[value="${tahunTerbaru}"]`)) {
-                        tahunSelect.value = tahunTerbaru;
-                    }
-                }
+                // ============================================
+                // ISI DROPDOWN TAHUN OTOMATIS DARI DATA
+                // ============================================
+                isiDropdownTahunOtomatis();
 
                 if (document.getElementById('selectNotarisPensiun')) {
                     isiDropdownNotaris();
@@ -6360,6 +6285,8 @@
                 showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
                 // Tampilkan data kosong
                 renderTable([]);
+                // Tetap coba isi dropdown tahun
+                isiDropdownTahunOtomatis();
             }
         }
 
@@ -6378,8 +6305,7 @@
                 allData.forEach(row => {
                     const bulanLaporan = row["laporan_bulanan"];
                     if (bulanLaporan) {
-                        // Ambil tahun dari format "Bulan Tahun" (contoh: "Januari 2026")
-                        const match = bulanLaporan.match(/\d{4}/); // Cari angka 4 digit (tahun)
+                        const match = bulanLaporan.match(/\d{4}/);
                         if (match) {
                             tahunSet.add(parseInt(match[0]));
                         }
@@ -6387,7 +6313,7 @@
                 });
             }
 
-            // Jika tidak ada data, gunakan tahun saat ini dan tahun depan
+            // Jika tidak ada data, gunakan tahun saat ini
             if (tahunSet.size === 0) {
                 const tahunSekarang = new Date().getFullYear();
                 tahunSet.add(tahunSekarang);
@@ -6405,19 +6331,14 @@
 
             console.log(`✅ Dropdown tahun diisi dengan: ${tahunList.join(', ')} (${tahunList.length} tahun)`);
 
-            // Auto-pilih tahun terbaru
+            // Auto-pilih tahun terbaru dan generate bulan
             if (tahunList.length > 0) {
                 tahunSelect.value = tahunList[0];
-                // Panggil generateBulan untuk menampilkan bulan berdasarkan tahun terpilih
                 if (typeof generateBulan === 'function') {
                     generateBulan();
                 }
             }
         }
-
-        // ============================================
-        // FUNGSI GENERATE BULAN (PERBAIKAN)
-        // ============================================
 
         function generateBulan() {
             const tahunSelect = document.getElementById('filterTahun');
@@ -6444,7 +6365,6 @@
 
             container.innerHTML = "";
 
-            // Dapatkan bulan-bulan yang TERSEDIA di data untuk tahun ini
             const bulanTersedia = new Set();
             let adaDataUntukTahunIni = false;
 
@@ -6459,19 +6379,15 @@
                 });
             }
 
-            // Daftar semua bulan
             const semuaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                 "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-            // Tentukan bulan yang akan ditampilkan
             let bulanYangDitampilkan = semuaBulan;
 
-            // Jika ada data untuk tahun ini, hanya tampilkan bulan yang ada datanya
             if (adaDataUntukTahunIni) {
                 bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
             }
 
-            // Tampilkan tombol bulan
             bulanYangDitampilkan.forEach(bulan => {
                 let col = document.createElement("div");
                 col.className = "col-md-2 mb-2";
@@ -6482,7 +6398,6 @@
                 container.appendChild(col);
             });
 
-            // Jika tidak ada data untuk tahun ini, tampilkan pesan
             if (!adaDataUntukTahunIni) {
                 container.innerHTML = `
             <div class="col-12">
