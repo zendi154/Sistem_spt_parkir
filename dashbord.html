@@ -1828,6 +1828,213 @@
             transform: translateY(-2px);
         }
 
+        /* ============================================
+   DROPDOWN TAHUN MODERN - GLASSMORPHISM STYLE
+   ============================================ */
+
+        /* Container dropdown tahun */
+        .col-md-2 {
+            position: relative;
+        }
+
+        #filterTahun {
+            /* Styling dasar */
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            font-family: 'Poppins', 'Work Sans', sans-serif;
+
+            /* Background dengan efek glassmorphism */
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+
+            /* Warna teks */
+            color: #1e293b;
+
+            /* Transition untuk efek hover */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Shadow halus */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+
+            /* Cursor */
+            cursor: pointer;
+
+            /* Hilangkan outline default */
+            outline: none;
+        }
+
+        /* Efek hover */
+        #filterTahun:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Efek focus */
+        #filterTahun:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+            background: white;
+        }
+
+        /* Styling untuk option di dalam select */
+        #filterTahun option {
+            padding: 12px;
+            font-size: 0.85rem;
+            background: white;
+            color: #1e293b;
+        }
+
+        #filterTahun option:hover {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        }
+
+        /* Ikon panah custom untuk select (opsional) */
+        #filterTahun {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230284c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+
+        /* Container dengan icon (opsional) */
+        .tahun-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .tahun-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0284c7;
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .tahun-wrapper select {
+            padding-left: 40px;
+        }
+
+        /* Efek loading skeleton (opsional) */
+        #filterTahun.loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loadingShimmer 1.5s infinite;
+            color: transparent;
+            border-color: #e2e8f0;
+        }
+
+        @keyframes loadingShimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Efek pulse saat ada perubahan tahun */
+        @keyframes tahunPulse {
+
+            0%,
+            100% {
+                border-color: #38bdf8;
+                box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4);
+            }
+
+            50% {
+                border-color: #0284c7;
+                box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2);
+            }
+        }
+
+        #filterTahun.pulse {
+            animation: tahunPulse 0.5s ease;
+        }
+
+        /* Styling untuk disabled state */
+        #filterTahun:disabled {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 768px) {
+            #filterTahun {
+                padding: 10px 14px;
+                padding-right: 32px;
+                font-size: 0.75rem;
+                border-radius: 14px;
+            }
+
+            .tahun-wrapper i {
+                font-size: 0.85rem;
+                left: 12px;
+            }
+
+            .tahun-wrapper select {
+                padding-left: 36px;
+            }
+        }
+
+        /* Efek modern gradient border (opsional) */
+        #filterTahun:focus-within {
+            position: relative;
+        }
+
+        #filterTahun:focus-within::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8, #7dd3fc);
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Dark mode support (opsional) */
+        @media (prefers-color-scheme: dark) {
+            #filterTahun {
+                background: rgba(30, 41, 59, 0.95);
+                border-color: rgba(56, 189, 248, 0.2);
+                color: #e2e8f0;
+            }
+
+            #filterTahun:hover {
+                background: #1e293b;
+            }
+
+            #filterTahun option {
+                background: #1e293b;
+                color: #e2e8f0;
+            }
+
+            #filterTahun option:hover {
+                background: linear-gradient(135deg, #0c4a6e, #0284c7);
+            }
+        }
+
         /* Progress bar styling untuk loading */
         .progress {
             background-color: #e9ecef;
@@ -1883,11 +2090,14 @@
                         </div>
                     </div>
 
-                    <!-- PILIH TAHUN -->
+                    <!-- PILIH TAHUN dengan ikon -->
                     <div class="col-md-2">
-                        <select id="filterTahun" class="form-control">
-                            <option value="">-- Pilih Tahun --</option>
-                        </select>
+                        <div class="tahun-wrapper">
+                            <i class="bi bi-calendar3"></i>
+                            <select id="filterTahun" class="form-control">
+                                <option value="">-- Pilih Tahun --</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- BUTTON TAMPILKAN BULAN -->
