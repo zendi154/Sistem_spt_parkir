@@ -2580,7 +2580,7 @@
             <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
             <td>${row["keterangan"] || ""}</td>
             <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
-            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="${row["file_pdf_denda"]}" target="_blank" class="icon-btn"><i class="bi bi-eye-fill"></i></a><a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="icon-btn print"><i class="bi bi-printer-fill"></i></a>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}</td>
             <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? `<b>${row["nomor_pemberitahuan"]}</b>` : '-'}</td>
             <td style="text-align:center;">${row["file_surat_upload"] ? `<a href="#" onclick="printPDF('${row["file_surat_upload"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}</td>
             <td style="text-align:center;">${buktiSuratHTML}</td>
