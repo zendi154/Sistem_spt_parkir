@@ -1947,7 +1947,7 @@
                         <!-- Tombol Data Nihil (Rp 0) - di samping tombol Data Transaksi -->
                         <div class="col-md-3">
                             <button type="button" class="btn btn-danger w-100" onclick="bukaModalPrintNihil()">
-                                <i class="bi bi-gear-fill"></i> Kelola Data Nihil (Rp 0)
+                                <i class="bi bi-gear-fill"></i> Kelola Data Nihil
                             </button>
                         </div>
 
@@ -7936,7 +7936,7 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
         }
 
         // ============================================
-        // FUNGSI DATA TRANSAKSI NIHIL (Rp 0) - TABEL TETAP, ISI NIHIL
+        // FUNGSI DATA TRANSAKSI NIHIL 
         // ============================================
 
         function bukaModalPrintNihil() {
@@ -7950,76 +7950,191 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
 
             // Buat modal khusus untuk DATA NIHIL
             const modalHTML = `
-    <div class="modal fade" id="modalPrintNihil" tabindex="-1" data-bs-backdrop="static" style="z-index: 9999;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content" style="border-radius: 20px;">
-                <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #ef4444); color: white;">
-                    <h5 class="modal-title">
-                        <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data NIHIL (Rp 0)
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" style="background: white;">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
-                                <select id="selectNotarisNihil" class="form-select">
-                                    <option value="">-- Pilih Notaris --</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Pilih Bulan Laporan</label>
-                                <select id="selectBulanNihil" class="form-select">
-                                    <option value="">-- Pilih Bulan --</option>
-                                </select>
-                            </div>
+<div class="modal fade" id="modalPrintNihil" tabindex="-1" data-bs-backdrop="static" style="z-index: 9999;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #ef4444); color: white;">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data NIHIL (Rp 0)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="background: white;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
+                            <select id="selectNotarisNihil" class="form-select">
+                                <option value="">-- Pilih Notaris --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pilih Bulan Laporan</label>
+                            <select id="selectBulanNihil" class="form-select">
+                                <option value="">-- Pilih Bulan --</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="background: #f8f9fa;">
-                    <div class="row w-100 g-2">
-                        <div class="col-md-6">
-                            <button type="button" class="btn btn-danger w-100" onclick="exportDataNihilToExcel()">
-                                <i class="bi bi-file-earmark-excel-fill"></i> Export Nihil Excel
-                            </button>
-                        </div>
-                        <div class="col-md-6">
-                            <button type="button" class="btn btn-warning w-100" onclick="printDataNihil()">
-                                <i class="bi bi-printer-fill"></i> Cetak Nihil PDF
-                            </button>
-                        </div>
+            </div>
+            <div class="modal-footer" style="background: #f8f9fa;">
+                <div class="row w-100 g-2">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-danger w-100" onclick="exportDataNihilToExcel()">
+                            <i class="bi bi-file-earmark-excel-fill"></i> Export Nihil Excel
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-warning w-100" onclick="printDataNihil()">
+                            <i class="bi bi-printer-fill"></i> Cetak Nihil PDF
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    `;
+</div>
+`;
 
             document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-            // Isi dropdown notaris
+            // ============================================
+            // ISI DROPDOWN NOTARIS - HANYA YANG MEMILIKI DATA TRANSAKSI NIHIL (Rp 0)
+            // ============================================
             const selectNotaris = document.getElementById('selectNotarisNihil');
             const semuaNotaris = getAllNotarisFromDropdown();
-            selectNotaris.innerHTML = '<option value="">-- Pilih Notaris --</option>';
-            semuaNotaris.forEach(notaris => {
-                selectNotaris.innerHTML += `<option value="${notaris.nama}">${notaris.nama}</option>`;
-            });
 
-            // Isi dropdown bulan
-            const selectBulan = document.getElementById('selectBulanNihil');
-            const bulanSet = new Set();
+            // Kumpulkan notaris yang memiliki data TRANSAKSI NIHIL (nilai SSP + SSB = 0)
+            const notarisDenganDataNihil = new Map();
+
             if (allData && allData.length > 0) {
                 allData.forEach(row => {
-                    if (row["laporan_bulanan"]) {
-                        bulanSet.add(row["laporan_bulanan"]);
+                    const namaNotaris = row["nama_notaris_&_ppat"];
+                    const bulanLaporan = row["laporan_bulanan"];
+
+                    // CEK APAKAH DATA TRANSAKSI NIHIL?
+                    let isNihil = true;
+                    let totalSSP = 0;
+                    let totalSSB = 0;
+
+                    try {
+                        if (row["data_transaksi"]) {
+                            let transaksi = JSON.parse(row["data_transaksi"]);
+                            if (Array.isArray(transaksi) && transaksi.length > 0) {
+                                // Hitung total SSP dan SSB
+                                transaksi.forEach(item => {
+                                    if (item.ssp) {
+                                        let val = parseInt(String(item.ssp).replace(/[^0-9]/g, '')) || 0;
+                                        totalSSP += val;
+                                    }
+                                    if (item.ssb) {
+                                        let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
+                                        totalSSB += val;
+                                    }
+                                });
+
+                                // Jika total SSP dan SSB = 0, berarti NIHIL
+                                isNihil = (totalSSP === 0 && totalSSB === 0);
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Error parsing transaksi untuk pengecekan NIHIL:", e);
+                        isNihil = true;
+                    }
+
+                    // HANYA TAMPILKAN jika data NIHIL (Rp 0)
+                    if (isNihil && namaNotaris && bulanLaporan) {
+                        const key = `${namaNotaris}|${bulanLaporan}`;
+                        if (!notarisDenganDataNihil.has(key)) {
+                            notarisDenganDataNihil.set(key, {
+                                nama: namaNotaris,
+                                bulan: bulanLaporan
+                            });
+                        }
                     }
                 });
             }
-            const bulanList = Array.from(bulanSet).sort();
+
+            // Isi dropdown notaris (hanya yang memiliki data NIHIL)
+            const daftarNotarisUnik = new Map();
+            notarisDenganDataNihil.forEach((value, key) => {
+                const namaNotaris = value.nama;
+                if (!daftarNotarisUnik.has(namaNotaris)) {
+                    daftarNotarisUnik.set(namaNotaris, true);
+                }
+            });
+
+            selectNotaris.innerHTML = '<option value="">-- Pilih Notaris --</option>';
+            daftarNotarisUnik.forEach((_, namaNotaris) => {
+                selectNotaris.innerHTML += `<option value="${escapeHtml(namaNotaris)}">${escapeHtml(namaNotaris)}</option>`;
+            });
+
+            // Jika tidak ada notaris dengan data nihil, tampilkan pesan
+            if (daftarNotarisUnik.size === 0) {
+                selectNotaris.innerHTML = '<option value="">-- Tidak ada data nihil --</option>';
+            }
+
+            // ============================================
+            // ISI DROPDOWN BULAN - HANYA BULAN YANG MEMILIKI DATA NIHIL UNTUK NOTARIS TERPILIH
+            // ============================================
+            const selectBulan = document.getElementById('selectBulanNihil');
+            const bulanSet = new Set();
+
+            notarisDenganDataNihil.forEach((value) => {
+                bulanSet.add(value.bulan);
+            });
+
+            const bulanList = Array.from(bulanSet).sort((a, b) => {
+                const getDate = (str) => {
+                    if (!str) return new Date(0);
+                    const [bulan, tahun] = str.split(' ');
+                    const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                    return new Date(parseInt(tahun), bulanIndex);
+                };
+                return getDate(b) - getDate(a);
+            });
+
             selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
             bulanList.forEach(bulan => {
                 selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
+            });
+
+            // Event listener untuk filter bulan berdasarkan notaris yang dipilih
+            selectNotaris.addEventListener('change', function () {
+                const namaNotarisTerpilih = this.value;
+                if (!namaNotarisTerpilih) {
+                    selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                    return;
+                }
+
+                // Filter bulan berdasarkan notaris yang dipilih
+                const bulanUntukNotaris = new Set();
+                notarisDenganDataNihil.forEach((value) => {
+                    if (value.nama === namaNotarisTerpilih) {
+                        bulanUntukNotaris.add(value.bulan);
+                    }
+                });
+
+                const filteredBulanList = Array.from(bulanUntukNotaris).sort((a, b) => {
+                    const getDate = (str) => {
+                        if (!str) return new Date(0);
+                        const [bulan, tahun] = str.split(' ');
+                        const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                        return new Date(parseInt(tahun), bulanIndex);
+                    };
+                    return getDate(b) - getDate(a);
+                });
+
+                selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                filteredBulanList.forEach(bulan => {
+                    selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
+                });
+
+                if (filteredBulanList.length === 0) {
+                    selectBulan.innerHTML = '<option value="">-- Tidak ada data nihil --</option>';
+                }
             });
 
             // Tampilkan modal
@@ -8032,7 +8147,7 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
             });
         }
 
-        // Cetak data NIHIL - TABEL TETAP, ISI NIHIL
+        // Cetak data NIHIL - HANYA JIKA DATA TRANSAKSI BENAR-BENAR NIHIL
         function printDataNihil() {
             const selectNotaris = document.getElementById('selectNotarisNihil');
             const selectBulan = document.getElementById('selectBulanNihil');
@@ -8055,14 +8170,54 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                 return;
             }
 
-            // Cari data notaris
-            const dataNotaris = allData.find(row =>
-                row["nama_notaris_&_ppat"] === namaNotaris &&
-                row["laporan_bulanan"] === bulanLaporan
-            );
+            // ============================================
+            // CEK DATA TRANSAKSI - PASTIKAN BENAR-BENAR NIHIL
+            // ============================================
+            let dataNotaris = null;
+            let totalSSP = 0;
+            let totalSSB = 0;
+            let isNihil = false;
+
+            // Cari data notaris yang memiliki transaksi NIHIL
+            for (const row of allData) {
+                if (row["nama_notaris_&_ppat"] === namaNotaris && row["laporan_bulanan"] === bulanLaporan) {
+                    dataNotaris = row;
+
+                    // Hitung total SSP dan SSB dari data transaksi
+                    try {
+                        if (row["data_transaksi"]) {
+                            let transaksi = JSON.parse(row["data_transaksi"]);
+                            if (Array.isArray(transaksi)) {
+                                transaksi.forEach(item => {
+                                    if (item.ssp) {
+                                        let val = parseInt(String(item.ssp).replace(/[^0-9]/g, '')) || 0;
+                                        totalSSP += val;
+                                    }
+                                    if (item.ssb) {
+                                        let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
+                                        totalSSB += val;
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Error parsing transaksi:", e);
+                    }
+
+                    // Data dianggap NIHIL jika total SSP = 0 DAN total SSB = 0
+                    isNihil = (totalSSP === 0 && totalSSB === 0);
+                    break;
+                }
+            }
 
             if (!dataNotaris) {
                 showError('Error', 'Data tidak ditemukan untuk notaris dan bulan tersebut!');
+                return;
+            }
+
+            // JIKA BUKAN NIHIL, TAMPILKAN PESAN ERROR
+            if (!isNihil) {
+                showError('Error', `Notaris ${namaNotaris} pada bulan ${bulanLaporan} memiliki data transaksi dengan nilai SSP: ${formatRupiahTabel(String(totalSSP))} dan SSB: ${formatRupiahTabel(String(totalSSB))}.\n\nData ini BUKAN data NIHIL (Rp 0).`);
                 return;
             }
 
@@ -8083,288 +8238,288 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
 
             // Buat HTML untuk print - TABEL TETAP, 1 BARIS NIHIL
             const printHTML = `<!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Data Transaksi NIHIL - ${namaNotaris} - ${bulanLaporan}</title>
-            <style>
-                @page {
-                    size: A4 landscape;
-                    margin: 6mm;
-                }
-                
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-                
-                body {
-                    font-family: 'Times New Roman', 'Arial', sans-serif;
-                    font-size: 7.5pt;
-                    line-height: 1.2;
-                    background: white;
-                }
-                
-                .print-container {
-                    max-width: 100%;
-                    margin: 0 auto;
-                }
-                
-                .header {
-                    text-align: center;
-                    margin-bottom: 12px;
-                    padding-bottom: 6px;
-                    border-bottom: 2px solid #dc3545;
-                }
-                
-                .header h1 {
-                    font-size: 14pt;
-                    color: #dc3545;
-                    margin-bottom: 3px;
-                }
-                
-                .header h3 {
-                    font-size: 11pt;
-                    color: #475569;
-                    margin-bottom: 3px;
-                }
-                
-                .header p {
-                    font-size: 7pt;
-                    color: #64748b;
-                }
-                
-                .badge-nihil {
-                    background-color: #dc3545;
-                    color: white;
-                    padding: 2px 8px;
-                    border-radius: 12px;
-                    font-size: 7pt;
-                    display: inline-block;
-                    margin-left: 10px;
-                }
-                
-                .info-notaris {
-                    margin-bottom: 12px;
-                    padding: 8px;
-                    background: #fff5f5;
-                    border-radius: 6px;
-                    border-left: 3px solid #dc3545;
-                }
-                
-                .info-notaris table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                
-                .info-notaris td {
-                    padding: 2px 5px;
-                    font-size: 7.5pt;
-                }
-                
-                .info-notaris td:first-child {
-                    width: 100px;
-                    font-weight: bold;
-                }
-                
-                .info-transaksi {
-                    margin-bottom: 10px;
-                    padding: 5px 8px;
-                    background: #ffe5e5;
-                    border-radius: 5px;
-                }
-                
-                .info-transaksi p {
-                    font-size: 8pt;
-                    font-weight: bold;
-                    color: #dc3545;
-                }
-                
-                .table-transaksi {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 10px;
-                    font-size: 6.5pt;
-                    table-layout: fixed;
-                }
-                
-                .table-transaksi th:nth-child(1) { width: 3%; }
-                .table-transaksi th:nth-child(2) { width: 6%; }
-                .table-transaksi th:nth-child(3) { width: 6%; }
-                .table-transaksi th:nth-child(4) { width: 5%; }
-                .table-transaksi th:nth-child(5) { width: 5%; }
-                .table-transaksi th:nth-child(6) { width: 10%; }
-                .table-transaksi th:nth-child(7) { width: 10%; }
-                .table-transaksi th:nth-child(8) { width: 5%; }
-                .table-transaksi th:nth-child(9) { width: 5%; }
-                .table-transaksi th:nth-child(10) { width: 8%; }
-                .table-transaksi th:nth-child(11) { width: 6%; }
-                .table-transaksi th:nth-child(12) { width: 5%; }
-                .table-transaksi th:nth-child(13) { width: 7%; }
-                .table-transaksi th:nth-child(14) { width: 5%; }
-                .table-transaksi th:nth-child(15) { width: 5%; }
-                .table-transaksi th:nth-child(16) { width: 9%; }
-                
-                .table-transaksi th,
-                .table-transaksi td {
-                    border: 1px solid #cbd5e1;
-                    padding: 4px 3px;
-                    vertical-align: top;
-                    word-wrap: break-word;
-                }
-                
-                .table-transaksi th {
-                    background: #dc3545;
-                    color: white;
-                    font-weight: 600;
-                    font-size: 6.5pt;
-                    padding: 5px 3px;
-                    text-align: center;
-                }
-                
-                .table-transaksi td {
-                    text-align: center;
-                }
-                
-                .table-transaksi td:last-child {
-                    text-align: left;
-                }
-                
-                .total-section {
-                    margin-top: 12px;
-                    padding: 8px 12px;
-                    background: #fff5f5;
-                    border-radius: 6px;
-                    border: 1px solid #dc3545;
-                }
-
-                .total-section div {
-                    font-size: 8pt;
-                }
-
-                .total-section strong {
-                    font-weight: 700;
-                }
-                
-                .footer {
-                    margin-top: 12px;
-                    text-align: center;
-                    font-size: 6pt;
-                    color: #64748b;
-                }
-                
-                @media print {
-                    body {
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .table-transaksi th {
-                        background: #dc3545 !important;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="print-container">
-                <div class="header">
-                    <h1>DATA TRANSAKSI NIHIL (Rp 0) <span class="badge-nihil">NILAI 0</span></h1>
-                    <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
-                    <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
-                </div>
-                
-                <div class="info-notaris">
-                    <table width="100%">
-                        <tr>
-                            <td width="100">ID Notaris</td>
-                            <td colspan="4">: ${dataNotaris["id"] || '-'}</td>
-                            <td width="50"></td>
-                            <td>Bulan Laporan</td>
-                            <td>: <strong>${bulanLaporan}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Nama Notaris</td>
-                            <td colspan="7">: ${escapeHtml(namaNotaris)}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat Kantor</td>
-                            <td colspan="7">: ${escapeHtml(dataNotaris["alamat"] || '-')}</td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <div class="info-transaksi">
-                    <p> Daftar Transaksi Bulan ${bulanLaporan} - STATUS: <b>NIHIL (Nilai SSP & SSB Rp 0)</b></p>
-                </div>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Transaksi NIHIL - ${namaNotaris} - ${bulanLaporan}</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 6mm;
+        }
         
-                    <table class="table-transaksi">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>No.SPPD</th>
-                                <th>No.Akta</th>
-                                <th>No.Hak</th>
-                                <th>Penjual</th>
-                                <th>Pembeli</th>
-                                <th>Kecamatan</th>
-                                <th>Kelurahan</th>
-                                <th>NOP</th>
-                                <th>NJOP</th>
-                                <th>Luas</th>
-                                <th>Harga</th>
-                                <th>SSP</th>
-                                <th>SSB</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- HANYA 1 BARIS DENGAN KETERANGAN NIHIL -->
-                            <tr>
-                                <td style="text-align:center;">1</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:right;">-</td>
-                                <td style="text-align:center;">-</td>
-                                <td style="text-align:right;">-</td>
-                                <td style="text-align:right;">-</td>
-                                <td style="text-align:right;">-</td>
-                                <td style="text-align:left; color:#dc3545; font-weight:bold;"><b>NIHIL</b> (Nilai SSP & SSB Rp 0)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <div class="total-section">
-                        <div><strong>STATUS TRANSAKSI:</strong> <b>NIHIL</b> - Tidak ada transaksi dengan nilai SSP & SSB > 0</div>
-                        <div><strong>Total Nilai SSP & SSB:</strong> Rp 0 (NIHIL)</div>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-                        <p>**Status <b>NIHIL</b> berarti tidak ada transaksi dengan nilai SSP & SSB yang harus dibayar</p>
-                        <p>Di Cetak Pada Tanggal : ${tanggalCetak}</p>
-                    </div>
-                </div>
-                <script>
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                            window.onafterprint = function() { window.close(); };
-                            setTimeout(function() { window.close(); }, 500);
-                        }, 300);
-                    };
-                <\/script>
-            </body>
-            </html>`;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', 'Arial', sans-serif;
+            font-size: 7.5pt;
+            line-height: 1.2;
+            background: white;
+        }
+        
+        .print-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header h1 {
+            font-size: 14pt;
+            color: #dc3545;
+            margin-bottom: 3px;
+        }
+        
+        .header h3 {
+            font-size: 11pt;
+            color: #475569;
+            margin-bottom: 3px;
+        }
+        
+        .header p {
+            font-size: 7pt;
+            color: #64748b;
+        }
+        
+        .badge-nihil {
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 7pt;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .info-notaris {
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #fff5f5;
+            border-radius: 6px;
+            border-left: 3px solid #dc3545;
+        }
+        
+        .info-notaris table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .info-notaris td {
+            padding: 2px 5px;
+            font-size: 7.5pt;
+        }
+        
+        .info-notaris td:first-child {
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        .info-transaksi {
+            margin-bottom: 10px;
+            padding: 5px 8px;
+            background: #ffe5e5;
+            border-radius: 5px;
+        }
+        
+        .info-transaksi p {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        .table-transaksi {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 6.5pt;
+            table-layout: fixed;
+        }
+        
+        .table-transaksi th:nth-child(1) { width: 3%; }
+        .table-transaksi th:nth-child(2) { width: 6%; }
+        .table-transaksi th:nth-child(3) { width: 6%; }
+        .table-transaksi th:nth-child(4) { width: 5%; }
+        .table-transaksi th:nth-child(5) { width: 5%; }
+        .table-transaksi th:nth-child(6) { width: 10%; }
+        .table-transaksi th:nth-child(7) { width: 10%; }
+        .table-transaksi th:nth-child(8) { width: 5%; }
+        .table-transaksi th:nth-child(9) { width: 5%; }
+        .table-transaksi th:nth-child(10) { width: 8%; }
+        .table-transaksi th:nth-child(11) { width: 6%; }
+        .table-transaksi th:nth-child(12) { width: 5%; }
+        .table-transaksi th:nth-child(13) { width: 7%; }
+        .table-transaksi th:nth-child(14) { width: 5%; }
+        .table-transaksi th:nth-child(15) { width: 5%; }
+        .table-transaksi th:nth-child(16) { width: 9%; }
+        
+        .table-transaksi th,
+        .table-transaksi td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 3px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        
+        .table-transaksi th {
+            background: #dc3545;
+            color: white;
+            font-weight: 600;
+            font-size: 6.5pt;
+            padding: 5px 3px;
+            text-align: center;
+        }
+        
+        .table-transaksi td {
+            text-align: center;
+        }
+        
+        .table-transaksi td:last-child {
+            text-align: left;
+        }
+        
+        .total-section {
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: #fff5f5;
+            border-radius: 6px;
+            border: 1px solid #dc3545;
+        }
+
+        .total-section div {
+            font-size: 8pt;
+        }
+
+        .total-section strong {
+            font-weight: 700;
+        }
+        
+        .footer {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 6pt;
+            color: #64748b;
+        }
+        
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .table-transaksi th {
+                background: #dc3545 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-container">
+        <div class="header">
+            <h1>DATA TRANSAKSI NIHIL (Rp 0) <span class="badge-nihil">NILAI 0</span></h1>
+            <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+            <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+        </div>
+        
+        <div class="info-notaris">
+            <table width="100%">
+                <tr>
+                    <td width="100">ID Notaris</td>
+                    <td colspan="4">: ${dataNotaris["id"] || '-'}</td>
+                    <td width="50"></td>
+                    <td>Bulan Laporan</td>
+                    <td>: <strong>${bulanLaporan}</strong></td>
+                </tr>
+                <tr>
+                    <td>Nama Notaris</td>
+                    <td colspan="7">: ${escapeHtml(namaNotaris)}</td>
+                </tr>
+                <tr>
+                    <td>Alamat Kantor</td>
+                    <td colspan="7">: ${escapeHtml(dataNotaris["alamat"] || '-')}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="info-transaksi">
+            <p>📋 Daftar Transaksi Bulan ${bulanLaporan} - STATUS: <b>NIHIL (Nilai SSP & SSB Rp 0)</b></p>
+        </div>
+
+        <table class="table-transaksi">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>No.SPPD</th>
+                    <th>No.Akta</th>
+                    <th>No.Hak</th>
+                    <th>Penjual</th>
+                    <th>Pembeli</th>
+                    <th>Kecamatan</th>
+                    <th>Kelurahan</th>
+                    <th>NOP</th>
+                    <th>NJOP</th>
+                    <th>Luas</th>
+                    <th>Harga</th>
+                    <th>SSP</th>
+                    <th>SSB</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- HANYA 1 BARIS DENGAN KETERANGAN NIHIL -->
+                <tr>
+                    <td style="text-align:center;">1</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:right;">-</td>
+                    <td style="text-align:center;">-</td>
+                    <td style="text-align:right;">-</td>
+                    <td style="text-align:right;">-</td>
+                    <td style="text-align:right;">-</td>
+                    <td style="text-align:left; color:#dc3545; font-weight:bold;"><b>NIHIL</b> (Nilai SSP & SSB Rp 0)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="total-section">
+            <div><strong>STATUS TRANSAKSI:</strong> <b>NIHIL</b> - Tidak ada transaksi dengan nilai SSP & SSB > 0</div>
+            <div><strong>Total Nilai SSP & SSB:</strong> Rp 0 (NIHIL)</div>
+        </div>
+        
+        <div class="footer">
+            <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+            <p>**Status <b>NIHIL</b> berarti tidak ada transaksi dengan nilai SSP & SSB yang harus dibayar</p>
+            <p>Di Cetak Pada Tanggal : ${tanggalCetak}</p>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+                setTimeout(function() { window.close(); }, 500);
+            }, 300);
+        };
+    <\/script>
+</body>
+</html>`;
 
             const printWindow = window.open('', '_blank');
             if (!printWindow) {
@@ -8376,7 +8531,7 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
             printWindow.document.close();
         }
 
-        // Export data NIHIL ke Excel - TABEL TETAP, ISI NIHIL
+        // Export data NIHIL ke Excel - HANYA JIKA DATA TRANSAKSI BENAR-BENAR NIHIL
         function exportDataNihilToExcel() {
             console.log("exportDataNihilToExcel dipanggil");
 
@@ -8397,14 +8552,51 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
                     return;
                 }
 
-                // Cari data notaris
-                const dataNotaris = allData.find(row =>
-                    row["nama_notaris_&_ppat"] === namaNotaris &&
-                    row["laporan_bulanan"] === bulanLaporan
-                );
+                // ============================================
+                // CEK DATA TRANSAKSI - PASTIKAN BENAR-BENAR NIHIL
+                // ============================================
+                let dataNotaris = null;
+                let totalSSP = 0;
+                let totalSSB = 0;
+                let isNihil = false;
+
+                for (const row of allData) {
+                    if (row["nama_notaris_&_ppat"] === namaNotaris && row["laporan_bulanan"] === bulanLaporan) {
+                        dataNotaris = row;
+
+                        try {
+                            if (row["data_transaksi"]) {
+                                let transaksi = JSON.parse(row["data_transaksi"]);
+                                if (Array.isArray(transaksi)) {
+                                    transaksi.forEach(item => {
+                                        if (item.ssp) {
+                                            let val = parseInt(String(item.ssp).replace(/[^0-9]/g, '')) || 0;
+                                            totalSSP += val;
+                                        }
+                                        if (item.ssb) {
+                                            let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
+                                            totalSSB += val;
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Error parsing transaksi:", e);
+                        }
+
+                        isNihil = (totalSSP === 0 && totalSSB === 0);
+                        break;
+                    }
+                }
 
                 if (!dataNotaris) {
                     alert('Data tidak ditemukan untuk notaris dan bulan tersebut!');
+                    return;
+                }
+
+                // JIKA BUKAN NIHIL, TAMPILKAN PESAN ERROR
+                if (!isNihil) {
+                    alert(`Notaris ${namaNotaris} pada bulan ${bulanLaporan} memiliki data transaksi dengan nilai SSP: ${formatRupiahTabel(String(totalSSP))} dan SSB: ${formatRupiahTabel(String(totalSSB))}.\n\nData ini BUKAN data NIHIL (Rp 0). Export dibatalkan.`);
                     return;
                 }
 
@@ -8413,163 +8605,162 @@ _*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
 
                 // Buat HTML untuk Excel - TABEL TETAP, 1 BARIS NIHIL
                 let htmlContent = `<!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Transaksi NIHIL ${namaNotaris} - ${bulanLaporan}</title>
-                <style>
-                    * {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                    }
-                    body {
-                        font-family: 'Times New Roman', Arial, sans-serif;
-                        font-size: 10pt;
-                        padding: 20px;
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 20px;
-                        border-bottom: 2px solid #dc3545;
-                        padding-bottom: 10px;
-                    }
-                    .header h1 {
-                        color: #dc3545;
-                        font-size: 16pt;
-                    }
-                    .badge-nihil {
-                        background-color: #dc3545;
-                        color: white;
-                        padding: 2px 10px;
-                        border-radius: 20px;
-                        font-size: 9pt;
-                    }
-                    .info-notaris {
-                        margin-bottom: 20px;
-                        padding: 10px;
-                        background: #fff5f5;
-                        border-left: 3px solid #dc3545;
-                    }
-                    .info-notaris table {
-                        width: 100%;
-                    }
-                    .info-notaris td {
-                        padding: 4px 8px;
-                    }
-                    .info-notaris td:first-child {
-                        width: 120px;
-                        font-weight: bold;
-                    }
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                        margin: 15px 0;
-                    }
-                    th, td {
-                        border: 1px solid #000000;
-                        padding: 6px 4px;
-                        text-align: left;
-                        vertical-align: top;
-                    }
-                    th {
-                        background-color: #dc3545;
-                        color: white;
-                        font-weight: bold;
-                        text-align: center;
-                    }
-                    td {
-                        text-align: left;
-                    }
-                    td:nth-child(1) { text-align: center; }
-                    td:nth-child(2) { text-align: center; }
-                    td:nth-child(3) { text-align: center; }
-                    td:last-child { text-align: left; color: #dc3545; font-weight: bold; }
-                    .total-section {
-                        margin-top: 20px;
-                        padding: 10px;
-                        background: #fff5f5;
-                        border: 1px solid #dc3545;
-                    }
-                    .footer {
-                        margin-top: 20px;
-                        text-align: center;
-                        font-size: 8pt;
-                        color: #64748b;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>DATA TRANSAKSI NIHIL (Rp 0) <span class="badge-nihil">NILAI 0</span></h1>
-                    <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
-                    <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
-                </div>
-                
-                <div class="info-notaris">
-                    <table>
-                        <tr><td width="120">ID Notaris</td><td colspan="3">: ${dataNotaris["id"] || '-'}</td><td>Bulan Laporan</td><td>: <strong>${bulanLaporan}</strong></td></tr>
-                        <tr><td>Nama Notaris</td><td colspan="5">: ${escapeHtml(namaNotaris)}</td></tr>
-                        <tr><td>Alamat Kantor</td><td colspan="5">: ${escapeHtml(dataNotaris["alamat"] || '-')}</td></tr>
-                    </table>
-                </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Tanggal</th>
-                            <th>No.SPPD</th>
-                            <th>No.Akta</th>
-                            <th>No.Hak</th>
-                            <th>Penjual</th>
-                            <th>Pembeli</th>
-                            <th>Kecamatan</th>
-                            <th>Kelurahan</th>
-                            <th>NOP</th>
-                            <th>NJOP</th>
-                            <th>Luas TB</th>
-                            <th>Harga</th>
-                            <th>SSP</th>
-                            <th>SSB</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- HANYA 1 BARIS DENGAN KETERANGAN NIHIL -->
-                        <tr>
-                            <td style="text-align:center;">1</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:right;">-</td>
-                            <td style="text-align:center;">-</td>
-                            <td style="text-align:right;">-</td>
-                            <td style="text-align:right;">-</td>
-                            <td style="text-align:right;">-</td>
-                            <td style="text-align:left; color:#dc3545; font-weight:bold;"><b>NIHIL</b> (Nilai SSP & SSB Rp 0)</td>
-                    </tr>
-                </tbody>
-            </table>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transaksi NIHIL ${namaNotaris} - ${bulanLaporan}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Arial, sans-serif;
+            font-size: 10pt;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #dc3545;
+            font-size: 16pt;
+        }
+        .badge-nihil {
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 9pt;
+        }
+        .info-notaris {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fff5f5;
+            border-left: 3px solid #dc3545;
+        }
+        .info-notaris table {
+            width: 100%;
+        }
+        .info-notaris td {
+            padding: 4px 8px;
+        }
+        .info-notaris td:first-child {
+            width: 120px;
+            font-weight: bold;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #000000;
+            padding: 6px 4px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        td {
+            text-align: left;
+        }
+        td:nth-child(1) { text-align: center; }
+        td:nth-child(2) { text-align: center; }
+        td:nth-child(3) { text-align: center; }
+        td:last-child { text-align: left; color: #dc3545; font-weight: bold; }
+        .total-section {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff5f5;
+            border: 1px solid #dc3545;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 8pt;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DATA TRANSAKSI NIHIL (Rp 0) <span class="badge-nihil">NILAI 0</span></h1>
+        <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+        <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+    </div>
     
-                <div class="total-section">
-                    <strong>STATUS TRANSAKSI:</strong> <b>NIHIL</b> - Tidak ada transaksi dengan nilai SSP & SSB > 0<br>
-                    <strong>Total Nilai SSP & SSB:</strong> Rp 0 (NIHIL)
-                </div>
-                
-                <div class="footer">
-                    <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-                    <p>**Status <b>NIHIL</b> berarti tidak ada transaksi dengan nilai SSP & SSB yang harus dibayar</p>
-                    <p>Dicetak pada: ${tanggalExport}</p>
-                </div>
-            </body>
-            </html>`;
+    <div class="info-notaris">
+        <table>
+            <tr><td width="120">ID Notaris</td><td colspan="3">: ${dataNotaris["id"] || '-'}</td><td>Bulan Laporan</td><td>: <strong>${bulanLaporan}</strong></td></tr>
+            <tr><td>Nama Notaris</td><td colspan="5">: ${escapeHtml(namaNotaris)}</td></tr>
+            <tr><td>Alamat Kantor</td><td colspan="5">: ${escapeHtml(dataNotaris["alamat"] || '-')}</td></tr>
+        </table>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>No.SPPD</th>
+                <th>No.Akta</th>
+                <th>No.Hak</th>
+                <th>Penjual</th>
+                <th>Pembeli</th>
+                <th>Kecamatan</th>
+                <th>Kelurahan</th>
+                <th>NOP</th>
+                <th>NJOP</th>
+                <th>Luas TB</th>
+                <th>Harga</th>
+                <th>SSP</th>
+                <th>SSB</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align:center;">1</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:right;">-</td>
+                <td style="text-align:center;">-</td>
+                <td style="text-align:right;">-</td>
+                <td style="text-align:right;">-</td>
+                <td style="text-align:right;">-</td>
+                <td style="text-align:left; color:#dc3545; font-weight:bold;"><b>NIHIL</b> (Nilai SSP & SSB Rp 0)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <strong>STATUS TRANSAKSI:</strong> <b>NIHIL</b> - Tidak ada transaksi dengan nilai SSP & SSB > 0<br>
+        <strong>Total Nilai SSP & SSB:</strong> Rp 0 (NIHIL)
+    </div>
+    
+    <div class="footer">
+        <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+        <p>**Status <b>NIHIL</b> berarti tidak ada transaksi dengan nilai SSP & SSB yang harus dibayar</p>
+        <p>Dicetak pada: ${tanggalExport}</p>
+    </div>
+</body>
+</html>`;
 
                 // Download sebagai file .xls
                 const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
