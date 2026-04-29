@@ -1807,6 +1807,27 @@
             background: linear-gradient(135deg, #b45309, #d97706);
         }
 
+        /* Tambahkan di dalam tag style */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-bulan {
+            transition: all 0.3s ease;
+        }
+
+        .btn-bulan:hover {
+            transform: translateY(-2px);
+        }
+
         /* Progress bar styling untuk loading */
         .progress {
             background-color: #e9ecef;
@@ -1873,6 +1894,13 @@
                     <div class="col-md-2">
                         <button type="button" class="btn btn-primary w-100" onclick="generateBulan()">
                             <i class="bi bi-calendar"></i> Tampilkan Bulan
+                        </button>
+                    </div>
+
+                    <!-- Tambahkan di samping tombol Tampilkan Bulan -->
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-secondary w-100" onclick="resetBulan()">
+                            <i class="bi bi-x-circle"></i> Reset Bulan
                         </button>
                     </div>
 
@@ -2647,15 +2675,27 @@
         function filterByMonth(bulanTahun, element) {
             const selectedBulanInput = document.getElementById("selectedBulan");
             if (selectedBulanInput) selectedBulanInput.value = bulanTahun;
-            filterData(); // <-- Ini sudah otomatis memanggil tampilkanRingkasanBulanan()
+
+            filterData(); // Filter data berdasarkan bulan
+
+            // Update tampilan tombol bulan
             document.querySelectorAll(".btn-bulan").forEach(btn => {
                 btn.classList.remove("btn-primary");
                 btn.classList.add("btn-outline-primary");
             });
+
             if (element) {
                 element.classList.remove("btn-outline-primary");
                 element.classList.add("btn-primary");
             }
+
+            // Optional: Scroll ke tabel setelah filter
+            const tableWrapper = document.querySelector(".table-wrapper");
+            if (tableWrapper) {
+                tableWrapper.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+
+            console.log(`✅ Filter bulan: ${bulanTahun}`);
         }
 
         function resetAllFilters() {
@@ -6363,62 +6403,120 @@
                 return;
             }
 
+            // ============================================
+            // SEMBUNYIKAN SEMUA BULAN YANG ADA (HAPUS DULU)
+            // ============================================
             container.innerHTML = "";
 
-            const bulanTersedia = new Set();
-            let adaDataUntukTahunIni = false;
+            // Animasi fade out (opsional)
+            container.style.transition = "opacity 0.3s ease";
+            container.style.opacity = "0";
 
-            if (allData && allData.length > 0) {
-                allData.forEach(row => {
-                    const bulanLaporan = row["laporan_bulanan"];
-                    if (bulanLaporan && bulanLaporan.includes(tahun)) {
-                        const bulan = bulanLaporan.split(' ')[0];
-                        bulanTersedia.add(bulan);
-                        adaDataUntukTahunIni = true;
-                    }
+            setTimeout(() => {
+                const bulanTersedia = new Set();
+                let adaDataUntukTahunIni = false;
+
+                if (allData && allData.length > 0) {
+                    allData.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (bulanLaporan && bulanLaporan.includes(tahun)) {
+                            const bulan = bulanLaporan.split(' ')[0];
+                            bulanTersedia.add(bulan);
+                            adaDataUntukTahunIni = true;
+                        }
+                    });
+                }
+
+                const semuaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+                let bulanYangDitampilkan = semuaBulan;
+
+                if (adaDataUntukTahunIni) {
+                    bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
+                }
+
+                // Kosongkan container sebelum diisi
+                container.innerHTML = "";
+
+                // Tampilkan bulan baru dengan animasi
+                bulanYangDitampilkan.forEach(bulan => {
+                    let col = document.createElement("div");
+                    col.className = "col-md-2 mb-2";
+                    col.style.animation = "fadeInUp 0.3s ease";
+                    col.innerHTML = `<button class="btn btn-outline-primary w-100 btn-bulan" 
+                                    onclick="filterByMonth('${bulan} ${tahun}', this)">
+                                <i class="bi bi-calendar-month"></i> ${bulan}
+                            </button>`;
+                    container.appendChild(col);
                 });
+
+                if (!adaDataUntukTahunIni) {
+                    container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle"></i> 
+                        Belum ada data laporan untuk tahun ${tahun}
+                    </div>
+                </div>
+            `;
+                } else if (container.children.length === 0) {
+                    container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-warning text-center">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        Tidak ada bulan dengan data untuk tahun ${tahun}
+                    </div>
+                </div>
+            `;
+                }
+
+                // Tampilkan container dengan animasi fade in
+                container.style.opacity = "1";
+
+                console.log(`📅 Menampilkan ${container.children.length} bulan untuk tahun ${tahun}${adaDataUntukTahunIni ? ' (ada data)' : ' (belum ada data)'}`);
+            }, 200);
+        }
+
+        // Fungsi untuk menyembunyikan semua tombol bulan
+        function sembunyikanSemuaBulan() {
+            const container = document.getElementById("listBulan");
+            if (!container) return;
+
+            // Animasi fade out
+            container.style.transition = "opacity 0.3s ease";
+            container.style.opacity = "0";
+
+            setTimeout(() => {
+                container.innerHTML = "";
+                container.style.opacity = "1";
+                console.log("✅ Semua tombol bulan telah disembunyikan");
+            }, 200);
+        }
+
+        // Fungsi untuk reset pilihan bulan (sembunyikan bulan dan reset filter)
+        function resetBulan() {
+            // Sembunyikan semua tombol bulan
+            sembunyikanSemuaBulan();
+
+            // Reset pilihan bulan di hidden input
+            const selectedBulanInput = document.getElementById("selectedBulan");
+            if (selectedBulanInput) {
+                selectedBulanInput.value = "";
             }
 
-            const semuaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-
-            let bulanYangDitampilkan = semuaBulan;
-
-            if (adaDataUntukTahunIni) {
-                bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
-            }
-
-            bulanYangDitampilkan.forEach(bulan => {
-                let col = document.createElement("div");
-                col.className = "col-md-2 mb-2";
-                col.innerHTML = `<button class="btn btn-outline-primary w-100 btn-bulan" 
-                                onclick="filterByMonth('${bulan} ${tahun}', this)">
-                            <i class="bi bi-calendar-month"></i> ${bulan}
-                        </button>`;
-                container.appendChild(col);
+            // Reset aktif class pada tombol bulan (tidak ada yang aktif)
+            document.querySelectorAll(".btn-bulan").forEach(btn => {
+                btn.classList.remove("btn-primary");
+                btn.classList.add("btn-outline-primary");
             });
 
-            if (!adaDataUntukTahunIni) {
-                container.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-info text-center">
-                    <i class="bi bi-info-circle"></i> 
-                    Belum ada data laporan untuk tahun ${tahun}
-                </div>
-            </div>
-        `;
-            } else if (container.children.length === 0) {
-                container.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-warning text-center">
-                    <i class="bi bi-exclamation-triangle"></i> 
-                    Tidak ada bulan dengan data untuk tahun ${tahun}
-                </div>
-            </div>
-        `;
+            // Tampilkan semua data tanpa filter bulan
+            if (typeof filterData === 'function') {
+                filterData();
             }
 
-            console.log(`📅 Menampilkan ${container.children.length} bulan untuk tahun ${tahun}${adaDataUntukTahunIni ? ' (ada data)' : ' (belum ada data)'}`);
+            console.log("✅ Filter bulan telah direset");
         }
 
         // Update fungsi renderTable (tambahkan badge pensiun)
