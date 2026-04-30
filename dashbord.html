@@ -2035,6 +2035,403 @@
             }
         }
 
+        /* ============================================
+   BALON OBROLAN WHATSAPP - FLOATING CHAT BUBBLE
+   ============================================ */
+
+        /* Container untuk floating button */
+        .whatsapp-float-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: none;
+            /* Default hidden, akan ditampilkan jika admin */
+        }
+
+        /* Balon obrolan utama */
+        .whatsapp-chat-bubble {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: floatGlow 2s ease-in-out infinite;
+        }
+
+        /* Efek floating */
+        @keyframes floatGlow {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            }
+
+            50% {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6);
+            }
+        }
+
+        /* Hover effect */
+        .whatsapp-chat-bubble:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(37, 211, 102, 0.5);
+        }
+
+        .whatsapp-chat-bubble:active {
+            transform: scale(0.95);
+        }
+
+        /* Icon WhatsApp */
+        .whatsapp-chat-bubble i {
+            font-size: 36px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-chat-bubble:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Badge notifikasi (jumlah pesan) */
+        .whatsapp-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 50px;
+            min-width: 22px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: pulseBadge 1.5s infinite;
+            border: 2px solid white;
+        }
+
+        @keyframes pulseBadge {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* Tooltip / balon obrolan kecil */
+        .whatsapp-tooltip {
+            position: absolute;
+            right: 85px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            white-space: nowrap;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-tooltip::before {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 0 8px 8px;
+            border-color: transparent transparent transparent white;
+        }
+
+        .whatsapp-chat-bubble:hover .whatsapp-tooltip {
+            opacity: 1;
+            visibility: visible;
+            right: 95px;
+        }
+
+        /* Efek ripple saat diklik */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Loading state */
+        .whatsapp-chat-bubble.loading {
+            animation: none;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .whatsapp-chat-bubble.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modal WhatsApp Style */
+        .whatsapp-modal {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 380px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+            transform-origin: bottom right;
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .whatsapp-modal-header {
+            background: linear-gradient(135deg, #075E54, #128C7E);
+            padding: 18px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .whatsapp-modal-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .whatsapp-modal-header h5 i {
+            margin-right: 10px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .whatsapp-modal-body {
+            padding: 20px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .notaris-list-wa {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .notaris-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .notaris-item:hover {
+            background: #f0f9ff;
+        }
+
+        .notaris-info {
+            flex: 1;
+        }
+
+        .notaris-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .notaris-id {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .notaris-wa-status {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .notaris-wa-status.available {
+            color: #25D366;
+        }
+
+        .notaris-wa-status.unavailable {
+            color: #dc2626;
+        }
+
+        .btn-wa-send {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 30px;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-wa-send:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-wa-send i {
+            font-size: 14px;
+        }
+
+        .whatsapp-modal-footer {
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .btn-copy-all {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-all:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Overlay untuk modal */
+        .whatsapp-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 768px) {
+            .whatsapp-chat-bubble {
+                width: 55px;
+                height: 55px;
+            }
+
+            .whatsapp-chat-bubble i {
+                font-size: 28px;
+            }
+
+            .whatsapp-modal {
+                width: calc(100% - 40px);
+                right: 20px;
+                bottom: 90px;
+            }
+
+            .whatsapp-tooltip {
+                display: none;
+            }
+        }
+
+        /* Animasi bounce untuk badge */
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .whatsapp-badge {
+            animation: bounce 1s ease infinite;
+        }
+
         /* Progress bar styling untuk loading */
         .progress {
             background-color: #e9ecef;
@@ -2118,6 +2515,7 @@
                     <div class="col-md-2" id="btnBelumLaporContainer" style="display: none;">
                         <button type="button" class="btn btn-success w-100" onclick="deteksiDanKirimTidakMelapor()">
                             <i class="bi bi-whatsapp"></i> Kirim WA Notifikasi
+                            <!-- Container untuk floating button akan dibuat oleh JavaScript -->
                         </button>
                     </div>
                     <br><br>
@@ -2589,7 +2987,7 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxv4-Zfw61_-og2D-C18tV6B729aqvV2VKTcssyeUmodAZmEeLjdJCAw-Cwcv6jsms/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyxIgdtVcADzv70YiKCTMrSDfM8JO2DR5eTwYhryquOz_FSQ77XiSHFtag6NBVGWWSD/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -2671,7 +3069,7 @@
                 return '<span style="color:green; font-weight:bold;">✅ VALID</span>';
             }
 
-            // Jika SUDAH UPLOAD BUKTI BAYAR (LUNAS)
+            // Cek LUNAS dari kolom file_bukti_bayar (bukan file_surat_upload)
             if (hasUpload) {
                 return '<span style="color:green; font-weight:bold;">💰 LUNAS</span>';
             }
@@ -2679,8 +3077,6 @@
             // Status berdasarkan email
             if (statusEmail === "SELESAI") {
                 return '<span style="color:green;">✓ Selesai</span>';
-            } else if (statusEmail === "WAITING_RESEND") {
-                return '<span style="color:orange;">⏳ Menunggu Kirim Ulang</span>';
             } else if (statusEmail === "EMAIL_TERKIRIM") {
                 return '<span style="color:#d4a100;">📧 Email Terkirim!<br>Belum Upload</span>';
             } else {
@@ -2733,7 +3129,7 @@
                 let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
                 let hariTelat = hitungHariTerlambat(row["tanggal_diterima"]);
                 let statusEmail = row["status_email"] || "";
-                let hasUpload = (row["file_surat_upload"] || "").trim() !== "";
+                let hasUpload = (row["file_bukti_bayar"] || "").trim() !== "";
                 let catatanAuto = getCatatanAuto(statusTerlambat, statusEmail, hasUpload);
                 let actionHTML = "";
 
@@ -2783,10 +3179,17 @@
                 let tgl = getTanggal(row["tanggal_diterima"]);
                 let bolehUpload = isFirst && tgl > 10;
 
-                if (row["file_surat_upload"]) {
-                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_surat_upload"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
+                // Cek apakah sudah upload bukti bayar dari kolom file_bukti_bayar
+                if (row["file_bukti_bayar"]) {
+                    buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_bukti_bayar"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
                 } else if (bolehUpload) {
-                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar"><i class="bi bi-cloud-upload-fill"></i><input type="file" accept="application/pdf,image/jpeg,image/png" onchange="uploadBuktiBayar(this, '${row["id"]}')" style="display:none;"></label>`;
+                    // Kirimkan bulan juga saat upload
+                    buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                    <input type="file" accept="application/pdf,image/jpeg,image/png" 
+                        onchange="uploadBuktiBayar(this, '${row["id"]}', '${row["laporan_bulanan"]}')" 
+                        style="display:none;">
+                </label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
                 }
@@ -3202,31 +3605,47 @@
         // ===============================
         // FUNGSI UPLOAD BUKTI BAYAR
         // ===============================
-        async function uploadBuktiBayar(input, id) {
+        async function uploadBuktiBayar(input, id, bulan) {
             const file = input.files[0];
             if (!file) return;
+
             if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
                 showError('Format Salah', 'Hanya PDF, JPG, atau PNG!');
                 input.value = "";
                 return;
             }
-            const confirmed = await showConfirm('Upload Bukti Bayar', `Upload bukti bayar "${file.name}"?`);
+
+            const confirmed = await showConfirm('Upload Bukti Bayar', `Upload bukti bayar untuk periode ${bulan}?`);
             if (!confirmed) { input.value = ""; return; }
+
             showLoading('Mengupload bukti bayar...');
             const reader = new FileReader();
             reader.onload = async function (e) {
                 const base64 = e.target.result.split(",")[1];
                 try {
-                    const response = await fetch(scriptURL, { method: "POST", body: new URLSearchParams({ action: "upload_pdf", id: id, file: base64, filename: file.name }) });
+                    const response = await fetch(scriptURL, {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            action: "upload_bukti_bayar",
+                            id: id,
+                            bulan: bulan,
+                            file: base64,
+                            filename: file.name
+                        })
+                    });
                     const res = await response.json();
                     hideLoading();
                     if (res.result === "success") {
-                        showSuccess('✅ LUNAS!', 'Bukti bayar terupload. Status menjadi LUNAS.');
+                        showSuccess('✅ LUNAS!', 'Bukti bayar terupload.');
                         input.value = "";
-                        await updateStatusEmail(id, "SELESAI");
                         setTimeout(() => loadDataSheet(), 500);
-                    } else { showError('Upload Gagal', res.message || 'Terjadi kesalahan.'); }
-                } catch (err) { hideLoading(); showError('Error Koneksi', 'Gagal terhubung ke server.'); }
+                    } else {
+                        showError('Upload Gagal', res.message || 'Terjadi kesalahan.');
+                    }
+                } catch (err) {
+                    hideLoading();
+                    showError('Error Koneksi', 'Gagal terhubung ke server.');
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -7592,154 +8011,26 @@
         }
 
         // ============================================
-        // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR
-        // ============================================
-
-        // ============================================
-        // BALON OBROLAN WHATSAPP - FLOATING BUTTON
-        // ============================================
-
-        let whatsappBubbleCreated = false;
-
-        // Buat elemen floating WhatsApp
-        function createWhatsAppFloatingButton() {
-            if (whatsappBubbleCreated) return;
-
-            // Cek apakah sudah ada
-            if (document.querySelector('.whatsapp-float-container')) return;
-
-            // Buat container floating
-            const floatContainer = document.createElement('div');
-            floatContainer.className = 'whatsapp-float-container';
-            floatContainer.id = 'whatsappFloatContainer';
-
-            // Buat balon obrolan
-            floatContainer.innerHTML = `
-        <div class="whatsapp-chat-bubble" id="whatsappChatBubble">
-            <i class="bi bi-whatsapp"></i>
-            <span class="whatsapp-badge" id="whatsappBadge">0</span>
-            <div class="whatsapp-tooltip">
-                <i class="bi bi-chat-dots-fill" style="color: #25D366;"></i> 
-                Kirim Notifikasi WhatsApp
-            </div>
-        </div>
-    `;
-
-            document.body.appendChild(floatContainer);
-            floatContainer.style.display = 'block';
-            whatsappBubbleCreated = true;
-
-            // Tambahkan event listener
-            const bubble = document.getElementById('whatsappChatBubble');
-            if (bubble) {
-                bubble.addEventListener('click', function (e) {
-                    // Efek ripple
-                    createRippleEffect(e, this);
-                    // Panggil fungsi deteksi
-                    if (typeof deteksiDanKirimTidakMelapor === 'function') {
-                        deteksiDanKirimTidakMelapor();
-                    }
-                });
-            }
-
-            // Update badge
-            setTimeout(() => updateWhatsAppBadge(), 1000);
-        }
-
-        // Efek ripple
-        function createRippleEffect(event, element) {
-            const ripple = document.createElement('span');
-            ripple.classList.add('ripple');
-            const rect = element.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
-            ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
-            element.appendChild(ripple);
-
-            setTimeout(() => ripple.remove(), 600);
-        }
-
-        // Set loading pada balon obrolan
-        function setWhatsAppLoading(loading) {
-            const bubble = document.getElementById('whatsappChatBubble');
-            if (!bubble) return;
-
-            if (loading) {
-                bubble.classList.add('loading');
-            } else {
-                bubble.classList.remove('loading');
-            }
-        }
-
-        // Update badge WhatsApp
-        async function updateWhatsAppBadge() {
-            const badge = document.getElementById('whatsappBadge');
-            if (!badge) return;
-
-            try {
-                // Ambil data laporan
-                const dataLaporan = await getDataLaporanDariSheet();
-                const semuaNotaris = getAllNotarisFromDropdown(true);
-                const bulanTerbaru = getBulanTerbaruDariData();
-
-                let jumlahBelumLapor = 0;
-
-                if (bulanTerbaru && dataLaporan && dataLaporan.length > 0) {
-                    const sudahLapor = new Set();
-                    dataLaporan.forEach(laporan => {
-                        if (laporan["laporan_bulanan"] === bulanTerbaru) {
-                            sudahLapor.add(normalisasiNama(laporan["nama_notaris_&_ppat"]));
-                        }
-                    });
-
-                    jumlahBelumLapor = semuaNotaris.filter(notaris =>
-                        !sudahLapor.has(normalisasiNama(notaris.nama))
-                    ).length;
-                }
-
-                badge.textContent = jumlahBelumLapor > 0 ? jumlahBelumLapor : '';
-
-                if (jumlahBelumLapor === 0) {
-                    badge.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
-                    badge.textContent = '✓';
-                } else {
-                    badge.style.background = 'linear-gradient(135deg, #ff4757, #ff6b81)';
-                    badge.textContent = jumlahBelumLapor;
-                }
-
-            } catch (error) {
-                console.error('Gagal update badge:', error);
-                badge.textContent = '!';
-            }
-        }
-
-        // Update tombol yang sudah ada agar terintegrasi dengan balon obrolan
-        function updateExistingWAButton() {
-            const existingBtn = document.getElementById('btnBelumLaporContainer');
-            if (existingBtn && currentUserRole === 'admin') {
-                // Sembunyikan tombol yang sudah ada karena sudah ada balon obrolan
-                existingBtn.style.display = 'none';
-            }
-        }
-
-        // ============================================
         // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR (OPTIMIZED)
         // ============================================
 
         async function deteksiDanKirimTidakMelapor() {
-            // Ambil bulan yang sedang dipilih
-            const selectedBulan = document.getElementById('selectedBulan')?.value || '';
+            // Ambil bulan yang sedang dipilih dari dropdown filter
             const filterTahun = document.getElementById('filterTahun')?.value || '';
+            let bulanTerpilih = '';
 
-            let bulanTerpilih = selectedBulan;
+            // Coba ambil dari selectedBulan (hidden input)
+            const selectedBulan = document.getElementById('selectedBulan')?.value || '';
 
-            // Jika tidak ada bulan yang dipilih, ambil dari filter tahun atau bulan terbaru
-            if (!bulanTerpilih && filterTahun) {
+            if (selectedBulan) {
+                bulanTerpilih = selectedBulan;
+            } else if (filterTahun) {
+                // Jika tidak ada bulan dipilih, cari bulan terbaru dari data
                 const bulanTerbaru = getBulanTerbaruDariData();
                 if (bulanTerbaru) {
                     bulanTerpilih = bulanTerbaru;
                 } else {
+                    // Fallback ke bulan saat ini
                     const now = new Date();
                     const bulanSaatIni = daftarBulan[now.getMonth()];
                     const tahunSaatIni = now.getFullYear();
@@ -7751,9 +8042,8 @@
                 await Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan',
-                    text: 'Silakan pilih tahun terlebih dahulu!',
-                    confirmButtonColor: '#3085d6',
-                    backdrop: true
+                    text: 'Tidak dapat menentukan periode laporan. Silakan pilih tahun terlebih dahulu!',
+                    confirmButtonColor: '#3085d6'
                 });
                 return;
             }
@@ -7767,11 +8057,10 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
                 <p><strong>Mendeteksi notaris yang belum melapor...</strong></p>
-                <p class="text-muted">Periode: <strong class="text-primary">${bulanTerpilih}</strong></p>
-                <div class="progress mt-3" style="height: 6px; border-radius: 10px;">
-                    <div id="deteksiProgress" class="progress-bar bg-primary" style="width: 0%; border-radius: 10px;"></div>
+                <p class="text-muted">Periode: <strong>${bulanTerpilih}</strong></p>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div id="deteksiProgress" class="progress-bar bg-primary" style="width: 0%;"></div>
                 </div>
-                <p id="deteksiStatus" class="text-muted mt-2 small">Memulai deteksi...</p>
             </div>
         `,
                 allowOutsideClick: false,
@@ -7779,24 +8068,22 @@
                 showConfirmButton: false
             });
 
-            // Update progress function
-            const updateProgress = (percent, message) => {
+            // Update progress
+            const updateProgress = (percent) => {
                 const progressBar = document.getElementById('deteksiProgress');
-                const statusText = document.getElementById('deteksiStatus');
                 if (progressBar) progressBar.style.width = `${percent}%`;
-                if (statusText && message) statusText.textContent = message;
             };
 
             try {
-                updateProgress(10, 'Mengambil data laporan...');
+                updateProgress(20);
 
                 // Ambil data laporan dari sheet
                 const dataLaporan = await getDataLaporanDariSheet();
-                updateProgress(30, 'Menganalisis data laporan...');
+                updateProgress(40);
 
-                // Ambil semua notaris (aktif, tidak pensiun)
+                // Ambil semua notaris aktif (belum pensiun)
                 const semuaNotaris = getAllNotarisFromDropdown(true);
-                updateProgress(50, `Memproses ${semuaNotaris.length} notaris...`);
+                updateProgress(60);
 
                 // Dapatkan notaris yang sudah lapor pada bulan tersebut
                 const sudahLaporSet = new Set();
@@ -7809,16 +8096,13 @@
                         }
                     });
                 }
-                updateProgress(75, `Mencari notaris yang belum lapor...`);
+                updateProgress(80);
 
                 // Filter notaris yang BELUM lapor
                 const belumLapor = semuaNotaris.filter(notaris =>
                     !sudahLaporSet.has(normalisasiNama(notaris.nama))
                 );
-                updateProgress(100, 'Selesai!');
-
-                // Delay sebentar agar user melihat progress selesai
-                await new Promise(resolve => setTimeout(resolve, 300));
+                updateProgress(100);
 
                 // Tutup loading
                 await loadingSwal.close();
@@ -7827,27 +8111,18 @@
                     await Swal.fire({
                         icon: 'success',
                         title: '🎉 Semua Notaris Sudah Melapor!',
-                        html: `
-                    <div class="text-center">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size: 48px;"></i>
-                        <p class="mt-3">Semua notaris sudah menyampaikan laporan untuk periode <strong>${bulanTerpilih}</strong>.</p>
-                    </div>
-                `,
+                        text: `Semua notaris sudah menyampaikan laporan untuk periode ${bulanTerpilih}.`,
                         confirmButtonColor: '#28a745',
                         backdrop: true
                     });
                     return;
                 }
 
-                // Tampilkan konfirmasi dengan daftar notaris yang belum lapor
+                // Tampilkan daftar notaris yang belum lapor dalam bentuk yang lebih menarik
                 let daftarHtml = `
             <div style="max-height: 450px; overflow-y: auto; border-radius: 12px;">
-                <div class="alert alert-warning mb-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <strong>Periode: ${bulanTerpilih}</strong>
-                </div>
                 <table class="table table-sm table-hover" style="font-size: 12px;">
-                    <thead class="table-danger" style="position: sticky; top: 0; z-index: 1;">
+                    <thead class="table-danger" style="position: sticky; top: 0;">
                         <tr>
                             <th style="width: 10%; text-align: center;">No</th>
                             <th style="width: 60%;">Nama Notaris & PPAT</th>
@@ -7859,7 +8134,7 @@
 
                 belumLapor.forEach((notaris, idx) => {
                     daftarHtml += `
-                <tr style="cursor: pointer;" onclick="copyNotarisInfo('${escapeHtml(notaris.nama)}', '${escapeHtml(notaris.id || '')}')" title="Klik untuk copy info">
+                <tr style="cursor: pointer;" onclick="copyNotarisInfo('${escapeHtml(notaris.nama)}', '${escapeHtml(notaris.id || '')}')">
                     <td class="text-center">${idx + 1}</td>
                     <td>
                         <strong>${escapeHtml(notaris.nama)}</strong>
@@ -7867,7 +8142,7 @@
                             <i class="bi bi-clipboard text-muted"></i>
                         </button>
                     </td>
-                    <td class="text-center"><code>${escapeHtml(notaris.id || '-')}</code></td>
+                    <td><code>${escapeHtml(notaris.id || '-')}</code></td>
                 </tr>
             `;
                 });
@@ -7875,17 +8150,31 @@
                 daftarHtml += `
                     </tbody>
                 </table>
-                <div class="alert alert-info mt-3 small">
-                    <i class="bi bi-info-circle-fill"></i> 
-                    <strong>Total: ${belumLapor.length} Notaris</strong> belum melapor
-                    <br><small class="text-muted">💡 Klik pada baris untuk menyalin info notaris</small>
-                </div>
+            </div>
+            <div class="alert alert-info mt-3 small">
+                <i class="bi bi-info-circle-fill"></i> 
+                <strong>Total: ${belumLapor.length} Notaris</strong> belum melapor untuk periode <strong>${bulanTerpilih}</strong>
             </div>
         `;
 
+                // Tampilkan modal konfirmasi dengan opsi pengiriman
                 const result = await Swal.fire({
                     title: `⚠️ ${belumLapor.length} Notaris Belum Melapor`,
-                    html: daftarHtml,
+                    html: `
+                <div class="text-start">
+                    <div class="alert alert-warning mb-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Periode: ${bulanTerpilih}</strong>
+                    </div>
+                    <p class="mb-2">Berikut daftar notaris yang belum menyampaikan laporan:</p>
+                    ${daftarHtml}
+                    <hr>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-lightbulb"></i> 
+                        Klik pada baris untuk menyalin info notaris
+                    </p>
+                </div>
+            `,
                     icon: 'warning',
                     width: '850px',
                     showCancelButton: true,
@@ -7895,8 +8184,7 @@
                     cancelButtonText: 'Tutup',
                     confirmButtonColor: '#25D366',
                     denyButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    backdrop: true
+                    cancelButtonColor: '#6c757d'
                 });
 
                 if (result.isConfirmed) {
@@ -7908,36 +8196,29 @@
                 }
 
                 // Update badge notifikasi
-                if (typeof updateNotifikasiBelumLapor === 'function') {
-                    await updateNotifikasiBelumLapor();
-                }
-                if (typeof updateWhatsAppBadge === 'function') {
-                    await updateWhatsAppBadge();
-                }
+                await updateNotifikasiBelumLapor();
+                await updateWhatsAppBadge();
 
             } catch (error) {
                 await loadingSwal.close();
-                console.error('Error detail:', error);
+                console.error('Error:', error);
                 await Swal.fire({
                     icon: 'error',
                     title: 'Terjadi Kesalahan',
-                    text: error.message || 'Gagal mendeteksi notaris yang belum melapor. Silakan coba lagi.',
+                    text: 'Gagal mendeteksi notaris yang belum melapor. Silakan coba lagi.',
                     confirmButtonColor: '#dc3545'
                 });
             }
         }
 
-        // ============================================
-        // FUNGSI COPY NOTARIS INFO
-        // ============================================
-
+        // Fungsi untuk copy info notaris
         function copyNotarisInfo(nama, id) {
             const text = `Nama: ${nama}\nID: ${id}`;
             copyToClipboard(text);
             Swal.fire({
                 icon: 'success',
                 title: 'Info Tersalin!',
-                text: `Info ${nama.substring(0, 40)}... telah disalin ke clipboard`,
+                text: `Info ${nama} telah disalin ke clipboard`,
                 timer: 1500,
                 showConfirmButton: false,
                 toast: true,
@@ -7945,34 +8226,26 @@
             });
         }
 
+        // Fungsi copy ke clipboard
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                console.log('Tersalin:', text.substring(0, 50));
+                console.log('Tersalin:', text);
             }).catch(err => {
                 console.error('Gagal copy:', err);
-                // Fallback
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
             });
         }
 
-        // ============================================
-        // FUNGSI KIRIM NOTIFIKASI WHATSAPP
-        // ============================================
-
+        // Fungsi untuk mengirim notifikasi WhatsApp ke notaris yang belum lapor
         async function kirimNotifikasiWABelumLapor(daftarNotaris, periode) {
+            // Tampilkan loading
             const loadingSwal = Swal.fire({
                 title: 'Memproses...',
                 html: `
             <div class="text-center">
                 <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
                 <p><strong>Menyiapkan daftar WhatsApp...</strong></p>
-                <div class="progress mt-3" style="height: 8px; border-radius: 10px;">
-                    <div id="waProgress" class="progress-bar bg-success" style="width: 0%; border-radius: 10px;"></div>
+                <div class="progress mt-3" style="height: 8px;">
+                    <div id="waProgress" class="progress-bar bg-success" style="width: 0%;"></div>
                 </div>
                 <p id="waProgressText" class="text-muted mt-2 small">Memeriksa nomor WhatsApp...</p>
             </div>
@@ -7982,11 +8255,11 @@
                 showConfirmButton: false
             });
 
-            const updateProgress = (percent, text) => {
+            const updateWAPercent = (percent, text) => {
                 const progressBar = document.getElementById('waProgress');
                 const progressText = document.getElementById('waProgressText');
                 if (progressBar) progressBar.style.width = `${percent}%`;
-                if (progressText && text) progressText.textContent = text;
+                if (progressText) progressText.textContent = text;
             };
 
             try {
@@ -7995,7 +8268,7 @@
                 for (let i = 0; i < daftarNotaris.length; i++) {
                     const notaris = daftarNotaris[i];
                     const persen = ((i + 1) / daftarNotaris.length * 80);
-                    updateProgress(persen, `Memeriksa ${i + 1}/${daftarNotaris.length}: ${notaris.nama.substring(0, 35)}...`);
+                    updateWAPercent(persen, `Memeriksa ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...`);
 
                     const nomorWa = await cariNomorWA(notaris.nama);
                     daftarWa.push({
@@ -8004,16 +8277,19 @@
                         nomor_wa: nomorWa
                     });
 
+                    // Delay kecil agar tidak overload
                     await new Promise(r => setTimeout(r, 100));
                 }
 
-                updateProgress(100, 'Selesai memeriksa!');
+                updateWAPercent(100, 'Selesai memeriksa!');
                 await new Promise(r => setTimeout(r, 500));
                 await loadingSwal.close();
 
+                // Filter notaris yang punya nomor WA
                 const punyaWa = daftarWa.filter(item => item.nomor_wa);
                 const tidakPunyaWa = daftarWa.filter(item => !item.nomor_wa);
 
+                // Buat daftar HTML
                 let daftarHtml = `
             <div class="mb-3">
                 <div class="alert alert-success">
@@ -8057,7 +8333,7 @@
                     </td>
                     <td class="text-center">
                         ${item.nomor_wa ?
-                            `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm" onclick="whatsappClicked('${escapeHtml(item.nama)}')">
+                            `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm">
                                 <i class="bi bi-whatsapp"></i> Kirim
                             </a>` :
                             `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')">
@@ -8074,7 +8350,7 @@
                 </table>
             </div>
             <div class="mt-3 text-center">
-                <button class="btn btn-outline-primary btn-sm" onclick="copyAllWANumbersFromTable()">
+                <button class="btn btn-outline-primary btn-sm" onclick="copyAllWANumbersFromModal()">
                     <i class="bi bi-clipboard"></i> Copy Semua Nomor WA
                 </button>
             </div>
@@ -8087,7 +8363,14 @@
                     width: '900px',
                     showCloseButton: true,
                     showConfirmButton: false,
-                    backdrop: true
+                    footer: `
+                <div class="w-100">
+                    <small class="text-muted">
+                        <i class="bi bi-lightbulb"></i> 
+                        Klik tombol WhatsApp untuk membuka chat, pesan sudah otomatis terisi
+                    </small>
+                </div>
+            `
                 });
 
             } catch (error) {
@@ -8102,79 +8385,19 @@
             }
         }
 
-        // Fungsi saat WhatsApp diklik
-        function whatsappClicked(nama) {
-            console.log(`WhatsApp dikirim ke: ${nama}`);
-            // Bisa ditambahkan tracking atau logging
-        }
-
-        // Fungsi copy semua nomor WA dari tabel
-        function copyAllWANumbersFromTable() {
-            const waNumbers = [];
-            const waElements = document.querySelectorAll('.swal2-html-container .badge.bg-success');
-
-            waElements.forEach(el => {
-                const text = el.innerText;
-                const match = text.match(/\d+/g);
-                if (match) {
-                    match.forEach(num => waNumbers.push(num));
-                }
-            });
-
-            if (waNumbers.length === 0) {
-                Swal.fire('Info', 'Tidak ada nomor WhatsApp yang tersedia', 'info');
-                return;
-            }
-
-            const textToCopy = waNumbers.join('\n');
-            copyToClipboard(textToCopy);
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: `${waNumbers.length} nomor WA telah dicopy`,
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
-
-        // Fungsi untuk mendapatkan bulan terbaru dari data
-        function getBulanTerbaruDariData() {
-            if (!allData || allData.length === 0) return null;
-
-            const bulanSet = new Set();
-            allData.forEach(row => {
-                const bulan = row["laporan_bulanan"];
-                if (bulan) bulanSet.add(bulan);
-            });
-
-            const bulanList = Array.from(bulanSet);
-            if (bulanList.length === 0) return null;
-
-            bulanList.sort((a, b) => {
-                const getDate = (str) => {
-                    const [bulan, tahun] = str.split(' ');
-                    const bulanIndex = daftarBulan.indexOf(bulan);
-                    return new Date(parseInt(tahun), bulanIndex);
-                };
-                return getDate(b) - getDate(a);
-            });
-
-            return bulanList[0];
-        }
-
-        // Fungsi untuk mengirim notifikasi ke notaris yang belum lapor
-        async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
+        // Fungsi untuk mengirim notifikasi email ke notaris yang belum lapor
+        async function kirimNotifikasiEmailBelumLapor(daftarNotaris, periode) {
             // Tampilkan loading dengan progress
-            Swal.fire({
-                title: 'Mengirim Notifikasi...',
+            const loadingSwal = Swal.fire({
+                title: 'Mengirim Notifikasi Email...',
                 html: `
             <div class="text-center">
-                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
-                <p><strong>Mengirim notifikasi ke ${daftarNotaris.length} notaris...</strong></p>
+                <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p><strong>Mengirim email ke ${daftarNotaris.length} notaris...</strong></p>
                 <div class="progress mt-3" style="height: 10px;">
-                    <div id="progressKirim" class="progress-bar bg-danger" style="width: 0%;"></div>
+                    <div id="emailProgress" class="progress-bar bg-danger" style="width: 0%;"></div>
                 </div>
-                <p id="progressText" class="text-muted mt-2 small">Memulai pengiriman...</p>
+                <p id="emailProgressText" class="text-muted mt-2 small">Memulai pengiriman...</p>
             </div>
         `,
                 allowOutsideClick: false,
@@ -8182,42 +8405,40 @@
                 showConfirmButton: false
             });
 
+            const updateEmailProgress = (percent, text) => {
+                const progressBar = document.getElementById('emailProgress');
+                const progressText = document.getElementById('emailProgressText');
+                if (progressBar) progressBar.style.width = `${percent}%`;
+                if (progressText) progressText.textContent = text;
+            };
+
             let sukses = 0;
             let gagal = 0;
             let lewati = 0;
 
             for (let i = 0; i < daftarNotaris.length; i++) {
                 const notaris = daftarNotaris[i];
-
-                // Update progress
                 const persen = ((i + 1) / daftarNotaris.length * 100);
-                const progressBar = document.getElementById('progressKirim');
-                const progressText = document.getElementById('progressText');
+                updateEmailProgress(persen, `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 40)}...`);
 
-                if (progressBar) progressBar.style.width = `${persen}%`;
-                if (progressText) progressText.textContent = `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 40)}...`;
-
-                // Cari email notaris dari data yang ada
+                // Cari email notaris
                 let emailNotaris = await cariEmailNotaris(notaris.nama);
 
-                // Jika email tidak ditemukan, minta input manual
                 if (!emailNotaris) {
-                    // Tutup loading sementara untuk menampilkan prompt
-                    Swal.close();
+                    // Minta input email manual
+                    await loadingSwal.close();
 
-                    // Tanya user untuk input email manual
                     const result = await Swal.fire({
                         title: `Email untuk ${notaris.nama.substring(0, 50)}`,
                         html: `
                     <div class="text-start">
-                        <p><strong>Notaris:</strong> ${notaris.nama}</p>
-                        <p><strong>ID:</strong> ${notaris.id || '-'}</p>
+                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
+                        <p><strong>ID:</strong> ${escapeHtml(notaris.id || '-')}</p>
                         <hr>
                         <label class="form-label">Masukkan Alamat Email:</label>
                         <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
                     </div>
                 `,
-                        input: 'text',
                         showCancelButton: true,
                         confirmButtonText: 'Kirim Email',
                         cancelButtonText: 'Lewati',
@@ -8241,15 +8462,15 @@
 
                     // Kembalikan loading
                     Swal.fire({
-                        title: 'Mengirim Notifikasi...',
+                        title: 'Mengirim Notifikasi Email...',
                         html: `
                     <div class="text-center">
-                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
-                        <p><strong>Mengirim notifikasi...</strong></p>
+                        <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+                        <p><strong>Melanjutkan pengiriman...</strong></p>
                         <div class="progress mt-3" style="height: 10px;">
-                            <div id="progressKirim" class="progress-bar bg-danger" style="width: ${persen}%;"></div>
+                            <div id="emailProgress" class="progress-bar bg-danger" style="width: ${persen}%;"></div>
                         </div>
-                        <p id="progressText" class="text-muted mt-2 small">Mengirim ke ${i + 1} dari ${daftarNotaris.length}...</p>
+                        <p id="emailProgressText" class="text-muted mt-2 small">Mengirim ke ${i + 1} dari ${daftarNotaris.length}...</p>
                     </div>
                 `,
                         allowOutsideClick: false,
@@ -8275,14 +8496,12 @@
                     gagal++;
                 }
 
-                // Delay agar tidak overload
                 await new Promise(r => setTimeout(r, 500));
             }
 
-            // Tutup loading dan tampilkan hasil
-            Swal.close();
+            await loadingSwal.close();
 
-            Swal.fire({
+            await Swal.fire({
                 icon: sukses > 0 ? 'success' : 'warning',
                 title: 'Pengiriman Selesai',
                 html: `
@@ -8291,428 +8510,94 @@
                 <hr>
                 <p>📧 <span class="text-success fw-bold">${sukses}</span> Email berhasil dikirim</p>
                 <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal/Kirim dibatalkan</p>
-                <hr>
-                <p class="text-muted small">*Email dikirim ke alamat yang dimasukkan.</p>
+                ${lewati > 0 ? `<p>⏭️ <span class="text-warning fw-bold">${lewati}</span> Dilewati</p>` : ''}
             </div>
         `,
                 confirmButtonColor: '#28a745'
             });
-
-            // Refresh data untuk update badge notifikasi
-            await updateNotifikasiBelumLapor();
         }
 
-        // Fungsi untuk mencari email notaris
-        async function cariEmailNotaris(namaNotaris) {
-            // Coba cari dari data laporan yang ada
-            const dataLaporan = await getDataLaporanDariSheet();
+        // Fungsi kirim email notifikasi
+        async function kirimEmailNotifikasi(notaris, periode, email) {
+            const url = `${scriptURL}?action=kirim_email_notifikasi`
+                + `&email=${encodeURIComponent(email)}`
+                + `&nama=${encodeURIComponent(notaris.nama)}`
+                + `&id=${encodeURIComponent(notaris.id || '')}`
+                + `&periode=${encodeURIComponent(periode)}`
+                + `&t=${Date.now()}`;
 
-            // Cari email dari data laporan sebelumnya
-            for (const laporan of dataLaporan) {
-                if (laporan["nama_notaris_&_ppat"] === namaNotaris && laporan["email"]) {
-                    return laporan["email"];
-                }
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.result !== "success") {
+                throw new Error(result.message || 'Gagal mengirim email');
             }
 
-            // Jika tidak ditemukan, coba dari data notaris di dropdown
-            const semuaNotaris = getAllNotarisFromDropdown(false);
-            const notaris = semuaNotaris.find(n => n.nama === namaNotaris);
-            if (notaris && notaris.email) {
-                return notaris.email;
-            }
-
-            return null;
+            return result;
         }
 
-        // Fungsi untuk mengirim notifikasi via WhatsApp
-        async function kirimNotifikasiBelumLapor(daftarNotaris, periode) {
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Memproses...',
-                text: 'Menyiapkan daftar notaris...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
+        // Fungsi untuk copy semua nomor WA dari modal
+        function copyAllWANumbersFromModal() {
+            const waNumbers = [];
+            const waElements = document.querySelectorAll('.swal2-html-container .badge.bg-success');
+
+            waElements.forEach(el => {
+                const text = el.innerText;
+                const match = text.match(/\d+/);
+                if (match) waNumbers.push(match[0]);
             });
 
-            let daftarWa = [];
-
-            // Cari nomor WA untuk setiap notaris
-            for (let i = 0; i < daftarNotaris.length; i++) {
-                const notaris = daftarNotaris[i];
-
-                // Cari nomor WA dari data laporan atau sheet NOTARIS
-                let nomorWa = await cariNomorWA(notaris.nama);
-
-                daftarWa.push({
-                    nama: notaris.nama,
-                    id: notaris.id,
-                    nomor_wa: nomorWa
-                });
-            }
-
-            Swal.close();
-
-            // Tampilkan daftar notaris dengan nomor WA
-            let daftarHtml = `
-        <div style="max-height: 500px; overflow-y: auto; font-size: 12px;">
-            <table class="table table-sm table-hover" style="font-size: 12px;">
-                <thead class="table-primary">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Notaris</th>
-                        <th>Nomor WA</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-
-            daftarWa.forEach((item, idx) => {
-                const waUrl = item.nomor_wa ? `https://wa.me/${item.nomor_wa}?text=${encodeURIComponent(generateWAMessage(item.nama, periode))}` : '#';
-                const waStatus = item.nomor_wa ? '✅ Ada' : '❌ Tidak ada';
-
-                daftarHtml += `
-            <tr>
-                <td class="text-center">${idx + 1}</td>
-                <td><strong>${escapeHtml(item.nama)}</strong><br><small class="text-muted">${item.id}</small></td>
-                <td class="text-center">
-                    ${item.nomor_wa ? `<code>${item.nomor_wa}</code>` : '<span class="text-danger">-</span>'}
-                </td>
-                <td class="text-center">
-                    ${item.nomor_wa ?
-                        `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm" style="padding: 4px 10px;">
-                            <i class="bi bi-whatsapp"></i> Kirim WA
-                         </a>` :
-                        `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')" style="padding: 4px 10px;">
-                            <i class="bi bi-pencil"></i> Input No
-                         </button>`
-                    }
-                </td>
-            </tr>
-        `;
-            });
-
-            daftarHtml += `
-                </tbody>
-            </table>
-            <hr>
-            <div class="alert alert-info small">
-                <i class="bi bi-info-circle"></i> 
-                <strong>Petunjuk:</strong><br>
-                1. Klik tombol <i class="bi bi-whatsapp text-success"></i> <strong>Kirim WA</strong> untuk membuka WhatsApp<br>
-                2. Pesan akan otomatis terisi, tinggal kirim<br>
-                3. Jika nomor tidak ada, klik <strong>Input No</strong> untuk mengisi nomor WA
-            </div>
-        </div>
-    `;
-
-            const result = await Swal.fire({
-                title: `📱 Kirim Notifikasi WhatsApp`,
-                html: daftarHtml,
-                icon: 'info',
-                width: '900px',
-                showCloseButton: true,
-                showConfirmButton: false,
-                footer: '<button class="btn btn-primary" onclick="copySemuaNomorWA()"><i class="bi bi-clipboard"></i> Copy Semua Nomor WA</button>'
-            });
-        }
-
-        // Fungsi generate pesan WhatsApp
-        function generateWAMessage(nama, periode) {
-            return `*📢 PEMBERITAHUAN PERIODE ${periode}*
-
-Kepada Yth.🔗 *${nama}*
-di Tempat
-
-Kami dari *Badan Pendapatan Daerah Kota Bengkulu* mengingatkan bahwa laporan bulanan untuk periode *${periode}* belum kami terima sampai saat ini sistem aku memproeses secara otomatis .
-
-Sistem kami mendeteksi otomatis:
-• Terlambat menyampaikan laporan
-• Tidak menyampaikan laporan
-
-Silakan cek 📧 *Email* Anda untuk mengetahui:
-1. Surat Pemberitahuan Denda
-2. Surat Tagihan Denda (STD)
-
-Atas perhatian dan kerjasama yang baik terimakasih.
-
-*Hormat kami,*
-Bidang Pengendalian dan Evaluasi Pendapatan Daerah
-Bapenda Kota Bengkulu
-
-_*Pesan ini dikirim secara otomatis oleh sistem, tidak perlu dibalas*_`;
-        }
-        // Fungsi mencari nomor WA notaris
-        async function cariNomorWA(namaNotaris) {
-            // Coba cari dari data laporan
-            const dataLaporan = await getDataLaporanDariSheet();
-            for (const laporan of dataLaporan) {
-                if (laporan["nama_notaris_&_ppat"] === namaNotaris && laporan["nomor_wa"]) {
-                    return laporan["nomor_wa"];
-                }
-            }
-
-            // Coba cari dari sheet NOTARIS via API
-            try {
-                const response = await fetch(`${scriptURL}?action=get_nomor_wa&nama=${encodeURIComponent(namaNotaris)}`);
-                const result = await response.json();
-                if (result.nomor_wa) {
-                    return result.nomor_wa;
-                }
-            } catch (error) {
-                console.error("Gagal ambil nomor WA:", error);
-            }
-
-            return null;
-        }
-
-        // Fungsi input nomor WA manual
-        async function inputNomorWA(nama, id) {
-            const { value: nomorWa } = await Swal.fire({
-                title: `Input Nomor WhatsApp`,
-                html: `
-            <div class="text-start">
-                <p><strong>Notaris:</strong> ${nama}</p>
-                <p><strong>ID:</strong> ${id}</p>
-                <hr>
-                <label class="form-label">Nomor WhatsApp (format: 628xxxxxxxxxx):</label>
-                <input type="tel" id="nomorWaInput" class="form-control" placeholder="Contoh: 6281234567890">
-                <small class="text-muted">*Gunakan kode negara 62, tanpa tanda + atau 0 di awal</small>
-            </div>
-        `,
-                showCancelButton: true,
-                confirmButtonText: 'Simpan',
-                preConfirm: () => {
-                    const nomor = document.getElementById('nomorWaInput').value;
-                    if (!nomor) {
-                        Swal.showValidationMessage('Nomor WA harus diisi!');
-                        return false;
-                    }
-                    if (!/^62\d{9,13}$/.test(nomor)) {
-                        Swal.showValidationMessage('Format nomor salah! Gunakan format 628xxxxxxxxxx');
-                        return false;
-                    }
-                    return nomor;
-                }
-            });
-
-            if (nomorWa) {
-                // Simpan nomor WA ke sheet NOTARIS
-                const response = await fetch(`${scriptURL}?action=simpan_nomor_wa&id=${encodeURIComponent(id)}&nomor=${encodeURIComponent(nomorWa)}`);
-                const result = await response.json();
-
-                if (result.success) {
-                    Swal.fire('Berhasil!', `Nomor WA ${nama} berhasil disimpan`, 'success');
-                    // Refresh daftar
-                    deteksiDanKirimTidakMelapor();
-                } else {
-                    Swal.fire('Gagal!', result.message, 'error');
-                }
-            }
-        }
-
-        // Copy semua nomor WA ke clipboard
-        function copySemuaNomorWA() {
-            // Ambil semua nomor WA dari tabel
-            const nomorElements = document.querySelectorAll('#swal2-html-container code');
-            const nomorList = Array.from(nomorElements).map(el => el.innerText).filter(n => n && n !== '-');
-
-            if (nomorList.length === 0) {
-                Swal.fire('Info', 'Tidak ada nomor WA yang tersedia', 'info');
+            if (waNumbers.length === 0) {
+                Swal.fire('Info', 'Tidak ada nomor WhatsApp yang tersedia', 'info');
                 return;
             }
 
-            const textToCopy = nomorList.join('\n');
+            const textToCopy = waNumbers.join('\n');
             navigator.clipboard.writeText(textToCopy);
-            Swal.fire('Berhasil!', `${nomorList.length} nomor WA telah dicopy`, 'success');
-        }
-
-        // Tampilkan tombol hanya untuk ADMIN
-        // Tambahkan di dalam DOMContentLoaded setelah cek role
-        if (currentUserRole === 'admin') {
-            const btnContainer = document.getElementById('btnBelumLaporContainer');
-            if (btnContainer) {
-                btnContainer.style.display = 'block';
-            }
-        }
-
-        // Tampilkan tombol deteksi otomatis hanya untuk ADMIN
-        if (currentUserRole === 'admin') {
-            const btnDeteksi = document.getElementById('btnDeteksiOtomatisContainer');
-            if (btnDeteksi) {
-                btnDeteksi.style.display = 'block';
-            }
-        }
-
-        async function deteksiOtomatisTidakLapor() {
-            // Tampilkan dialog untuk input bulan dan tahun
-            const { value: formValues } = await Swal.fire({
-                title: 'Deteksi Notaris Tidak Melapor',
-                html: `
-            <div class="text-start">
-                <p>Deteksi notaris yang belum menyampaikan laporan pada periode tertentu.</p>
-                <label class="form-label mt-2">Pilih Bulan Laporan:</label>
-                <select id="swal-bulan" class="form-select">
-                    <option value="">-- Pilih Bulan --</option>
-                    <option value="Januari">Januari</option>
-                    <option value="Februari">Februari</option>
-                    <option value="Maret">Maret</option>
-                    <option value="April">April</option>
-                    <option value="Mei">Mei</option>
-                    <option value="Juni">Juni</option>
-                    <option value="Juli">Juli</option>
-                    <option value="Agustus">Agustus</option>
-                    <option value="September">September</option>
-                    <option value="Oktober">Oktober</option>
-                    <option value="November">November</option>
-                    <option value="Desember">Desember</option>
-                </select>
-                <label class="form-label mt-2">Tahun:</label>
-                <input type="number" id="swal-tahun" class="form-control" placeholder="Contoh: 2026" value="2026">
-            </div>
-        `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Preview Daftar',
-                cancelButtonText: 'Batal',
-                preConfirm: () => {
-                    return {
-                        bulan: document.getElementById('swal-bulan').value,
-                        tahun: document.getElementById('swal-tahun').value
-                    };
-                }
-            });
-
-            if (!formValues) return;
-            if (!formValues.bulan) {
-                Swal.fire('Peringatan', 'Silakan pilih bulan terlebih dahulu!', 'warning');
-                return;
-            }
-
-            const bulan = formValues.bulan;
-            const tahun = formValues.tahun;
-
-            // Tampilkan loading
             Swal.fire({
-                title: 'Memproses...',
-                text: 'Mendeteksi notaris yang tidak melapor...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
+                icon: 'success',
+                title: 'Berhasil!',
+                text: `${waNumbers.length} nomor WA telah dicopy`,
+                timer: 2000,
+                showConfirmButton: false
             });
+        }
+
+        // Update badge WhatsApp
+        async function updateWhatsAppBadge() {
+            const badge = document.getElementById('whatsappBadge');
+            if (!badge) return;
 
             try {
-                // Panggil preview untuk mendapatkan daftar lengkap (termasuk ID dan Alamat)
-                let url = `${scriptURL}?action=preview_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
-                const response = await fetch(url);
-                const text = await response.text();
-                const result = JSON.parse(text);
+                const dataLaporan = await getDataLaporanDariSheet();
+                const semuaNotaris = getAllNotarisFromDropdown(true);
+                const bulanTerbaru = getBulanTerbaruDariData();
 
-                try {
-                    result = JSON.parse(text);
-                } catch (e) {
-                    throw new Error("Server bukan JSON: " + text);
-                }
+                let jumlahBelumLapor = 0;
 
-                Swal.close();
-
-                if (result.success && result.preview) {
-                    let daftarHtml = '';
-                    if (result.totalTidakLapor > 0) {
-                        // TAMPILKAN TABEL LENGKAP DENGAN UKURAN HURUF KECIL
-                        daftarHtml = `
-                    <div style="max-height: 400px; overflow-y: auto; margin-top: 15px; font-size: 11px;">
-                        <table class="table table-sm table-hover" style="font-size: 11px;">
-                            <thead class="table-danger" style="font-size: 11px;">
-                                <tr>
-                                    <th style="width: 5%; font-size: 11px;">No</th>
-                                    <th style="width: 40%; font-size: 11px;">Nama Notaris & PPAT</th>
-                                    <th style="width: 15%; font-size: 11px;">Nomor Unik</th>
-                                    <th style="width: 40%; font-size: 11px;">Alamat Kantor</th>
-                                </tr>
-                            </thead>
-                            <tbody style="font-size: 11px;">
-                                ${result.daftarTidakLapor.map((item, idx) => `
-                                    <tr>
-                                        <td style="text-align: center; font-size: 11px;">${idx + 1}</td>
-                                        <td style="font-size: 11px;"><strong>${escapeHtml(item.nama || item)}</strong></td>
-                                        <td style="text-align: center; font-size: 11px;"><code style="font-size: 10px;">${escapeHtml(item.id || '-')}</code></td>
-                                        <td style="font-size: 11px;"><small style="font-size: 10px;">${escapeHtml((item.alamat || '').substring(0, 60))}${(item.alamat || '').length > 60 ? '...' : ''}</small></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                    } else {
-                        daftarHtml = '<p class="text-success" style="font-size: 12px;">✅ Semua notaris sudah melapor!</p>';
-                    }
-
-                    // TAMPILKAN KONFIRMASI SEBELUM MENAMBAHKAN DATA
-                    const confirmResult = await Swal.fire({
-                        title: result.totalTidakLapor > 0 ? `⚠️ ${result.totalTidakLapor} Notaris Belum Melapor` : 'Informasi',
-                        html: `
-                    <div class="text-start" style="font-size: 12px;">
-                        <p style="font-size: 12px;"><strong>Periode yang dideteksi:</strong> ${result.targetBulan}</p>
-                        <p style="font-size: 12px;"><strong>Tanggal Akhir Bulan:</strong> ${result.tanggalAkhir}</p>
-                        <hr style="margin: 8px 0;">
-                        ${daftarHtml}
-                        <hr style="margin: 8px 0;">
-                        <p class="text-muted small" style="font-size: 10px;">*Data notaris yang belum lapor akan ditambahkan ke sistem dengan status "Tidak Menyampaikan Laporan".</p>
-                    </div>
-                `,
-                        icon: result.totalTidakLapor > 0 ? 'warning' : 'success',
-                        showCancelButton: result.totalTidakLapor > 0,
-                        confirmButtonText: result.totalTidakLapor > 0 ? 'Ya, Tambahkan Data' : 'OK',
-                        cancelButtonText: 'Batal',
-                        confirmButtonColor: '#28a745',
-                        cancelButtonColor: '#dc3545',
-                        width: '900px'
+                if (bulanTerbaru && dataLaporan) {
+                    const sudahLapor = new Set();
+                    dataLaporan.forEach(laporan => {
+                        if (laporan["laporan_bulanan"] === bulanTerbaru) {
+                            sudahLapor.add(normalisasiNama(laporan["nama_notaris_&_ppat"]));
+                        }
                     });
 
-                    // JIKA USER KONFIRMASI, BARU TAMBAHKAN DATA
-                    if (confirmResult.isConfirmed && result.totalTidakLapor > 0) {
-                        // Tampilkan loading lagi
-                        Swal.fire({
-                            title: 'Menambahkan Data...',
-                            text: 'Sedang menambahkan data notaris yang tidak melapor...',
-                            allowOutsideClick: false,
-                            didOpen: () => { Swal.showLoading(); }
-                        });
-
-                        // Panggil action deteksi_tidak_lapor untuk benar-benar menambahkan data
-                        const addUrl = `${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
-                        const addResponse = await fetch(addUrl);
-                        const addResult = await addResponse.json();
-
-                        Swal.close();
-
-                        if (addResult.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Selesai!',
-                                html: `
-                            <p style="font-size: 13px;"><strong>Periode:</strong> ${addResult.targetBulan}</p>
-                            <p style="font-size: 13px;"><strong>Total Notaris Ditambahkan:</strong> ${addResult.totalTidakLapor}</p>
-                        `,
-                                confirmButtonColor: '#28a745'
-                            });
-
-                            // Refresh tabel dashboard
-                            if (typeof loadDataSheet === 'function') {
-                                loadDataSheet();
-                            }
-                        } else {
-                            Swal.fire('Gagal!', addResult.message || 'Terjadi kesalahan', 'error');
-                        }
-                    }
-                } else {
-                    Swal.fire('Error', result.message || 'Terjadi kesalahan', 'error');
+                    jumlahBelumLapor = semuaNotaris.filter(notaris =>
+                        !sudahLapor.has(normalisasiNama(notaris.nama))
+                    ).length;
                 }
 
+                badge.textContent = jumlahBelumLapor;
+
+                if (jumlahBelumLapor === 0) {
+                    badge.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                } else {
+                    badge.style.background = 'linear-gradient(135deg, #ff4757, #ff6b81)';
+                    badge.style.animation = 'bounce 1s ease infinite';
+                }
             } catch (error) {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire('Error Koneksi', 'Gagal terhubung ke server. Silakan coba lagi.', 'error');
+                console.error('Gagal update badge:', error);
             }
         }
 
