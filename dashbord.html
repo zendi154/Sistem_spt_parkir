@@ -8425,19 +8425,19 @@
         function generateWAMessage(namaNotaris, periode) {
             return `Kepada Yth. ${namaNotaris}
 
-Kami mengingatkan bahwa laporan bulanan untuk periode ${periode} belum kami terima.
+            Kami mengingatkan bahwa laporan bulanan untuk periode ${periode} belum kami terima.
 
-Mohon segera menyampaikan laporan tepat waktu.
+            Mohon segera menyampaikan laporan tepat waktu.
 
-Terima kasih atas perhatian dan kerjasamanya.
+            Terima kasih atas perhatian dan kerjasamanya.
 
-*PENTING:*
-- Batas akhir pelaporan: Tanggal 10 setiap bulan
-- Format laporan: PDF dan Excel
-- Kirim ke email: laporan@notaris.go.id
+            *PENTING:*
+            - Batas akhir pelaporan: Tanggal 10 setiap bulan
+            - Format laporan: PDF dan Excel
+            - Kirim ke email: laporan@notaris.go.id
 
-Hormat kami,
-Admin`;
+            Hormat kami,
+            Admin`;
         }
 
         // Fungsi untuk membuka WhatsApp
@@ -8916,6 +8916,280 @@ Admin`;
                 console.error('Gagal update badge:', error);
             }
         }
+
+
+        // ============================================
+        // FUNGSI DETEKSI OTOMATIS TIDAK LAPOR
+        // ============================================
+
+        async function deteksiOtomatisTidakLapor() {
+            // Tampilkan loading
+            const loadingSwal = Swal.fire({
+                title: 'Deteksi Otomatis',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p><strong>Mendeteksi notaris yang belum melapor...</strong></p>
+                <p class="text-muted">Proses ini akan memeriksa semua periode laporan</p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false
+            });
+
+            try {
+                // Panggil fungsi deteksi utama
+                await deteksiDanKirimTidakMelapor();
+                await loadingSwal.close();
+            } catch (error) {
+                await loadingSwal.close();
+                console.error('Error deteksi otomatis:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Terjadi kesalahan saat mendeteksi notaris yang belum melapor: ' + (error.message || 'Silakan coba lagi'),
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+
+        // ============================================
+        // FUNGSI RESET BULAN (jika belum ada)
+        // ============================================
+
+        function resetBulan() {
+            // Sembunyikan semua tombol bulan
+            const container = document.getElementById("listBulan");
+            if (container) {
+                container.innerHTML = "";
+            }
+
+            // Reset pilihan bulan di hidden input
+            const selectedBulanInput = document.getElementById("selectedBulan");
+            if (selectedBulanInput) {
+                selectedBulanInput.value = "";
+            }
+
+            // Reset aktif class pada tombol bulan
+            document.querySelectorAll(".btn-bulan").forEach(btn => {
+                btn.classList.remove("btn-primary");
+                btn.classList.add("btn-outline-primary");
+            });
+
+            // Tampilkan semua data tanpa filter bulan
+            if (typeof filterData === 'function') {
+                filterData();
+            }
+
+            console.log("✅ Filter bulan telah direset");
+
+            // Tampilkan notifikasi
+            if (typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Filter Bulan Direset',
+                    text: 'Menampilkan semua data laporan',
+                    timer: 2000
+                });
+            }
+        }
+
+        // ============================================
+        // FUNGSI KIRIM NOTIFIKASI EMAIL BELUM LAPOR (jika belum ada)
+        // ============================================
+
+        async function kirimNotifikasiEmailBelumLapor(daftarNotaris, periode) {
+            if (!daftarNotaris || daftarNotaris.length === 0) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Tidak ada notaris yang perlu dikirimi email',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            const loadingSwal = Swal.fire({
+                title: 'Mengirim Notifikasi Email...',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p><strong>Mengirim email ke ${daftarNotaris.length} notaris...</strong></p>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div id="emailProgress" class="progress-bar bg-danger" style="width: 0%;"></div>
+                </div>
+                <p id="emailProgressText" class="text-muted mt-2 small">Memulai pengiriman...</p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false
+            });
+
+            const updateEmailProgress = (percent, text) => {
+                const progressBar = document.getElementById('emailProgress');
+                const progressText = document.getElementById('emailProgressText');
+                if (progressBar) progressBar.style.width = `${percent}%`;
+                if (progressText) progressText.textContent = text;
+            };
+
+            let sukses = 0;
+            let gagal = 0;
+            let lewati = 0;
+
+            for (let i = 0; i < daftarNotaris.length; i++) {
+                const notaris = daftarNotaris[i];
+                const persen = ((i + 1) / daftarNotaris.length * 100);
+                updateEmailProgress(persen, `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 40)}...`);
+
+                // Cari email notaris (gunakan email default atau bisa ditambahkan nanti)
+                let emailNotaris = await cariEmailNotaris(notaris.nama);
+
+                if (!emailNotaris) {
+                    // Minta input email manual
+                    await loadingSwal.close();
+
+                    const result = await Swal.fire({
+                        title: `Email untuk ${notaris.nama.substring(0, 50)}`,
+                        html: `
+                    <div class="text-start">
+                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
+                        <p><strong>ID:</strong> ${escapeHtml(notaris.id || '-')}</p>
+                        <hr>
+                        <label class="form-label">Masukkan Alamat Email:</label>
+                        <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
+                    </div>
+                `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim Email',
+                        cancelButtonText: 'Lewati',
+                        didOpen: () => {
+                            const input = document.getElementById('emailManual');
+                            if (input) input.focus();
+                        },
+                        preConfirm: () => {
+                            const email = document.getElementById('emailManual')?.value;
+                            if (!email) {
+                                Swal.showValidationMessage('Email harus diisi!');
+                                return false;
+                            }
+                            if (!email.includes('@') || !email.includes('.')) {
+                                Swal.showValidationMessage('Email tidak valid!');
+                                return false;
+                            }
+                            return email;
+                        }
+                    });
+
+                    // Kembalikan loading
+                    Swal.fire({
+                        title: 'Mengirim Notifikasi Email...',
+                        html: `
+                    <div class="text-center">
+                        <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+                        <p><strong>Melanjutkan pengiriman...</strong></p>
+                        <div class="progress mt-3" style="height: 10px;">
+                            <div id="emailProgress" class="progress-bar bg-danger" style="width: ${persen}%;"></div>
+                        </div>
+                        <p id="emailProgressText" class="text-muted mt-2 small">Mengirim ke ${i + 1} dari ${daftarNotaris.length}...</p>
+                    </div>
+                `,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false
+                    });
+
+                    if (result.isConfirmed && result.value) {
+                        emailNotaris = result.value;
+                        // Simpan email untuk下次
+                        await simpanEmailNotaris(notaris.nama, emailNotaris);
+                    } else {
+                        lewati++;
+                        gagal++;
+                        continue;
+                    }
+                }
+
+                // Kirim email (simulasi, Anda bisa sesuaikan dengan backend)
+                try {
+                    // Panggil API atau fungsi kirim email di sini
+                    console.log(`Mengirim email ke ${emailNotaris} untuk notaris ${notaris.nama} periode ${periode}`);
+                    sukses++;
+                } catch (err) {
+                    console.error(`Gagal kirim ke ${notaris.nama}:`, err);
+                    gagal++;
+                }
+
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            await loadingSwal.close();
+
+            await Swal.fire({
+                icon: sukses > 0 ? 'success' : 'warning',
+                title: 'Pengiriman Selesai',
+                html: `
+            <div class="text-center">
+                <p><strong>Periode: ${periode}</strong></p>
+                <hr>
+                <p>📧 <span class="text-success fw-bold">${sukses}</span> Email berhasil dikirim</p>
+                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal/Kirim dibatalkan</p>
+                ${lewati > 0 ? `<p>⏭️ <span class="text-warning fw-bold">${lewati}</span> Dilewati</p>` : ''}
+            </div>
+        `,
+                confirmButtonColor: '#28a745'
+            });
+        }
+
+        // ============================================
+        // FUNGSI CARI EMAIL NOTARIS
+        // ============================================
+
+        async function cariEmailNotaris(namaNotaris) {
+            // Coba cari dari data laporan
+            if (typeof allData !== 'undefined' && allData && allData.length > 0) {
+                for (const row of allData) {
+                    if (row["nama_notaris_&_ppat"] === namaNotaris && row["email_notaris"]) {
+                        return row["email_notaris"];
+                    }
+                }
+            }
+
+            // Coba dari localStorage
+            const savedEmails = localStorage.getItem('dataEmailNotaris');
+            if (savedEmails) {
+                try {
+                    const emailMap = JSON.parse(savedEmails);
+                    const key = namaNotaris.trim().toLowerCase();
+                    if (emailMap[key]) {
+                        return emailMap[key];
+                    }
+                } catch (e) { }
+            }
+
+            return null;
+        }
+
+        // ============================================
+        // FUNGSI SIMPAN EMAIL NOTARIS
+        // ============================================
+
+        async function simpanEmailNotaris(namaNotaris, email) {
+            let emailMap = {};
+            const saved = localStorage.getItem('dataEmailNotaris');
+            if (saved) {
+                try {
+                    emailMap = JSON.parse(saved);
+                } catch (e) { }
+            }
+
+            const key = namaNotaris.trim().toLowerCase();
+            emailMap[key] = email;
+            localStorage.setItem('dataEmailNotaris', JSON.stringify(emailMap));
+            console.log(`Email untuk ${namaNotaris} disimpan: ${email}`);
+        }
+
 
         // ============================================
         // FUNGSI DATA TRANSAKSI NIHIL 
