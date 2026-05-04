@@ -8018,6 +8018,10 @@
         // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR (OPTIMIZED)
         // ============================================
 
+        // ============================================
+        // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR (OPTIMIZED)
+        // ============================================
+
         async function deteksiDanKirimTidakMelapor() {
             // Ambil bulan yang sedang dipilih dari dropdown filter
             const filterTahun = document.getElementById('filterTahun')?.value || '';
@@ -8122,7 +8126,7 @@
                     return;
                 }
 
-                // Tampilkan daftar notaris yang belum lapor dalam bentuk yang lebih menarik
+                // Tampilkan daftar notaris yang belum lapor
                 let daftarHtml = `
             <div style="max-height: 450px; overflow-y: auto; border-radius: 12px;">
                 <table class="table table-sm table-hover" style="font-size: 12px;">
@@ -8161,7 +8165,7 @@
             </div>
         `;
 
-                // Tampilkan modal konfirmasi dengan opsi pengiriman
+                // Tampilkan modal konfirmasi
                 const result = await Swal.fire({
                     title: `⚠️ ${belumLapor.length} Notaris Belum Melapor`,
                     html: `
@@ -8184,7 +8188,6 @@
                     showCancelButton: true,
                     showDenyButton: true,
                     confirmButtonText: '<i class="bi bi-whatsapp"></i> Kirim WA',
-                    denyButtonText: '<i class="bi bi-envelope-paper"></i> Kirim Email',
                     cancelButtonText: 'Tutup',
                     confirmButtonColor: '#25D366',
                     denyButtonColor: '#dc3545',
@@ -8199,10 +8202,6 @@
                     await kirimNotifikasiEmailBelumLapor(belumLapor, bulanTerpilih);
                 }
 
-                // Update badge notifikasi
-                await updateNotifikasiBelumLapor();
-                await updateWhatsAppBadge();
-
             } catch (error) {
                 await loadingSwal.close();
                 console.error('Error:', error);
@@ -8215,32 +8214,132 @@
             }
         }
 
-        // Fungsi untuk copy info notaris
-        function copyNotarisInfo(nama, id) {
-            const text = `Nama: ${nama}\nID: ${id}`;
-            copyToClipboard(text);
-            Swal.fire({
-                icon: 'success',
-                title: 'Info Tersalin!',
-                text: `Info ${nama} telah disalin ke clipboard`,
-                timer: 1500,
-                showConfirmButton: false,
-                toast: true,
-                position: 'top-end'
-            });
+        // ============================================
+        // FUNGSI WHATSAPP YANG DIPERBAIKI
+        // ============================================
+
+        // Data nomor WhatsApp (simpan di localStorage atau database)
+        let dataNomorWA = {};
+
+        // Load data nomor WA dari localStorage saat halaman dimuat
+        function loadDataNomorWA() {
+            const saved = localStorage.getItem('dataNomorWA');
+            if (saved) {
+                dataNomorWA = JSON.parse(saved);
+            }
         }
 
-        // Fungsi copy ke clipboard
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                console.log('Tersalin:', text);
-            }).catch(err => {
-                console.error('Gagal copy:', err);
-            });
+        // Simpan data nomor WA ke localStorage
+        function saveDataNomorWA() {
+            localStorage.setItem('dataNomorWA', JSON.stringify(dataNomorWA));
         }
 
-        // Fungsi untuk mengirim notifikasi WhatsApp ke notaris yang belum lapor
+        // Fungsi untuk mencari nomor WA berdasarkan nama notaris
+        async function cariNomorWA(namaNotaris) {
+            // Normalisasi nama untuk key
+            const key = namaNotaris.trim().toLowerCase();
+
+            // Cek di memory
+            if (dataNomorWA[key]) {
+                return dataNomorWA[key];
+            }
+
+            // Coba ambil dari atribut data di dropdown notaris
+            const dropdownNotaris = document.getElementById('notaris');
+            if (dropdownNotaris) {
+                const options = dropdownNotaris.options;
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+                    if (option.text === namaNotaris && option.dataset.wa) {
+                        const nomor = option.dataset.wa;
+                        if (nomor) {
+                            dataNomorWA[key] = nomor;
+                            saveDataNomorWA();
+                            return nomor;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // Fungsi untuk menyimpan nomor WA
+        async function simpanNomorWA(namaNotaris, nomorWA) {
+            // Bersihkan nomor WA (hapus spasi, strip, plus)
+            let cleaned = nomorWA.replace(/[^0-9]/g, '');
+
+            // Jika dimulai dengan 0, ganti dengan 62
+            if (cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+            // Jika tidak dimulai dengan 62 dan bukan 62, tambahkan 62
+            else if (!cleaned.startsWith('62')) {
+                cleaned = '62' + cleaned;
+            }
+
+            const key = namaNotaris.trim().toLowerCase();
+            dataNomorWA[key] = cleaned;
+            saveDataNomorWA();
+
+            // Update juga atribut di dropdown jika ada
+            const dropdownNotaris = document.getElementById('notaris');
+            if (dropdownNotaris) {
+                const options = dropdownNotaris.options;
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].text === namaNotaris) {
+                        options[i].dataset.wa = cleaned;
+                        break;
+                    }
+                }
+            }
+
+            return cleaned;
+        }
+
+        // Fungsi untuk generate pesan WhatsApp
+        function generateWAMessage(namaNotaris, periode) {
+            const pesan = `Kepada Yth. ${namaNotaris}
+
+Kami mengingatkan bahwa laporan bulanan untuk periode ${periode} belum kami terima.
+
+Mohon segera menyampaikan laporan tepat waktu.
+
+Terima kasih atas perhatian dan kerjasamanya.
+
+*PENTING:*
+- Batas akhir pelaporan: Tanggal 10 setiap bulan
+- Format laporan: PDF dan Excel
+- Kirim ke email: laporan@notaris.go.id
+
+Hormat kami,
+Admin`;
+
+            return pesan;
+        }
+
+        // Fungsi untuk membuka WhatsApp
+        function bukaWhatsApp(nomor, pesan) {
+            if (!nomor) {
+                Swal.fire('Error', 'Nomor WhatsApp tidak valid', 'error');
+                return false;
+            }
+
+            // Format nomor untuk URL
+            const cleanNumber = nomor.replace(/[^0-9]/g, '');
+            const encodedMessage = encodeURIComponent(pesan);
+            const waUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+
+            // Buka di tab baru
+            window.open(waUrl, '_blank');
+            return true;
+        }
+
+        // Fungsi untuk mengirim notifikasi WhatsApp (VERSI DIPERBAIKI)
         async function kirimNotifikasiWABelumLapor(daftarNotaris, periode) {
+            // Load data nomor WA terlebih dahulu
+            loadDataNomorWA();
+
             // Tampilkan loading
             const loadingSwal = Swal.fire({
                 title: 'Memproses...',
@@ -8293,6 +8392,9 @@
                 const punyaWa = daftarWa.filter(item => item.nomor_wa);
                 const tidakPunyaWa = daftarWa.filter(item => !item.nomor_wa);
 
+                // Buat pesan preview
+                const pesanPreview = generateWAMessage('Contoh Notaris', periode);
+
                 // Buat daftar HTML
                 let daftarHtml = `
             <div class="mb-3">
@@ -8304,8 +8406,14 @@
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle-fill"></i> 
                     <strong>${tidakPunyaWa.length}</strong> Notaris belum memiliki nomor WhatsApp
+                    <br><small>Klik tombol "Input No" untuk menambahkan nomor WA</small>
                 </div>
                 ` : ''}
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Preview Pesan:</strong><br>
+                    ${escapeHtml(pesanPreview.substring(0, 150))}...
+                </div>
             </div>
             <div style="max-height: 450px; overflow-y: auto;">
                 <table class="table table-sm table-hover" style="font-size: 12px;">
@@ -8321,7 +8429,9 @@
         `;
 
                 daftarWa.forEach((item, idx) => {
-                    const waUrl = item.nomor_wa ? `https://wa.me/${item.nomor_wa}?text=${encodeURIComponent(generateWAMessage(item.nama, periode))}` : '#';
+                    const pesan = generateWAMessage(item.nama, periode);
+                    const waUrl = item.nomor_wa ? `https://wa.me/${item.nomor_wa}?text=${encodeURIComponent(pesan)}` : '#';
+
                     daftarHtml += `
                 <tr>
                     <td class="text-center">${idx + 1}</td>
@@ -8335,13 +8445,16 @@
                             '<span class="badge bg-secondary">Belum ada</span>'
                         }
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="white-space: nowrap;">
                         ${item.nomor_wa ?
-                            `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm">
+                            `<button onclick="bukaWhatsApp('${item.nomor_wa}', \`${pesan.replace(/`/g, '\\`')}\`)" class="btn btn-success btn-sm me-1">
                                 <i class="bi bi-whatsapp"></i> Kirim
-                            </a>` :
-                            `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')">
-                                <i class="bi bi-pencil"></i> Input No
+                            </button>
+                            <button onclick="editNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}', '${item.nomor_wa || ''}')" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-pencil"></i>
+                            </button>` :
+                            `<button onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-circle"></i> Input No
                             </button>`
                         }
                     </td>
@@ -8354,27 +8467,33 @@
                 </table>
             </div>
             <div class="mt-3 text-center">
-                <button class="btn btn-outline-primary btn-sm" onclick="copyAllWANumbersFromModal()">
+                <button class="btn btn-outline-primary btn-sm me-2" onclick="copyAllWANumbers(daftarWa)">
                     <i class="bi bi-clipboard"></i> Copy Semua Nomor WA
                 </button>
+                ${punyaWa.length > 0 ? `
+                <button class="btn btn-outline-success btn-sm" onclick="kirimWABatch(daftarWa, periode)">
+                    <i class="bi bi-send"></i> Kirim ke ${punyaWa.length} Notaris
+                </button>
+                ` : ''}
             </div>
         `;
+
+                // Simpan daftarWa ke global untuk akses fungsi lain
+                window.daftarWaSementara = daftarWa;
+                window.periodeSementara = periode;
 
                 await Swal.fire({
                     title: `📱 Kirim Notifikasi WhatsApp`,
                     html: daftarHtml,
                     icon: 'info',
-                    width: '900px',
+                    width: '1000px',
                     showCloseButton: true,
                     showConfirmButton: false,
-                    footer: `
-                <div class="w-100">
-                    <small class="text-muted">
-                        <i class="bi bi-lightbulb"></i> 
-                        Klik tombol WhatsApp untuk membuka chat, pesan sudah otomatis terisi
-                    </small>
-                </div>
-            `
+                    didClose: () => {
+                        // Bersihkan data sementara
+                        delete window.daftarWaSementara;
+                        delete window.periodeSementara;
+                    }
                 });
 
             } catch (error) {
@@ -8383,11 +8502,240 @@
                 await Swal.fire({
                     icon: 'error',
                     title: 'Gagal',
-                    text: 'Terjadi kesalahan saat menyiapkan notifikasi WhatsApp',
+                    text: 'Terjadi kesalahan saat menyiapkan notifikasi WhatsApp: ' + error.message,
                     confirmButtonColor: '#dc3545'
                 });
             }
         }
+
+        // Fungsi untuk input nomor WA baru
+        async function inputNomorWA(nama, id) {
+            const { value: nomor } = await Swal.fire({
+                title: 'Input Nomor WhatsApp',
+                html: `
+            <div class="text-start">
+                <p><strong>Nama:</strong> ${escapeHtml(nama)}</p>
+                <p><strong>ID:</strong> ${escapeHtml(id)}</p>
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle"></i>
+                    Format: 81234567890 atau 6281234567890
+                </div>
+            </div>
+        `,
+                input: 'tel',
+                inputLabel: 'Nomor WhatsApp',
+                inputPlaceholder: '81234567890',
+                inputValue: '',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#28a745',
+                preConfirm: (nomor) => {
+                    if (!nomor || nomor.trim() === '') {
+                        Swal.showValidationMessage('Nomor WA tidak boleh kosong');
+                        return false;
+                    }
+                    return nomor;
+                }
+            });
+
+            if (nomor) {
+                const cleaned = await simpanNomorWA(nama, nomor);
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Tersimpan!',
+                    text: `Nomor WA untuk ${nama} telah disimpan: ${cleaned}`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+
+                // Refresh modal jika masih terbuka
+                if (window.daftarWaSementara && window.periodeSementara) {
+                    await kirimNotifikasiWABelumLapor(window.daftarWaSementara, window.periodeSementara);
+                } else {
+                    // Refresh halaman
+                    location.reload();
+                }
+            }
+        }
+
+        // Fungsi untuk edit nomor WA
+        async function editNomorWA(nama, id, nomorLama) {
+            const { value: nomor } = await Swal.fire({
+                title: 'Edit Nomor WhatsApp',
+                html: `
+            <div class="text-start">
+                <p><strong>Nama:</strong> ${escapeHtml(nama)}</p>
+                <p><strong>ID:</strong> ${escapeHtml(id)}</p>
+            </div>
+        `,
+                input: 'tel',
+                inputLabel: 'Nomor WhatsApp',
+                inputPlaceholder: '81234567890',
+                inputValue: nomorLama,
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ffc107',
+                preConfirm: (nomor) => {
+                    if (!nomor || nomor.trim() === '') {
+                        Swal.showValidationMessage('Nomor WA tidak boleh kosong');
+                        return false;
+                    }
+                    return nomor;
+                }
+            });
+
+            if (nomor) {
+                const cleaned = await simpanNomorWA(nama, nomor);
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Diupdate!',
+                    text: `Nomor WA untuk ${nama} telah diupdate: ${cleaned}`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+
+                // Refresh modal
+                if (window.daftarWaSementara && window.periodeSementara) {
+                    await kirimNotifikasiWABelumLapor(window.daftarWaSementara, window.periodeSementara);
+                }
+            }
+        }
+
+        // Fungsi untuk copy semua nomor WA
+        function copyAllWANumbers(daftarWa) {
+            const numbers = daftarWa
+                .filter(item => item.nomor_wa)
+                .map(item => `${item.nama}: ${item.nomor_wa}`);
+
+            if (numbers.length > 0) {
+                const textToCopy = numbers.join('\n');
+                copyToClipboard(textToCopy);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Tersalin!',
+                    text: `${numbers.length} nomor WA telah disalin ke clipboard`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                Swal.fire('Info', 'Tidak ada nomor WA yang ditemukan', 'info');
+            }
+        }
+
+        // Fungsi untuk kirim WA batch (membuka multiple tab)
+        async function kirimWABatch(daftarWa, periode) {
+            const punyaWa = daftarWa.filter(item => item.nomor_wa);
+
+            if (punyaWa.length === 0) {
+                Swal.fire('Info', 'Tidak ada notaris yang memiliki nomor WA', 'info');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: 'Konfirmasi Kirim Batch',
+                html: `
+            <p>Anda akan mengirim WhatsApp ke <strong>${punyaWa.length} notaris</strong></p>
+            <p class="text-warning small">
+                <i class="bi bi-exclamation-triangle"></i>
+                Perhatian: WhatsApp akan membuka ${punyaWa.length} tab baru.
+                Pastikan Anda sudah login ke WhatsApp Web!
+            </p>
+            <div class="form-check mt-3">
+                <input type="checkbox" class="form-check-input" id="confirmBatchSend">
+                <label class="form-check-label" for="confirmBatchSend">
+                    Saya mengerti dan ingin melanjutkan
+                </label>
+            </div>
+        `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-send"></i> Kirim Semua',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#25D366',
+                preConfirm: () => {
+                    const checkbox = document.getElementById('confirmBatchSend');
+                    if (!checkbox || !checkbox.checked) {
+                        Swal.showValidationMessage('Harap centang konfirmasi terlebih dahulu');
+                        return false;
+                    }
+                    return true;
+                }
+            });
+
+            if (result.isConfirmed) {
+                let berhasil = 0;
+                for (let i = 0; i < punyaWa.length; i++) {
+                    const item = punyaWa[i];
+                    const pesan = generateWAMessage(item.nama, periode);
+
+                    // Delay 1 detik antar pengiriman
+                    setTimeout(() => {
+                        bukaWhatsApp(item.nomor_wa, pesan);
+                        berhasil++;
+                    }, i * 1000);
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Pengiriman Dimulai',
+                    html: `Membuka ${berhasil} chat WhatsApp...<br><small>Harap tunggu beberapa saat</small>`,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        // Fungsi copy ke clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('Tersalin:', text);
+            }).catch(err => {
+                console.error('Gagal copy:', err);
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            });
+        }
+
+        // Fungsi copy notaris info
+        function copyNotarisInfo(nama, id) {
+            const text = `Nama: ${nama}\nID: ${id}`;
+            copyToClipboard(text);
+            Swal.fire({
+                icon: 'success',
+                title: 'Info Tersalin!',
+                text: `Info ${nama} telah disalin ke clipboard`,
+                timer: 1500,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDataNomorWA();
+        });
 
         // Fungsi untuk mengirim notifikasi email ke notaris yang belum lapor
         async function kirimNotifikasiEmailBelumLapor(daftarNotaris, periode) {
@@ -8620,51 +8968,51 @@
 
             // Buat modal khusus untuk DATA NIHIL
             const modalHTML = `
-<div class="modal fade" id="modalPrintNihil" tabindex="-1" data-bs-backdrop="static" style="z-index: 9999;">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #ef4444); color: white;">
-                <h5 class="modal-title">
-                    <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data NIHIL (Rp 0)
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" style="background: white;">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
-                            <select id="selectNotarisNihil" class="form-select">
-                                <option value="">-- Pilih Notaris --</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pilih Bulan Laporan</label>
-                            <select id="selectBulanNihil" class="form-select">
-                                <option value="">-- Pilih Bulan --</option>
-                            </select>
+                <div class="modal fade" id="modalPrintNihil" tabindex="-1" data-bs-backdrop="static" style="z-index: 9999;">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content" style="border-radius: 20px;">
+                            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #ef4444); color: white;">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data NIHIL (Rp 0)
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body" style="background: white;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
+                                            <select id="selectNotarisNihil" class="form-select">
+                                                <option value="">-- Pilih Notaris --</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Pilih Bulan Laporan</label>
+                                            <select id="selectBulanNihil" class="form-select">
+                                                <option value="">-- Pilih Bulan --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="background: #f8f9fa;">
+                                <div class="row w-100 g-2">
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-danger w-100" onclick="exportDataNihilToExcel()">
+                                            <i class="bi bi-file-earmark-excel-fill"></i> Export Nihil Excel
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-warning w-100" onclick="printDataNihil()">
+                                            <i class="bi bi-printer-fill"></i> Cetak Nihil PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer" style="background: #f8f9fa;">
-                <div class="row w-100 g-2">
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-danger w-100" onclick="exportDataNihilToExcel()">
-                            <i class="bi bi-file-earmark-excel-fill"></i> Export Nihil Excel
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-warning w-100" onclick="printDataNihil()">
-                            <i class="bi bi-printer-fill"></i> Cetak Nihil PDF
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-`;
+                `;
 
             document.body.insertAdjacentHTML('beforeend', modalHTML);
 
