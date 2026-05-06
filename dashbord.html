@@ -2695,7 +2695,7 @@
                                     </thead>
                                     <tbody id="tbodyPensiun">
                                         <tr>
-                                            <td colspan="8" class="text-center">Memuat数据...<\ /td>
+                                            <td colspan="8" class="text-center">Memuat Data Pensiun</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -2726,7 +2726,7 @@
                                 <th>Lihat Surat Tagihan Denda</th>
                                 <th>Nomor Surat Pemberitahuan Denda</th>
                                 <th>Lihat Pemberitahuan Denda</th>
-                                <th>Upload Bukti Bayar</th>
+                                <th>Upload Bukti Bayar (STD)</th>
                                 <th>Catatan (Auto)</th>
                                 <th>Aksi</th>
                             </tr>
@@ -2827,7 +2827,6 @@
         </div>
     </nav>
     <!-- Akhir Navbar -->
-
     <script>
         const hamburger = document.querySelector('.navbar-toggler');
         const stikyTop = document.querySelector('.sticky-top');
@@ -2986,7 +2985,7 @@
         /* =========================
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxdckmg9zFBdTDA5iMVHFr2sSLfd6PHOZDcGAflAZnkYoxWp6olqH5P75adKSphMO0_/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzL0ANiOO08j5U2xBfuruUKhUTFwmt7GI62DmSRejI9t5A9g4557wFfNwajCSk9yotH/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -4717,7 +4716,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Notaris & PPAT</th>
-                        <th>ID Notaris</th>
+                        <th>Nomor Unik</th>
                         <th>Bulan Laporan</th>
                     </tr>
                 </thead>
@@ -4852,7 +4851,7 @@
             try {
                 // HAPUS AbortController, gunakan timeout sederhana
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // Naikkan jadi 30 detik
+                const timeoutId = setTimeout(() => controller.abort(), 20000); // Naikkan jadi 20 detik
 
                 const response = await fetch(scriptURL, {
                     signal: controller.signal,
