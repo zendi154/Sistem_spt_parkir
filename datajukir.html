@@ -199,18 +199,7 @@
                                     <i class="bi bi-calendar-month"></i> Bulan
                                 </label>
                                 <select id="bulanSelect" class="form-select form-select-modern">
-                                    <option value="Januari">Januari</option>
-                                    <option value="Februari">Februari</option>
-                                    <option value="Maret">Maret</option>
-                                    <option value="April">April</option>
-                                    <option value="Mei">Mei</option>
-                                    <option value="Juni">Juni</option>
-                                    <option value="Juli">Juli</option>
-                                    <option value="Agustus">Agustus</option>
-                                    <option value="September">September</option>
-                                    <option value="Oktober">Oktober</option>
-                                    <option value="November">November</option>
-                                    <option value="Desember">Desember</option>
+                                    <option value="">-- Pilih Bulan --</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -218,6 +207,7 @@
                                     <i class="bi bi-calendar"></i> Tahun
                                 </label>
                                 <select id="tahunSelect" class="form-select form-select-modern">
+                                    <option value="">-- Pilih Tahun --</option>
                                 </select>
                             </div>
                         </div>
@@ -257,7 +247,7 @@
         // ============================================
         // FUNGSI BERITA ACARA
         // ============================================
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzEcugaJVh3fIGieduKod6UY4NWsJXfG1mEk8kc-5wa8uGwwRfcPGZIRZGtjiQXgHU/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbza31lUkXNPSOw5pmhOTwGsFX4uuvSouHjv44dUDNrTQUApQBW1UIHZcZHU_16i2SIo/exec";
 
         // ============================================
         // FUNGSI PEMBATASAN AKSES
@@ -397,71 +387,185 @@
         // FUNGSI UTAMA
         // ============================================
 
-        // Isi dropdown tahun
-        async function isiTahun() {
-            const tahunSelect = document.getElementById('tahunSelect');
-            if (!tahunSelect) return;
+        // Urutan bulan
+        const urutanBulan = {
+            "Januari": 1, "Februari": 2, "Maret": 3, "April": 4,
+            "Mei": 5, "Juni": 6, "Juli": 7, "Agustus": 8,
+            "September": 9, "Oktober": 10, "November": 11, "Desember": 12
+        };
 
-            tahunSelect.innerHTML = '<option value="">Memuat tahun...</option>';
+        // Data bulan dan tahun yang tersedia
+        let semuaDataLaporan = [];  // Simpan semua data untuk filtering
+
+        // Load data dari Apps Script
+        async function loadDataPeriode() {
+            const bulanSelect = document.getElementById('bulanSelect');
+            const tahunSelect = document.getElementById('tahunSelect');
+
+            bulanSelect.innerHTML = '<option value="">Memuat data...</option>';
+            tahunSelect.innerHTML = '<option value="">Memuat data...</option>';
 
             try {
                 const response = await fetch(APPS_SCRIPT_URL);
                 const data = await response.json();
 
+                // Simpan semua data untuk filtering nanti
+                semuaDataLaporan = Array.isArray(data) ? data : [];
+
+                // Kumpulkan bulan dan tahun unik dari SEMUA data (termasuk data mendatang)
+                const bulanSet = new Set();
                 const tahunSet = new Set();
-                if (Array.isArray(data)) {
-                    for (var i = 0; i < data.length; i++) {
-                        var bulanLaporan = data[i]["laporan_bulanan"];
-                        if (bulanLaporan) {
-                            var match = bulanLaporan.match(/\d{4}/);
-                            if (match) {
-                                tahunSet.add(parseInt(match[0]));
-                            }
+
+                for (var i = 0; i < semuaDataLaporan.length; i++) {
+                    var bulanLaporan = semuaDataLaporan[i]["laporan_bulanan"];
+                    if (bulanLaporan) {
+                        var parts = bulanLaporan.split(' ');
+                        var bulan = parts[0];
+                        var tahun = parts[1];
+
+                        if (bulan && urutanBulan[bulan]) {
+                            bulanSet.add(bulan);
+                        }
+                        if (tahun) {
+                            tahunSet.add(parseInt(tahun));
                         }
                     }
                 }
 
-                if (tahunSet.size === 0) {
-                    tahunSet.add(new Date().getFullYear());
+                // Jika tidak ada data, gunakan bulan dan tahun saat ini
+                if (bulanSet.size === 0) {
+                    const now = new Date();
+                    const bulanNow = now.toLocaleString('id-ID', { month: 'long' });
+                    const tahunNow = now.getFullYear();
+                    bulanSet.add(bulanNow);
+                    tahunSet.add(tahunNow);
                 }
 
+                // Urutkan bulan berdasarkan urutan
+                var bulanList = Array.from(bulanSet).sort(function (a, b) {
+                    return urutanBulan[a] - urutanBulan[b];
+                });
+
+                // Urutkan tahun dari terbaru ke terlama
                 var tahunList = Array.from(tahunSet).sort(function (a, b) {
                     return b - a;
                 });
 
-                tahunSelect.innerHTML = '';
+                // Isi dropdown bulan (SEMUA bulan yang pernah ada data)
+                bulanSelect.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                for (var i = 0; i < bulanList.length; i++) {
+                    bulanSelect.innerHTML += `<option value="${bulanList[i]}">${bulanList[i]}</option>`;
+                }
+
+                // Isi dropdown tahun
+                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
                 for (var i = 0; i < tahunList.length; i++) {
                     tahunSelect.innerHTML += `<option value="${tahunList[i]}">${tahunList[i]}</option>`;
                 }
 
+                // Auto pilih tahun terbaru
                 if (tahunList.length > 0) {
                     tahunSelect.value = tahunList[0];
                 }
 
-                console.log("Tahun yang tersedia:", tahunList);
+                console.log("Semua bulan yang pernah ada:", bulanList);
+                console.log("Semua tahun:", tahunList);
+
+                // Event listener untuk filter bulan berdasarkan tahun
+                tahunSelect.addEventListener('change', function () {
+                    filterBulanByTahun();
+                });
+
+                // Filter awal
+                if (tahunSelect.value) {
+                    filterBulanByTahun();
+                } else if (tahunList.length > 0) {
+                    tahunSelect.value = tahunList[0];
+                    filterBulanByTahun();
+                }
 
             } catch (error) {
-                console.error("Gagal ambil data tahun:", error);
-                tahunSelect.innerHTML = '';
-                var tahunNow = new Date().getFullYear();
-                for (var i = tahunNow; i <= tahunNow + 5; i++) {
-                    tahunSelect.innerHTML += `<option value="${i}">${i}</option>`;
-                }
+                console.error("Gagal ambil data periode:", error);
+                bulanSelect.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+
+                // Fallback
+                const now = new Date();
+                const bulanNow = now.toLocaleString('id-ID', { month: 'long' });
+                const tahunNow = now.getFullYear();
+                bulanSelect.innerHTML += `<option value="${bulanNow}">${bulanNow}</option>`;
+                tahunSelect.innerHTML += `<option value="${tahunNow}">${tahunNow}</option>`;
                 tahunSelect.value = tahunNow;
             }
         }
 
-        // Refresh data
+        // Filter bulan berdasarkan tahun yang dipilih (HANYA bulan yang ADA DATA untuk tahun tersebut)
+        async function filterBulanByTahun() {
+            const tahun = document.getElementById('tahunSelect').value;
+            const bulanSelect = document.getElementById('bulanSelect');
+
+            if (!tahun) {
+                bulanSelect.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                return;
+            }
+
+            bulanSelect.innerHTML = '<option value="">Memuat bulan...</option>';
+
+            try {
+                // Gunakan data yang sudah disimpan
+                const bulanSet = new Set();
+
+                for (var i = 0; i < semuaDataLaporan.length; i++) {
+                    var bulanLaporan = semuaDataLaporan[i]["laporan_bulanan"];
+                    if (bulanLaporan && bulanLaporan.includes(tahun)) {
+                        var bulan = bulanLaporan.split(' ')[0];
+                        if (bulan && urutanBulan[bulan]) {
+                            bulanSet.add(bulan);
+                        }
+                    }
+                }
+
+                // Urutkan bulan
+                var bulanList = Array.from(bulanSet).sort(function (a, b) {
+                    return urutanBulan[a] - urutanBulan[b];
+                });
+
+                bulanSelect.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                for (var i = 0; i < bulanList.length; i++) {
+                    bulanSelect.innerHTML += `<option value="${bulanList[i]}">${bulanList[i]}</option>`;
+                }
+
+                // Auto pilih bulan pertama jika ada
+                if (bulanList.length > 0) {
+                    bulanSelect.value = bulanList[0];
+                }
+
+                console.log(`Bulan untuk tahun ${tahun}:`, bulanList);
+                console.log(`Total ${bulanList.length} bulan ditemukan`);
+
+            } catch (error) {
+                console.error("Gagal filter bulan:", error);
+                bulanSelect.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+            }
+        }
+
+        // Fungsi untuk refresh data (bisa dipanggil manual atau otomatis periodik)
         function refreshData() {
-            isiTahun();
+            loadDataPeriode();
             Swal.fire({
                 icon: 'success',
                 title: 'Refresh Berhasil',
-                text: 'Data tahun telah diperbarui',
+                text: 'Data periode telah diperbarui',
                 timer: 1500,
                 showConfirmButton: false
             });
         }
+
+        // Auto refresh setiap 30 menit (opsional)
+        setInterval(function () {
+            loadDataPeriode();
+            console.log("Auto refresh data periode");
+        }, 30 * 60 * 1000); // 30 menit
 
         // Cetak Berita Acara
         async function cetakBeritaAcara() {
@@ -508,43 +612,10 @@
             }
         }
 
-        // Logout
-        function logout() {
-            Swal.fire({
-                title: 'Konfirmasi Logout',
-                text: 'Apakah Anda yakin ingin keluar?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("userRole");
-                    localStorage.removeItem("userName");
-                    window.location.href = "table.html";
-                }
-            });
-        }
-
         // Inisialisasi
         document.addEventListener('DOMContentLoaded', async function () {
             await checkLoginAndRole();
-            await isiTahun();
-
-            // Set bulan default ke bulan saat ini
-            const bulanSekarang = new Date().toLocaleString('id-ID', { month: 'long' });
-            const bulanSelect = document.getElementById('bulanSelect');
-            if (bulanSelect) {
-                for (let i = 0; i < bulanSelect.options.length; i++) {
-                    if (bulanSelect.options[i].value === bulanSekarang) {
-                        bulanSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
+            await loadDataPeriode();
         });
 
         // Enter key support
