@@ -2985,7 +2985,7 @@
         /* =========================
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzzEcugaJVh3fIGieduKod6UY4NWsJXfG1mEk8kc-5wa8uGwwRfcPGZIRZGtjiQXgHU/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxQUA-rCTnHGLzSwd_8w3zVM2gYufqat-9UQJz112g0HzakaX84sJKEnLcQWuxrQDy7/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3208,7 +3208,7 @@
             <td>${formatTanggal(row["tanggal_surat"])}</td>
             <td>${formatTanggal(row["tanggal_diterima"])}</td>
             <td>${row["status_surat"] || ""}</td>
-            <td>${row["laporan_bulanan"] || ""}</td>
+            <td>${formatTanggal(row["laporan_bulanan"]) || ""}</td>
             <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
             <td>${row["jumlah_laporan"] || ""}</td>
             <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
@@ -8227,7 +8227,14 @@
                 return `${parseInt(hari)} ${bulanNama[parseInt(bulan) - 1]} ${tahun}`;
             }
 
-            // Jika sudah dalam format lain, kembalikan apa adanya
+            // Jika format DD/MM/YYYY (seperti 07/05/2026)
+            if (tanggalString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                const [hari, bulan, tahun] = tanggalString.split('/');
+                const bulanNama = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                return `${parseInt(hari)} ${bulanNama[parseInt(bulan) - 1]} ${tahun}`;
+            }
+
             return tanggalString;
         }
 
