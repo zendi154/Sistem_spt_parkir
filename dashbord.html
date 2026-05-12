@@ -9498,6 +9498,166 @@
                 });
             }
         }
+
+        // ============================================
+        // FITUR DAFTAR NOTARIS AKTIF SAAT ICON DIKLIK
+        // ============================================
+
+        // Fungsi untuk menampilkan modal daftar notaris aktif
+        function tampilkanDaftarNotarisAktif() {
+            // Ambil semua notaris aktif (belum pensiun)
+            const notarisAktif = getAllNotarisFromDropdown(true);
+
+            if (notarisAktif.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    text: 'Tidak ada notaris aktif saat ini',
+                    confirmButtonColor: '#0284c7'
+                });
+                return;
+            }
+
+            // Buat tabel daftar notaris aktif
+            let tabelHTML = `
+        <div style="max-height: 450px; overflow-y: auto;">
+            <style>
+                .table-notaris-aktif {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-family: 'Poppins', sans-serif;
+                }
+                .table-notaris-aktif th {
+                    background: linear-gradient(135deg, #0284c7, #38bdf8);
+                    color: white;
+                    padding: 12px;
+                    text-align: center;
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
+                }
+                .table-notaris-aktif td {
+                    padding: 10px 12px;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                .table-notaris-aktif tr:hover {
+                    background: #f0f9ff;
+                    cursor: pointer;
+                }
+                .badge-id {
+                    background: #e0f2fe;
+                    color: #0284c7;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 500;
+                }
+                .copy-btn {
+                    background: none;
+                    border: none;
+                    color: #0284c7;
+                    cursor: pointer;
+                    padding: 0 5px;
+                    transition: all 0.2s;
+                }
+                .copy-btn:hover {
+                    transform: scale(1.1);
+                    color: #0369a1;
+                }
+            </style>
+            <table class="table-notaris-aktif">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th style="width: 55%;">Nama Notaris & PPAT</th>
+                        <th style="width: 25%;">ID Notaris</th>
+                        <th style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+            notarisAktif.forEach((notaris, idx) => {
+                tabelHTML += `
+            <tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td>
+                    <strong>${escapeHtml(notaris.nama)}</strong>
+                    <br><small class="text-muted">${escapeHtml((notaris.alamat || '').substring(0, 50))}${(notaris.alamat || '').length > 50 ? '...' : ''}</small>
+                </td>
+                <td style="text-align:center;">
+                    <span class="badge-id">${escapeHtml(notaris.id || '-')}</span>
+                </td>
+                <td style="text-align:center;">
+                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('${escapeHtml(notaris.nama)}')" title="Copy Nama">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                    <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('${escapeHtml(notaris.id || '')}')" title="Copy ID">
+                        <i class="bi bi-key"></i>
+                    </button>
+                </td>
+             </tr>
+        `;
+            });
+
+            tabelHTML += `
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-info-circle-fill"></i> 
+            <strong>Total Notaris Aktif: ${notarisAktif.length} Notaris</strong><br>
+            <small class="text-muted">Klik icon <i class="bi bi-clipboard"></i> untuk menyalin nama/ID notaris</small>
+        </div>
+    `;
+
+            Swal.fire({
+                title: `📋 DAFTAR NOTARIS / PPAT AKTIF`,
+                html: tabelHTML,
+                icon: 'info',
+                width: '900px',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#0284c7',
+                showCloseButton: true,
+                customClass: {
+                    popup: 'swal-modern-popup'
+                }
+            });
+        }
+
+        // Modifikasi fungsi tambahBadgeJumlahNotaris untuk menambahkan event klik
+        function tambahBadgeJumlahNotaris() {
+            const navbarContainer = document.querySelector('#mainNavbar .container');
+            if (!navbarContainer) return;
+
+            if (document.getElementById('badgeJumlahNotaris')) return;
+
+            const badgeContainer = document.createElement('div');
+            badgeContainer.id = 'badgeJumlahNotaris';
+            badgeContainer.className = 'nav-link position-relative';
+            badgeContainer.style.cursor = 'pointer';
+            badgeContainer.style.marginRight = '15px';
+            badgeContainer.title = 'Klik untuk melihat daftar Notaris Aktif';
+
+            badgeContainer.innerHTML = `
+        <i class="bi bi-people-fill" style="font-size: 1.2rem;"></i>
+        <span id="jumlahNotarisAktif" class="badge rounded-pill bg-primary" style="font-size: 0.7rem; position: absolute; top: -8px; right: -12px; padding: 2px 6px; min-width: 18px;">0</span>
+    `;
+
+            // Tambahkan event klik
+            badgeContainer.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                tampilkanDaftarNotarisAktif();
+            };
+
+            const logoutBtn = document.querySelector('a[title="Logout"]');
+            if (logoutBtn) {
+                navbarContainer.insertBefore(badgeContainer, logoutBtn);
+            } else {
+                navbarContainer.appendChild(badgeContainer);
+            }
+        }
     </script>
 
 </body>
