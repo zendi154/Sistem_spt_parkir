@@ -2511,13 +2511,6 @@
                         </button>
                     </div>
 
-                    <!-- BUTTON KIRIM NOTIFIKASI VIA WHATSAPP (HANYA UNTUK ADMIN) -->
-                    <div class="col-md-2" id="btnBelumLaporContainer" style="display: none;">
-                        <button type="button" class="btn btn-success w-100" onclick="deteksiDanKirimTidakMelapor()">
-                            <i class="bi bi-whatsapp"></i> Kirim WA Notifikasi
-                            <!-- Container untuk floating button akan dibuat oleh JavaScript -->
-                        </button>
-                    </div>
                     <br><br>
                     <!-- FLOATING FOOTER CONTROL -->
                     <div class="floating-footer">
@@ -2548,13 +2541,6 @@
                             </button>
                         </div>
 
-                        <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
-                        <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
-                            <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
-                                <i class="bi bi-robot"></i> Deteksi Tidak Lapor
-                            </button>
-                        </div>
-
                         <div class="col-md-3">
                             <button type="button" class="btn btn-secondary w-100" onclick="resetAllFilters()">
                                 <i class="bi bi-arrow-repeat"></i> Reset Filter
@@ -2565,6 +2551,14 @@
                         <div class="col-md-3">
                             <button type="button" class="btn btn-success w-100" onclick="exportExcel()">
                                 <i class="bi bi-file-earmark-excel"></i> Export Data Excel
+                            </button>
+                        </div>
+
+                        <!-- BUTTON KIRIM NOTIFIKASI VIA WHATSAPP (HANYA UNTUK ADMIN) -->
+                        <div class="col-md-2" id="btnBelumLaporContainer" style="display: none;">
+                            <button type="button" class="btn btn-success w-100" onclick="deteksiDanKirimTidakMelapor()">
+                                <i class="bi bi-whatsapp"></i> Kirim WA Notifikasi
+                                <!-- Container untuk floating button akan dibuat oleh JavaScript -->
                             </button>
                         </div>
 
@@ -2587,7 +2581,7 @@
 
                     <!-- FILTER NOTARIS PENSIUN -->
                     <div class="filter-pensiun mb-3">
-                        <span class="fw-bold me-2">Status Notaris:</span>
+                        <span class="fw-bold me-2">Status Notaris/PPAT:</span>
                         <button class="btn-filter active" onclick="filterNotarisStatus('all')">
                             <i class="bi bi-people-fill"></i> Semua
                         </button>
