@@ -7009,31 +7009,50 @@
             for (let i = 0; i < rawData.length; i++) {
                 const row = rawData[i];
 
-                // Ambil nilai berdasarkan index (karena key-nya dinamis)
+                // Ambil nilai berdasarkan index (0,1,2,3,4,5,6,7,8,9,10,11)
+                // karena key-nya tidak konsisten
+                const values = [];
+
+                // Kumpulkan semua nilai berdasarkan urutan index
+                for (let j = 0; j <= 11; j++) {
+                    if (row[j] !== undefined) {
+                        values[j] = row[j];
+                    } else {
+                        // Coba cari dari key yang berupa angka
+                        const keyAngka = Object.keys(row).find(k => !isNaN(parseInt(k)) && parseInt(k) === j);
+                        if (keyAngka) {
+                            values[j] = row[keyAngka];
+                        } else {
+                            values[j] = "";
+                        }
+                    }
+                }
+
+                // Mapping berdasarkan urutan kolom yang benar
                 const newRow = {
-                    "sspd_bphtb": row[0] || "",
-                    "tanggal_diterima_timestamp": row[1] || "",
-                    "id": row[2] || "",
-                    "nama_notaris_&_ppat": row[3] || "",
-                    "alamat": row[4] || "",
-                    "nomor_surat": row[5] || "",
-                    "tanggal_surat": row[6] || "",
-                    "tanggal_diterima": row[7] || "",
-                    "status_surat": row[8] || "",
-                    "laporan_bulanan": row[9] || "",
-                    "data_transaksi": row[10] || "",
-                    "keterangan": row[11] || "",
-                    // Field tambahan yang mungkin ada
-                    "nomor_std": row[12] || "",
-                    "file_pdf_denda": row[13] || "",
-                    "nomor_pemberitahuan": row[14] || "",
-                    "file_surat_upload": row[15] || "",
-                    "file_bukti_bayar": row[16] || "",
-                    "status_email": row[17] || "",
-                    "jumlah_laporan": "1" // default
+                    "sspd_bphtb": values[0] || "",
+                    "tanggal_diterima_timestamp": values[1] || "",
+                    "id": values[2] || "",
+                    "nama_notaris_&_ppat": values[3] || "",
+                    "alamat": values[4] || "",
+                    "nomor_surat": values[5] || "",
+                    "tanggal_surat": values[6] || "",
+                    "tanggal_diterima": values[7] || "",
+                    "status_surat": values[8] || "",
+                    "laporan_bulanan": values[9] || "",
+                    "data_transaksi": values[10] || "",
+                    "keterangan": values[11] || "",
+                    "jumlah_laporan": "1",
+                    // Field tambahan default kosong
+                    "nomor_std": "",
+                    "file_pdf_denda": "",
+                    "nomor_pemberitahuan": "",
+                    "file_surat_upload": "",
+                    "file_bukti_bayar": "",
+                    "status_email": ""
                 };
 
-                // Jika data_transaksi ada, parse JSON
+                // Parse data_transaksi jika ada
                 if (newRow.data_transaksi && typeof newRow.data_transaksi === 'string' && newRow.data_transaksi.startsWith('[')) {
                     try {
                         newRow.data_transaksi = JSON.parse(newRow.data_transaksi);
