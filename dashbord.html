@@ -6879,58 +6879,40 @@
             showLoading("Memuat data...");
 
             try {
-                // 1. AMBIL DATA DARI SERVER
-                const [dataResult, pensiunResult] = await Promise.allSettled([
-                    fetch(scriptURL).then(res => {
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        return res.json();
-                    }).catch(err => {
-                        console.error("Gagal fetch data utama:", err);
-                        return [];
-                    }),
-                    getNotarisPensiun()
-                ]);
+                // AMBIL DATA DARI SERVER
+                const response = await fetch(scriptURL);
+                const dataFromServer = await response.json();
 
-                // 2. INISIALISASI data (setelah fetch selesai)
-                let rawData = [];
-                if (dataResult.status === 'fulfilled' && Array.isArray(dataResult.value)) {
-                    rawData = dataResult.value;
-                    console.log(`✅ Data mentah dari server: ${rawData.length} baris`);
-                } else {
-                    console.error("Gagal ambil data utama:", dataResult.reason);
-                    rawData = [];
+                console.log("Data dari server:", dataFromServer.length, "baris");
+
+                // TAMPILKAN SAMPLE UNTUK DEBUG
+                if (dataFromServer.length > 0) {
+                    console.log("Contoh data pertama:", dataFromServer[0]);
+                    console.log("Contoh laporan_bulanan:", dataFromServer[0]["laporan_bulanan"]);
                 }
 
-                // 3. FILTER DATA - HAPUS BARIS DENGAN TAHUN TIDAK VALID
-                const currentYear = new Date().getFullYear();
-                const validData = rawData.filter(row => {
+                // FILTER DATA - VERSI SEDERHANA (JANGAN TERLALU KETAT)
+                const validData = dataFromServer.filter(row => {
                     const bulanLaporan = row["laporan_bulanan"];
-                    if (!bulanLaporan) return false;
-                    const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
-                    if (!match) return false;
-                    const tahun = parseInt(match[0]);
-                    // Hanya terima tahun antara 2020 sampai currentYear + 1
-                    const isValid = tahun >= 2020 && tahun <= currentYear + 1;
-                    if (!isValid) {
-                        console.log(`⚠️ Data dihapus - tahun tidak valid: "${bulanLaporan}"`);
-                    }
-                    return isValid;
+                    // Hanya filter yang benar-benar kosong
+                    return bulanLaporan && bulanLaporan.trim() !== "";
                 });
 
-                console.log(`✅ Data setelah filter: ${validData.length} baris (dihilangkan ${rawData.length - validData.length} baris)`);
+                console.log("Data setelah filter (hapus kosong):", validData.length, "baris");
 
-                // 4. AMBIL DATA PENSIUN
-                if (pensiunResult.status === 'fulfilled') {
-                    dataPensiunGlobal = Array.isArray(pensiunResult.value) ? pensiunResult.value : [];
-                    console.log(`✅ Data pensiun: ${dataPensiunGlobal.length} notaris`);
-                } else {
-                    console.error("Gagal ambil data pensiun:", pensiunResult.reason);
+                // AMBIL DATA PENSIUN
+                try {
+                    const pensiunResponse = await fetch(`${scriptURL}?action=get_pensiun`);
+                    const pensiunData = await pensiunResponse.json();
+                    dataPensiunGlobal = Array.isArray(pensiunData) ? pensiunData : [];
+                } catch (err) {
+                    console.error("Gagal ambil pensiun:", err);
                     dataPensiunGlobal = [];
                 }
 
                 hideLoading();
 
-                // 5. CEK DATA KOSONG
+                // CEK DATA KOSONG
                 if (!validData || validData.length === 0) {
                     console.warn("Data kosong dari server");
                     allData = [];
@@ -6941,39 +6923,29 @@
                     return;
                 }
 
-                // 6. SIMPAN KE VARIABEL GLOBAL
+                // SIMPAN KE VARIABEL GLOBAL
                 lastData = JSON.stringify(validData);
                 allData = sortDataByMonth(validData);
                 currentFilteredData = allData;
 
-                // 7. TERAPKAN FILTER STATUS (AKTIF/PENSIUN)
-                if (currentFilterStatus === 'active') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else if (currentFilterStatus === 'pensiun') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else {
-                    renderTable(allData);
-                }
-
-                // 8. UPDATE TAMPILAN LAINNYA
+                // RENDER TABLE
+                renderTable(allData);
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
                 isiDropdownTahunOtomatis();
 
+                // UPDATE DROPDOWN NOTARIS PENSIUN
                 if (document.getElementById('selectNotarisPensiun')) {
                     isiDropdownNotaris();
                 }
 
+                // TAMPILKAN TABLE PENSIUN JIKA SEDANG TERBUKA
                 const cardPensiun = document.getElementById('cardPensiun');
                 if (cardPensiun && cardPensiun.style.display === 'block') {
                     await tampilkanTablePensiun();
                 }
 
-                console.log("✅ LoadDataSheet SELESAI dengan sukses!");
+                console.log("✅ LoadDataSheet SELESAI! Total data:", allData.length);
 
             } catch (error) {
                 hideLoading();
@@ -6993,48 +6965,44 @@
 
             const tahunSet = new Set();
 
-            // HANYA baca dari laporan_bulanan, IGNORE kolom lainnya
             if (allData && allData.length > 0) {
                 allData.forEach(row => {
                     const bulanLaporan = row["laporan_bulanan"];
                     if (bulanLaporan && typeof bulanLaporan === 'string') {
-                        // Ekstrak tahun dari format "Januari 2026"
-                        const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
+                        // Debug: lihat sample
+                        console.log("Bulan laporan sample:", bulanLaporan);
+
+                        // Ekstrak tahun - coba berbagai format
+                        let tahun = null;
+
+                        // Format: "Januari 2026"
+                        let match = bulanLaporan.match(/(\d{4})/);
                         if (match) {
-                            const tahun = parseInt(match[0]);
-                            // Validasi tahun yang wajar (2000 - tahun sekarang + 1)
-                            const currentYear = new Date().getFullYear();
-                            if (tahun >= 2000 && tahun <= currentYear + 1) {
-                                tahunSet.add(tahun);
-                            }
+                            tahun = parseInt(match[1]);
+                        }
+
+                        // Format: "2026"
+                        if (!tahun) {
+                            match = bulanLaporan.match(/^(\d{4})$/);
+                            if (match) tahun = parseInt(match[1]);
+                        }
+
+                        if (tahun && tahun >= 2020 && tahun <= 2030) {
+                            tahunSet.add(tahun);
                         }
                     }
                 });
             }
 
-            // Jika tidak ada data valid, gunakan tahun dari data terakhir yang ada di allData
-            if (tahunSet.size === 0 && allData && allData.length > 0) {
-                // Ambil dari laporan_bulanan manapun yang ada
-                for (const row of allData) {
-                    const bulanLaporan = row["laporan_bulanan"];
-                    if (bulanLaporan) {
-                        const match = bulanLaporan.match(/\d{4}/);
-                        if (match) {
-                            tahunSet.add(parseInt(match[0]));
-                        }
-                    }
-                }
-            }
-
-            // Fallback ke tahun saat ini jika tetap kosong
+            // Jika tidak ada data valid, gunakan tahun 2026 (karena data Anda tahun 2026)
             if (tahunSet.size === 0) {
-                tahunSet.add(new Date().getFullYear());
+                tahunSet.add(2026);
+                console.log("⚠️ Tidak ada tahun ditemukan, default ke 2026");
             }
 
-            // Urutkan descending (terbaru ke lama)
+            // Urutkan descending
             const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
 
-            // Isi dropdown
             tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
             tahunList.forEach(tahun => {
                 tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
@@ -7042,7 +7010,6 @@
 
             console.log("✅ Tahun yang tersedia di dropdown:", tahunList);
 
-            // Auto-pilih tahun pertama
             if (tahunList.length > 0) {
                 tahunSelect.value = tahunList[0];
                 if (typeof generateBulan === 'function') {
@@ -7051,102 +7018,89 @@
             }
         }
 
+        // ============================================
+        // FUNGSI GENRATE BULAN
+        // ============================================
+
         function generateBulan() {
             const tahunSelect = document.getElementById('filterTahun');
             const tahun = tahunSelect ? tahunSelect.value : '';
 
             const container = document.getElementById("listBulan");
-            if (!container) {
-                console.error("Container listBulan tidak ditemukan");
-                return;
-            }
+            if (!container) return;
 
             if (!tahun) {
-                if (typeof Toast !== 'undefined') {
-                    Toast.fire({
-                        icon: 'warning',
-                        title: 'Pilih tahun terlebih dahulu!',
-                        timer: 2000
-                    });
-                } else {
-                    alert("Pilih tahun terlebih dahulu!");
-                }
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Pilih tahun terlebih dahulu!',
+                    timer: 2000
+                });
                 return;
             }
 
-            // ============================================
-            // SEMBUNYIKAN SEMUA BULAN YANG ADA (HAPUS DULU)
-            // ============================================
             container.innerHTML = "";
-
-            // Animasi fade out (opsional)
-            container.style.transition = "opacity 0.3s ease";
             container.style.opacity = "0";
 
             setTimeout(() => {
                 const bulanTersedia = new Set();
-                let adaDataUntukTahunIni = false;
 
                 if (allData && allData.length > 0) {
                     allData.forEach(row => {
                         const bulanLaporan = row["laporan_bulanan"];
                         if (bulanLaporan && bulanLaporan.includes(tahun)) {
+                            // Ambil nama bulan dari "Januari 2026"
                             const bulan = bulanLaporan.split(' ')[0];
                             bulanTersedia.add(bulan);
-                            adaDataUntukTahunIni = true;
                         }
                     });
                 }
 
+                console.log("Bulan tersedia untuk tahun", tahun, ":", Array.from(bulanTersedia));
+
                 const semuaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                     "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-                let bulanYangDitampilkan = semuaBulan;
+                let bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
 
-                if (adaDataUntukTahunIni) {
-                    bulanYangDitampilkan = semuaBulan.filter(bulan => bulanTersedia.has(bulan));
+                if (bulanYangDitampilkan.length === 0 && allData && allData.length > 0) {
+                    // Jika tidak ada bulan yang cocok, coba ekstrak ulang
+                    console.log("Mencoba ekstrak ulang dari data...");
+                    allData.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (bulanLaporan && bulanLaporan.includes(tahun)) {
+                            console.log("Found:", bulanLaporan);
+                            const bulan = bulanLaporan.split(' ')[0];
+                            if (!bulanYangDitampilkan.includes(bulan)) {
+                                bulanYangDitampilkan.push(bulan);
+                            }
+                        }
+                    });
                 }
 
-                // Kosongkan container sebelum diisi
-                container.innerHTML = "";
-
-                // Tampilkan bulan baru dengan animasi
-                bulanYangDitampilkan.forEach(bulan => {
-                    let col = document.createElement("div");
-                    col.className = "col-md-2 mb-2";
-                    col.style.animation = "fadeInUp 0.3s ease";
-                    col.innerHTML = `<button class="btn btn-outline-primary w-100 btn-bulan" 
-                                    onclick="filterByMonth('${bulan} ${tahun}', this)">
-                                <i class="bi bi-calendar-month"></i> ${bulan}
-                            </button>`;
-                    container.appendChild(col);
-                });
-
-                if (!adaDataUntukTahunIni) {
-                    container.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="bi bi-info-circle"></i> 
-                        Belum ada data laporan untuk tahun ${tahun}
-                    </div>
-                </div>
-            `;
-                } else if (container.children.length === 0) {
+                if (bulanYangDitampilkan.length === 0) {
                     container.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-warning text-center">
                         <i class="bi bi-exclamation-triangle"></i> 
-                        Tidak ada bulan dengan data untuk tahun ${tahun}
+                        Tidak ada data laporan untuk tahun ${tahun}
                     </div>
                 </div>
             `;
+                } else {
+                    bulanYangDitampilkan.forEach(bulan => {
+                        let col = document.createElement("div");
+                        col.className = "col-md-2 mb-2";
+                        col.innerHTML = `<button class="btn btn-outline-primary w-100 btn-bulan" 
+                                onclick="filterByMonth('${bulan} ${tahun}', this)">
+                                <i class="bi bi-calendar-month"></i> ${bulan}
+                            </button>`;
+                        container.appendChild(col);
+                    });
+                    console.log(`📅 Menampilkan ${container.children.length} bulan untuk tahun ${tahun}`);
                 }
 
-                // Tampilkan container dengan animasi fade in
                 container.style.opacity = "1";
-
-                console.log(`📅 Menampilkan ${container.children.length} bulan untuk tahun ${tahun}${adaDataUntukTahunIni ? ' (ada data)' : ' (belum ada data)'}`);
-            }, 200);
+            }, 100);
         }
 
         // Fungsi untuk menyembunyikan semua tombol bulan
