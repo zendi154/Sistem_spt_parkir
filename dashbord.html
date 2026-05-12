@@ -6879,82 +6879,139 @@
             showLoading("Memuat data...");
 
             try {
-                // AMBIL DATA DARI SERVER
                 const response = await fetch(scriptURL);
-                let dataFromServer = await response.json();
+                const rawData = await response.json();
 
-                console.log("Tipe data dari server:", typeof dataFromServer);
-                console.log("Apakah array?", Array.isArray(dataFromServer));
+                console.log("Raw data type:", typeof rawData);
+                console.log("Is array?", Array.isArray(rawData));
 
                 // ============================================
-                // PERBAIKAN: KONVERSI KE FORMAT ARRAY YANG BENAR
+                // KONVERSI FORMAT DATA YANG BENAR
                 // ============================================
-                let formattedData = [];
+                let extractedData = [];
 
-                if (Array.isArray(dataFromServer)) {
-                    // Jika sudah array, langsung pakai
-                    formattedData = dataFromServer;
-                } else if (typeof dataFromServer === 'object' && dataFromServer !== null) {
-                    // Jika objek, konversi ke array
-                    console.log("Data berbentuk objek, mengkonversi ke array...");
+                if (Array.isArray(rawData)) {
+                    // Cek apakah ini array of objects atau array of arrays
+                    if (rawData.length > 0 && rawData[0] && typeof rawData[0] === 'object' && !Array.isArray(rawData[0])) {
+                        // Sudah dalam format array of objects
+                        extractedData = rawData;
+                        console.log("Format: Array of Objects ✅");
+                    } else if (rawData.length > 0 && Array.isArray(rawData[0])) {
+                        // Format: Array of Arrays (2D array) - perlu dikonversi
+                        console.log("Format: 2D Array, perlu konversi...");
 
-                    // Cek apakah ada properti 'data' atau 'rows'
-                    if (dataFromServer.data && Array.isArray(dataFromServer.data)) {
-                        formattedData = dataFromServer.data;
-                    } else if (dataFromServer.rows && Array.isArray(dataFromServer.rows)) {
-                        formattedData = dataFromServer.rows;
-                    } else {
-                        // Konversi objek ke array
-                        formattedData = Object.values(dataFromServer);
-                        // Filter out non-data properties
-                        formattedData = formattedData.filter(item =>
-                            item && typeof item === 'object' && item["nama_notaris_&_ppat"]
-                        );
+                        // Ambil header dari baris pertama
+                        const headers = rawData[0];
+                        // Baris berikutnya adalah data
+                        for (let i = 1; i < rawData.length; i++) {
+                            const row = rawData[i];
+                            const obj = {};
+                            headers.forEach((header, idx) => {
+                                if (header && typeof header === 'string') {
+                                    obj[header] = row[idx];
+                                }
+                            });
+                            extractedData.push(obj);
+                        }
+                        console.log("Konversi selesai, jumlah data:", extractedData.length);
                     }
-                }
+                } else if (typeof rawData === 'object' && rawData !== null) {
+                    // Format: Object dengan properti numeric
+                    console.log("Format: Object dengan properti numeric, perlu konversi...");
 
-                // Jika masih kosong, coba ambil dari properti bernomor
-                if (formattedData.length === 0 && dataFromServer) {
-                    const keys = Object.keys(dataFromServer);
-                    for (const key of keys) {
-                        if (!isNaN(parseInt(key)) && dataFromServer[key] && typeof dataFromServer[key] === 'object') {
-                            formattedData.push(dataFromServer[key]);
+                    // Cari header
+                    let headers = [];
+                    let dataRows = [];
+
+                    // Coba cari properti yang berisi headers
+                    for (const key in rawData) {
+                        const val = rawData[key];
+                        if (Array.isArray(val) && val.length > 0) {
+                            if (val[0] && typeof val[0] === 'string' && val[0].includes("nama_notaris")) {
+                                headers = val;
+                            } else if (val[0] && typeof val[0] === 'string') {
+                                // Mungkin ini header
+                                headers = val;
+                            } else {
+                                dataRows.push(val);
+                            }
+                        }
+                    }
+
+                    // Jika tidak ada header yang ditemukan, buat sendiri
+                    if (headers.length === 0) {
+                        headers = ["id", "nama_notaris_&_ppat", "alamat", "nomor_surat", "tanggal_surat",
+                            "tanggal_diterima", "status_surat", "laporan_bulanan", "data_transaksi",
+                            "jumlah_laporan", "sspd_bphtb", "keterangan"];
+                    }
+
+                    // Konversi dataRows ke array of objects
+                    for (const row of dataRows) {
+                        if (Array.isArray(row)) {
+                            const obj = {};
+                            headers.forEach((header, idx) => {
+                                if (header && idx < row.length) {
+                                    obj[header] = row[idx];
+                                }
+                            });
+                            if (obj["laporan_bulanan"] || obj["nama_notaris_&_ppat"]) {
+                                extractedData.push(obj);
+                            }
                         }
                     }
                 }
 
-                console.log("Data setelah format ulang:", formattedData.length, "baris");
-
-                // TAMPILKAN SAMPLE UNTUK DEBUG
-                if (formattedData.length > 0) {
-                    console.log("Contoh data pertama yang sudah diformat:", formattedData[0]);
-                    console.log("laporan_bulanan:", formattedData[0]["laporan_bulanan"]);
-                    console.log("nama_notaris:", formattedData[0]["nama_notaris_&_ppat"]);
+                // Jika extractedData masih kosong, coba ambil dari properti bernomor
+                if (extractedData.length === 0 && typeof rawData === 'object') {
+                    const keys = Object.keys(rawData);
+                    for (const key of keys) {
+                        const val = rawData[key];
+                        if (val && typeof val === 'object' && val["laporan_bulanan"]) {
+                            extractedData.push(val);
+                        }
+                    }
                 }
 
-                // FILTER DATA - HAPUS YANG TIDAK VALID
-                const validData = formattedData.filter(row => {
+                console.log("✅ Data setelah konversi:", extractedData.length, "baris");
+
+                // Tampilkan sample untuk verifikasi
+                if (extractedData.length > 0) {
+                    console.log("Sample data ke-0:", extractedData[0]);
+                    console.log("laporan_bulanan sample:", extractedData[0]["laporan_bulanan"]);
+                    console.log("nama_notaris sample:", extractedData[0]["nama_notaris_&_ppat"]);
+                }
+
+                // FILTER: Hapus data yang tidak valid dan tahun 2027
+                const validData = extractedData.filter(row => {
                     const bulanLaporan = row["laporan_bulanan"];
-                    return bulanLaporan && bulanLaporan.trim() !== "";
+                    if (!bulanLaporan || typeof bulanLaporan !== 'string') return false;
+
+                    // Tolak tahun 2027
+                    if (bulanLaporan.includes("2027")) return false;
+
+                    // Ambil tahun
+                    const match = bulanLaporan.match(/\d{4}/);
+                    if (!match) return false;
+
+                    const tahun = parseInt(match[0]);
+                    return tahun >= 2025 && tahun <= 2028;
                 });
 
-                console.log("Data setelah filter:", validData.length, "baris");
+                console.log("✅ Data setelah filter valid:", validData.length, "baris");
 
-                // AMBIL DATA PENSIUN
+                // Ambil data pensiun
                 try {
                     const pensiunResponse = await fetch(`${scriptURL}?action=get_pensiun`);
                     const pensiunData = await pensiunResponse.json();
                     dataPensiunGlobal = Array.isArray(pensiunData) ? pensiunData : [];
                 } catch (err) {
-                    console.error("Gagal ambil pensiun:", err);
                     dataPensiunGlobal = [];
                 }
 
                 hideLoading();
 
-                // CEK DATA KOSONG
-                if (!validData || validData.length === 0) {
-                    console.warn("Data kosong dari server");
+                if (validData.length === 0) {
+                    console.warn("Tidak ada data valid setelah konversi");
                     allData = [];
                     currentFilteredData = [];
                     renderTable([]);
@@ -6963,34 +7020,26 @@
                     return;
                 }
 
-                // SIMPAN KE VARIABEL GLOBAL
+                // Simpan ke global
                 lastData = JSON.stringify(validData);
                 allData = sortDataByMonth(validData);
                 currentFilteredData = allData;
 
-                // RENDER TABLE
                 renderTable(allData);
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
                 isiDropdownTahunOtomatis();
 
-                // UPDATE DROPDOWN NOTARIS PENSIUN
                 if (document.getElementById('selectNotarisPensiun')) {
                     isiDropdownNotaris();
                 }
 
-                // TAMPILKAN TABLE PENSIUN JIKA SEDANG TERBUKA
-                const cardPensiun = document.getElementById('cardPensiun');
-                if (cardPensiun && cardPensiun.style.display === 'block') {
-                    await tampilkanTablePensiun();
-                }
-
-                console.log("✅ LoadDataSheet SELESAI! Total data:", allData.length);
+                console.log("✅ LoadDataSheet SELESAI! Total data tampil:", allData.length);
 
             } catch (error) {
                 hideLoading();
                 console.error("Error loadDataSheet:", error);
-                showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
+                showError("Error", "Gagal memuat data: " + error.message);
                 renderTable([]);
                 isiDropdownTahunOtomatis();
             }
