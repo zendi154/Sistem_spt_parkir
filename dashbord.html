@@ -2989,6 +2989,52 @@
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwxtKyFS1e1DCMNHgaJ3dS88hPKbImp5PCPpNL1hPZ4nkjEkB-me6hzKEHvmRWIATAw/exec';
+        // CSS untuk badge pensiun (tambahkan ke style yang sudah ada)
+        const stylePensiun = document.createElement('style');
+        stylePensiun.innerHTML = `
+        .badge-pensiun {
+            background-color: #6c757d;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        .btn-filter {
+            transition: all 0.3s ease;
+        }
+        .btn-filter.active {
+            background: #0284c7 !important;
+            color: white !important;
+        }
+        .btn-pensiun {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+        }
+        .btn-pensiun:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            color: white;
+        }
+        .modal-pensiun .modal-content {
+            border-radius: 15px;
+        }
+        .btn-sm-action {
+            padding: 2px 6px;
+            font-size: 11px;
+        }
+        `;
+        document.head.appendChild(stylePensiun);
+
+        // Panggil inisialisasi saat halaman load
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => {
+                tambahBadgeJumlahNotaris();
+                updateJumlahNotarisAktif();
+            }, 2000);
+        });
+
         const form = document.forms['LAPORAN NOTARIS'];
         const btnKirim = document.querySelector('.btn-kirim');
         const loading = document.querySelector('.loading-wrapper');
@@ -3116,7 +3162,7 @@
             if (!tbody) return;
             tbody.innerHTML = "";
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak Ada Data<\/td><\/tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center">Tidak Ada Data</td></tr>';
                 hitungTotal();
                 return;
             }
@@ -3136,36 +3182,42 @@
 
                 if (hasUpload) {
                     actionHTML = `<div class="text-center">
-                <i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i>
-            </div>`;
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 18px;" title="LUNAS ✅"></i>
+                </div>`;
                     tr.style.backgroundColor = "#d4edda";
                 }
+
+                // PRIORITAS EMAIL STATUS
                 else if (statusEmail === "WAITING_RESEND" || statusEmail === "EMAIL_TERKIRIM") {
                     actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-warning btn-sm">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
                     tr.style.backgroundColor = "#fff3cd";
                 }
+
+                // TERLAMBAT
                 else if (statusTerlambat === "TIDAK VALID") {
                     actionHTML = `<div class="text-center">
-                <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-danger btn-sm">
-                    <i class="bi bi-envelope-fill"></i>
-                </button>
-                <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </div>`;
+                    <button type="button" onclick="bukaModalEmail(this.closest('tr'))" class="btn btn-danger btn-sm">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" onclick="hapusData(this)" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>`;
                     tr.style.backgroundColor = "#f8d7da";
                 }
+
+                // VALID
                 else {
                     actionHTML = `<div class="text-center">
-                <i class="bi bi-check-lg text-success" title="Valid"></i>
-            </div>`;
+                    <i class="bi bi-check-lg text-success" title="Valid"></i>
+                </div>`;
                     tr.style.backgroundColor = "transparent";
                 }
 
@@ -3174,21 +3226,23 @@
                 let tgl = getTanggal(row["tanggal_diterima"]);
                 let bolehUpload = isFirst && tgl > 10;
 
+                // Cek apakah sudah upload bukti bayar dari kolom file_bukti_bayar
                 if (row["file_bukti_bayar"]) {
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_bukti_bayar"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
                 } else if (bolehUpload) {
+                    // Kirimkan bulan juga saat upload
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
-                <i class="bi bi-cloud-upload-fill"></i>
-                <input type="file" accept="application/pdf,image/jpeg,image/png" 
-                    onchange="uploadBuktiBayar(this, '${row["id"]}', '${row["laporan_bulanan"]}')" 
-                    style="display:none;">
-            </label>`;
+                    <i class="bi bi-cloud-upload-fill"></i>
+                    <input type="file" accept="application/pdf,image/jpeg,image/png" 
+                        onchange="uploadBuktiBayar(this, '${row["id"]}', '${row["laporan_bulanan"]}')" 
+                        style="display:none;">
+                </label>`;
                 } else {
                     buktiSuratHTML = `<span style="color:gray;">-</span>`;
                 }
 
-                // ✅ BADGE PENSIUN - HANYA LOGIKA, TANPA CSS/EVENT
-                const isPensiun = row && row["id"] ? isNotarisPensiunCheck(row["id"]) : false;
+                // CEK PENSIUN
+                const isPensiun = isNotarisPensiunCheck(row["id"]);
                 let namaHtml = row["nama_notaris_&_ppat"] || "";
                 if (isPensiun) {
                     const dataP = getDataPensiunById(row["id"]);
@@ -3196,25 +3250,25 @@
                 }
 
                 tr.innerHTML = `
-            <td>${row["id"] || ""}<\/td>
-            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}<\/td>
-            <td>${row["alamat"] || ""}<\/td>
-            <td>${row["nomor_surat"] || ""}<\/td>
-            <td>${row["tanggal_surat"] || ""}<\/td>
-            <td>${row["tanggal_diterima"] || ""}<\/td>
-            <td>${row["status_surat"] || ""}<\/td>
-            <td>${row["laporan_bulanan"] || ""}<\/td>
-            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}<\/td>
-            <td>${row["jumlah_laporan"] || ""}<\/td>
-            <td>${formatRupiahTabel(row["sspd_bphtb"])}<\/td>
-            <td>${row["keterangan"] || ""}<\/td>
-            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}<\/td>
-            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}<\/td>
-            <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? `<b>${row["nomor_pemberitahuan"]}</b>` : '-'}<\/td>
-            <td style="text-align:center;">${row["file_surat_upload"] ? `<a href="#" onclick="printPDF('${row["file_surat_upload"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}<\/td>
-            <td style="text-align:center;">${buktiSuratHTML}<\/td>
-            <td style="text-align:center;">${catatanAuto}<\/td>
-            <td style="text-align:center;">${actionHTML}<\/td>
+            <td>${row["id"] || ""}</td>
+            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:11px;"> (duplikat)</span>' : ''}</td>
+            <td>${row["alamat"] || ""}</td>
+            <td>${row["nomor_surat"] || ""}</td>
+            <td>${row["tanggal_surat"] || ""}</td>
+            <td>${row["tanggal_diterima"] || ""}</td>
+            <td>${row["status_surat"] || ""}</td>
+            <td>${row["laporan_bulanan"] || ""}</td>
+            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
+            <td>${row["jumlah_laporan"] || ""}</td>
+            <td>${formatRupiahTabel(row["sspd_bphtb"])}</td>
+            <td>${row["keterangan"] || ""}</td>
+            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}</td>
+            <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? `<b>${row["nomor_pemberitahuan"]}</b>` : '-'}</td>
+            <td style="text-align:center;">${row["file_surat_upload"] ? `<a href="#" onclick="printPDF('${row["file_surat_upload"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}</td>
+            <td style="text-align:center;">${buktiSuratHTML}</td>
+            <td style="text-align:center;">${catatanAuto}</td>
+            <td style="text-align:center;">${actionHTML}</td>
         `;
                 tbody.appendChild(tr);
             });
@@ -6911,6 +6965,7 @@
             showLoading("Memuat data...");
 
             try {
+                // Gunakan Promise.allSettled agar tidak gagal total
                 const [dataResult, pensiunResult] = await Promise.allSettled([
                     fetch(scriptURL).then(res => {
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -6922,32 +6977,12 @@
                     getNotarisPensiun()
                 ]);
 
-                let rawData = [];
+                let data = [];
                 if (dataResult.status === 'fulfilled' && Array.isArray(dataResult.value)) {
-                    rawData = dataResult.value;
+                    data = dataResult.value;
                 } else {
                     console.error("Gagal ambil data utama:", dataResult.reason);
-                    rawData = [];
-                }
-
-                // ============================================
-                // KONVERSI DATA DARI FORMAT YANG BENAR
-                // ============================================
-                let data = [];
-                if (rawData.length > 0) {
-                    // Cek apakah data perlu dikonversi
-                    const firstItem = rawData[0];
-                    const hasValidKey = firstItem && (firstItem["laporan_bulanan"] !== undefined || firstItem["nama_notaris_&_ppat"] !== undefined);
-
-                    if (!hasValidKey && firstItem[0] !== undefined) {
-                        console.log("⚠️ Data dalam format index, melakukan konversi...");
-                        data = convertDataFromSheet(rawData);
-                        console.log("✅ Data setelah konversi:", data.length, "records");
-                        console.log("Contoh data setelah konversi:", data[0]);
-                    } else {
-                        data = rawData;
-                        console.log("✅ Data sudah dalam format yang benar");
-                    }
+                    data = [];
                 }
 
                 if (pensiunResult.status === 'fulfilled') {
@@ -6965,6 +7000,7 @@
                     currentFilteredData = [];
                     renderTable([]);
                     tampilkanRingkasanBulanan();
+                    // Tetap isi dropdown tahun meskipun data kosong
                     isiDropdownTahunOtomatis();
                     return;
                 }
@@ -6973,13 +7009,26 @@
                 allData = sortDataByMonth(data);
                 currentFilteredData = allData;
 
-                // Cek data untuk debugging
-                console.log("Cek laporan_bulanan:", allData[0]?.["laporan_bulanan"]);
-                console.log("Cek sspd_bphtb:", allData[0]?.["sspd_bphtb"]);
+                // Terapkan filter jika ada
+                if (currentFilterStatus === 'active') {
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
+                    currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
+                    renderTable(currentFilteredData);
+                } else if (currentFilterStatus === 'pensiun') {
+                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
+                    currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
+                    renderTable(currentFilteredData);
+                } else {
+                    renderTable(allData);
+                    tampilkanRingkasanBulanan();
+                }
 
-                renderTable(allData);
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
+
+                // ============================================
+                // ISI DROPDOWN TAHUN OTOMATIS DARI DATA
+                // ============================================
                 isiDropdownTahunOtomatis();
 
                 if (document.getElementById('selectNotarisPensiun')) {
@@ -6995,76 +7044,12 @@
                 hideLoading();
                 console.error("Error loadDataSheet:", error);
                 showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
+                // Tampilkan data kosong
                 renderTable([]);
                 tampilkanRingkasanBulanan();
+                // Tetap coba isi dropdown tahun
                 isiDropdownTahunOtomatis();
             }
-        }
-
-        function convertDataFromSheet(rawData) {
-            if (!Array.isArray(rawData) || rawData.length === 0) return [];
-
-            const convertedData = [];
-
-            for (let i = 0; i < rawData.length; i++) {
-                const row = rawData[i];
-
-                // Ambil nilai berdasarkan index (0,1,2,3,4,5,6,7,8,9,10,11)
-                // karena key-nya tidak konsisten
-                const values = [];
-
-                // Kumpulkan semua nilai berdasarkan urutan index
-                for (let j = 0; j <= 11; j++) {
-                    if (row[j] !== undefined) {
-                        values[j] = row[j];
-                    } else {
-                        // Coba cari dari key yang berupa angka
-                        const keyAngka = Object.keys(row).find(k => !isNaN(parseInt(k)) && parseInt(k) === j);
-                        if (keyAngka) {
-                            values[j] = row[keyAngka];
-                        } else {
-                            values[j] = "";
-                        }
-                    }
-                }
-
-                // Mapping berdasarkan urutan kolom yang benar
-                const newRow = {
-                    "sspd_bphtb": values[0] || "",
-                    "tanggal_diterima_timestamp": values[1] || "",
-                    "id": values[2] || "",
-                    "nama_notaris_&_ppat": values[3] || "",
-                    "alamat": values[4] || "",
-                    "nomor_surat": values[5] || "",
-                    "tanggal_surat": values[6] || "",
-                    "tanggal_diterima": values[7] || "",
-                    "status_surat": values[8] || "",
-                    "laporan_bulanan": values[9] || "",
-                    "data_transaksi": values[10] || "",
-                    "keterangan": values[11] || "",
-                    "jumlah_laporan": "1",
-                    // Field tambahan default kosong
-                    "nomor_std": "",
-                    "file_pdf_denda": "",
-                    "nomor_pemberitahuan": "",
-                    "file_surat_upload": "",
-                    "file_bukti_bayar": "",
-                    "status_email": ""
-                };
-
-                // Parse data_transaksi jika ada
-                if (newRow.data_transaksi && typeof newRow.data_transaksi === 'string' && newRow.data_transaksi.startsWith('[')) {
-                    try {
-                        newRow.data_transaksi = JSON.parse(newRow.data_transaksi);
-                    } catch (e) {
-                        console.error("Gagal parse transaksi:", e);
-                    }
-                }
-
-                convertedData.push(newRow);
-            }
-
-            return convertedData;
         }
 
         // ============================================
@@ -7075,8 +7060,8 @@
             const tahunSelect = document.getElementById('filterTahun');
             if (!tahunSelect) return;
 
+            // Kumpulkan SEMUA tahun dari data laporan_bulanan
             const tahunSet = new Set();
-            const tahunSekarang = new Date().getFullYear();
 
             if (allData && allData.length > 0) {
                 allData.forEach(row => {
@@ -7084,26 +7069,23 @@
                     if (bulanLaporan) {
                         const match = bulanLaporan.match(/\d{4}/);
                         if (match) {
-                            const tahun = parseInt(match[0]);
-                            // HANYA TAMPILKAN TAHUN <= TAHUN SEKARANG + 1
-                            // Ini akan mencegah tahun 2027 muncul
-                            if (tahun <= tahunSekarang + 1 && tahun >= 2020) {
-                                tahunSet.add(tahun);
-                            } else {
-                                console.warn(`Tahun ${tahun} (dari ${bulanLaporan}) diabaikan karena tidak valid`);
-                            }
+                            tahunSet.add(parseInt(match[0]));
                         }
                     }
                 });
             }
 
-            // Jika tidak ada data, gunakan tahun sekarang
+            // Jika tidak ada data, gunakan tahun saat ini
             if (tahunSet.size === 0) {
+                const tahunSekarang = new Date().getFullYear();
                 tahunSet.add(tahunSekarang);
+                tahunSet.add(tahunSekarang + 1);
             }
 
+            // Urutkan tahun dari yang TERBARU ke yang LAMA
             const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
 
+            // Isi dropdown
             tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
             tahunList.forEach(tahun => {
                 tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
@@ -7111,6 +7093,7 @@
 
             console.log(`✅ Dropdown tahun diisi dengan: ${tahunList.join(', ')} (${tahunList.length} tahun)`);
 
+            // Auto-pilih tahun terbaru dan generate bulan
             if (tahunList.length > 0) {
                 tahunSelect.value = tahunList[0];
                 if (typeof generateBulan === 'function') {
