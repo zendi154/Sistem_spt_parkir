@@ -3188,7 +3188,7 @@
                 }
 
                 // ✅ BADGE PENSIUN - HANYA LOGIKA, TANPA CSS/EVENT
-                const isPensiun = isNotarisPensiunCheck(row["id"]);
+                const isPensiun = row && row["id"] ? isNotarisPensiunCheck(row["id"]) : false;
                 let namaHtml = row["nama_notaris_&_ppat"] || "";
                 if (isPensiun) {
                     const dataP = getDataPensiunById(row["id"]);
@@ -6907,12 +6907,10 @@
         }
 
         // Update fungsi loadDataSheet yang sudah ada (tambahkan ini)
-        // Update fungsi loadDataSheet yang sudah ada (tambahkan ini)
         async function loadDataSheet() {
             showLoading("Memuat data...");
 
             try {
-                // Gunakan Promise.allSettled agar tidak gagal total
                 const [dataResult, pensiunResult] = await Promise.allSettled([
                     fetch(scriptURL).then(res => {
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -6933,47 +6931,19 @@
                 }
 
                 // ============================================
-                // NORMALISASI DATA - PERBAIKI FORMAT YANG SALAH
+                // KONVERSI DATA DARI FORMAT YANG BENAR
                 // ============================================
                 let data = [];
-
                 if (rawData.length > 0) {
+                    // Cek apakah data perlu dikonversi
                     const firstItem = rawData[0];
-                    const keys = Object.keys(firstItem);
+                    const hasValidKey = firstItem && (firstItem["laporan_bulanan"] !== undefined || firstItem["nama_notaris_&_ppat"] !== undefined);
 
-                    // Cek apakah data menggunakan index angka (0,1,2) sebagai key
-                    const isIndexedFormat = keys.length > 0 && !isNaN(parseInt(keys[0]));
-
-                    if (isIndexedFormat) {
-                        console.warn("⚠️ Data dalam format index, melakukan normalisasi...");
-                        console.log("Contoh data sebelum normalisasi:", rawData[0]);
-
-                        // Mapping ulang berdasarkan urutan kolom di Google Sheet
-                        data = rawData.map(row => {
-                            return {
-                                "id": row[0] || row["id"] || "",
-                                "nama_notaris_&_ppat": row[1] || row["nama_notaris_&_ppat"] || "",
-                                "alamat": row[2] || row["alamat"] || "",
-                                "nomor_surat": row[3] || row["nomor_surat"] || "",
-                                "tanggal_surat": row[4] || row["tanggal_surat"] || "",
-                                "tanggal_diterima": row[5] || row["tanggal_diterima"] || "",
-                                "status_surat": row[6] || row["status_surat"] || "",
-                                "laporan_bulanan": row[7] || row["laporan_bulanan"] || "",
-                                "data_transaksi": row[8] || row["data_transaksi"] || "",
-                                "jumlah_laporan": row[9] || row["jumlah_laporan"] || "",
-                                "sspd_bphtb": row[10] || row["sspd_bphtb"] || "",
-                                "keterangan": row[11] || row["keterangan"] || "",
-                                "nomor_std": row[12] || row["nomor_std"] || "",
-                                "file_pdf_denda": row[13] || row["file_pdf_denda"] || "",
-                                "nomor_pemberitahuan": row[14] || row["nomor_pemberitahuan"] || "",
-                                "file_surat_upload": row[15] || row["file_surat_upload"] || "",
-                                "file_bukti_bayar": row[16] || row["file_bukti_bayar"] || "",
-                                "status_email": row[17] || row["status_email"] || ""
-                            };
-                        });
-
-                        console.log("✅ Data setelah normalisasi:", data.length, "records");
-                        console.log("Contoh data setelah normalisasi:", data[0]);
+                    if (!hasValidKey && firstItem[0] !== undefined) {
+                        console.log("⚠️ Data dalam format index, melakukan konversi...");
+                        data = convertDataFromSheet(rawData);
+                        console.log("✅ Data setelah konversi:", data.length, "records");
+                        console.log("Contoh data setelah konversi:", data[0]);
                     } else {
                         data = rawData;
                         console.log("✅ Data sudah dalam format yang benar");
@@ -7003,19 +6973,11 @@
                 allData = sortDataByMonth(data);
                 currentFilteredData = allData;
 
-                // Terapkan filter jika ada
-                if (currentFilterStatus === 'active') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else if (currentFilterStatus === 'pensiun') {
-                    const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
-                    currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
-                    renderTable(currentFilteredData);
-                } else {
-                    renderTable(allData);
-                }
+                // Cek data untuk debugging
+                console.log("Cek laporan_bulanan:", allData[0]?.["laporan_bulanan"]);
+                console.log("Cek sspd_bphtb:", allData[0]?.["sspd_bphtb"]);
 
+                renderTable(allData);
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
                 isiDropdownTahunOtomatis();
@@ -7037,6 +6999,53 @@
                 tampilkanRingkasanBulanan();
                 isiDropdownTahunOtomatis();
             }
+        }
+
+        function convertDataFromSheet(rawData) {
+            if (!Array.isArray(rawData) || rawData.length === 0) return [];
+
+            const convertedData = [];
+
+            for (let i = 0; i < rawData.length; i++) {
+                const row = rawData[i];
+
+                // Ambil nilai berdasarkan index (karena key-nya dinamis)
+                const newRow = {
+                    "sspd_bphtb": row[0] || "",
+                    "tanggal_diterima_timestamp": row[1] || "",
+                    "id": row[2] || "",
+                    "nama_notaris_&_ppat": row[3] || "",
+                    "alamat": row[4] || "",
+                    "nomor_surat": row[5] || "",
+                    "tanggal_surat": row[6] || "",
+                    "tanggal_diterima": row[7] || "",
+                    "status_surat": row[8] || "",
+                    "laporan_bulanan": row[9] || "",
+                    "data_transaksi": row[10] || "",
+                    "keterangan": row[11] || "",
+                    // Field tambahan yang mungkin ada
+                    "nomor_std": row[12] || "",
+                    "file_pdf_denda": row[13] || "",
+                    "nomor_pemberitahuan": row[14] || "",
+                    "file_surat_upload": row[15] || "",
+                    "file_bukti_bayar": row[16] || "",
+                    "status_email": row[17] || "",
+                    "jumlah_laporan": "1" // default
+                };
+
+                // Jika data_transaksi ada, parse JSON
+                if (newRow.data_transaksi && typeof newRow.data_transaksi === 'string' && newRow.data_transaksi.startsWith('[')) {
+                    try {
+                        newRow.data_transaksi = JSON.parse(newRow.data_transaksi);
+                    } catch (e) {
+                        console.error("Gagal parse transaksi:", e);
+                    }
+                }
+
+                convertedData.push(newRow);
+            }
+
+            return convertedData;
         }
 
         // ============================================
