@@ -6871,26 +6871,15 @@
             }
         }
 
-        // Update fungsi loadDataSheet yang sudah ada (tambahkan ini)
+        // ============================================
+        // FUNGSI LOAD DATA SHEET - VERSION FINAL
+        // ============================================
+
         async function loadDataSheet() {
             showLoading("Memuat data...");
 
             try {
-                // FILTER DATA: HAPUS BARIS DENGAN TAHUN TIDAK VALID DI LAPORAN_BULANAN
-                if (Array.isArray(data)) {
-                    data = data.filter(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        if (!bulanLaporan) return false;
-                        const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
-                        if (!match) return false;
-                        const tahun = parseInt(match[0]);
-                        const currentYear = new Date().getFullYear();
-                        // Hanya terima tahun antara 2020 sampai currentYear + 1
-                        return tahun >= 2020 && tahun <= currentYear + 1;
-                    });
-                }
-
-                // Gunakan Promise.allSettled agar tidak gagal total
+                // 1. AMBIL DATA DARI SERVER
                 const [dataResult, pensiunResult] = await Promise.allSettled([
                     fetch(scriptURL).then(res => {
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -6902,16 +6891,38 @@
                     getNotarisPensiun()
                 ]);
 
-                let data = [];
+                // 2. INISIALISASI data (setelah fetch selesai)
+                let rawData = [];
                 if (dataResult.status === 'fulfilled' && Array.isArray(dataResult.value)) {
-                    data = dataResult.value;
+                    rawData = dataResult.value;
+                    console.log(`✅ Data mentah dari server: ${rawData.length} baris`);
                 } else {
                     console.error("Gagal ambil data utama:", dataResult.reason);
-                    data = [];
+                    rawData = [];
                 }
 
+                // 3. FILTER DATA - HAPUS BARIS DENGAN TAHUN TIDAK VALID
+                const currentYear = new Date().getFullYear();
+                const validData = rawData.filter(row => {
+                    const bulanLaporan = row["laporan_bulanan"];
+                    if (!bulanLaporan) return false;
+                    const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
+                    if (!match) return false;
+                    const tahun = parseInt(match[0]);
+                    // Hanya terima tahun antara 2020 sampai currentYear + 1
+                    const isValid = tahun >= 2020 && tahun <= currentYear + 1;
+                    if (!isValid) {
+                        console.log(`⚠️ Data dihapus - tahun tidak valid: "${bulanLaporan}"`);
+                    }
+                    return isValid;
+                });
+
+                console.log(`✅ Data setelah filter: ${validData.length} baris (dihilangkan ${rawData.length - validData.length} baris)`);
+
+                // 4. AMBIL DATA PENSIUN
                 if (pensiunResult.status === 'fulfilled') {
                     dataPensiunGlobal = Array.isArray(pensiunResult.value) ? pensiunResult.value : [];
+                    console.log(`✅ Data pensiun: ${dataPensiunGlobal.length} notaris`);
                 } else {
                     console.error("Gagal ambil data pensiun:", pensiunResult.reason);
                     dataPensiunGlobal = [];
@@ -6919,22 +6930,23 @@
 
                 hideLoading();
 
-                if (!data || data.length === 0) {
+                // 5. CEK DATA KOSONG
+                if (!validData || validData.length === 0) {
                     console.warn("Data kosong dari server");
                     allData = [];
                     currentFilteredData = [];
                     renderTable([]);
                     tampilkanRingkasanBulanan();
-                    // Tetap isi dropdown tahun meskipun data kosong
                     isiDropdownTahunOtomatis();
                     return;
                 }
 
-                lastData = JSON.stringify(data);
-                allData = sortDataByMonth(data);
+                // 6. SIMPAN KE VARIABEL GLOBAL
+                lastData = JSON.stringify(validData);
+                allData = sortDataByMonth(validData);
                 currentFilteredData = allData;
 
-                // Terapkan filter jika ada
+                // 7. TERAPKAN FILTER STATUS (AKTIF/PENSIUN)
                 if (currentFilterStatus === 'active') {
                     const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
                     currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
@@ -6947,12 +6959,9 @@
                     renderTable(allData);
                 }
 
+                // 8. UPDATE TAMPILAN LAINNYA
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
-
-                // ============================================
-                // ISI DROPDOWN TAHUN OTOMATIS DARI DATA
-                // ============================================
                 isiDropdownTahunOtomatis();
 
                 if (document.getElementById('selectNotarisPensiun')) {
@@ -6964,13 +6973,13 @@
                     await tampilkanTablePensiun();
                 }
 
+                console.log("✅ LoadDataSheet SELESAI dengan sukses!");
+
             } catch (error) {
                 hideLoading();
                 console.error("Error loadDataSheet:", error);
                 showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
-                // Tampilkan data kosong
                 renderTable([]);
-                // Tetap coba isi dropdown tahun
                 isiDropdownTahunOtomatis();
             }
         }
@@ -6978,7 +6987,6 @@
         // ============================================
         // FUNGSI MENGISI DROPDOWN TAHUN OTOMATIS DARI DATA
         // ============================================
-
         function isiDropdownTahunOtomatis() {
             const tahunSelect = document.getElementById('filterTahun');
             if (!tahunSelect) return;
