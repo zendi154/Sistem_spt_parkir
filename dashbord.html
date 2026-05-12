@@ -6881,24 +6881,64 @@
             try {
                 // AMBIL DATA DARI SERVER
                 const response = await fetch(scriptURL);
-                const dataFromServer = await response.json();
+                let dataFromServer = await response.json();
 
-                console.log("Data dari server:", dataFromServer.length, "baris");
+                console.log("Tipe data dari server:", typeof dataFromServer);
+                console.log("Apakah array?", Array.isArray(dataFromServer));
 
-                // TAMPILKAN SAMPLE UNTUK DEBUG
-                if (dataFromServer.length > 0) {
-                    console.log("Contoh data pertama:", dataFromServer[0]);
-                    console.log("Contoh laporan_bulanan:", dataFromServer[0]["laporan_bulanan"]);
+                // ============================================
+                // PERBAIKAN: KONVERSI KE FORMAT ARRAY YANG BENAR
+                // ============================================
+                let formattedData = [];
+
+                if (Array.isArray(dataFromServer)) {
+                    // Jika sudah array, langsung pakai
+                    formattedData = dataFromServer;
+                } else if (typeof dataFromServer === 'object' && dataFromServer !== null) {
+                    // Jika objek, konversi ke array
+                    console.log("Data berbentuk objek, mengkonversi ke array...");
+
+                    // Cek apakah ada properti 'data' atau 'rows'
+                    if (dataFromServer.data && Array.isArray(dataFromServer.data)) {
+                        formattedData = dataFromServer.data;
+                    } else if (dataFromServer.rows && Array.isArray(dataFromServer.rows)) {
+                        formattedData = dataFromServer.rows;
+                    } else {
+                        // Konversi objek ke array
+                        formattedData = Object.values(dataFromServer);
+                        // Filter out non-data properties
+                        formattedData = formattedData.filter(item =>
+                            item && typeof item === 'object' && item["nama_notaris_&_ppat"]
+                        );
+                    }
                 }
 
-                // FILTER DATA - VERSI SEDERHANA (JANGAN TERLALU KETAT)
-                const validData = dataFromServer.filter(row => {
+                // Jika masih kosong, coba ambil dari properti bernomor
+                if (formattedData.length === 0 && dataFromServer) {
+                    const keys = Object.keys(dataFromServer);
+                    for (const key of keys) {
+                        if (!isNaN(parseInt(key)) && dataFromServer[key] && typeof dataFromServer[key] === 'object') {
+                            formattedData.push(dataFromServer[key]);
+                        }
+                    }
+                }
+
+                console.log("Data setelah format ulang:", formattedData.length, "baris");
+
+                // TAMPILKAN SAMPLE UNTUK DEBUG
+                if (formattedData.length > 0) {
+                    console.log("Contoh data pertama yang sudah diformat:", formattedData[0]);
+                    console.log("laporan_bulanan:", formattedData[0]["laporan_bulanan"]);
+                    console.log("nama_notaris:", formattedData[0]["nama_notaris_&_ppat"]);
+                }
+
+                // FILTER DATA - HAPUS YANG TIDAK VALID
+                const validData = formattedData.filter(row => {
                     const bulanLaporan = row["laporan_bulanan"];
-                    // Hanya filter yang benar-benar kosong
                     return bulanLaporan && bulanLaporan.trim() !== "";
                 });
 
-                console.log("Data setelah filter (hapus kosong):", validData.length, "baris");
+                console.log("Data setelah filter:", validData.length, "baris");
 
                 // AMBIL DATA PENSIUN
                 try {
