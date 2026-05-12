@@ -8273,288 +8273,6 @@
             });
         }
 
-        // Fungsi untuk mengirim notifikasi WhatsApp ke notaris yang belum lapor
-        async function kirimNotifikasiWABelumLapor(daftarNotaris, periode) {
-            // Tampilkan loading
-            const loadingSwal = Swal.fire({
-                title: 'Memproses...',
-                html: `
-            <div class="text-center">
-                <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-                <p><strong>Menyiapkan daftar WhatsApp...</strong></p>
-                <div class="progress mt-3" style="height: 8px;">
-                    <div id="waProgress" class="progress-bar bg-success" style="width: 0%;"></div>
-                </div>
-                <p id="waProgressText" class="text-muted mt-2 small">Memeriksa nomor WhatsApp...</p>
-            </div>
-        `,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false
-            });
-
-            const updateWAPercent = (percent, text) => {
-                const progressBar = document.getElementById('waProgress');
-                const progressText = document.getElementById('waProgressText');
-                if (progressBar) progressBar.style.width = `${percent}%`;
-                if (progressText) progressText.textContent = text;
-            };
-
-            try {
-                const daftarWa = [];
-
-                for (let i = 0; i < daftarNotaris.length; i++) {
-                    const notaris = daftarNotaris[i];
-                    const persen = ((i + 1) / daftarNotaris.length * 80);
-                    updateWAPercent(persen, `Memeriksa ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...`);
-
-                    const nomorWa = await cariNomorWA(notaris.nama);
-                    daftarWa.push({
-                        nama: notaris.nama,
-                        id: notaris.id,
-                        nomor_wa: nomorWa
-                    });
-
-                    // Delay kecil agar tidak overload
-                    await new Promise(r => setTimeout(r, 100));
-                }
-
-                updateWAPercent(100, 'Selesai memeriksa!');
-                await new Promise(r => setTimeout(r, 500));
-                await loadingSwal.close();
-
-                // Filter notaris yang punya nomor WA
-                const punyaWa = daftarWa.filter(item => item.nomor_wa);
-                const tidakPunyaWa = daftarWa.filter(item => !item.nomor_wa);
-
-                // Buat daftar HTML
-                let daftarHtml = `
-            <div class="mb-3">
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i> 
-                    <strong>${punyaWa.length}</strong> Notaris memiliki nomor WhatsApp
-                </div>
-                ${tidakPunyaWa.length > 0 ? `
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill"></i> 
-                    <strong>${tidakPunyaWa.length}</strong> Notaris belum memiliki nomor WhatsApp
-                </div>
-                ` : ''}
-            </div>
-            <div style="max-height: 450px; overflow-y: auto;">
-                <table class="table table-sm table-hover" style="font-size: 12px;">
-                    <thead class="table-primary sticky-top">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Notaris</th>
-                            <th>Nomor WA</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-                daftarWa.forEach((item, idx) => {
-                    const waUrl = item.nomor_wa ? `https://wa.me/${item.nomor_wa}?text=${encodeURIComponent(generateWAMessage(item.nama, periode))}` : '#';
-                    daftarHtml += `
-                <tr>
-                    <td class="text-center">${idx + 1}</td>
-                    <td>
-                        <strong>${escapeHtml(item.nama)}</strong>
-                        <br><small class="text-muted">${escapeHtml(item.id)}</small>
-                    </td>
-                    <td>
-                        ${item.nomor_wa ?
-                            `<span class="badge bg-success"><i class="bi bi-whatsapp"></i> ${item.nomor_wa}</span>` :
-                            '<span class="badge bg-secondary">Belum ada</span>'
-                        }
-                    </td>
-                    <td class="text-center">
-                        ${item.nomor_wa ?
-                            `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm">
-                                <i class="bi bi-whatsapp"></i> Kirim
-                            </a>` :
-                            `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')">
-                                <i class="bi bi-pencil"></i> Input No
-                            </button>`
-                        }
-                    </td>
-                </tr>
-            `;
-                });
-
-                daftarHtml += `
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-3 text-center">
-                <button class="btn btn-outline-primary btn-sm" onclick="copyAllWANumbersFromModal()">
-                    <i class="bi bi-clipboard"></i> Copy Semua Nomor WA
-                </button>
-            </div>
-        `;
-
-                await Swal.fire({
-                    title: `📱 Kirim Notifikasi WhatsApp`,
-                    html: daftarHtml,
-                    icon: 'info',
-                    width: '900px',
-                    showCloseButton: true,
-                    showConfirmButton: false,
-                    footer: `
-                <div class="w-100">
-                    <small class="text-muted">
-                        <i class="bi bi-lightbulb"></i> 
-                        Klik tombol WhatsApp untuk membuka chat, pesan sudah otomatis terisi
-                    </small>
-                </div>
-            `
-                });
-
-            } catch (error) {
-                await loadingSwal.close();
-                console.error('Error:', error);
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Terjadi kesalahan saat menyiapkan notifikasi WhatsApp',
-                    confirmButtonColor: '#dc3545'
-                });
-            }
-        }
-
-        // Fungsi untuk mengirim notifikasi email ke notaris yang belum lapor
-        async function kirimNotifikasiEmailBelumLapor(daftarNotaris, periode) {
-            // Tampilkan loading dengan progress
-            const loadingSwal = Swal.fire({
-                title: 'Mengirim Notifikasi Email...',
-                html: `
-            <div class="text-center">
-                <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
-                <p><strong>Mengirim email ke ${daftarNotaris.length} notaris...</strong></p>
-                <div class="progress mt-3" style="height: 10px;">
-                    <div id="emailProgress" class="progress-bar bg-danger" style="width: 0%;"></div>
-                </div>
-                <p id="emailProgressText" class="text-muted mt-2 small">Memulai pengiriman...</p>
-            </div>
-        `,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false
-            });
-
-            const updateEmailProgress = (percent, text) => {
-                const progressBar = document.getElementById('emailProgress');
-                const progressText = document.getElementById('emailProgressText');
-                if (progressBar) progressBar.style.width = `${percent}%`;
-                if (progressText) progressText.textContent = text;
-            };
-
-            let sukses = 0;
-            let gagal = 0;
-            let lewati = 0;
-
-            for (let i = 0; i < daftarNotaris.length; i++) {
-                const notaris = daftarNotaris[i];
-                const persen = ((i + 1) / daftarNotaris.length * 100);
-                updateEmailProgress(persen, `Mengirim ke ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 40)}...`);
-
-                // Cari email notaris
-                let emailNotaris = await cariEmailNotaris(notaris.nama);
-
-                if (!emailNotaris) {
-                    // Minta input email manual
-                    await loadingSwal.close();
-
-                    const result = await Swal.fire({
-                        title: `Email untuk ${notaris.nama.substring(0, 50)}`,
-                        html: `
-                    <div class="text-start">
-                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
-                        <p><strong>ID:</strong> ${escapeHtml(notaris.id || '-')}</p>
-                        <hr>
-                        <label class="form-label">Masukkan Alamat Email:</label>
-                        <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
-                    </div>
-                `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Kirim Email',
-                        cancelButtonText: 'Lewati',
-                        didOpen: () => {
-                            const input = document.getElementById('emailManual');
-                            if (input) input.focus();
-                        },
-                        preConfirm: () => {
-                            const email = document.getElementById('emailManual')?.value;
-                            if (!email) {
-                                Swal.showValidationMessage('Email harus diisi!');
-                                return false;
-                            }
-                            if (!email.includes('@')) {
-                                Swal.showValidationMessage('Email tidak valid!');
-                                return false;
-                            }
-                            return email;
-                        }
-                    });
-
-                    // Kembalikan loading
-                    Swal.fire({
-                        title: 'Mengirim Notifikasi Email...',
-                        html: `
-                    <div class="text-center">
-                        <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
-                        <p><strong>Melanjutkan pengiriman...</strong></p>
-                        <div class="progress mt-3" style="height: 10px;">
-                            <div id="emailProgress" class="progress-bar bg-danger" style="width: ${persen}%;"></div>
-                        </div>
-                        <p id="emailProgressText" class="text-muted mt-2 small">Mengirim ke ${i + 1} dari ${daftarNotaris.length}...</p>
-                    </div>
-                `,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false
-                    });
-
-                    if (result.isConfirmed && result.value) {
-                        emailNotaris = result.value;
-                    } else {
-                        lewati++;
-                        gagal++;
-                        continue;
-                    }
-                }
-
-                // Kirim email
-                try {
-                    await kirimEmailNotifikasi(notaris, periode, emailNotaris);
-                    sukses++;
-                } catch (err) {
-                    console.error(`Gagal kirim ke ${notaris.nama}:`, err);
-                    gagal++;
-                }
-
-                await new Promise(r => setTimeout(r, 500));
-            }
-
-            await loadingSwal.close();
-
-            await Swal.fire({
-                icon: sukses > 0 ? 'success' : 'warning',
-                title: 'Pengiriman Selesai',
-                html: `
-            <div class="text-center">
-                <p><strong>Periode: ${periode}</strong></p>
-                <hr>
-                <p>📧 <span class="text-success fw-bold">${sukses}</span> Email berhasil dikirim</p>
-                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal/Kirim dibatalkan</p>
-                ${lewati > 0 ? `<p>⏭️ <span class="text-warning fw-bold">${lewati}</span> Dilewati</p>` : ''}
-            </div>
-        `,
-                confirmButtonColor: '#28a745'
-            });
-        }
-
         // Fungsi kirim email notifikasi
         async function kirimEmailNotifikasi(notaris, periode, email) {
             const url = `${scriptURL}?action=kirim_email_notifikasi`
@@ -8803,21 +8521,13 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
             return bulanList[0];
         }
 
-        // Kirim notifikasi WhatsApp
         async function kirimNotifikasiWABelumLapor(daftarNotaris, periode) {
-            // Tampilkan loading
-            const loadingSwal = Swal.fire({
+            // Tampilkan loading sederhana
+            Swal.fire({
                 title: 'Memproses...',
-                html: `
-            <div class="text-center">
-                <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-                <p><strong>Menyiapkan daftar WhatsApp...</strong></p>
-                <p id="waProgressText" class="text-muted mt-2">Memeriksa nomor WhatsApp...</p>
-            </div>
-        `,
+                text: 'Menyiapkan daftar WhatsApp',
                 allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false
+                didOpen: () => Swal.showLoading()
             });
 
             try {
@@ -8825,10 +8535,7 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
 
                 for (let i = 0; i < daftarNotaris.length; i++) {
                     const notaris = daftarNotaris[i];
-                    const progressText = document.getElementById('waProgressText');
-                    if (progressText) {
-                        progressText.textContent = `Memeriksa ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...`;
-                    }
+                    Swal.update({ text: `Memeriksa ${i + 1} dari ${daftarNotaris.length}: ${notaris.nama.substring(0, 30)}...` });
 
                     const nomorWa = await cariNomorWA(notaris.nama);
                     daftarWa.push({
@@ -8840,34 +8547,19 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
                     await new Promise(r => setTimeout(r, 50));
                 }
 
-                await loadingSwal.close();
+                Swal.close();
 
                 const punyaWa = daftarWa.filter(item => item.nomor_wa);
                 const tidakPunyaWa = daftarWa.filter(item => !item.nomor_wa);
 
                 let daftarHtml = `
             <div class="mb-3">
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i> 
-                    <strong>${punyaWa.length}</strong> Notaris memiliki nomor WhatsApp
-                </div>
-                ${tidakPunyaWa.length > 0 ? `
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill"></i> 
-                    <strong>${tidakPunyaWa.length}</strong> Notaris belum memiliki nomor WhatsApp
-                </div>
-                ` : ''}
+                <div class="alert alert-success">✅ <strong>${punyaWa.length}</strong> Notaris memiliki nomor WhatsApp</div>
+                ${tidakPunyaWa.length > 0 ? `<div class="alert alert-warning">⚠️ <strong>${tidakPunyaWa.length}</strong> Notaris belum memiliki nomor WhatsApp</div>` : ''}
             </div>
-            <div style="max-height: 450px; overflow-y: auto;">
-                <table class="table table-sm table-hover" style="font-size: 12px;">
-                    <thead class="table-primary sticky-top">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Notaris</th>
-                            <th>Nomor WA</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-sm table-hover">
+                    <thead class="table-primary"><tr><th>No</th><th>Nama Notaris</th><th>Nomor WA</th><th>Aksi</th></tr></thead>
                     <tbody>
         `;
 
@@ -8877,66 +8569,69 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
                 <tr>
                     <td class="text-center">${idx + 1}</td>
                     <td><strong>${escapeHtml(item.nama)}</strong><br><small class="text-muted">${escapeHtml(item.id)}</small></td>
-                    <td class="text-center">${item.nomor_wa ? `<span class="badge bg-success">${item.nomor_wa}</span>` : '<span class="badge bg-secondary">Belum ada</span>'}</td>
-                    <td class="text-center">
-                        ${item.nomor_wa ?
-                            `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i> Kirim</a>` :
-                            `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')"><i class="bi bi-pencil"></i> Input No</button>`
-                        }
-                    </td>
+                    <td>${item.nomor_wa ? `<span class="badge bg-success">${item.nomor_wa}</span>` : '<span class="badge bg-secondary">Belum ada</span>'}</td>
+                    <td>${item.nomor_wa ? `<a href="${waUrl}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i> Kirim</a>` : `<button class="btn btn-secondary btn-sm" onclick="inputNomorWA('${escapeHtml(item.nama)}', '${escapeHtml(item.id)}')"><i class="bi bi-pencil"></i> Input</button>`}</td>
                 </tr>
             `;
                 });
 
-                daftarHtml += `
-                    </tbody>
-                </table>
-            </div>
-        `;
+                daftarHtml += `</tbody></table></div>`;
 
                 await Swal.fire({
                     title: `📱 Kirim Notifikasi WhatsApp (${daftarNotaris.length} Notaris)`,
                     html: daftarHtml,
                     icon: 'info',
-                    width: '850px',
+                    width: '800px',
                     showCloseButton: true,
                     showConfirmButton: false
                 });
 
             } catch (error) {
-                await loadingSwal.close();
+                Swal.close();
                 console.error('Error:', error);
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Terjadi kesalahan: ' + error.message,
-                    confirmButtonColor: '#dc3545'
-                });
+                await Swal.fire({ icon: 'error', title: 'Gagal', text: error.message });
             }
         }
 
-        // Kirim notifikasi email
+        // Fungsi untuk mengirim notifikasi email ke notaris yang belum lapor
         async function kirimNotifikasiEmailBelumLapor(daftarNotaris, periode) {
-            const loadingSwal = Swal.fire({
-                title: 'Mengirim Email...',
-                html: '<div class="spinner-border text-primary"></div><p class="mt-2">Mengirim email...</p>',
-                allowOutsideClick: false,
-                showConfirmButton: false
-            });
-
             let sukses = 0;
             let gagal = 0;
+            let lewati = 0;
 
             for (let i = 0; i < daftarNotaris.length; i++) {
                 const notaris = daftarNotaris[i];
+
+                // Tampilkan loading setiap akan kirim
+                await Swal.fire({
+                    title: 'Mengirim Email...',
+                    html: `
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" style="width: 2rem; height: 2rem;"></div>
+                    <p><strong>${i + 1} dari ${daftarNotaris.length}</strong></p>
+                    <p>${notaris.nama.substring(0, 40)}...</p>
+                </div>
+            `,
+                    allowOutsideClick: false,
+                    showConfirmButton: false
+                });
+
+                // Cari email notaris
                 let emailNotaris = await cariEmailNotaris(notaris.nama);
 
                 if (!emailNotaris) {
-                    await loadingSwal.close();
+                    Swal.close();
+
                     const result = await Swal.fire({
                         title: `Email untuk ${notaris.nama.substring(0, 40)}`,
                         html: `
-                    <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
+                    <div class="text-start">
+                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
+                        <p><strong>ID:</strong> ${escapeHtml(notaris.id || '-')}</p>
+                        <hr>
+                        <label class="form-label">Masukkan Alamat Email:</label>
+                        <input type="email" id="emailManual" class="form-control" placeholder="contoh: notaris@email.com">
+                    </div>
                 `,
                         showCancelButton: true,
                         confirmButtonText: 'Kirim',
@@ -8951,23 +8646,18 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
                         }
                     });
 
-                    loadingSwal.fire({
-                        title: 'Mengirim Email...',
-                        html: '<div class="spinner-border text-primary"></div><p class="mt-2">Melanjutkan...</p>',
-                        allowOutsideClick: false,
-                        showConfirmButton: false
-                    });
-
                     if (result.isConfirmed && result.value) {
                         emailNotaris = result.value;
                     } else {
+                        lewati++;
                         gagal++;
                         continue;
                     }
                 }
 
+                // Kirim email
                 try {
-                    const url = `${scriptURL}?action=kirim_email_notifikasi&email=${encodeURIComponent(emailNotaris)}&nama=${encodeURIComponent(notaris.nama)}&id=${encodeURIComponent(notaris.id || '')}&periode=${encodeURIComponent(periode)}`;
+                    const url = `${scriptURL}?action=kirim_email_notifikasi&email=${encodeURIComponent(emailNotaris)}&nama=${encodeURIComponent(notaris.nama)}&id=${encodeURIComponent(notaris.id || '')}&periode=${encodeURIComponent(periode)}&t=${Date.now()}`;
                     const response = await fetch(url);
                     const result = await response.json();
 
@@ -8977,18 +8667,26 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
                         gagal++;
                     }
                 } catch (err) {
+                    console.error(`Gagal kirim ke ${notaris.nama}:`, err);
                     gagal++;
                 }
 
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, 300));
+                Swal.close();
             }
-
-            await loadingSwal.close();
 
             await Swal.fire({
                 icon: sukses > 0 ? 'success' : 'warning',
                 title: 'Pengiriman Selesai',
-                html: `<p>✅ Berhasil: ${sukses}</p><p>❌ Gagal: ${gagal}</p>`,
+                html: `
+            <div class="text-center">
+                <p><strong>Periode: ${periode}</strong></p>
+                <hr>
+                <p>✅ <span class="text-success fw-bold">${sukses}</span> Email berhasil dikirim</p>
+                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal/Kirim dibatalkan</p>
+                ${lewati > 0 ? `<p>⏭️ <span class="text-warning fw-bold">${lewati}</span> Dilewati</p>` : ''}
+            </div>
+        `,
                 confirmButtonColor: '#28a745'
             });
         }
