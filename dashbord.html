@@ -7021,7 +7021,6 @@
                     renderTable(currentFilteredData);
                 } else {
                     renderTable(allData);
-                    tampilkanRingkasanBulanan();
                 }
 
                 tampilkanRingkasanBulanan();
@@ -7047,7 +7046,6 @@
                 showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
                 // Tampilkan data kosong
                 renderTable([]);
-                tampilkanRingkasanBulanan();
                 // Tetap coba isi dropdown tahun
                 isiDropdownTahunOtomatis();
             }
