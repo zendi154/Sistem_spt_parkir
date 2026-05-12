@@ -3279,11 +3279,21 @@
             let searchText = document.getElementById("searchNotaris")?.value.toLowerCase() || "";
             let selectedBulan = document.getElementById("selectedBulan")?.value || "";
             let filteredData = [...allData];
-            if (searchText) filteredData = filteredData.filter(row => (row["nama_notaris_&_ppat"] || "").toLowerCase().includes(searchText));
-            if (selectedBulan) filteredData = filteredData.filter(row => (row["laporan_bulanan"] || "") === selectedBulan);
+
+            if (searchText) {
+                filteredData = filteredData.filter(row =>
+                    (row["nama_notaris_&_ppat"] || "").toLowerCase().includes(searchText)
+                );
+            }
+            if (selectedBulan) {
+                filteredData = filteredData.filter(row =>
+                    (row["laporan_bulanan"] || "") === selectedBulan
+                );
+            }
+
             currentFilteredData = filteredData;
             renderTable(filteredData);
-            tampilkanRingkasanBulanan(); // <-- HARUS ADA INI
+            tampilkanRingkasanBulanan();
         }
 
         function filterByMonth(bulanTahun, element) {
@@ -3310,15 +3320,22 @@
             }
 
             console.log(`✅ Filter bulan: ${bulanTahun}`);
+            // ✅ tambahkan ini untuk memastikan ringkasan terupdate
+            setTimeout(() => tampilkanRingkasanBulanan(), 100);
         }
 
         function resetAllFilters() {
             document.getElementById("searchNotaris").value = "";
             document.getElementById("selectedBulan").value = "";
-            document.querySelectorAll(".btn-bulan").forEach(btn => { btn.classList.remove("btn-primary"); btn.classList.add("btn-outline-primary"); });
+
+            document.querySelectorAll(".btn-bulan").forEach(btn => {
+                btn.classList.remove("btn-primary");
+                btn.classList.add("btn-outline-primary");
+            });
+
+            currentFilteredData = allData; // ✅ PASTIKAN INI
             renderTable(allData);
-            currentFilteredData = allData;
-            tampilkanRingkasanBulanan(); // <-- TAMBAHKAN INI
+            tampilkanRingkasanBulanan(); // ✅ SUDAH ADA, TETAP PERTAHANKAN
         }
 
         function generateBulan() {
@@ -3359,13 +3376,23 @@
         function hitungTotalBPHTBPerBulan(data) {
             const bulanMap = new Map();
 
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                return [];
+            }
+
             data.forEach(row => {
                 const bulan = row["laporan_bulanan"];
-                const bphtb = row["sspd_bphtb"];
+                let bphtb = row["sspd_bphtb"];
 
                 if (bulan && bphtb) {
                     // Bersihkan angka (hapus titik dan Rp)
                     let angkaBersih = String(bphtb).replace(/[^0-9]/g, '');
+                    // Jika setelah dibersihkan kosong, coba parse langsung
+                    if (angkaBersih === '') {
+                        angkaBersih = String(bphtb).replace(/Rp\.?\s?/gi, '').replace(/\./g, '').trim();
+                        angkaBersih = angkaBersih.replace(/[^0-9]/g, '');
+                    }
+
                     let nilai = parseInt(angkaBersih) || 0;
 
                     if (bulanMap.has(bulan)) {
@@ -3379,10 +3406,14 @@
             // Urutkan berdasarkan tahun dan bulan
             const sorted = Array.from(bulanMap.entries()).sort((a, b) => {
                 const getDate = (str) => {
-                    const [bulan, tahun] = str.split(' ');
+                    if (!str) return new Date(0);
+                    const parts = str.split(' ');
+                    if (parts.length < 2) return new Date(0);
+                    const bulan = parts[0];
+                    const tahun = parseInt(parts[1]) || 0;
                     const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                         "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
-                    return new Date(parseInt(tahun), bulanIndex);
+                    return new Date(tahun, bulanIndex);
                 };
                 return getDate(a[0]) - getDate(b[0]);
             });
@@ -3393,11 +3424,20 @@
         // Fungsi untuk menampilkan ringkasan BPHTB per bulan (berdasarkan data yang sedang difilter)
         function tampilkanRingkasanBulanan() {
             const container = document.getElementById('ringkasanBulanan');
-            if (!container) return;
+            if (!container) {
+                console.warn("Container ringkasanBulanan tidak ditemukan!");
+                return;
+            }
 
             // Gunakan currentFilteredData (data yang sudah difilter) bukan allData
             const dataYangDigunakan = currentFilteredData.length > 0 ? currentFilteredData : allData;
+
+            console.log("Data untuk ringkasan BPHTB:", dataYangDigunakan.length, "records");
+            console.log("Contoh data pertama:", dataYangDigunakan[0]);
+
             const ringkasan = hitungTotalBPHTBPerBulan(dataYangDigunakan);
+
+            console.log("Hasil ringkasan per bulan:", ringkasan);
 
             if (ringkasan.length === 0) {
                 container.innerHTML = '<div class="text-center text-muted">Belum ada data BPHTB</div>';
@@ -6934,6 +6974,7 @@
                     renderTable(currentFilteredData);
                 } else {
                     renderTable(allData);
+                    tampilkanRingkasanBulanan();
                 }
 
                 tampilkanRingkasanBulanan();
@@ -6959,6 +7000,7 @@
                 showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
                 // Tampilkan data kosong
                 renderTable([]);
+                tampilkanRingkasanBulanan();
                 // Tetap coba isi dropdown tahun
                 isiDropdownTahunOtomatis();
             }
