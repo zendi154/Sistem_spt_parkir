@@ -6876,6 +6876,20 @@
             showLoading("Memuat data...");
 
             try {
+                // FILTER DATA: HAPUS BARIS DENGAN TAHUN TIDAK VALID DI LAPORAN_BULANAN
+                if (Array.isArray(data)) {
+                    data = data.filter(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (!bulanLaporan) return false;
+                        const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
+                        if (!match) return false;
+                        const tahun = parseInt(match[0]);
+                        const currentYear = new Date().getFullYear();
+                        // Hanya terima tahun antara 2020 sampai currentYear + 1
+                        return tahun >= 2020 && tahun <= currentYear + 1;
+                    });
+                }
+
                 // Gunakan Promise.allSettled agar tidak gagal total
                 const [dataResult, pensiunResult] = await Promise.allSettled([
                     fetch(scriptURL).then(res => {
@@ -6969,11 +6983,31 @@
             const tahunSelect = document.getElementById('filterTahun');
             if (!tahunSelect) return;
 
-            // Kumpulkan SEMUA tahun dari data laporan_bulanan
             const tahunSet = new Set();
 
+            // HANYA baca dari laporan_bulanan, IGNORE kolom lainnya
             if (allData && allData.length > 0) {
                 allData.forEach(row => {
+                    const bulanLaporan = row["laporan_bulanan"];
+                    if (bulanLaporan && typeof bulanLaporan === 'string') {
+                        // Ekstrak tahun dari format "Januari 2026"
+                        const match = bulanLaporan.match(/\b(19|20)\d{2}\b/);
+                        if (match) {
+                            const tahun = parseInt(match[0]);
+                            // Validasi tahun yang wajar (2000 - tahun sekarang + 1)
+                            const currentYear = new Date().getFullYear();
+                            if (tahun >= 2000 && tahun <= currentYear + 1) {
+                                tahunSet.add(tahun);
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Jika tidak ada data valid, gunakan tahun dari data terakhir yang ada di allData
+            if (tahunSet.size === 0 && allData && allData.length > 0) {
+                // Ambil dari laporan_bulanan manapun yang ada
+                for (const row of allData) {
                     const bulanLaporan = row["laporan_bulanan"];
                     if (bulanLaporan) {
                         const match = bulanLaporan.match(/\d{4}/);
@@ -6981,17 +7015,15 @@
                             tahunSet.add(parseInt(match[0]));
                         }
                     }
-                });
+                }
             }
 
-            // Jika tidak ada data, gunakan tahun saat ini
+            // Fallback ke tahun saat ini jika tetap kosong
             if (tahunSet.size === 0) {
-                const tahunSekarang = new Date().getFullYear();
-                tahunSet.add(tahunSekarang);
-                tahunSet.add(tahunSekarang + 1);
+                tahunSet.add(new Date().getFullYear());
             }
 
-            // Urutkan tahun dari yang TERBARU ke yang LAMA
+            // Urutkan descending (terbaru ke lama)
             const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
 
             // Isi dropdown
@@ -7000,9 +7032,9 @@
                 tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
             });
 
-            console.log(`✅ Dropdown tahun diisi dengan: ${tahunList.join(', ')} (${tahunList.length} tahun)`);
+            console.log("✅ Tahun yang tersedia di dropdown:", tahunList);
 
-            // Auto-pilih tahun terbaru dan generate bulan
+            // Auto-pilih tahun pertama
             if (tahunList.length > 0) {
                 tahunSelect.value = tahunList[0];
                 if (typeof generateBulan === 'function') {
