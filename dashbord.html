@@ -2470,6 +2470,25 @@
         .swal2-popup.swal2-hide {
             animation: none !important;
         }
+
+        /* Pastikan modal dapat berinteraksi dengan benar */
+        .modal {
+            z-index: 1050 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+
+        .modal.show {
+            display: block !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* SweetAlert2 override untuk tidak mengganggu modal */
+        .swal2-container {
+            z-index: 1060 !important;
+        }
     </style>
 </head>
 
@@ -5184,24 +5203,23 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Tunggu sebentar agar DOM siap
             setTimeout(() => {
+                // Tombol Deteksi Tidak Lapor - BUKA MODAL DETEKSI
                 const btnDeteksi = document.getElementById('btnDeteksiOtomatisContainer');
                 if (btnDeteksi) {
                     const btn = btnDeteksi.querySelector('button');
                     if (btn) {
                         btn.onclick = function (e) {
                             e.preventDefault();
-                            bukaModalDeteksiTidakLapor();
-                            bukaModalWANotifikasi();
+                            bukaModalDeteksiTidakLapor();  // HANYA 1 FUNGSI
                         };
                     }
                 }
 
-                // Juga update tombol "Kirim WA Notifikasi" jika perlu
+                // Tombol Kirim WA Notifikasi - BUKA MODAL WA
                 const btnWa = document.getElementById('btnBelumLaporContainer');
                 if (btnWa) {
                     const btnWaElement = btnWa.querySelector('button');
                     if (btnWaElement) {
-                        // Deteksi bulan terbaru otomatis
                         btnWaElement.onclick = function (e) {
                             e.preventDefault();
                             const filterTahun = document.getElementById('filterTahun')?.value;
@@ -5227,12 +5245,14 @@
                                 return;
                             }
 
-                            deteksiDanKirimTidakMelapor();
+                            deteksiDanKirimTidakMelapor();  // LANGSUNG PANGGIL FUNGSI UTAMA
                         };
                     }
                 }
             }, 1000);
         });
+
+
 
         // ============================================
         // NOTIFIKASI REALTIME DI NAVBAR
@@ -7660,6 +7680,16 @@
             });
         }
 
+        // Fungsi normalisasi nama (untuk menghindari duplikat)
+        function normalisasiNama(nama) {
+            if (!nama) return '';
+            return nama
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, ' ')
+                .replace(/[.,]/g, '');
+        }
+
         // Isi dropdown notaris di modal pensiun
         function isiDropdownNotaris() {
             const select = document.getElementById('selectNotarisPensiun');
@@ -9024,6 +9054,451 @@
         }
 
         // ============================================
+        // FUNGSI KIRIM WA UNTUK TERLAMBAT & TIDAK LAPOR
+        // ============================================
+
+        // Pastikan allData terisi sebelum memanggil fungsi
+        async function loadData() {
+            allData = await getDataLaporanDariSheet();
+        }
+
+        function bukaModalWANotifikasi() {
+            // VALIDASI: Pastikan modal element ada di DOM
+            const modalElement = document.getElementById('modalWANotifikasi');
+            if (!modalElement) {
+                console.error('❌ Modal element #modalWANotifikasi tidak ditemukan!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Komponen modal tidak ditemukan. Silakan refresh halaman.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            // Isi dropdown tahun (gunakan data yang sudah ada)
+            const tahunSelect = document.getElementById('waTahun');
+            if (tahunSelect) {
+                const tahunSet = new Set();
+
+                if (allData && allData.length > 0) {
+                    allData.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (bulanLaporan) {
+                            const match = bulanLaporan.match(/\d{4}/);
+                            if (match) {
+                                tahunSet.add(parseInt(match[0]));
+                            }
+                        }
+                    });
+                }
+
+                if (tahunSet.size === 0) {
+                    tahunSet.add(new Date().getFullYear());
+                }
+
+                const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+                tahunList.forEach(tahun => {
+                    tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+                });
+
+                if (tahunList.length > 0) {
+                    tahunSelect.value = tahunList[0];
+                }
+            }
+
+            // TAMPILKAN MODAL DENGAN HANDLE ERROR
+            try {
+                let modal = bootstrap.Modal.getInstance(modalElement);
+                if (!modal) {
+                    modal = new bootstrap.Modal(modalElement, {
+                        backdrop: 'static',  // Mencegah klik backdrop menutup modal
+                        keyboard: true      // Izinkan tombol ESC menutup
+                    });
+                }
+                modal.show();
+
+                // Optional: Tambahkan event listener untuk debugging
+                modalElement.addEventListener('shown.bs.modal', function () {
+                    console.log('✅ Modal WA Notifikasi terbuka');
+                });
+
+                modalElement.addEventListener('hidden.bs.modal', function () {
+                    console.log('✅ Modal WA Notifikasi tertutup');
+                });
+
+            } catch (error) {
+                console.error('❌ Gagal menampilkan modal:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Membuka Modal',
+                    text: error.message,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+
+        // Jalankan WA notifikasi untuk notaris terlambat/tidak lapor
+        async function jalankanWANotifikasi() {
+            const tahun = document.getElementById('waTahun')?.value;
+            const bulan = document.getElementById('waBulan')?.value;
+
+            if (!tahun) {
+                Swal.fire('Peringatan', 'Pilih tahun terlebih dahulu!', 'warning');
+                return;
+            }
+
+            if (!bulan) {
+                Swal.fire('Peringatan', 'Pilih bulan terlebih dahulu!', 'warning');
+                return;
+            }
+
+            const periode = `${bulan} ${tahun}`;
+
+            // Tutup modal
+            const modalElement = document.getElementById('modalWANotifikasi');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) modal.hide();
+
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Mendeteksi Notaris...',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p>Mendeteksi notaris yang <strong>terlambat</strong> atau <strong>tidak melapor</strong> untuk periode <strong>${periode}</strong></p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+
+            try {
+                // Ambil data laporan
+                const dataLaporan = allData;
+
+                // Filter notaris yang TERLAMBAT atau TIDAK LAPOR
+                const daftarNotaris = new Map(); // Gunakan Map untuk menghindari duplikat
+
+                if (dataLaporan && Array.isArray(dataLaporan)) {
+                    dataLaporan.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        const statusSurat = row["status_surat"] || "";
+                        const tanggalDiterima = row["tanggal_diterima"];
+                        const namaNotaris = row["nama_notaris_&_ppat"];
+                        const idNotaris = row["id"];
+                        const statusEmail = row["status_email"] || "";
+                        const hasUpload = (row["file_bukti_bayar"] || "").trim() !== "";
+
+                        // Cek apakah sudah LUNAS (jika sudah LUNAS, lewati)
+                        if (hasUpload) return;
+
+                        // Cek status terlambat
+                        let isTerlambat = false;
+                        if (tanggalDiterima) {
+                            let tgl = new Date(tanggalDiterima);
+                            if (!isNaN(tgl)) {
+                                isTerlambat = tgl.getDate() > 10;
+                            }
+                        }
+
+                        // Hanya untuk periode yang dipilih
+                        if (bulanLaporan === periode && namaNotaris) {
+                            // Kirim WA jika: Terlambat ATAU Tidak Menyampaikan Laporan
+                            if (isTerlambat && statusSurat !== "Tidak Menyampaikan Laporan") {
+                                const key = normalisasiNama(namaNotaris);
+                                if (!daftarNotaris.has(key)) {
+                                    daftarNotaris.set(key, {
+                                        id: idNotaris,
+                                        nama: namaNotaris,
+                                        status: "Terlambat",
+                                        tanggal: tanggalDiterima,
+                                        status_email: statusEmail
+                                    });
+                                }
+                            } else if (statusSurat === "Tidak Menyampaikan Laporan") {
+                                const key = normalisasiNama(namaNotaris);
+                                if (!daftarNotaris.has(key)) {
+                                    daftarNotaris.set(key, {
+                                        id: idNotaris,
+                                        nama: namaNotaris,
+                                        status: "Tidak Lapor",
+                                        tanggal: tanggalDiterima,
+                                        status_email: statusEmail
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+
+                const daftarKirim = Array.from(daftarNotaris.values());
+
+                Swal.close();
+
+                if (daftarKirim.length === 0) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Tidak Ada Data',
+                        text: `Untuk periode ${periode}, tidak ada notaris yang terlambat atau tidak melapor.`,
+                        confirmButtonColor: '#28a745'
+                    });
+                    return;
+                }
+
+                // Tampilkan daftar notaris yang akan dikirimi WA
+                let daftarHtml = `
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-sm table-hover">
+                    <thead class="table-success">
+                        <tr>
+                            <th style="width: 5%;">No</th>
+                            <th style="width: 50%;">Nama Notaris & PPAT</th>
+                            <th style="width: 20%;">ID Notaris</th>
+                            <th style="width: 25%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+                daftarKirim.forEach((item, idx) => {
+                    let statusClass = item.status === "Tidak Lapor" ? "danger" : "warning";
+                    daftarHtml += `
+                <tr>
+                    <td style="text-align:center;">${idx + 1}</td>
+                    <td><strong>${escapeHtml(item.nama)}</strong></td>
+                    <td><code>${escapeHtml(item.id)}</code></td>
+                    <td style="text-align:center;"><span class="badge bg-${statusClass}">${item.status}</span></td>
+                </tr>
+            `;
+                });
+
+                daftarHtml += `
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-whatsapp"></i> 
+                <strong>${daftarKirim.length} Notaris</strong> akan dikirimi WA notifikasi
+            </div>
+        `;
+
+                const confirmResult = await Swal.fire({
+                    title: `📱 Kirim WA Notifikasi (${daftarKirim.length})`,
+                    html: daftarHtml,
+                    icon: 'info',
+                    width: '800px',
+                    confirmButtonText: '<i class="bi bi-whatsapp"></i> Kirim WA Sekarang',
+                    cancelButtonText: 'Batal',
+                    showCancelButton: true,
+                    confirmButtonColor: '#25D366'
+                });
+
+                if (confirmResult.isConfirmed) {
+                    await prosesKirimWANotifikasi(daftarKirim, periode);
+                }
+
+            } catch (error) {
+                Swal.close();
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Gagal mendeteksi notaris: ' + error.message,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+
+        // Proses kirim WA notifikasi
+        async function prosesKirimWANotifikasi(daftarKirim, periode) {
+            let sukses = 0;
+            let gagal = 0;
+            let tidakAdaWA = 0;
+
+            // Tampilkan progress bar
+            Swal.fire({
+                title: 'Mengirim WA Notifikasi...',
+                html: `
+            <div class="text-center">
+                <div class="progress mb-3" style="height: 20px;">
+                    <div id="progressWa" class="progress-bar bg-success" style="width: 0%;">0%</div>
+                </div>
+                <p id="progressTextWa">Memulai pengiriman...</p>
+                <div class="mt-2">
+                    <span class="badge bg-success" id="suksesWaCount">0</span> Terkirim &nbsp;
+                    <span class="badge bg-danger" id="gagalWaCount">0</span> Gagal &nbsp;
+                    <span class="badge bg-secondary" id="noWaCount">0</span> No WA
+                </div>
+            </div>
+        `,
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+
+            const updateProgress = (current, total, message) => {
+                const percent = Math.round((current / total) * 100);
+                const progressBar = document.getElementById('progressWa');
+                const progressText = document.getElementById('progressTextWa');
+                const suksesSpan = document.getElementById('suksesWaCount');
+                const gagalSpan = document.getElementById('gagalWaCount');
+                const noWaSpan = document.getElementById('noWaCount');
+
+                if (progressBar) {
+                    progressBar.style.width = `${percent}%`;
+                    progressBar.textContent = `${percent}%`;
+                }
+                if (progressText) progressText.textContent = message;
+                if (suksesSpan) suksesSpan.textContent = sukses;
+                if (gagalSpan) gagalSpan.textContent = gagal;
+                if (noWaSpan) noWaSpan.textContent = tidakAdaWA;
+            };
+
+            for (let i = 0; i < daftarKirim.length; i++) {
+                const notaris = daftarKirim[i];
+                updateProgress(i + 1, daftarKirim.length, `Mengecek ${notaris.nama.substring(0, 40)}...`);
+
+                // Cari nomor WA notaris
+                let nomorWA = await cariNomorWA(notaris.nama);
+
+                if (!nomorWA) {
+                    // Tampilkan input nomor WA manual
+                    Swal.close();
+                    const result = await Swal.fire({
+                        title: `Nomor WA tidak ditemukan`,
+                        html: `
+                    <div class="text-start">
+                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
+                        <p><strong>Status:</strong> ${notaris.status}</p>
+                        <hr>
+                        <label class="form-label">Masukkan Nomor WhatsApp:</label>
+                        <input type="tel" id="nomorWaManual" class="form-control" placeholder="6281234567890">
+                        <small class="text-muted">*Gunakan kode negara 62, tanpa tanda + atau 0 di depan</small>
+                    </div>
+                `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim',
+                        cancelButtonText: 'Lewati',
+                        confirmButtonColor: '#25D366',
+                        cancelButtonColor: '#6c757d',
+                        preConfirm: () => {
+                            const nomor = document.getElementById('nomorWaManual')?.value;
+                            if (!nomor) {
+                                Swal.showValidationMessage('Nomor WhatsApp harus diisi!');
+                                return false;
+                            }
+                            let bersih = nomor.replace(/[^0-9]/g, '');
+                            if (bersih.startsWith('0')) {
+                                bersih = '62' + bersih.substring(1);
+                            }
+                            if (!bersih.startsWith('62')) {
+                                bersih = '62' + bersih;
+                            }
+                            return bersih;
+                        }
+                    });
+
+                    if (result.isConfirmed && result.value) {
+                        nomorWA = result.value;
+                        // Simpan nomor WA ke database
+                        await updateNomorWA(notaris.id, nomorWA);
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        tidakAdaWA++;
+                        gagal++;
+                        updateProgress(i + 1, daftarKirim.length, `⏭️ Melewati ${notaris.nama.substring(0, 40)} (tidak ada WA)`);
+                        await new Promise(r => setTimeout(r, 500));
+                        continue;
+                    } else {
+                        tidakAdaWA++;
+                        gagal++;
+                        updateProgress(i + 1, daftarKirim.length, `⏭️ Melewati ${notaris.nama.substring(0, 40)}`);
+                        await new Promise(r => setTimeout(r, 500));
+                        continue;
+                    }
+
+                    // Kembalikan loading
+                    Swal.fire({
+                        title: 'Mengirim WA Notifikasi...',
+                        html: `
+                    <div class="text-center">
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div id="progressWa" class="progress-bar bg-success" style="width: ${Math.round((i / daftarKirim.length) * 100)}%;">${Math.round((i / daftarKirim.length) * 100)}%</div>
+                        </div>
+                        <p id="progressTextWa">Memulai pengiriman...</p>
+                    </div>
+                `,
+                        allowOutsideClick: false,
+                        showConfirmButton: false
+                    });
+                    updateProgress(i + 1, daftarKirim.length, `Mengirim ke ${notaris.nama.substring(0, 40)}...`);
+                }
+
+                // Generate pesan WA sesuai status
+                let pesanWA = '';
+                if (notaris.status === "Terlambat") {
+                    pesanWA = `*PEMBERITAHUAN KETERLAMBATAN LAPORAN PPAT/NOTARIS*
+    
+Kepada Yth. Bapak/Ibu ${notaris.nama}
+
+Dengan hormat,
+Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* kami terima *TERLAMBAT* dari batas waktu yang ditentukan (tanggal 10 setiap bulannya).
+
+Mohon untuk lebih memperhatikan ketepatan waktu penyampaian laporan PPAT/Notaris untuk periode-periode berikutnya.
+
+Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
+
+*Badan Pendapatan Daerah Kota Bengkulu*
+Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
+                } else {
+                    pesanWA = `*PEMBERITAHUAN LAPORAN PPAT/NOTARIS*
+    
+Kepada Yth. Bapak/Ibu ${notaris.nama}
+
+Dengan hormat,
+Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* *BELUM KAMI TERIMA*.
+
+Mohon untuk segera menyampaikan laporan PPAT/Notaris periode ${periode} paling lambat tanggal 10 bulan berjalan.
+
+Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
+
+*Badan Pendapatan Daerah Kota Bengkulu*
+Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
+                }
+
+                const waUrl = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesanWA)}`;
+
+                // Buka WA di tab baru
+                window.open(waUrl, '_blank');
+
+                sukses++;
+                updateProgress(i + 1, daftarKirim.length, `✓ WA dibuka untuk ${notaris.nama.substring(0, 40)}`);
+
+                // Delay antar pengiriman
+                await new Promise(r => setTimeout(r, 1500));
+            }
+
+            Swal.close();
+
+            // Tampilkan hasil
+            await Swal.fire({
+                icon: sukses > 0 ? 'success' : 'warning',
+                title: 'Pengiriman Selesai',
+                html: `
+            <div class="text-center">
+                <p><strong>Periode: ${periode}</strong></p>
+                <hr>
+                <p>✅ <span class="text-success fw-bold">${sukses}</span> WA notifikasi berhasil dibuka</p>
+                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal (tidak ada nomor WA)</p>
+                <p class="text-muted small mt-2">*Pastikan Anda mengklik tombol kirim di WhatsApp Web</p>
+            </div>
+        `,
+                confirmButtonColor: '#25D366'
+            });
+        }
+
+
+        // ============================================
         // FUNGSI DETEKSI NOTARIS TIDAK MELAPOR (OPTIMIZED)
         // ============================================
 
@@ -9390,17 +9865,17 @@
         function generateWAMessage(nama, periode) {
             const pesan = `*PEMBERITAHUAN LAPORAN PPAT/NOTARIS*
     
-Kepada Yth. Bapak/Ibu ${nama}
+        Kepada Yth. Bapak/Ibu ${nama}
 
-Dengan hormat,
-Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* belum kami terima.
+        Dengan hormat,
+        Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* belum kami terima.
 
-Mohon untuk segera menyampaikan laporan PPAT/Notaris periode ${periode} paling lambat tanggal 10 bulan berjalan.
+        Mohon untuk segera menyampaikan laporan PPAT/Notaris periode ${periode} paling lambat tanggal 10 bulan berjalan.
 
-Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
+        Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
 
-*Badan Pendapatan Daerah Kota Bengkulu*
-Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
+        *Badan Pendapatan Daerah Kota Bengkulu*
+        Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
 
             return pesan;
         }
@@ -10765,409 +11240,6 @@ Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
                 navbarContainer.appendChild(badgeContainer);
             }
         }
-
-        // ============================================
-        // FUNGSI KIRIM WA UNTUK TERLAMBAT & TIDAK LAPOR
-        // ============================================
-
-        // Buka modal pilih bulan untuk WA notifikasi
-        function bukaModalWANotifikasi() {
-            // Isi dropdown tahun
-            const tahunSelect = document.getElementById('waTahun');
-            if (tahunSelect) {
-                const tahunSet = new Set();
-
-                if (allData && allData.length > 0) {
-                    allData.forEach(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        if (bulanLaporan) {
-                            const match = bulanLaporan.match(/\d{4}/);
-                            if (match) {
-                                tahunSet.add(parseInt(match[0]));
-                            }
-                        }
-                    });
-                }
-
-                if (tahunSet.size === 0) {
-                    tahunSet.add(new Date().getFullYear());
-                }
-
-                const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
-                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
-                tahunList.forEach(tahun => {
-                    tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
-                });
-
-                if (tahunList.length > 0) {
-                    tahunSelect.value = tahunList[0];
-                }
-            }
-
-            // Tampilkan modal
-            const modalElement = document.getElementById('modalWANotifikasi');
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        }
-
-        // Jalankan WA notifikasi untuk notaris terlambat/tidak lapor
-        async function jalankanWANotifikasi() {
-            const tahun = document.getElementById('waTahun')?.value;
-            const bulan = document.getElementById('waBulan')?.value;
-
-            if (!tahun) {
-                Swal.fire('Peringatan', 'Pilih tahun terlebih dahulu!', 'warning');
-                return;
-            }
-
-            if (!bulan) {
-                Swal.fire('Peringatan', 'Pilih bulan terlebih dahulu!', 'warning');
-                return;
-            }
-
-            const periode = `${bulan} ${tahun}`;
-
-            // Tutup modal
-            const modalElement = document.getElementById('modalWANotifikasi');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) modal.hide();
-
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Mendeteksi Notaris...',
-                html: `
-            <div class="text-center">
-                <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-                <p>Mendeteksi notaris yang <strong>terlambat</strong> atau <strong>tidak melapor</strong> untuk periode <strong>${periode}</strong></p>
-            </div>
-        `,
-                allowOutsideClick: false,
-                showConfirmButton: false
-            });
-
-            try {
-                // Ambil data laporan
-                const dataLaporan = allData;
-
-                // Filter notaris yang TERLAMBAT atau TIDAK LAPOR
-                const daftarNotaris = new Map(); // Gunakan Map untuk menghindari duplikat
-
-                if (dataLaporan && Array.isArray(dataLaporan)) {
-                    dataLaporan.forEach(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        const statusSurat = row["status_surat"] || "";
-                        const tanggalDiterima = row["tanggal_diterima"];
-                        const namaNotaris = row["nama_notaris_&_ppat"];
-                        const idNotaris = row["id"];
-                        const statusEmail = row["status_email"] || "";
-                        const hasUpload = (row["file_bukti_bayar"] || "").trim() !== "";
-
-                        // Cek apakah sudah LUNAS (jika sudah LUNAS, lewati)
-                        if (hasUpload) return;
-
-                        // Cek status terlambat
-                        let isTerlambat = false;
-                        if (tanggalDiterima) {
-                            let tgl = new Date(tanggalDiterima);
-                            if (!isNaN(tgl)) {
-                                isTerlambat = tgl.getDate() > 10;
-                            }
-                        }
-
-                        // Hanya untuk periode yang dipilih
-                        if (bulanLaporan === periode && namaNotaris) {
-                            // Kirim WA jika: Terlambat ATAU Tidak Menyampaikan Laporan
-                            if (isTerlambat && statusSurat !== "Tidak Menyampaikan Laporan") {
-                                const key = normalisasiNama(namaNotaris);
-                                if (!daftarNotaris.has(key)) {
-                                    daftarNotaris.set(key, {
-                                        id: idNotaris,
-                                        nama: namaNotaris,
-                                        status: "Terlambat",
-                                        tanggal: tanggalDiterima,
-                                        status_email: statusEmail
-                                    });
-                                }
-                            } else if (statusSurat === "Tidak Menyampaikan Laporan") {
-                                const key = normalisasiNama(namaNotaris);
-                                if (!daftarNotaris.has(key)) {
-                                    daftarNotaris.set(key, {
-                                        id: idNotaris,
-                                        nama: namaNotaris,
-                                        status: "Tidak Lapor",
-                                        tanggal: tanggalDiterima,
-                                        status_email: statusEmail
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-
-                const daftarKirim = Array.from(daftarNotaris.values());
-
-                Swal.close();
-
-                if (daftarKirim.length === 0) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Tidak Ada Data',
-                        text: `Untuk periode ${periode}, tidak ada notaris yang terlambat atau tidak melapor.`,
-                        confirmButtonColor: '#28a745'
-                    });
-                    return;
-                }
-
-                // Tampilkan daftar notaris yang akan dikirimi WA
-                let daftarHtml = `
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-sm table-hover">
-                    <thead class="table-success">
-                        <tr>
-                            <th style="width: 5%;">No</th>
-                            <th style="width: 50%;">Nama Notaris & PPAT</th>
-                            <th style="width: 20%;">ID Notaris</th>
-                            <th style="width: 25%;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-                daftarKirim.forEach((item, idx) => {
-                    let statusClass = item.status === "Tidak Lapor" ? "danger" : "warning";
-                    daftarHtml += `
-                <tr>
-                    <td style="text-align:center;">${idx + 1}</td>
-                    <td><strong>${escapeHtml(item.nama)}</strong></td>
-                    <td><code>${escapeHtml(item.id)}</code></td>
-                    <td style="text-align:center;"><span class="badge bg-${statusClass}">${item.status}</span></td>
-                </tr>
-            `;
-                });
-
-                daftarHtml += `
-                    </tbody>
-                </table>
-            </div>
-            <div class="alert alert-info mt-3">
-                <i class="bi bi-whatsapp"></i> 
-                <strong>${daftarKirim.length} Notaris</strong> akan dikirimi WA notifikasi
-            </div>
-        `;
-
-                const confirmResult = await Swal.fire({
-                    title: `📱 Kirim WA Notifikasi (${daftarKirim.length})`,
-                    html: daftarHtml,
-                    icon: 'info',
-                    width: '800px',
-                    confirmButtonText: '<i class="bi bi-whatsapp"></i> Kirim WA Sekarang',
-                    cancelButtonText: 'Batal',
-                    showCancelButton: true,
-                    confirmButtonColor: '#25D366'
-                });
-
-                if (confirmResult.isConfirmed) {
-                    await prosesKirimWANotifikasi(daftarKirim, periode);
-                }
-
-            } catch (error) {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Gagal mendeteksi notaris: ' + error.message,
-                    confirmButtonColor: '#dc3545'
-                });
-            }
-        }
-
-        // Proses kirim WA notifikasi
-        async function prosesKirimWANotifikasi(daftarKirim, periode) {
-            let sukses = 0;
-            let gagal = 0;
-            let tidakAdaWA = 0;
-
-            // Tampilkan progress bar
-            Swal.fire({
-                title: 'Mengirim WA Notifikasi...',
-                html: `
-            <div class="text-center">
-                <div class="progress mb-3" style="height: 20px;">
-                    <div id="progressWa" class="progress-bar bg-success" style="width: 0%;">0%</div>
-                </div>
-                <p id="progressTextWa">Memulai pengiriman...</p>
-                <div class="mt-2">
-                    <span class="badge bg-success" id="suksesWaCount">0</span> Terkirim &nbsp;
-                    <span class="badge bg-danger" id="gagalWaCount">0</span> Gagal &nbsp;
-                    <span class="badge bg-secondary" id="noWaCount">0</span> No WA
-                </div>
-            </div>
-        `,
-                allowOutsideClick: false,
-                showConfirmButton: false
-            });
-
-            const updateProgress = (current, total, message) => {
-                const percent = Math.round((current / total) * 100);
-                const progressBar = document.getElementById('progressWa');
-                const progressText = document.getElementById('progressTextWa');
-                const suksesSpan = document.getElementById('suksesWaCount');
-                const gagalSpan = document.getElementById('gagalWaCount');
-                const noWaSpan = document.getElementById('noWaCount');
-
-                if (progressBar) {
-                    progressBar.style.width = `${percent}%`;
-                    progressBar.textContent = `${percent}%`;
-                }
-                if (progressText) progressText.textContent = message;
-                if (suksesSpan) suksesSpan.textContent = sukses;
-                if (gagalSpan) gagalSpan.textContent = gagal;
-                if (noWaSpan) noWaSpan.textContent = tidakAdaWA;
-            };
-
-            for (let i = 0; i < daftarKirim.length; i++) {
-                const notaris = daftarKirim[i];
-                updateProgress(i + 1, daftarKirim.length, `Mengecek ${notaris.nama.substring(0, 40)}...`);
-
-                // Cari nomor WA notaris
-                let nomorWA = await cariNomorWA(notaris.nama);
-
-                if (!nomorWA) {
-                    // Tampilkan input nomor WA manual
-                    Swal.close();
-                    const result = await Swal.fire({
-                        title: `Nomor WA tidak ditemukan`,
-                        html: `
-                    <div class="text-start">
-                        <p><strong>Notaris:</strong> ${escapeHtml(notaris.nama)}</p>
-                        <p><strong>Status:</strong> ${notaris.status}</p>
-                        <hr>
-                        <label class="form-label">Masukkan Nomor WhatsApp:</label>
-                        <input type="tel" id="nomorWaManual" class="form-control" placeholder="6281234567890">
-                        <small class="text-muted">*Gunakan kode negara 62, tanpa tanda + atau 0 di depan</small>
-                    </div>
-                `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Kirim',
-                        cancelButtonText: 'Lewati',
-                        confirmButtonColor: '#25D366',
-                        cancelButtonColor: '#6c757d',
-                        preConfirm: () => {
-                            const nomor = document.getElementById('nomorWaManual')?.value;
-                            if (!nomor) {
-                                Swal.showValidationMessage('Nomor WhatsApp harus diisi!');
-                                return false;
-                            }
-                            let bersih = nomor.replace(/[^0-9]/g, '');
-                            if (bersih.startsWith('0')) {
-                                bersih = '62' + bersih.substring(1);
-                            }
-                            if (!bersih.startsWith('62')) {
-                                bersih = '62' + bersih;
-                            }
-                            return bersih;
-                        }
-                    });
-
-                    if (result.isConfirmed && result.value) {
-                        nomorWA = result.value;
-                        // Simpan nomor WA ke database
-                        await updateNomorWA(notaris.id, nomorWA);
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        tidakAdaWA++;
-                        gagal++;
-                        updateProgress(i + 1, daftarKirim.length, `⏭️ Melewati ${notaris.nama.substring(0, 40)} (tidak ada WA)`);
-                        await new Promise(r => setTimeout(r, 500));
-                        continue;
-                    } else {
-                        tidakAdaWA++;
-                        gagal++;
-                        updateProgress(i + 1, daftarKirim.length, `⏭️ Melewati ${notaris.nama.substring(0, 40)}`);
-                        await new Promise(r => setTimeout(r, 500));
-                        continue;
-                    }
-
-                    // Kembalikan loading
-                    Swal.fire({
-                        title: 'Mengirim WA Notifikasi...',
-                        html: `
-                    <div class="text-center">
-                        <div class="progress mb-3" style="height: 20px;">
-                            <div id="progressWa" class="progress-bar bg-success" style="width: ${Math.round((i / daftarKirim.length) * 100)}%;">${Math.round((i / daftarKirim.length) * 100)}%</div>
-                        </div>
-                        <p id="progressTextWa">Memulai pengiriman...</p>
-                    </div>
-                `,
-                        allowOutsideClick: false,
-                        showConfirmButton: false
-                    });
-                    updateProgress(i + 1, daftarKirim.length, `Mengirim ke ${notaris.nama.substring(0, 40)}...`);
-                }
-
-                // Generate pesan WA sesuai status
-                let pesanWA = '';
-                if (notaris.status === "Terlambat") {
-                    pesanWA = `*PEMBERITAHUAN KETERLAMBATAN LAPORAN PPAT/NOTARIS*
-    
-Kepada Yth. Bapak/Ibu ${notaris.nama}
-
-Dengan hormat,
-Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* kami terima *TERLAMBAT* dari batas waktu yang ditentukan (tanggal 10 setiap bulannya).
-
-Mohon untuk lebih memperhatikan ketepatan waktu penyampaian laporan PPAT/Notaris untuk periode-periode berikutnya.
-
-Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
-
-*Badan Pendapatan Daerah Kota Bengkulu*
-Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
-                } else {
-                    pesanWA = `*PEMBERITAHUAN LAPORAN PPAT/NOTARIS*
-    
-Kepada Yth. Bapak/Ibu ${notaris.nama}
-
-Dengan hormat,
-Berdasarkan data yang tercatat, laporan bulanan untuk periode *${periode}* *BELUM KAMI TERIMA*.
-
-Mohon untuk segera menyampaikan laporan PPAT/Notaris periode ${periode} paling lambat tanggal 10 bulan berjalan.
-
-Demikian pemberitahuan ini disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
-
-*Badan Pendapatan Daerah Kota Bengkulu*
-Bidang Pengendalian dan Evaluasi Pendapatan Daerah`;
-                }
-
-                const waUrl = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesanWA)}`;
-
-                // Buka WA di tab baru
-                window.open(waUrl, '_blank');
-
-                sukses++;
-                updateProgress(i + 1, daftarKirim.length, `✓ WA dibuka untuk ${notaris.nama.substring(0, 40)}`);
-
-                // Delay antar pengiriman
-                await new Promise(r => setTimeout(r, 1500));
-            }
-
-            Swal.close();
-
-            // Tampilkan hasil
-            await Swal.fire({
-                icon: sukses > 0 ? 'success' : 'warning',
-                title: 'Pengiriman Selesai',
-                html: `
-            <div class="text-center">
-                <p><strong>Periode: ${periode}</strong></p>
-                <hr>
-                <p>✅ <span class="text-success fw-bold">${sukses}</span> WA notifikasi berhasil dibuka</p>
-                <p>❌ <span class="text-danger fw-bold">${gagal}</span> Gagal (tidak ada nomor WA)</p>
-                <p class="text-muted small mt-2">*Pastikan Anda mengklik tombol kirim di WhatsApp Web</p>
-            </div>
-        `,
-                confirmButtonColor: '#25D366'
-            });
-        }
-
     </script>
 
 </body>
