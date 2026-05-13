@@ -4060,7 +4060,7 @@
                     const updateFormData = new FormData();
                     updateFormData.append('action', 'update_status');
                     updateFormData.append('id', data.id);
-                    updateFormData.append('status', 'EMAIL_TERKIRIM');  // ← Ubah jadi EMAIL_TERKIRIM
+                    updateFormData.append('status', 'EMAIL_TERKIRIM');  // ← SUDAH DIUBAH
                     updateFormData.append('file', result.linkSTD || '');
 
                     await fetch(scriptURL, {
@@ -4068,7 +4068,7 @@
                         body: updateFormData
                     });
 
-                    // PEMANGGILAN MODAL UPLOAD DI SINI
+                    // TAMBAHKAN PEMANGGILAN MODAL UPLOAD
                     await tampilkanModalUploadBukti(data.id, data.nama, data.bulan);
 
                     setTimeout(() => loadDataSheet(), 1000);
@@ -4421,6 +4421,7 @@
         window.filterByMonth = filterByMonth;
         window.filterTanggal = filterTanggal;
         window.resetAllFilters = resetAllFilters;
+        window.tampilkanModalUploadBukti = tampilkanModalUploadBukti;
 
         // ============================================
         // NOTIFIKASI REALTIME DI NAVBAR
