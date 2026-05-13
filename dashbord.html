@@ -3787,6 +3787,124 @@
             reader.readAsDataURL(file);
         }
 
+        // Tambahkan fungsi ini setelah fungsi uploadBuktiBayar
+        async function tampilkanModalUploadBukti(id, nama, bulan) {
+            const result = await Swal.fire({
+                title: 'Upload Bukti Bayar',
+                html: `
+            <div class="text-center mb-3">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 48px;"></i>
+                <h4 class="mt-2">Email Berhasil Terkirim!</h4>
+                <p class="text-muted">Kepada: <strong>${escapeHtml(nama)}</strong></p>
+                <p class="text-muted">Periode: <strong>${bulan}</strong></p>
+                <hr>
+                <p>Silakan upload bukti bayar denda untuk menyelesaikan proses.</p>
+                <div class="alert alert-info py-2 small">
+                    <i class="bi bi-info-circle"></i> Format yang didukung: PDF, JPG, PNG
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Pilih File Bukti Bayar</label>
+                <input type="file" id="fileBuktiBayarModal" class="form-control" accept="application/pdf,image/jpeg,image/png">
+                <small class="text-muted">*Upload bukti pembayaran denda</small>
+            </div>
+        `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-cloud-upload-fill"></i> Upload Sekarang',
+                cancelButtonText: 'Nanti Saja',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                preConfirm: () => {
+                    const fileInput = document.getElementById('fileBuktiBayarModal');
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        Swal.showValidationMessage('Pilih file bukti bayar terlebih dahulu!');
+                        return false;
+                    }
+                    return fileInput;
+                }
+            });
+
+            if (result.isConfirmed && result.value) {
+                // Upload file
+                const fileInput = result.value;
+                const file = fileInput.files[0];
+
+                if (file.type !== "application/pdf" && file.type !== "image/jpeg" && file.type !== "image/png") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Format Salah',
+                        text: 'Hanya PDF, JPG, atau PNG!',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Mengupload...',
+                    text: 'Mohon tunggu',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    const base64 = e.target.result.split(",")[1];
+                    try {
+                        const formData = new FormData();
+                        formData.append('action', 'upload_bukti_bayar');
+                        formData.append('id', id);
+                        formData.append('bulan', bulan);
+                        formData.append('file', base64);
+                        formData.append('filename', file.name);
+
+                        const response = await fetch(scriptURL, {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        const res = await response.json();
+                        Swal.close();
+
+                        if (res.result === "success") {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '✅ LUNAS!',
+                                text: 'Bukti bayar berhasil diupload. Terima kasih!',
+                                confirmButtonColor: '#28a745',
+                                timer: 2000
+                            });
+                            setTimeout(() => loadDataSheet(), 500);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Upload Gagal',
+                                text: res.message || 'Terjadi kesalahan.',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        }
+                    } catch (err) {
+                        Swal.close();
+                        console.error(err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error Koneksi',
+                            text: 'Gagal terhubung ke server.',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Upload Ditunda',
+                    text: 'Anda bisa upload bukti bayar nanti melalui tombol di kolom "Bukti Bayar Denda"',
+                    confirmButtonColor: '#0d6efd',
+                    timer: 2500
+                });
+            }
+        }
+
         // ===============================
         // FUNGSI HAPUS DATA
         // ===============================
@@ -3912,7 +4030,6 @@
             showLoading('Mengirim email...');
 
             try {
-                // GUNAKAN FormData
                 const formData = new FormData();
                 formData.append('action', 'kirim_email');
                 formData.append('email', emailUser);
@@ -3928,7 +4045,7 @@
 
                 const response = await fetch(scriptURL, {
                     method: "POST",
-                    body: formData  // ← PAKAI FormData
+                    body: formData
                 });
 
                 const result = await response.json();
@@ -3939,17 +4056,20 @@
                 if (result.result === "success") {
                     showSuccess('Email Terkirim!', `Email ke ${emailUser} berhasil dikirim.`);
 
-                    // UPDATE SHEET (gunakan POST juga)
+                    // UPDATE SHEET
                     const updateFormData = new FormData();
                     updateFormData.append('action', 'update_status');
                     updateFormData.append('id', data.id);
-                    updateFormData.append('status', 'TERKIRIM');
+                    updateFormData.append('status', 'EMAIL_TERKIRIM');  // ← Ubah jadi EMAIL_TERKIRIM
                     updateFormData.append('file', result.linkSTD || '');
 
                     await fetch(scriptURL, {
                         method: "POST",
                         body: updateFormData
                     });
+
+                    // PEMANGGILAN MODAL UPLOAD DI SINI
+                    await tampilkanModalUploadBukti(data.id, data.nama, data.bulan);
 
                     setTimeout(() => loadDataSheet(), 1000);
 
