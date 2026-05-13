@@ -2712,6 +2712,65 @@
                     </div>
                 </div>
 
+                <!-- MODAL PILIH BULAN UNTUK DETEKSI TIDAK LAPOR -->
+                <div class="modal fade" id="modalPilihBulan" tabindex="-1" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 20px;">
+                            <div class="modal-header"
+                                style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: white;">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-calendar-month"></i> Deteksi Notaris Tidak Lapor
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white"
+                                    data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted mb-3">Pilih bulan dan tahun untuk mendeteksi notaris/PPAT yang
+                                    belum melaporkan
+                                    laporan.</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tahun</label>
+                                    <select id="deteksiTahun" class="form-select">
+                                        <option value="">-- Pilih Tahun --</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Bulan</label>
+                                    <select id="deteksiBulan" class="form-select">
+                                        <option value="">-- Pilih Bulan --</option>
+                                        <option value="Januari">Januari</option>
+                                        <option value="Februari">Februari</option>
+                                        <option value="Maret">Maret</option>
+                                        <option value="April">April</option>
+                                        <option value="Mei">Mei</option>
+                                        <option value="Juni">Juni</option>
+                                        <option value="Juli">Juli</option>
+                                        <option value="Agustus">Agustus</option>
+                                        <option value="September">September</option>
+                                        <option value="Oktober">Oktober</option>
+                                        <option value="November">November</option>
+                                        <option value="Desember">Desember</option>
+                                    </select>
+                                </div>
+
+                                <div class="alert alert-info py-2 small">
+                                    <i class="bi bi-info-circle"></i> Sistem akan mendeteksi notaris/PPAT yang belum
+                                    melapor pada
+                                    periode yang dipilih.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary" onclick="jalankanDeteksiTidakLapor()">
+                                    <i class="bi bi-search"></i> Deteksi Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TABLE -->
                 <div class="table-wrapper">
 
@@ -3787,162 +3846,162 @@
 
             // Buat HTML untuk print
             let htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Laporan Data PPAT/Notaris</title>
-        <style>
-            @page {
-                size: A4 landscape;
-                margin: 10mm;
-            }
-            
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            
-            body {
-                font-family: 'Times New Roman', 'Arial', sans-serif;
-                font-size: 9pt;
-                line-height: 1.2;
-                background: white;
-                padding: 10px;
-            }
-            
-            .print-container {
-                max-width: 100%;
-                margin: 0 auto;
-            }
-            
-            .header {
-                text-align: center;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #0284c7;
-            }
-            
-            .header h1 {
-                font-size: 14pt;
-                color: #0284c7;
-                margin-bottom: 5px;
-            }
-            
-            .header h3 {
-                font-size: 11pt;
-                color: #475569;
-                margin-bottom: 3px;
-            }
-            
-            .header p {
-                font-size: 8pt;
-                color: #64748b;
-            }
-            
-            .info-cetak {
-                margin-bottom: 15px;
-                padding: 8px 12px;
-                background: #f0f9ff;
-                border-left: 3px solid #0284c7;
-                font-size: 8pt;
-                display: flex;
-                justify-content: space-between;
-            }
-            
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                margin: 10px 0;
-                font-size: 7.5pt;
-            }
-            
-            th, td {
-                border: 1px solid #000000;
-                padding: 6px 4px;
-                vertical-align: top;
-            }
-            
-            th {
-                background-color: #0284c7;
-                color: white;
-                font-weight: bold;
-                text-align: center;
-                font-size: 7.5pt;
-            }
-            
-            td {
-                text-align: left;
-            }
-            
-            td:nth-child(1) { text-align: center; }  /* No */
-            td:nth-child(2) { text-align: center; }  /* Nomor Unik */
-            td:nth-child(5) { text-align: center; }  /* Tanggal Surat */
-            td:nth-child(6) { text-align: center; }  /* Tanggal Diterima */
-            td:nth-child(7) { text-align: center; }  /* Status Surat */
-            td:nth-child(8) { text-align: center; }  /* Laporan Bulanan */
-            td:nth-child(10) { text-align: center; } /* Jumlah Laporan */
-            td:nth-child(11) { text-align: right; }   /* Nominal BPHTB */
-            td:nth-child(12) { text-align: left; }    /* Keterangan */
-            
-            .footer {
-                margin-top: 15px;
-                padding-top: 8px;
-                text-align: center;
-                font-size: 7pt;
-                color: #64748b;
-                border-top: 1px solid #ccc;
-            }
-            
-            @media print {
-                body {
-                    margin: 0;
-                    padding: 8px;
-                }
-                th {
-                    background-color: #0284c7 !important;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="print-container">
-            <div class="header">
-                <h1>LAPORAN DATA PPAT / NOTARIS</h1>
-                <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
-                <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
-            </div>
-            
-            <div class="info-cetak">
-                <div><strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}</div>
-                <div><strong>Total Data:</strong> ${dataToPrint.length} Laporan</div>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nomor Unik</th>
-                        <th>Nama Notaris & PPAT</th>
-                        <th>Alamat Kantor</th>
-                        <th>Tanggal Surat</th>
-                        <th>Tanggal Diterima</th>
-                        <th>Status Surat</th>
-                        <th>Laporan Bulanan</th>
-                        <th>Data Transaksi</th>
-                        <th>Jumlah Laporan</th>
-                        <th>Nominal BPHTB (Rp)</th>
-                        <th>Keterangan</th>
-                        <th>Nomor Surat Denda (STD)</th>
-                        <th>Nomor Surat Pemberitahuan Denda</th>
-                        <th>Catatan Auto</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Laporan Data PPAT/Notaris</title>
+                <style>
+                    @page {
+                        size: A4 landscape;
+                        margin: 10mm;
+                    }
+                    
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    
+                    body {
+                        font-family: 'Times New Roman', 'Arial', sans-serif;
+                        font-size: 9pt;
+                        line-height: 1.2;
+                        background: white;
+                        padding: 10px;
+                    }
+                    
+                    .print-container {
+                        max-width: 100%;
+                        margin: 0 auto;
+                    }
+                    
+                    .header {
+                        text-align: center;
+                        margin-bottom: 15px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid #0284c7;
+                    }
+                    
+                    .header h1 {
+                        font-size: 14pt;
+                        color: #0284c7;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .header h3 {
+                        font-size: 11pt;
+                        color: #475569;
+                        margin-bottom: 3px;
+                    }
+                    
+                    .header p {
+                        font-size: 8pt;
+                        color: #64748b;
+                    }
+                    
+                    .info-cetak {
+                        margin-bottom: 15px;
+                        padding: 8px 12px;
+                        background: #f0f9ff;
+                        border-left: 3px solid #0284c7;
+                        font-size: 8pt;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        margin: 10px 0;
+                        font-size: 7.5pt;
+                    }
+                    
+                    th, td {
+                        border: 1px solid #000000;
+                        padding: 6px 4px;
+                        vertical-align: top;
+                    }
+                    
+                    th {
+                        background-color: #0284c7;
+                        color: white;
+                        font-weight: bold;
+                        text-align: center;
+                        font-size: 7.5pt;
+                    }
+                    
+                    td {
+                        text-align: left;
+                    }
+                    
+                    td:nth-child(1) { text-align: center; }  /* No */
+                    td:nth-child(2) { text-align: center; }  /* Nomor Unik */
+                    td:nth-child(5) { text-align: center; }  /* Tanggal Surat */
+                    td:nth-child(6) { text-align: center; }  /* Tanggal Diterima */
+                    td:nth-child(7) { text-align: center; }  /* Status Surat */
+                    td:nth-child(8) { text-align: center; }  /* Laporan Bulanan */
+                    td:nth-child(10) { text-align: center; } /* Jumlah Laporan */
+                    td:nth-child(11) { text-align: right; }   /* Nominal BPHTB */
+                    td:nth-child(12) { text-align: left; }    /* Keterangan */
+                    
+                    .footer {
+                        margin-top: 15px;
+                        padding-top: 8px;
+                        text-align: center;
+                        font-size: 7pt;
+                        color: #64748b;
+                        border-top: 1px solid #ccc;
+                    }
+                    
+                    @media print {
+                        body {
+                            margin: 0;
+                            padding: 8px;
+                        }
+                        th {
+                            background-color: #0284c7 !important;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-container">
+                    <div class="header">
+                        <h1>LAPORAN DATA PPAT / NOTARIS</h1>
+                        <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+                        <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+                    </div>
+                    
+                    <div class="info-cetak">
+                        <div><strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}</div>
+                        <div><strong>Total Data:</strong> ${dataToPrint.length} Laporan</div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nomor Unik</th>
+                                <th>Nama Notaris & PPAT</th>
+                                <th>Alamat Kantor</th>
+                                <th>Tanggal Surat</th>
+                                <th>Tanggal Diterima</th>
+                                <th>Status Surat</th>
+                                <th>Laporan Bulanan</th>
+                                <th>Data Transaksi</th>
+                                <th>Jumlah Laporan</th>
+                                <th>Nominal BPHTB (Rp)</th>
+                                <th>Keterangan</th>
+                                <th>Nomor Surat Denda (STD)</th>
+                                <th>Nomor Surat Pemberitahuan Denda</th>
+                                <th>Catatan Auto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
 
             // Loop data untuk membuat baris tabel
             dataToPrint.forEach((row, idx) => {
@@ -4300,7 +4359,6 @@
                     <select id="jenisPelanggaran">
                         <option value="Terlambat Menyampaikan Laporan">Terlambat</option>
                         <option value="Tidak Menyampaikan Laporan">Tidak Lapor</option>
-                        <option value="Pelanggaran : 0 / Denda Lunas">Lunas</option>
                     </select>
                 </div>
 
@@ -4375,7 +4433,7 @@
                     const updateFormData = new FormData();
                     updateFormData.append('action', 'update_status');
                     updateFormData.append('id', data.id);
-                    updateFormData.append('status', 'EMAIL_TERKIRIM');  // ← SUDAH DIUBAH
+                    updateFormData.append('status', 'EMAIL_TERKIRIM');
                     updateFormData.append('file', result.linkSTD || '');
 
                     await fetch(scriptURL, {
@@ -4416,25 +4474,25 @@
             let modal = document.createElement("div");
             modal.id = "pdfModal";
             modal.style = `
-        position:fixed;
-        top:0;left:0;
-        width:100%;height:100%;
-        background:rgba(0,0,0,0.7);
-        z-index:9999;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    `;
+                position:fixed;
+                top:0;left:0;
+                width:100%;height:100%;
+                background:rgba(0,0,0,0.7);
+                z-index:9999;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            `;
 
             modal.innerHTML = `
-        <div style="width:90%;height:90%;background:#fff;border-radius:10px;position:relative;">
-            <button onclick="this.closest('#pdfModal').remove()"
-                style="position:absolute;top:10px;right:10px;background:red;color:#fff;border:none;padding:5px 10px;">
-                ✖
-            </button>
-            <iframe src="${url}" width="100%" height="100%"></iframe>
-        </div>
-    `;
+                <div style="width:90%;height:90%;background:#fff;border-radius:10px;position:relative;">
+                    <button onclick="this.closest('#pdfModal').remove()"
+                        style="position:absolute;top:10px;right:10px;background:red;color:#fff;border:none;padding:5px 10px;">
+                        ✖
+                    </button>
+                    <iframe src="${url}" width="100%" height="100%"></iframe>
+                </div>
+            `;
 
             document.body.appendChild(modal);
         }
@@ -4737,6 +4795,382 @@
         window.filterTanggal = filterTanggal;
         window.resetAllFilters = resetAllFilters;
         window.tampilkanModalUploadBukti = tampilkanModalUploadBukti;
+
+        // ============================================
+        // FUNGSI DETEKSI TIDAK LAPOR
+        // ============================================
+        // Fungsi untuk membuka modal pilih bulan
+        function bukaModalDeteksiTidakLapor() {
+            // Isi dropdown tahun dari data yang tersedia
+            const tahunSelect = document.getElementById('deteksiTahun');
+            if (tahunSelect) {
+                // Ambil tahun dari filterTahun atau dari data
+                const tahunSet = new Set();
+
+                if (allData && allData.length > 0) {
+                    allData.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (bulanLaporan) {
+                            const match = bulanLaporan.match(/\d{4}/);
+                            if (match) {
+                                tahunSet.add(parseInt(match[0]));
+                            }
+                        }
+                    });
+                }
+
+                // Jika tidak ada data, gunakan tahun sekarang
+                if (tahunSet.size === 0) {
+                    tahunSet.add(new Date().getFullYear());
+                }
+
+                const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+                tahunList.forEach(tahun => {
+                    tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+                });
+
+                // Auto pilih tahun terbaru
+                if (tahunList.length > 0) {
+                    tahunSelect.value = tahunList[0];
+                }
+            }
+
+            // Tampilkan modal
+            const modalElement = document.getElementById('modalPilihBulan');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        // Fungsi untuk menjalankan deteksi tidak lapor
+        async function jalankanDeteksiTidakLapor() {
+            const tahun = document.getElementById('deteksiTahun')?.value;
+            const bulan = document.getElementById('deteksiBulan')?.value;
+
+            if (!tahun) {
+                Swal.fire('Peringatan', 'Pilih tahun terlebih dahulu!', 'warning');
+                return;
+            }
+
+            if (!bulan) {
+                Swal.fire('Peringatan', 'Pilih bulan terlebih dahulu!', 'warning');
+                return;
+            }
+
+            const periode = `${bulan} ${tahun}`;
+
+            // Tutup modal
+            const modalElement = document.getElementById('modalPilihBulan');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) modal.hide();
+
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Sedang Mendeteksi...',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                <p>Mendeteksi notaris yang belum lapor untuk periode <strong>${periode}</strong></p>
+            </div>
+        `,
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+
+            try {
+                // Panggil API deteksi tidak lapor
+                const response = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`);
+                const result = await response.json();
+
+                Swal.close();
+
+                if (result.success) {
+                    if (result.totalTidakLapor === 0) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Semua Notaris Sudah Lapor!',
+                            text: `Untuk periode ${periode}, semua notaris/PPAT sudah melaporkan laporan.`,
+                            confirmButtonColor: '#28a745'
+                        });
+                    } else {
+                        // Tampilkan daftar notaris yang belum lapor
+                        let daftarHtml = `
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-danger">
+                                <tr>
+                                    <th>No</th>
+                                    <th>ID Notaris</th>
+                                    <th>Nama Notaris & PPAT</th>
+                                    <th>Alamat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                        result.daftarTidakLapor.forEach((notaris, idx) => {
+                            daftarHtml += `
+                        <tr>
+                            <td style="text-align:center;">${idx + 1}</td>
+                            <td><code>${escapeHtml(notaris.id)}</code></td>
+                            <td><strong>${escapeHtml(notaris.nama)}</strong></td>
+                            <td><small>${escapeHtml(notaris.alamat?.substring(0, 50) || '-')}${(notaris.alamat?.length || 0) > 50 ? '...' : ''}</small></td>
+                        </tr>
+                    `;
+                        });
+
+                        daftarHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        <strong>${result.totalTidakLapor} Notaris</strong> belum melapor untuk periode <strong>${periode}</strong>
+                    </div>
+                `;
+
+                        const confirmResult = await Swal.fire({
+                            title: `⚠️ Notaris Belum Lapor (${result.totalTidakLapor})`,
+                            html: daftarHtml,
+                            icon: 'warning',
+                            width: '900px',
+                            confirmButtonText: 'Tambah Data Tidak Lapor',
+                            cancelButtonText: 'Tutup',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545'
+                        });
+
+                        if (confirmResult.isConfirmed) {
+                            // Tampilkan loading tambah data
+                            Swal.fire({
+                                title: 'Menambahkan Data...',
+                                html: `
+                            <div class="text-center">
+                                <div class="spinner-border text-primary mb-3"></div>
+                                <p>Menambahkan data tidak lapor ke sistem...</p>
+                            </div>
+                        `,
+                                allowOutsideClick: false,
+                                showConfirmButton: false
+                            });
+
+                            // Panggil API untuk menambah data tidak lapor
+                            const addResponse = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}&tambah=true`);
+                            const addResult = await addResponse.json();
+
+                            Swal.close();
+
+                            if (addResult.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: `Berhasil menambahkan ${addResult.totalTidakLapor} data notaris tidak lapor untuk periode ${periode}`,
+                                    confirmButtonColor: '#28a745'
+                                });
+                                // Refresh data
+                                setTimeout(() => loadDataSheet(), 1500);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: addResult.message || 'Terjadi kesalahan saat menambah data',
+                                    confirmButtonColor: '#dc3545'
+                                });
+                            }
+                        }
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: result.message || 'Terjadi kesalahan saat mendeteksi',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+
+            } catch (error) {
+                Swal.close();
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Gagal terhubung ke server. Silakan coba lagi.',
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+
+        // ============================================
+        // FUNGSI BERITA ACARA (Preview dari Apps Script)
+        // ============================================
+
+        let currentBeritaAcaraWindow = null;
+
+        function bukaBeritaAcara() {
+            // Cek apakah sudah ada jendela berita acara
+            if (currentBeritaAcaraWindow && !currentBeritaAcaraWindow.closed) {
+                currentBeritaAcaraWindow.focus();
+                return;
+            }
+
+            // Tampilkan modal pilih bulan untuk berita acara
+            Swal.fire({
+                title: 'Pilih Periode Berita Acara',
+                html: `
+            <div class="text-start">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tahun</label>
+                    <select id="baTahun" class="form-select">
+                        <option value="">-- Pilih Tahun --</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Bulan</label>
+                    <select id="baBulan" class="form-select">
+                        <option value="">-- Pilih Bulan --</option>
+                        <option value="Januari">Januari</option>
+                        <option value="Februari">Februari</option>
+                        <option value="Maret">Maret</option>
+                        <option value="April">April</option>
+                        <option value="Mei">Mei</option>
+                        <option value="Juni">Juni</option>
+                        <option value="Juli">Juli</option>
+                        <option value="Agustus">Agustus</option>
+                        <option value="September">September</option>
+                        <option value="Oktober">Oktober</option>
+                        <option value="November">November</option>
+                        <option value="Desember">Desember</option>
+                    </select>
+                </div>
+            </div>
+        `,
+                width: '450px',
+                showCancelButton: true,
+                confirmButtonText: 'Buka Berita Acara',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    const tahun = document.getElementById('baTahun')?.value;
+                    const bulan = document.getElementById('baBulan')?.value;
+
+                    if (!tahun) {
+                        Swal.showValidationMessage('Pilih tahun terlebih dahulu!');
+                        return false;
+                    }
+                    if (!bulan) {
+                        Swal.showValidationMessage('Pilih bulan terlebih dahulu!');
+                        return false;
+                    }
+
+                    return { bulan, tahun };
+                },
+                didOpen: () => {
+                    // Isi dropdown tahun
+                    const tahunSelect = document.getElementById('baTahun');
+                    if (tahunSelect) {
+                        const tahunSet = new Set();
+
+                        if (allData && allData.length > 0) {
+                            allData.forEach(row => {
+                                const bulanLaporan = row["laporan_bulanan"];
+                                if (bulanLaporan) {
+                                    const match = bulanLaporan.match(/\d{4}/);
+                                    if (match) {
+                                        tahunSet.add(parseInt(match[0]));
+                                    }
+                                }
+                            });
+                        }
+
+                        if (tahunSet.size === 0) {
+                            tahunSet.add(new Date().getFullYear());
+                        }
+
+                        const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+                        tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+                        tahunList.forEach(tahun => {
+                            tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+                        });
+
+                        if (tahunList.length > 0) {
+                            tahunSelect.value = tahunList[0];
+                        }
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    const { bulan, tahun } = result.value;
+                    const periode = `${bulan} ${tahun}`;
+
+                    // Buka berita acara di window baru
+                    const url = `${scriptURL}?action=get_berita_acara&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`;
+                    currentBeritaAcaraWindow = window.open(url, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+
+                    if (!currentBeritaAcaraWindow) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Popup Terblokir',
+                            text: 'Izinkan popup untuk membuka Berita Acara.',
+                            confirmButtonColor: '#3085d6'
+                        });
+                    }
+                }
+            });
+        }
+
+        // Update tombol deteksi untuk membuka modal
+        // Cari tombol dengan id "btnDeteksiOtomatisContainer" dan ubah onclick-nya
+        // Atau tambahkan event listener setelah DOM ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tunggu sebentar agar DOM siap
+            setTimeout(() => {
+                const btnDeteksi = document.getElementById('btnDeteksiOtomatisContainer');
+                if (btnDeteksi) {
+                    const btn = btnDeteksi.querySelector('button');
+                    if (btn) {
+                        btn.onclick = function (e) {
+                            e.preventDefault();
+                            bukaModalDeteksiTidakLapor();
+                        };
+                    }
+                }
+
+                // Juga update tombol "Kirim WA Notifikasi" jika perlu
+                const btnWa = document.getElementById('btnBelumLaporContainer');
+                if (btnWa) {
+                    const btnWaElement = btnWa.querySelector('button');
+                    if (btnWaElement) {
+                        // Deteksi bulan terbaru otomatis
+                        btnWaElement.onclick = function (e) {
+                            e.preventDefault();
+                            const filterTahun = document.getElementById('filterTahun')?.value;
+                            let bulanTerpilih = '';
+                            const selectedBulan = document.getElementById('selectedBulan')?.value;
+
+                            if (selectedBulan) {
+                                bulanTerpilih = selectedBulan;
+                            } else if (filterTahun) {
+                                const bulanTerbaru = getBulanTerbaruDariData();
+                                if (bulanTerbaru) {
+                                    bulanTerpilih = bulanTerbaru;
+                                }
+                            }
+
+                            if (!bulanTerpilih) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Pilih Periode',
+                                    text: 'Silakan pilih bulan terlebih dahulu dari filter bulan di atas.',
+                                    confirmButtonColor: '#3085d6'
+                                });
+                                return;
+                            }
+
+                            deteksiDanKirimTidakMelapor();
+                        };
+                    }
+                }
+            }, 1000);
+        });
 
         // ============================================
         // NOTIFIKASI REALTIME DI NAVBAR
