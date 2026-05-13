@@ -2989,7 +2989,7 @@
         /* =========================
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxZqhYSg7fgxJKob3jUDboWUDzfhFdHu-9PnZpAF9U4lO1k4Tan5TMMsbVCTDVQ0Tmo/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyK6SJSptviNdDdxBfyi_GA7rW6rAnlYF_CtfnnYhIST0AhenLdP-gQdHU-KJda0j5e/exec';
         // CSS untuk badge pensiun (tambahkan ke style yang sudah ada)
         const stylePensiun = document.createElement('style');
         stylePensiun.innerHTML = `
@@ -3119,7 +3119,7 @@
 
             // Cek LUNAS dari kolom file_bukti_bayar (bukan file_surat_upload)
             if (hasUpload) {
-                return '<span style="color:green; font-weight:bold;">💰 LUNAS</span>';
+                return '<span style="color:green; font-weight:bold;"> ✅ LUNAS</span>';
             }
 
             // Status berdasarkan email
@@ -3155,6 +3155,54 @@
             let bersih = String(angka).replace(/\D/g, '');
             if (bersih === '') return 'Rp. 0';
             return 'Rp. ' + bersih.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Tambahkan fungsi ini di bagian atas script (setelah fungsi formatRupiahTabel)
+        function formatTanggalIndonesia(tanggal) {
+            if (!tanggal || tanggal === '') return '';
+
+            // Jika format sudah seperti "04 April 2026", langsung kembalikan
+            if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                return tanggal;
+            }
+
+            // Coba parse berbagai format
+            let tanggalObj = null;
+
+            // Format YYYY/MM/DD atau YYYY-MM-DD
+            if (tanggal.includes('/') || tanggal.includes('-')) {
+                let parts = tanggal.split(/[/-]/);
+                if (parts.length === 3) {
+                    // Asumsi format YYYY/MM/DD atau YYYY-MM-DD
+                    tanggalObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+            }
+
+            // Format DD/MM/YYYY
+            if (!tanggalObj && tanggal.includes('/')) {
+                let parts = tanggal.split('/');
+                if (parts.length === 3 && parts[0].length === 2) {
+                    tanggalObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+
+            // Jika masih null, coba new Date langsung
+            if (!tanggalObj) {
+                tanggalObj = new Date(tanggal);
+            }
+
+            // Validasi tanggal valid
+            if (tanggalObj && !isNaN(tanggalObj.getTime())) {
+                const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                const hari = tanggalObj.getDate().toString().padStart(2, '0');
+                const bulanNama = bulan[tanggalObj.getMonth()];
+                const tahun = tanggalObj.getFullYear();
+                return `${hari} ${bulanNama} ${tahun}`;
+            }
+
+            // Jika gagal, kembalikan aslinya
+            return tanggal;
         }
 
         function renderTable(data) {
@@ -3256,8 +3304,8 @@
             <td>${row["alamat"] || ""}</td>
             <td>${row["nomor_surat"] || ""}</td>
             <td>${row["tanggal_surat"] || ""}</td>
-            <td>${row["tanggal_diterima"] || ""}</td>
-            <td>${row["status_surat"] || ""}</td>
+            <td>${formatTanggalIndonesia(row["tanggal_diterima"] || "")}</td>
+            <td>${formatTanggalIndonesia(row["tanggal_surat"] || "")}</td>
             <td>${row["laporan_bulanan"] || ""}</td>
             <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}</td>
             <td>${row["jumlah_laporan"] || ""}</td>
@@ -3380,9 +3428,9 @@
                 btn.classList.add("btn-outline-primary");
             });
 
-            currentFilteredData = allData; // ✅ PASTIKAN INI
+            currentFilteredData = allData;
             renderTable(allData);
-            tampilkanRingkasanBulanan(); // ✅ SUDAH ADA, TETAP PERTAHANKAN
+            tampilkanRingkasanBulanan();
         }
 
         function generateBulan() {
@@ -3412,7 +3460,7 @@
             });
             renderTable(filteredData);
             currentFilteredData = filteredData;
-            tampilkanRingkasanBulanan(); // <-- TAMBAHKAN INI
+            tampilkanRingkasanBulanan();
         }
 
         // ===============================
@@ -3711,7 +3759,6 @@
             reader.onload = async function (e) {
                 const base64 = e.target.result.split(",")[1];
                 try {
-                    // ✅ PERBAIKAN: Gunakan FormData, BUKAN URLSearchParams
                     const formData = new FormData();
                     formData.append('action', 'upload_bukti_bayar');
                     formData.append('id', id);
@@ -3801,7 +3848,7 @@
                         <div class="icon">👤</div>
                         <div>
                             <div class="nama">${nama}</div>
-                            <div class="sub">ID: ${id}</div>
+                            <div class="sub">Nomor Unik ${id}</div>
                             <div class="sub">Periode: ${bulan}</div>
                         </div>
                     </div>
@@ -3867,7 +3914,7 @@
             showLoading('Mengirim email...');
 
             try {
-                // ✅ GUNAKAN FormData
+                // GUNAKAN FormData
                 const formData = new FormData();
                 formData.append('action', 'kirim_email');
                 formData.append('email', emailUser);
