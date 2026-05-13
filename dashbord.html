@@ -2471,23 +2471,86 @@
             animation: none !important;
         }
 
-        /* Pastikan modal dapat berinteraksi dengan benar */
+        /* ============================================
+   FINAL FIX - MODAL TIDAK GELAP
+   ============================================ */
+
+        /* Pastikan modal memiliki z-index tertinggi */
         .modal {
-            z-index: 1050 !important;
+            z-index: 99999 !important;
         }
 
         .modal-backdrop {
-            z-index: 1040 !important;
+            z-index: 99998 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
         }
 
-        .modal.show {
-            display: block !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
+        .modal-backdrop.show {
+            opacity: 0.3 !important;
         }
 
-        /* SweetAlert2 override untuk tidak mengganggu modal */
+        /* Pastikan modal content bisa diklik */
+        .modal-content {
+            pointer-events: auto !important;
+            z-index: 99999 !important;
+        }
+
+        .modal-dialog {
+            pointer-events: auto !important;
+            z-index: 99999 !important;
+        }
+
+        /* SweetAlert2 harus berada DI BAWAH modal Bootstrap */
         .swal2-container {
-            z-index: 1060 !important;
+            z-index: 99990 !important;
+        }
+
+        .swal2-popup {
+            z-index: 99991 !important;
+        }
+
+        /* Reset body saat modal terbuka */
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        /* Pastikan tidak ada elemen yang menutupi modal */
+        .modal-open .container,
+        .modal-open .floating-footer,
+        .modal-open .navbar {
+            z-index: auto !important;
+        }
+
+        /* Debug - pastikan modal terlihat */
+        #modalPilihBulan.show,
+        #modalWANotifikasi.show {
+            display: flex !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
+        #modalPilihBulan .modal-content,
+        #modalWANotifikasi .modal-content {
+            background: white !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* Pastikan elemen di dalam modal bisa diinteraksi */
+        .modal-body,
+        .modal-body *,
+        .modal-footer,
+        .modal-footer * {
+            pointer-events: auto !important;
+        }
+
+        /* Hilangkan backdrop yang tersisa secara paksa */
+        .modal-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>
@@ -3237,16 +3300,26 @@
         function forceCloseAllModals() {
             console.log("🔧 Force close all modals...");
 
-            // Hapus semua backdrop Bootstrap
+            // Tutup SweetAlert terlebih dahulu
+            if (Swal.isVisible()) {
+                Swal.close();
+            }
+
+            // Hapus semua backdrop Bootstrap dengan paksa
             const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => backdrop.remove());
+            backdrops.forEach(backdrop => {
+                backdrop.remove();
+                console.log("🗑️ Backdrop dihapus");
+            });
 
             // Tutup semua modal yang terbuka
-            const modals = document.querySelectorAll('.modal.show');
+            const modals = document.querySelectorAll('.modal.show, .modal.fade');
             modals.forEach(modal => {
                 try {
                     const instance = bootstrap.Modal.getInstance(modal);
-                    if (instance) instance.hide();
+                    if (instance) {
+                        instance.hide();
+                    }
                 } catch (e) { }
                 modal.classList.remove('show');
                 modal.style.display = 'none';
@@ -3257,10 +3330,9 @@
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
 
-            // Tutup SweetAlert jika ada
-            if (Swal.isVisible) {
-                Swal.close();
-            }
+            // Tambahan: Hapus style inline yang mungkin tertinggal
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
 
             console.log("✅ Force close selesai");
         }
@@ -5136,7 +5208,9 @@
             console.log("🔍 Membuka modal deteksi tidak lapor...");
 
             // PASTIKAN SEMUA MODAL TERTUTUP SEBELUM MEMBUKA YANG BARU
-            forceCloseAllModals();
+            if (typeof forceCloseAllModals === 'function') {
+                forceCloseAllModals();
+            }
 
             // TUNGGU SEBENTAR AGAR MODAL BENAR-BENAR TERTUTUP
             setTimeout(() => {
@@ -5145,8 +5219,7 @@
                 if (tahunSelect) {
                     const tahunSet = new Set();
 
-                    // CEK APAKAH allData SUDAH TERSEDIA
-                    if (typeof allData !== 'undefined' && allData && allData.length > 0) {
+                    if (allData && allData.length > 0) {
                         allData.forEach(row => {
                             const bulanLaporan = row["laporan_bulanan"];
                             if (bulanLaporan) {
@@ -5193,13 +5266,22 @@
                         modal.dispose();
                     }
 
+                    // Buat modal baru dengan backdrop true
                     modal = new bootstrap.Modal(modalElement, {
-                        backdrop: true,
-                        keyboard: true
+                        backdrop: true,     // Izinkan klik backdrop untuk menutup
+                        keyboard: true,     // Izinkan ESC untuk menutup
+                        focus: true         // Fokus ke modal
+                    });
+
+                    // Event listener untuk setelah modal terbuka
+                    modalElement.addEventListener('shown.bs.modal', function onShown() {
+                        console.log("✅ Modal deteksi tidak lapor terbuka");
+                        // Pastikan body tidak memiliki scroll
+                        document.body.style.overflow = 'hidden';
+                        modalElement.removeEventListener('shown.bs.modal', onShown);
                     });
 
                     modal.show();
-                    console.log("✅ Modal deteksi tidak lapor terbuka");
 
                 } catch (error) {
                     console.error("❌ Gagal membuka modal:", error);
@@ -5210,7 +5292,7 @@
                         confirmButtonColor: '#dc3545'
                     });
                 }
-            }, 100);
+            }, 150); // Tunggu 150ms agar force close selesai
         }
 
         // ============================================
@@ -5434,36 +5516,6 @@
                 } else {
                     console.warn("⚠️ Tombol WA Notifikasi tidak ditemukan di DOM");
                 }
-            }
-
-            // Fungsi emergency untuk menutup semua modal
-            function forceCloseAllModals() {
-                // Hapus semua backdrop Bootstrap
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                backdrops.forEach(backdrop => backdrop.remove());
-
-                // Tutup semua modal yang terbuka
-                const modals = document.querySelectorAll('.modal.show');
-                modals.forEach(modal => {
-                    try {
-                        const instance = bootstrap.Modal.getInstance(modal);
-                        if (instance) instance.hide();
-                    } catch (e) { }
-                    modal.classList.remove('show');
-                    modal.style.display = 'none';
-                });
-
-                // Reset body
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-
-                // Tutup SweetAlert jika ada
-                if (Swal.isVisible) {
-                    Swal.close();
-                }
-
-                console.log("✅ Force close semua modal selesai");
             }
 
             // Jadikan forceCloseAllModals global agar bisa dipakai di fungsi lain
