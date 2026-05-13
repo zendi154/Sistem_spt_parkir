@@ -2552,86 +2552,6 @@
             width: 100% !important;
             height: 100% !important;
         }
-
-        /* ============================================
-   CRITICAL FIX - MODAL POSITION & CLICKABLE
-   ============================================ */
-
-        /* Reset modal positioning */
-        .modal {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            z-index: 99999 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow-y: auto !important;
-        }
-
-        .modal-dialog {
-            position: relative !important;
-            margin: 1.75rem auto !important;
-            z-index: 100000 !important;
-            pointer-events: auto !important;
-            transform: translate(0, 0) !important;
-        }
-
-        .modal-dialog-centered {
-            display: flex !important;
-            align-items: center !important;
-            min-height: calc(100% - 3.5rem) !important;
-        }
-
-        .modal-content {
-            position: relative !important;
-            pointer-events: auto !important;
-            background: white !important;
-            border-radius: 20px !important;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
-            z-index: 100001 !important;
-        }
-
-        .modal-backdrop {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            z-index: 99998 !important;
-        }
-
-        /* Pastikan semua elemen dalam modal bisa diklik */
-        .modal-body,
-        .modal-body *,
-        .modal-footer,
-        .modal-footer *,
-        .modal-header,
-        .modal-header * {
-            pointer-events: auto !important;
-        }
-
-        /* Fix untuk select dan input dalam modal */
-        .modal-body select,
-        .modal-body input,
-        .modal-body button {
-            pointer-events: auto !important;
-            cursor: pointer !important;
-        }
-
-        .modal-body select:disabled,
-        .modal-body input:disabled {
-            cursor: not-allowed !important;
-        }
-
-        /* Hilangkan scroll yang tidak perlu */
-        .modal-open {
-            overflow: hidden !important;
-            padding-right: 0 !important;
-        }
     </style>
 </head>
 
@@ -5093,23 +5013,33 @@
 
             const periode = `${bulan} ${tahun}`;
 
-            // Tutup modal dengan aman
+            // ============================================
+            // TUTUP MODAL DENGAN BENAR + HAPUS BACKDROP
+            // ============================================
             const modalElement = document.getElementById('modalPilihBulan');
             if (modalElement) {
                 try {
                     const modal = bootstrap.Modal.getInstance(modalElement);
                     if (modal) {
                         modal.hide();
+                        console.log("🔒 Modal ditutup");
                     }
-                } catch (e) { }
-                // Hapus backdrop dengan paksa
-                setTimeout(() => {
-                    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                    document.body.classList.remove('modal-open');
-                }, 100);
+                } catch (e) {
+                    console.warn("Gagal tutup modal:", e);
+                }
             }
 
-            // Tampilkan loading
+            // TUNGGU MODAL BENAR-BENAR TERTUTUP
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // HAPUS SEMUA BACKDROP YANG TERSISA
+            forceCloseAllModals();
+
+            console.log("✅ Semua modal dan backdrop telah dibersihkan");
+
+            // ============================================
+            // TAMPILKAN LOADING DENGAN SWEETALERT
+            // ============================================
             Swal.fire({
                 title: 'Sedang Mendeteksi...',
                 html: `
@@ -5122,74 +5052,145 @@
             </div>
         `,
                 allowOutsideClick: false,
+                allowEscapeKey: false,
                 showConfirmButton: false,
                 didOpen: () => {
                     let progress = 0;
                     const interval = setInterval(() => {
-                        progress += 25;
+                        progress += 20;
                         const progressBar = document.getElementById('deteksiProgress');
-                        if (progressBar) progressBar.style.width = `${Math.min(progress, 100)}%`;
+                        if (progressBar) {
+                            progressBar.style.width = `${Math.min(progress, 100)}%`;
+                        }
                         if (progress >= 100) clearInterval(interval);
                     }, 400);
                 }
             });
 
             try {
+                // Panggil API deteksi tidak lapor
+                console.log("📡 Memanggil API deteksi...");
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
                 const response = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`, {
-                    method: 'GET',
-                    cache: 'no-cache'
+                    signal: controller.signal
                 });
 
+                clearTimeout(timeoutId);
+
                 const result = await response.json();
+                console.log("📥 Hasil API:", result);
+
                 Swal.close();
-                await new Promise(r => setTimeout(r, 100));
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 if (result.success) {
                     if (result.totalTidakLapor === 0) {
                         await Swal.fire({
                             icon: 'success',
-                            title: 'Semua Notaris Sudah Lapor!',
-                            text: `Untuk periode ${periode}, semua notaris sudah melaporkan laporan.`,
+                            title: '🎉 Semua Notaris Sudah Lapor!',
+                            text: `Untuk periode ${periode}, semua notaris/PPAT sudah melaporkan laporan.`,
                             confirmButtonColor: '#28a745'
                         });
                     } else {
                         let daftarHtml = `
                     <div style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-sm table-hover">
-                            <thead class="table-danger">
-                                <tr><th>No</th><th>Nama Notaris</th><th>ID</th></tr>
+                        <table class="table table-sm table-hover" style="font-size: 12px;">
+                            <thead class="table-danger" style="position: sticky; top: 0;">
+                                <tr>
+                                    <th style="width: 5%; text-align: center;">No</th>
+                                    <th style="width: 60%;">Nama Notaris & PPAT</th>
+                                    <th style="width: 35%; text-align: center;">ID Notaris</th>
+                                </tr>
                             </thead>
                             <tbody>
                 `;
-                        result.daftarTidakLapor.forEach((nama, idx) => {
-                            daftarHtml += `<tr><td class="text-center">${idx + 1}</td><td>${escapeHtml(nama)}</td><td class="text-center">-</td></tr>`;
-                        });
-                        daftarHtml += `</tbody></table></div>`;
 
-                        await Swal.fire({
-                            title: `⚠️ ${result.totalTidakLapor} Notaris Belum Lapor`,
+                        result.daftarTidakLapor.forEach((nama, idx) => {
+                            daftarHtml += `
+                        <tr>
+                            <td style="text-align:center;">${idx + 1}</td>
+                            <td><strong>${escapeHtml(nama)}</strong></td>
+                            <td style="text-align:center;"><code>-</code></td>
+                        </tr>
+                    `;
+                        });
+
+                        daftarHtml += `
+                            </tbody>
+                        <tr>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        <strong>${result.totalTidakLapor} Notaris</strong> belum melapor untuk periode <strong>${periode}</strong>
+                    </div>
+                    <div class="alert alert-info mt-2 small">
+                        <i class="bi bi-info-circle-fill"></i> 
+                        Data akan ditambahkan ke sheet dengan status <strong>"Tidak Menyampaikan Laporan"</strong>
+                    </div>
+                `;
+
+                        const confirmResult = await Swal.fire({
+                            title: `⚠️ Notaris Belum Lapor (${result.totalTidakLapor})`,
                             html: daftarHtml,
                             icon: 'warning',
-                            width: '700px',
-                            confirmButtonText: 'Tutup',
-                            confirmButtonColor: '#dc3545'
+                            width: '800px',
+                            confirmButtonText: '<i class="bi bi-plus-circle"></i> Tambahkan ke Sheet',
+                            cancelButtonText: 'Batal',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d'
                         });
+
+                        if (confirmResult.isConfirmed) {
+                            Swal.fire({
+                                title: 'Menambahkan Data...',
+                                text: `Menambahkan ${result.totalTidakLapor} notaris ke sheet`,
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+
+                            Swal.close();
+                            await Swal.fire({
+                                icon: 'success',
+                                title: '✅ Berhasil!',
+                                text: `Berhasil menambahkan ${result.totalTidakLapor} notaris tidak lapor untuk periode ${periode}\n\nStatus: "Tidak Menyampaikan Laporan"`,
+                                confirmButtonColor: '#28a745'
+                            });
+
+                            setTimeout(() => {
+                                if (typeof loadDataSheet === 'function') {
+                                    loadDataSheet();
+                                }
+                            }, 1000);
+                        }
                     }
                 } else {
                     await Swal.fire({
                         icon: 'error',
-                        title: 'Gagal',
-                        text: result.message || 'Terjadi kesalahan',
+                        title: '❌ Gagal',
+                        text: result.message || 'Terjadi kesalahan saat mendeteksi',
                         confirmButtonColor: '#dc3545'
                     });
                 }
+
             } catch (error) {
                 Swal.close();
-                console.error('Error:', error);
+                console.error('❌ Error detail:', error);
+
+                let errorMessage = error.message;
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Request timeout. Server tidak merespon dalam 30 detik.';
+                }
+
                 await Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'Gagal terhubung ke server: ' + error.message,
+                    title: '❌ Error Koneksi',
+                    html: `Gagal terhubung ke server.<br><br>Detail: ${errorMessage}<br><br>Silakan coba lagi.`,
                     confirmButtonColor: '#dc3545'
                 });
             }
@@ -5206,64 +5207,92 @@
         function bukaModalDeteksiTidakLapor() {
             console.log("🔍 Membuka modal deteksi tidak lapor...");
 
-            // Tutup semua modal yang mungkin terbuka
-            try {
-                const modals = document.querySelectorAll('.modal.show');
-                modals.forEach(modal => {
-                    const instance = bootstrap.Modal.getInstance(modal);
-                    if (instance) instance.hide();
-                });
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-            } catch (e) { }
+            // PASTIKAN SEMUA MODAL TERTUTUP SEBELUM MEMBUKA YANG BARU
+            if (typeof forceCloseAllModals === 'function') {
+                forceCloseAllModals();
+            }
 
-            // Isi dropdown tahun
-            const tahunSelect = document.getElementById('deteksiTahun');
-            if (tahunSelect) {
-                const tahunSet = new Set();
-                if (allData && allData.length > 0) {
-                    allData.forEach(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        if (bulanLaporan) {
-                            const match = bulanLaporan.match(/\d{4}/);
-                            if (match) tahunSet.add(parseInt(match[0]));
-                        }
+            // TUNGGU SEBENTAR AGAR MODAL BENAR-BENAR TERTUTUP
+            setTimeout(() => {
+                // Isi dropdown tahun dari data yang tersedia
+                const tahunSelect = document.getElementById('deteksiTahun');
+                if (tahunSelect) {
+                    const tahunSet = new Set();
+
+                    if (allData && allData.length > 0) {
+                        allData.forEach(row => {
+                            const bulanLaporan = row["laporan_bulanan"];
+                            if (bulanLaporan) {
+                                const match = bulanLaporan.match(/\d{4}/);
+                                if (match) {
+                                    tahunSet.add(parseInt(match[0]));
+                                }
+                            }
+                        });
+                    }
+
+                    if (tahunSet.size === 0) {
+                        tahunSet.add(new Date().getFullYear());
+                    }
+
+                    const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+                    tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+                    tahunList.forEach(tahun => {
+                        tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+                    });
+
+                    if (tahunList.length > 0) {
+                        tahunSelect.value = tahunList[0];
+                    }
+                }
+
+                // Tampilkan modal
+                const modalElement = document.getElementById('modalPilihBulan');
+                if (!modalElement) {
+                    console.error("❌ Modal element tidak ditemukan!");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Komponen modal tidak ditemukan. Silakan refresh halaman.',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    return;
+                }
+
+                try {
+                    // Hapus instance lama jika ada
+                    let modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.dispose();
+                    }
+
+                    // Buat modal baru dengan backdrop true
+                    modal = new bootstrap.Modal(modalElement, {
+                        backdrop: true,     // Izinkan klik backdrop untuk menutup
+                        keyboard: true,     // Izinkan ESC untuk menutup
+                        focus: true         // Fokus ke modal
+                    });
+
+                    // Event listener untuk setelah modal terbuka
+                    modalElement.addEventListener('shown.bs.modal', function onShown() {
+                        console.log("✅ Modal deteksi tidak lapor terbuka");
+                        // Pastikan body tidak memiliki scroll
+                        document.body.style.overflow = 'hidden';
+                        modalElement.removeEventListener('shown.bs.modal', onShown);
+                    });
+
+                    modal.show();
+
+                } catch (error) {
+                    console.error("❌ Gagal membuka modal:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat membuka form deteksi. Silakan refresh halaman.',
+                        confirmButtonColor: '#dc3545'
                     });
                 }
-                if (tahunSet.size === 0) tahunSet.add(new Date().getFullYear());
-
-                const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
-                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
-                tahunList.forEach(t => tahunSelect.innerHTML += `<option value="${t}">${t}</option>`);
-                if (tahunList.length > 0) tahunSelect.value = tahunList[0];
-            }
-
-            // Buka modal
-            const modalElement = document.getElementById('modalPilihBulan');
-            if (!modalElement) {
-                Swal.fire('Error', 'Modal tidak ditemukan!', 'error');
-                return;
-            }
-
-            try {
-                let modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) modal.dispose();
-                modal = new bootstrap.Modal(modalElement, { backdrop: true, keyboard: true });
-                modal.show();
-
-                // Pastikan modal di tengah
-                setTimeout(() => {
-                    const dialog = modalElement.querySelector('.modal-dialog');
-                    if (dialog) {
-                        dialog.style.margin = '1.75rem auto';
-                        dialog.style.transform = 'none';
-                    }
-                }, 50);
-
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Gagal membuka modal!', 'error');
-            }
+            }, 150); // Tunggu 150ms agar force close selesai
         }
 
         // ============================================
