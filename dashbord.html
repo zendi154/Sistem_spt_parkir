@@ -2554,6 +2554,13 @@
                             </button>
                         </div>
 
+                        <!-- TAMBAHKAN TOMBOL PRINT DI SINI -->
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-primary w-100" onclick="printTableLaporan()">
+                                <i class="bi bi-printer-fill"></i> Print Table
+                            </button>
+                        </div>
+
                         <!-- BUTTON DETEKSI TIDAK MELAPOR OTOMATIS -->
                         <div class="col-md-2" id="btnDeteksiOtomatisContainer" style="display: none;">
                             <button type="button" class="btn btn-info w-100" onclick="deteksiOtomatisTidakLapor()">
@@ -3114,7 +3121,7 @@
         function getCatatanAuto(statusTerlambat, statusEmail, hasUpload) {
             // Jika VALID (tidak terlambat)
             if (statusTerlambat !== "TIDAK VALID") {
-                return '<span style="color:green; font-weight:bold;">✅ VALID</span>';
+                return '<span style="color:green; font-weight:bold;">✅ DATA VALID</span>';
             }
 
             // Cek LUNAS dari kolom file_bukti_bayar (bukan file_surat_upload)
@@ -3126,7 +3133,7 @@
             if (statusEmail === "SELESAI") {
                 return '<span style="color:green;">✓ Selesai</span>';
             } else if (statusEmail === "EMAIL_TERKIRIM") {
-                return '<span style="color:#d4a100;">📧 Email Terkirim!<br>Belum Upload</span>';
+                return '<span style="color:#d4a100;">✅ Email Terkirim!<br>Belum Upload</span>';
             } else {
                 return '<span style="color:black;">❌ Belum Diproses</span>';
             }
@@ -3757,6 +3764,291 @@
                 console.error("Error export:", error);
                 showError("Error", "Terjadi kesalahan saat export: " + error.message);
             }
+        }
+
+        // Fungsi Print Table Laporan (No otomatis, kolom sesuai permintaan)
+        function printTableLaporan() {
+            // Gunakan data yang sedang ditampilkan (currentFilteredData)
+            const dataToPrint = currentFilteredData.length > 0 ? currentFilteredData : allData;
+
+            if (!dataToPrint || dataToPrint.length === 0) {
+                showError("Error", "Tidak ada data untuk dicetak!");
+                return;
+            }
+
+            const now = new Date();
+            const tanggalCetak = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const waktuCetak = now.toLocaleTimeString('id-ID');
+
+            // Buat HTML untuk print
+            let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Laporan Data PPAT/Notaris</title>
+        <style>
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Times New Roman', 'Arial', sans-serif;
+                font-size: 9pt;
+                line-height: 1.2;
+                background: white;
+                padding: 10px;
+            }
+            
+            .print-container {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            
+            .header {
+                text-align: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #0284c7;
+            }
+            
+            .header h1 {
+                font-size: 14pt;
+                color: #0284c7;
+                margin-bottom: 5px;
+            }
+            
+            .header h3 {
+                font-size: 11pt;
+                color: #475569;
+                margin-bottom: 3px;
+            }
+            
+            .header p {
+                font-size: 8pt;
+                color: #64748b;
+            }
+            
+            .info-cetak {
+                margin-bottom: 15px;
+                padding: 8px 12px;
+                background: #f0f9ff;
+                border-left: 3px solid #0284c7;
+                font-size: 8pt;
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 10px 0;
+                font-size: 7.5pt;
+            }
+            
+            th, td {
+                border: 1px solid #000000;
+                padding: 6px 4px;
+                vertical-align: top;
+            }
+            
+            th {
+                background-color: #0284c7;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                font-size: 7.5pt;
+            }
+            
+            td {
+                text-align: left;
+            }
+            
+            td:nth-child(1) { text-align: center; }  /* No */
+            td:nth-child(2) { text-align: center; }  /* Nomor Unik */
+            td:nth-child(5) { text-align: center; }  /* Tanggal Surat */
+            td:nth-child(6) { text-align: center; }  /* Tanggal Diterima */
+            td:nth-child(7) { text-align: center; }  /* Status Surat */
+            td:nth-child(8) { text-align: center; }  /* Laporan Bulanan */
+            td:nth-child(10) { text-align: center; } /* Jumlah Laporan */
+            td:nth-child(11) { text-align: right; }   /* Nominal BPHTB */
+            td:nth-child(12) { text-align: left; }    /* Keterangan */
+            
+            .footer {
+                margin-top: 15px;
+                padding-top: 8px;
+                text-align: center;
+                font-size: 7pt;
+                color: #64748b;
+                border-top: 1px solid #ccc;
+            }
+            
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 8px;
+                }
+                th {
+                    background-color: #0284c7 !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="print-container">
+            <div class="header">
+                <h1>LAPORAN DATA PPAT / NOTARIS</h1>
+                <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+                <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+            </div>
+            
+            <div class="info-cetak">
+                <div><strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}</div>
+                <div><strong>Total Data:</strong> ${dataToPrint.length} Laporan</div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nomor Unik</th>
+                        <th>Nama Notaris & PPAT</th>
+                        <th>Alamat Kantor</th>
+                        <th>Tanggal Surat</th>
+                        <th>Tanggal Diterima</th>
+                        <th>Status Surat</th>
+                        <th>Laporan Bulanan</th>
+                        <th>Data Transaksi</th>
+                        <th>Jumlah Laporan</th>
+                        <th>Nominal BPHTB (Rp)</th>
+                        <th>Keterangan</th>
+                        <th>Nomor Surat Denda (STD)</th>
+                        <th>Nomor Surat Pemberitahuan Denda</th>
+                        <th>Catatan Auto</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+            // Loop data untuk membuat baris tabel
+            dataToPrint.forEach((row, idx) => {
+                // Format data transaksi untuk print
+                let dataTransaksiTeks = '-';
+                try {
+                    if (row["data_transaksi"]) {
+                        let transaksi = JSON.parse(row["data_transaksi"]);
+                        if (Array.isArray(transaksi) && transaksi.length > 0) {
+                            dataTransaksiTeks = `${transaksi.length} transaksi`;
+                        }
+                    }
+                } catch (e) {
+                    dataTransaksiTeks = '-';
+                }
+
+                htmlContent += `
+            <tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td style="text-align:center;">${escapeHtml(row["id"] || '-')}</td>
+                <td>${escapeHtml(row["nama_notaris_&_ppat"] || '-')}</td>
+                <td>${escapeHtml(row["alamat"] || '-')}</td>
+                <td style="text-align:center;">${row["tanggal_surat"] || '-'}</td>
+                <td style="text-align:center;">${row["tanggal_diterima"] || '-'}</td>
+                <td style="text-align:center;">${row["status_surat"] || '-'}</td>
+                <td style="text-align:center;">${row["laporan_bulanan"] || '-'}</td>
+                <td style="text-align:center;">${dataTransaksiTeks}</td>
+                <td style="text-align:center;">${row["jumlah_laporan"] || '0'}</td>
+                <td style="text-align:right;">${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
+                <td style="text-align:left;">${escapeHtml(row["keterangan"] || '-')}</td>
+                <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? row["nomor_std"] : '-'}</td>
+                <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? row["nomor_pemberitahuan"] : '-'}</td>
+                <td style="text-align:center;">${getCatatanAutoPrint(row)}</td>
+            </tr>
+        `;
+            });
+
+            // Hitung total
+            let totalLaporan = 0;
+            let totalBPHTB = 0;
+            dataToPrint.forEach(row => {
+                let jumlah = parseInt(String(row["jumlah_laporan"] || '0').replace(/\D/g, '')) || 0;
+                let bphtb = parseInt(String(row["sspd_bphtb"] || '0').replace(/\D/g, '')) || 0;
+                totalLaporan += jumlah;
+                totalBPHTB += bphtb;
+            });
+
+            htmlContent += `
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #f0f9ff;">
+                        <td colspan="9" style="text-align:right; font-weight:bold;">TOTAL :</td>
+                        <td style="text-align:center; font-weight:bold;">${totalLaporan}</td>
+                        <td style="text-align:right; font-weight:bold;">${formatRupiahTabel(String(totalBPHTB))}</td>
+                        <td colspan="4"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="footer">
+                <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
+                <p>*Bidang Pengendalian dan Evaluasi Pendapatan Daerah</p>
+                <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+            </div>
+        </div>
+        <script>
+            window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                    window.onafterprint = function() { window.close(); };
+                    setTimeout(function() { window.close(); }, 500);
+                }, 300);
+            };
+        <\/script>
+    </body>
+    </html>`;
+
+            // Buka window baru untuk print
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Popup blocker menghalangi. Izinkan popup untuk halaman ini.');
+                return;
+            }
+
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+        }
+
+        // Helper function untuk catatan auto di print
+        function getCatatanAutoPrint(row) {
+            let statusTerlambat = cekTerlambat(row["tanggal_diterima"]);
+            let statusEmail = row["status_email"] || "";
+            let hasUpload = (row["file_bukti_bayar"] || "").trim() !== "";
+
+            if (statusTerlambat !== "TIDAK VALID") {
+                return 'VALID';
+            }
+            if (hasUpload) {
+                return 'LUNAS';
+            }
+            if (statusEmail === "SELESAI") {
+                return 'Selesai';
+            } else if (statusEmail === "EMAIL_TERKIRIM") {
+                return 'Email Terkirim';
+            }
+            return 'Belum Diproses';
         }
 
         // ===============================
