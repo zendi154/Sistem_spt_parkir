@@ -3232,6 +3232,40 @@
         }
 
         // ============================================
+        // TARUH FUNGSI forceCloseAllModals()
+        // ============================================
+        function forceCloseAllModals() {
+            console.log("🔧 Force close all modals...");
+
+            // Hapus semua backdrop Bootstrap
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+
+            // Tutup semua modal yang terbuka
+            const modals = document.querySelectorAll('.modal.show');
+            modals.forEach(modal => {
+                try {
+                    const instance = bootstrap.Modal.getInstance(modal);
+                    if (instance) instance.hide();
+                } catch (e) { }
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            });
+
+            // Reset body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Tutup SweetAlert jika ada
+            if (Swal.isVisible) {
+                Swal.close();
+            }
+
+            console.log("✅ Force close selesai");
+        }
+
+        // ============================================
         // FUNGSI SAFE STRING HELPER (Tambahkan ini!)
         // ============================================
 
@@ -4888,54 +4922,10 @@
         window.resetAllFilters = resetAllFilters;
         window.tampilkanModalUploadBukti = tampilkanModalUploadBukti;
 
-        // ============================================
-        // FUNGSI DETEKSI TIDAK LAPOR
-        // ============================================
-        // Fungsi untuk membuka modal pilih bulan
-        function bukaModalDeteksiTidakLapor() {
-            // Isi dropdown tahun dari data yang tersedia
-            const tahunSelect = document.getElementById('deteksiTahun');
-            if (tahunSelect) {
-                // Ambil tahun dari filterTahun atau dari data
-                const tahunSet = new Set();
-
-                if (allData && allData.length > 0) {
-                    allData.forEach(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        if (bulanLaporan) {
-                            const match = bulanLaporan.match(/\d{4}/);
-                            if (match) {
-                                tahunSet.add(parseInt(match[0]));
-                            }
-                        }
-                    });
-                }
-
-                // Jika tidak ada data, gunakan tahun sekarang
-                if (tahunSet.size === 0) {
-                    tahunSet.add(new Date().getFullYear());
-                }
-
-                const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
-                tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
-                tahunList.forEach(tahun => {
-                    tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
-                });
-
-                // Auto pilih tahun terbaru
-                if (tahunList.length > 0) {
-                    tahunSelect.value = tahunList[0];
-                }
-            }
-
-            // Tampilkan modal
-            const modalElement = document.getElementById('modalPilihBulan');
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        }
-
-        // Fungsi untuk menjalankan deteksi tidak lapor
+        // Fungsi untuk menjalankan deteksi tidak lapor - VERSION FINAL
         async function jalankanDeteksiTidakLapor() {
+            console.log("🚀 Memulai deteksi tidak lapor...");
+
             const tahun = document.getElementById('deteksiTahun')?.value;
             const bulan = document.getElementById('deteksiBulan')?.value;
 
@@ -4951,12 +4941,33 @@
 
             const periode = `${bulan} ${tahun}`;
 
-            // Tutup modal
+            // ============================================
+            // TUTUP MODAL DENGAN BENAR + HAPUS BACKDROP
+            // ============================================
             const modalElement = document.getElementById('modalPilihBulan');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) modal.hide();
+            if (modalElement) {
+                try {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                        console.log("🔒 Modal ditutup");
+                    }
+                } catch (e) {
+                    console.warn("Gagal tutup modal:", e);
+                }
+            }
 
-            // Tampilkan loading
+            // TUNGGU MODAL BENAR-BENAR TERTUTUP
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // HAPUS SEMUA BACKDROP YANG TERSISA
+            forceCloseAllModals();
+
+            console.log("✅ Semua modal dan backdrop telah dibersihkan");
+
+            // ============================================
+            // TAMPILKAN LOADING DENGAN SWEETALERT
+            // ============================================
             Swal.fire({
                 title: 'Sedang Mendeteksi...',
                 html: `
@@ -4969,44 +4980,57 @@
             </div>
         `,
                 allowOutsideClick: false,
+                allowEscapeKey: false,
                 showConfirmButton: false,
                 didOpen: () => {
-                    // Simulasi progress
                     let progress = 0;
                     const interval = setInterval(() => {
                         progress += 20;
                         const progressBar = document.getElementById('deteksiProgress');
-                        if (progressBar) progressBar.style.width = `${progress}%`;
+                        if (progressBar) {
+                            progressBar.style.width = `${Math.min(progress, 100)}%`;
+                        }
                         if (progress >= 100) clearInterval(interval);
-                    }, 500);
+                    }, 400);
                 }
             });
 
             try {
                 // Panggil API deteksi tidak lapor
-                const response = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`);
+                console.log("📡 Memanggil API deteksi...");
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const response = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}`, {
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
                 const result = await response.json();
+                console.log("📥 Hasil API:", result);
 
                 Swal.close();
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 if (result.success) {
                     if (result.totalTidakLapor === 0) {
-                        Swal.fire({
+                        await Swal.fire({
                             icon: 'success',
-                            title: 'Semua Notaris Sudah Lapor!',
+                            title: '🎉 Semua Notaris Sudah Lapor!',
                             text: `Untuk periode ${periode}, semua notaris/PPAT sudah melaporkan laporan.`,
                             confirmButtonColor: '#28a745'
                         });
                     } else {
-                        // Tampilkan daftar notaris yang belum lapor
                         let daftarHtml = `
                     <div style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-sm table-hover">
-                            <thead class="table-danger">
+                        <table class="table table-sm table-hover" style="font-size: 12px;">
+                            <thead class="table-danger" style="position: sticky; top: 0;">
                                 <tr>
-                                    <th style="width: 5%;">No</th>
-                                    <th style="width: 55%;">Nama Notaris & PPAT</th>
-                                    <th style="width: 40%;">ID Notaris</th>
+                                    <th style="width: 5%; text-align: center;">No</th>
+                                    <th style="width: 60%;">Nama Notaris & PPAT</th>
+                                    <th style="width: 35%; text-align: center;">ID Notaris</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -5024,7 +5048,7 @@
 
                         daftarHtml += `
                             </tbody>
-                        </table>
+                        <tr>
                     </div>
                     <div class="alert alert-warning mt-3">
                         <i class="bi bi-exclamation-triangle-fill"></i> 
@@ -5044,25 +5068,39 @@
                             confirmButtonText: '<i class="bi bi-plus-circle"></i> Tambahkan ke Sheet',
                             cancelButtonText: 'Batal',
                             showCancelButton: true,
-                            confirmButtonColor: '#dc3545'
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d'
                         });
 
                         if (confirmResult.isConfirmed) {
-                            // Data sudah otomatis ditambahkan oleh Apps Script
                             Swal.fire({
+                                title: 'Menambahkan Data...',
+                                text: `Menambahkan ${result.totalTidakLapor} notaris ke sheet`,
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+
+                            Swal.close();
+                            await Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil!',
+                                title: '✅ Berhasil!',
                                 text: `Berhasil menambahkan ${result.totalTidakLapor} notaris tidak lapor untuk periode ${periode}\n\nStatus: "Tidak Menyampaikan Laporan"`,
                                 confirmButtonColor: '#28a745'
                             });
-                            // Refresh data
-                            setTimeout(() => loadDataSheet(), 1500);
+
+                            setTimeout(() => {
+                                if (typeof loadDataSheet === 'function') {
+                                    loadDataSheet();
+                                }
+                            }, 1000);
                         }
                     }
                 } else {
-                    Swal.fire({
+                    await Swal.fire({
                         icon: 'error',
-                        title: 'Gagal',
+                        title: '❌ Gagal',
                         text: result.message || 'Terjadi kesalahan saat mendeteksi',
                         confirmButtonColor: '#dc3545'
                     });
@@ -5070,14 +5108,109 @@
 
             } catch (error) {
                 Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
+                console.error('❌ Error detail:', error);
+
+                let errorMessage = error.message;
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Request timeout. Server tidak merespon dalam 30 detik.';
+                }
+
+                await Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'Gagal terhubung ke server. Silakan coba lagi.',
+                    title: '❌ Error Koneksi',
+                    html: `Gagal terhubung ke server.<br><br>Detail: ${errorMessage}<br><br>Silakan coba lagi.`,
                     confirmButtonColor: '#dc3545'
                 });
             }
+        }
+
+        // Fungsi safeString untuk mengamankan output (tambahkan jika belum ada)
+        function safeString(str, defaultValue = '') {
+            if (str === null || str === undefined) return defaultValue;
+            if (typeof str === 'string') return str;
+            if (typeof str === 'number') return str.toString();
+            return defaultValue;
+        }
+
+        function bukaModalDeteksiTidakLapor() {
+            console.log("🔍 Membuka modal deteksi tidak lapor...");
+
+            // PASTIKAN SEMUA MODAL TERTUTUP SEBELUM MEMBUKA YANG BARU
+            forceCloseAllModals();
+
+            // TUNGGU SEBENTAR AGAR MODAL BENAR-BENAR TERTUTUP
+            setTimeout(() => {
+                // Isi dropdown tahun dari data yang tersedia
+                const tahunSelect = document.getElementById('deteksiTahun');
+                if (tahunSelect) {
+                    const tahunSet = new Set();
+
+                    // CEK APAKAH allData SUDAH TERSEDIA
+                    if (typeof allData !== 'undefined' && allData && allData.length > 0) {
+                        allData.forEach(row => {
+                            const bulanLaporan = row["laporan_bulanan"];
+                            if (bulanLaporan) {
+                                const match = bulanLaporan.match(/\d{4}/);
+                                if (match) {
+                                    tahunSet.add(parseInt(match[0]));
+                                }
+                            }
+                        });
+                    }
+
+                    if (tahunSet.size === 0) {
+                        tahunSet.add(new Date().getFullYear());
+                    }
+
+                    const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+                    tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+                    tahunList.forEach(tahun => {
+                        tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
+                    });
+
+                    if (tahunList.length > 0) {
+                        tahunSelect.value = tahunList[0];
+                    }
+                }
+
+                // Tampilkan modal
+                const modalElement = document.getElementById('modalPilihBulan');
+                if (!modalElement) {
+                    console.error("❌ Modal element tidak ditemukan!");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Komponen modal tidak ditemukan. Silakan refresh halaman.',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    return;
+                }
+
+                try {
+                    // Hapus instance lama jika ada
+                    let modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.dispose();
+                    }
+
+                    modal = new bootstrap.Modal(modalElement, {
+                        backdrop: true,
+                        keyboard: true
+                    });
+
+                    modal.show();
+                    console.log("✅ Modal deteksi tidak lapor terbuka");
+
+                } catch (error) {
+                    console.error("❌ Gagal membuka modal:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat membuka form deteksi. Silakan refresh halaman.',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            }, 100);
         }
 
         // ============================================
@@ -5197,62 +5330,148 @@
             });
         }
 
-        // Update tombol deteksi untuk membuka modal
-        // Cari tombol dengan id "btnDeteksiOtomatisContainer" dan ubah onclick-nya
-        // Atau tambahkan event listener setelah DOM ready
+        // ============================================
+        // INISIALISASI TOMBOL - VERSION FINAL
+        // ============================================
         document.addEventListener('DOMContentLoaded', function () {
-            // Tunggu sebentar agar DOM siap
-            setTimeout(() => {
-                // Tombol Deteksi Tidak Lapor - BUKA MODAL DETEKSI
-                const btnDeteksi = document.getElementById('btnDeteksiOtomatisContainer');
-                if (btnDeteksi) {
-                    const btn = btnDeteksi.querySelector('button');
-                    if (btn) {
-                        btn.onclick = function (e) {
-                            e.preventDefault();
-                            bukaModalDeteksiTidakLapor();  // HANYA 1 FUNGSI
-                        };
-                    }
+            console.log("🔧 Memulai inisialisasi tombol...");
+
+            // Fungsi untuk menunggu currentUserRole tersedia
+            function initButtons() {
+                // Cek apakah currentUserRole sudah terdefinisi
+                if (typeof currentUserRole === 'undefined') {
+                    console.log("⏳ Menunggu currentUserRole tersedia...");
+                    setTimeout(initButtons, 200);
+                    return;
                 }
 
-                // Tombol Kirim WA Notifikasi - BUKA MODAL WA
-                const btnWa = document.getElementById('btnBelumLaporContainer');
-                if (btnWa) {
-                    const btnWaElement = btnWa.querySelector('button');
-                    if (btnWaElement) {
-                        btnWaElement.onclick = function (e) {
+                console.log("✅ currentUserRole:", currentUserRole);
+
+                // ============================================
+                // TOMBOL DETEKSI TIDAK LAPOR
+                // ============================================
+                const btnDeteksiContainer = document.getElementById('btnDeteksiOtomatisContainer');
+                if (btnDeteksiContainer) {
+                    if (currentUserRole === 'admin') {
+                        btnDeteksiContainer.style.display = 'block';
+
+                        // Cari tombol di dalam container
+                        let btnDeteksi = btnDeteksiContainer.querySelector('button');
+                        if (!btnDeteksi) {
+                            // Jika tombol tidak ada, buat tombol baru
+                            btnDeteksi = document.createElement('button');
+                            btnDeteksi.type = 'button';
+                            btnDeteksi.className = 'btn btn-info w-100';
+                            btnDeteksi.innerHTML = '<i class="bi bi-robot"></i> Deteksi Tidak Lapor';
+                            btnDeteksiContainer.innerHTML = '';
+                            btnDeteksiContainer.appendChild(btnDeteksi);
+                        }
+
+                        // Hapus event listener lama dengan clone & replace
+                        const newBtnDeteksi = btnDeteksi.cloneNode(true);
+                        btnDeteksi.parentNode.replaceChild(newBtnDeteksi, btnDeteksi);
+
+                        newBtnDeteksi.onclick = function (e) {
                             e.preventDefault();
-                            const filterTahun = document.getElementById('filterTahun')?.value;
-                            let bulanTerpilih = '';
-                            const selectedBulan = document.getElementById('selectedBulan')?.value;
+                            e.stopPropagation();
+                            console.log("🖱️ Tombol Deteksi Tidak Lapor diklik");
 
-                            if (selectedBulan) {
-                                bulanTerpilih = selectedBulan;
-                            } else if (filterTahun) {
-                                const bulanTerbaru = getBulanTerbaruDariData();
-                                if (bulanTerbaru) {
-                                    bulanTerpilih = bulanTerbaru;
-                                }
-                            }
+                            // PASTIKAN SEMUA MODAL TERTUTUP SEBELUM MEMBUKA YANG BARU
+                            forceCloseAllModals();
 
-                            if (!bulanTerpilih) {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Pilih Periode',
-                                    text: 'Silakan pilih bulan terlebih dahulu dari filter bulan di atas.',
-                                    confirmButtonColor: '#3085d6'
-                                });
-                                return;
-                            }
-
-                            deteksiDanKirimTidakMelapor();  // LANGSUNG PANGGIL FUNGSI UTAMA
+                            // Tampilkan modal pilih bulan
+                            bukaModalDeteksiTidakLapor();
                         };
+                        console.log("✅ Tombol Deteksi Tidak Lapor siap (ADMIN)");
+                    } else {
+                        btnDeteksiContainer.style.display = 'none';
+                        console.log("❌ Tombol Deteksi Tidak Lapor disembunyikan (bukan admin)");
                     }
+                } else {
+                    console.warn("⚠️ Tombol Deteksi Tidak Lapor tidak ditemukan di DOM");
                 }
-            }, 1000);
+
+                // ============================================
+                // TOMBOL KIRIM WA NOTIFIKASI
+                // ============================================
+                const btnWaContainer = document.getElementById('btnBelumLaporContainer');
+                if (btnWaContainer) {
+                    if (currentUserRole === 'admin') {
+                        btnWaContainer.style.display = 'block';
+
+                        // Cari tombol di dalam container
+                        let btnWa = btnWaContainer.querySelector('button');
+                        if (!btnWa) {
+                            // Jika tombol tidak ada, buat tombol baru
+                            btnWa = document.createElement('button');
+                            btnWa.type = 'button';
+                            btnWa.className = 'btn btn-success w-100';
+                            btnWa.innerHTML = '<i class="bi bi-whatsapp"></i> Kirim WA Notifikasi';
+                            btnWaContainer.innerHTML = '';
+                            btnWaContainer.appendChild(btnWa);
+                        }
+
+                        // Hapus event listener lama
+                        const newBtnWa = btnWa.cloneNode(true);
+                        btnWa.parentNode.replaceChild(newBtnWa, btnWa);
+
+                        newBtnWa.onclick = function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log("🖱️ Tombol Kirim WA Notifikasi diklik");
+
+                            // PASTIKAN SEMUA MODAL TERTUTUP
+                            forceCloseAllModals();
+
+                            // BUKA MODAL PILIH BULAN UNTUK WA
+                            bukaModalWANotifikasi();
+                        };
+                        console.log("✅ Tombol Kirim WA Notifikasi siap (ADMIN)");
+                    } else {
+                        btnWaContainer.style.display = 'none';
+                        console.log("❌ Tombol Kirim WA Notifikasi disembunyikan (bukan admin)");
+                    }
+                } else {
+                    console.warn("⚠️ Tombol WA Notifikasi tidak ditemukan di DOM");
+                }
+            }
+
+            // Fungsi emergency untuk menutup semua modal
+            function forceCloseAllModals() {
+                // Hapus semua backdrop Bootstrap
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+
+                // Tutup semua modal yang terbuka
+                const modals = document.querySelectorAll('.modal.show');
+                modals.forEach(modal => {
+                    try {
+                        const instance = bootstrap.Modal.getInstance(modal);
+                        if (instance) instance.hide();
+                    } catch (e) { }
+                    modal.classList.remove('show');
+                    modal.style.display = 'none';
+                });
+
+                // Reset body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+
+                // Tutup SweetAlert jika ada
+                if (Swal.isVisible) {
+                    Swal.close();
+                }
+
+                console.log("✅ Force close semua modal selesai");
+            }
+
+            // Jadikan forceCloseAllModals global agar bisa dipakai di fungsi lain
+            window.forceCloseAllModals = forceCloseAllModals;
+
+            // Mulai inisialisasi
+            initButtons();
         });
-
-
 
         // ============================================
         // NOTIFIKASI REALTIME DI NAVBAR
@@ -7666,7 +7885,10 @@
             container.innerHTML = html;
         }
 
-        // Escape HTML untuk keamanan
+        // HAPUS definisi escapeHtml yang kedua (yang di baris ~9750)
+        // HAPUS definisi normalisasiNama yang kedua (yang di baris ~10200)
+
+        // PERTAHANKAN yang ini (versi lengkap):
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
             if (typeof str === 'object') return '';
@@ -7680,14 +7902,20 @@
             });
         }
 
-        // Fungsi normalisasi nama (untuk menghindari duplikat)
+        // PERTAHANKAN yang ini (versi UPPERCASE untuk konsistensi):
         function normalisasiNama(nama) {
             if (!nama) return '';
             return nama
-                .toLowerCase()
-                .trim()
+                .toUpperCase()
                 .replace(/\s+/g, ' ')
-                .replace(/[.,]/g, '');
+                .replace(/[.,]/g, '')
+                .replace(/\s*,\s*/g, ' ')
+                .replace(/S\.?H\.?/gi, 'SH')
+                .replace(/M\.?Kn/gi, 'MKn')
+                .replace(/M\.?H/gi, 'MH')
+                .replace(/SST/gi, 'SST')
+                .replace(/Par\.?/gi, 'Par')
+                .trim();
         }
 
         // Isi dropdown notaris di modal pensiun
