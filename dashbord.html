@@ -3275,19 +3275,19 @@
                 }
 
                 // ============================================
-                // KOLOM BUKTI SURAT - YANG SUDAH DIPERBAIKI
+                // KOLOM BUKTI SURAT - HANYA MUNCUL SETELAH EMAIL TERKIRIM
                 // ============================================
                 let buktiSuratHTML = '';
                 let tgl = getTanggal(row["tanggal_diterima"]);
 
-                // Hanya boleh upload jika memenuhi SEMUA kondisi:
-                let bolehUpload = isFirst && tgl > 10 && !hasUpload && statusEmail !== "SELESAI" && statusEmail !== "EMAIL_TERKIRIM";
+                // ✅ PERBAIKAN: Hanya boleh upload jika statusEmail === "EMAIL_TERKIRIM"
+                let bolehUpload = isFirst && tgl > 10 && !hasUpload && statusEmail === "EMAIL_TERKIRIM";
 
                 if (row["file_bukti_bayar"]) {
                     // Sudah upload: tampilkan icon preview
                     buktiSuratHTML = `<a href="#" onclick="previewPDF('${row["file_bukti_bayar"]}')" class="icon-btn" title="Preview Bukti"><i class="bi bi-eye-fill"></i></a>`;
                 } else if (bolehUpload) {
-                    // Belum upload, masih boleh upload
+                    // Belum upload, status EMAIL_TERKIRIM: tampilkan icon upload
                     buktiSuratHTML = `<label class="icon-btn" style="cursor:pointer; color:#28a745;" title="Upload Bukti Bayar">
                 <i class="bi bi-cloud-upload-fill"></i>
                 <input type="file" accept="application/pdf,image/jpeg,image/png" 
@@ -3299,7 +3299,7 @@
                     if (hasUpload) {
                         buktiSuratHTML = `<i class="bi bi-check-circle-fill text-success" style="font-size: 16px;" title="Sudah LUNAS ✅"></i>`;
                     } else if (statusEmail === "EMAIL_TERKIRIM") {
-                        buktiSuratHTML = `<span class="text-warning" style="font-size: 11px;" title="Email terkirim, menunggu upload bukti">📧 Menunggu Upload</span>`;
+                        buktiSuratHTML = `<span class="text-warning" style="font-size: 10px;" title="Email terkirim, menunggu upload bukti">📧 Menunggu Upload Bukti Bayar</span>`;
                     } else {
                         buktiSuratHTML = `<span style="color:gray;">-</span>`;
                     }
@@ -3313,25 +3313,31 @@
                     namaHtml += `<span class="badge-pensiun">📅 Pensiun ${dataP?.tahunPensiun || ''}</span>`;
                 }
 
+                // PERBAIKAN: Teks "(duplikat)" HANYA di kolom Nama (kolom ke-2)
+                let kolomNama = namaHtml;
+                if (!isFirst) {
+                    kolomNama = namaHtml + '<span style="color:gray;font-size:9px;"> (data duplikat)</span>';
+                }
+
                 tr.innerHTML = `
-            <td>${row["id"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${namaHtml}${!isFirst ? '<span style="color:gray;font-size:10px;"> (duplikat)</span>' : ''}</td>
-            <td>${row["alamat"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${row["nomor_surat"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${formatTanggalIndonesia(row["tanggal_surat"] || "")}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${formatTanggalIndonesia(row["tanggal_diterima"] || "")}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${row["status_surat"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${row["laporan_bulanan"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${row["jumlah_laporan"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${formatRupiahTabel(row["sspd_bphtb"])}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td>${row["keterangan"] || ""}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? `<b>${row["nomor_pemberitahuan"]}</b>` : '-'}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${row["file_surat_upload"] ? `<a href="#" onclick="printPDF('${row["file_surat_upload"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${buktiSuratHTML}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
-            <td style="text-align:center;">${catatanAuto}${!isFirst ? '<span style="color:gray;font-size:10px;"> (dup)</span>' : ''}</td>
+            <td>${row["id"] || ""}${!isFirst ? '' : ''}</td>
+            <td>${kolomNama}</td>
+            <td>${row["alamat"] || ""}${!isFirst ? '' : ''}</td>
+            <td>${row["nomor_surat"] || ""}${!isFirst ? '' : ''}</td>
+            <td>${formatTanggalIndonesia(row["tanggal_surat"] || "")}${!isFirst ? '' : ''}</td>
+            <td>${formatTanggalIndonesia(row["tanggal_diterima"] || "")}${!isFirst ? '' : ''}</td>
+            <td>${row["status_surat"] || ""}${!isFirst ? '' : ''}</td>
+            <td>${row["laporan_bulanan"] || ""}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}${!isFirst ? '' : ''}</td>
+            <td>${row["jumlah_laporan"] || ""}${!isFirst ? '' : ''}</td>
+            <td>${formatRupiahTabel(row["sspd_bphtb"])}${!isFirst ? '' : ''}</td>
+            <td>${row["keterangan"] || ""}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? `<b>${row["nomor_std"]}</b>` : '-'}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${row["file_pdf_denda"] ? `<a href="#" onclick="printPDF('${row["file_pdf_denda"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? `<b>${row["nomor_pemberitahuan"]}</b>` : '-'}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${row["file_surat_upload"] ? `<a href="#" onclick="printPDF('${row["file_surat_upload"]}')" class="btn btn-sm btn-primary" title="Cetak PDF"><i class="bi bi-printer-fill"></i> Cetak</a>` : '-'}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${buktiSuratHTML}${!isFirst ? '' : ''}</td>
+            <td style="text-align:center;">${catatanAuto}${!isFirst ? '' : ''}</td>
             <td style="text-align:center;">${actionHTML}${!isFirst ? '' : ''}</td>
         `;
                 tbody.appendChild(tr);
