@@ -2579,7 +2579,7 @@
                         <!-- BUTTON BERITA ACARA -->
                         <div class="col-md-2">
                             <button type="button" class="btn btn-info w-100" onclick="bukaBeritaAcara()">
-                                <i class="bi bi-file-text-fill"></i> Berita Acara
+                                <i class="bi bi-file-text-fill"></i> Buat Berita Acara
                             </button>
                         </div>
 
@@ -3062,7 +3062,7 @@
         /* =========================
            FUNGSI UTAMA DASHBOARD & TABLE
         ========================= */
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxQS0a2gBeKDguyqT9aprQ8VtA41HgwcoCvJ-BRoTuhcoGtoAT8KicxG0feCPh-4WdT/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyM0LEnCH3eHRyhWGqfYwSpNpfthX7VmRoG6dQ-UeurSZ6C4XSjTES8bhd-gYdkVJTW/exec';
         // CSS untuk badge pensiun (tambahkan ke style yang sudah ada)
         const stylePensiun = document.createElement('style');
         stylePensiun.innerHTML = `
@@ -4878,10 +4878,23 @@
             <div class="text-center">
                 <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
                 <p>Mendeteksi notaris yang belum lapor untuk periode <strong>${periode}</strong></p>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div id="deteksiProgress" class="progress-bar bg-primary" style="width: 0%;"></div>
+                </div>
             </div>
         `,
                 allowOutsideClick: false,
-                showConfirmButton: false
+                showConfirmButton: false,
+                didOpen: () => {
+                    // Simulasi progress
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 20;
+                        const progressBar = document.getElementById('deteksiProgress');
+                        if (progressBar) progressBar.style.width = `${progress}%`;
+                        if (progress >= 100) clearInterval(interval);
+                    }, 500);
+                }
             });
 
             try {
@@ -4906,22 +4919,20 @@
                         <table class="table table-sm table-hover">
                             <thead class="table-danger">
                                 <tr>
-                                    <th>No</th>
-                                    <th>ID Notaris</th>
-                                    <th>Nama Notaris & PPAT</th>
-                                    <th>Alamat</th>
+                                    <th style="width: 5%;">No</th>
+                                    <th style="width: 55%;">Nama Notaris & PPAT</th>
+                                    <th style="width: 40%;">ID Notaris</th>
                                 </tr>
                             </thead>
                             <tbody>
                 `;
 
-                        result.daftarTidakLapor.forEach((notaris, idx) => {
+                        result.daftarTidakLapor.forEach((nama, idx) => {
                             daftarHtml += `
                         <tr>
                             <td style="text-align:center;">${idx + 1}</td>
-                            <td><code>${escapeHtml(notaris.id)}</code></td>
-                            <td><strong>${escapeHtml(notaris.nama)}</strong></td>
-                            <td><small>${escapeHtml(notaris.alamat?.substring(0, 50) || '-')}${(notaris.alamat?.length || 0) > 50 ? '...' : ''}</small></td>
+                            <td><strong>${escapeHtml(nama)}</strong></td>
+                            <td style="text-align:center;"><code>-</code></td>
                         </tr>
                     `;
                         });
@@ -4934,56 +4945,33 @@
                         <i class="bi bi-exclamation-triangle-fill"></i> 
                         <strong>${result.totalTidakLapor} Notaris</strong> belum melapor untuk periode <strong>${periode}</strong>
                     </div>
+                    <div class="alert alert-info mt-2 small">
+                        <i class="bi bi-info-circle-fill"></i> 
+                        Data akan ditambahkan ke sheet dengan status <strong>"Tidak Menyampaikan Laporan"</strong>
+                    </div>
                 `;
 
                         const confirmResult = await Swal.fire({
                             title: `⚠️ Notaris Belum Lapor (${result.totalTidakLapor})`,
                             html: daftarHtml,
                             icon: 'warning',
-                            width: '900px',
-                            confirmButtonText: 'Tambah Data Tidak Lapor',
-                            cancelButtonText: 'Tutup',
+                            width: '800px',
+                            confirmButtonText: '<i class="bi bi-plus-circle"></i> Tambahkan ke Sheet',
+                            cancelButtonText: 'Batal',
                             showCancelButton: true,
                             confirmButtonColor: '#dc3545'
                         });
 
                         if (confirmResult.isConfirmed) {
-                            // Tampilkan loading tambah data
+                            // Data sudah otomatis ditambahkan oleh Apps Script
                             Swal.fire({
-                                title: 'Menambahkan Data...',
-                                html: `
-                            <div class="text-center">
-                                <div class="spinner-border text-primary mb-3"></div>
-                                <p>Menambahkan data tidak lapor ke sistem...</p>
-                            </div>
-                        `,
-                                allowOutsideClick: false,
-                                showConfirmButton: false
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: `Berhasil menambahkan ${result.totalTidakLapor} notaris tidak lapor untuk periode ${periode}\n\nStatus: "Tidak Menyampaikan Laporan"`,
+                                confirmButtonColor: '#28a745'
                             });
-
-                            // Panggil API untuk menambah data tidak lapor
-                            const addResponse = await fetch(`${scriptURL}?action=deteksi_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}&tambah=true`);
-                            const addResult = await addResponse.json();
-
-                            Swal.close();
-
-                            if (addResult.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: `Berhasil menambahkan ${addResult.totalTidakLapor} data notaris tidak lapor untuk periode ${periode}`,
-                                    confirmButtonColor: '#28a745'
-                                });
-                                // Refresh data
-                                setTimeout(() => loadDataSheet(), 1500);
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal!',
-                                    text: addResult.message || 'Terjadi kesalahan saat menambah data',
-                                    confirmButtonColor: '#dc3545'
-                                });
-                            }
+                            // Refresh data
+                            setTimeout(() => loadDataSheet(), 1500);
                         }
                     }
                 } else {
@@ -5008,7 +4996,7 @@
         }
 
         // ============================================
-        // FUNGSI BERITA ACARA (Preview dari Apps Script)
+        // FUNGSI BUAT BERITA ACARA 
         // ============================================
 
         let currentBeritaAcaraWindow = null;
