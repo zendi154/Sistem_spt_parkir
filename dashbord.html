@@ -5105,63 +5105,35 @@
             const periode = `${bulan} ${tahun}`;
 
             // ============================================
-            // TUTUP MODAL DENGAN BENAR + HAPUS BACKDROP
+            // TUTUP MODAL SECARA MANUAL
             // ============================================
             const modalElement = document.getElementById('modalPilihBulan');
             if (modalElement) {
-                try {
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                        console.log("🔒 Modal ditutup");
-                    }
-                } catch (e) {
-                    console.warn("Gagal tutup modal:", e);
-                }
+                modalElement.classList.remove('show');
+                modalElement.style.display = 'none';
             }
 
-            // TUNGGU MODAL BENAR-BENAR TERTUTUP
-            await new Promise(resolve => setTimeout(resolve, 200));
+            // Hapus backdrop
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
 
-            // HAPUS SEMUA BACKDROP YANG TERSISA
-            forceCloseAllModals();
-
-            console.log("✅ Semua modal dan backdrop telah dibersihkan");
-
-            // ============================================
-            // TAMPILKAN LOADING DENGAN SWEETALERT
-            // ============================================
+            // Tampilkan loading
             Swal.fire({
                 title: 'Sedang Mendeteksi...',
                 html: `
             <div class="text-center">
                 <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
                 <p>Mendeteksi notaris yang belum lapor untuk periode <strong>${periode}</strong></p>
-                <div class="progress mt-3" style="height: 6px;">
-                    <div id="deteksiProgress" class="progress-bar bg-primary" style="width: 0%;"></div>
-                </div>
             </div>
         `,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    let progress = 0;
-                    const interval = setInterval(() => {
-                        progress += 20;
-                        const progressBar = document.getElementById('deteksiProgress');
-                        if (progressBar) {
-                            progressBar.style.width = `${Math.min(progress, 100)}%`;
-                        }
-                        if (progress >= 100) clearInterval(interval);
-                    }, 400);
-                }
+                showConfirmButton: false
             });
 
             try {
-                // Panggil API deteksi tidak lapor
-                console.log("📡 Memanggil API deteksi...");
-
+                // Panggil API deteksi
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000);
 
@@ -5170,12 +5142,9 @@
                 });
 
                 clearTimeout(timeoutId);
-
                 const result = await response.json();
-                console.log("📥 Hasil API:", result);
 
                 Swal.close();
-                await new Promise(resolve => setTimeout(resolve, 100));
 
                 if (result.success) {
                     if (result.totalTidakLapor === 0) {
@@ -5189,101 +5158,50 @@
                         let daftarHtml = `
                     <div style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-sm table-hover" style="font-size: 12px;">
-                            <thead class="table-danger" style="position: sticky; top: 0;">
-                                <tr>
-                                    <th style="width: 5%; text-align: center;">No</th>
-                                    <th style="width: 60%;">Nama Notaris & PPAT</th>
-                                    <th style="width: 35%; text-align: center;">ID Notaris</th>
-                                </tr>
-                            </thead>
+                            <thead class="table-danger">
+                                <tr><th>No</th><th>Nama Notaris</th><th>ID</th></tr></thead>
                             <tbody>
                 `;
-
                         result.daftarTidakLapor.forEach((nama, idx) => {
-                            daftarHtml += `
-                        <tr>
-                            <td style="text-align:center;">${idx + 1}</td>
-                            <td><strong>${escapeHtml(nama)}</strong></td>
-                            <td style="text-align:center;"><code>-</code></td>
-                        </tr>
-                    `;
+                            daftarHtml += `<tr><td>${idx + 1}</td><td>${escapeHtml(nama)}</td><td>-</td></tr>`;
                         });
-
-                        daftarHtml += `
-                            </tbody>
-                        <tr>
-                    </div>
-                    <div class="alert alert-warning mt-3">
-                        <i class="bi bi-exclamation-triangle-fill"></i> 
-                        <strong>${result.totalTidakLapor} Notaris</strong> belum melapor untuk periode <strong>${periode}</strong>
-                    </div>
-                    <div class="alert alert-info mt-2 small">
-                        <i class="bi bi-info-circle-fill"></i> 
-                        Data akan ditambahkan ke sheet dengan status <strong>"Tidak Menyampaikan Laporan"</strong>
-                    </div>
-                `;
+                        daftarHtml += `</tbody></table></div>
+                    <div class="alert alert-warning mt-3"><strong>${result.totalTidakLapor} Notaris</strong> belum melapor</div>`;
 
                         const confirmResult = await Swal.fire({
                             title: `⚠️ Notaris Belum Lapor (${result.totalTidakLapor})`,
                             html: daftarHtml,
                             icon: 'warning',
                             width: '800px',
-                            confirmButtonText: '<i class="bi bi-plus-circle"></i> Tambahkan ke Sheet',
+                            confirmButtonText: 'Tambahkan ke Sheet',
                             cancelButtonText: 'Batal',
                             showCancelButton: true,
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d'
+                            confirmButtonColor: '#dc3545'
                         });
 
                         if (confirmResult.isConfirmed) {
-                            Swal.fire({
-                                title: 'Menambahkan Data...',
-                                text: `Menambahkan ${result.totalTidakLapor} notaris ke sheet`,
-                                allowOutsideClick: false,
-                                didOpen: () => Swal.showLoading()
-                            });
+                            Swal.fire({ title: 'Menambahkan Data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                            await new Promise(resolve => setTimeout(resolve, 1500));
+                            const insertResponse = await fetch(`${scriptURL}?action=insert_tidak_lapor&bulan=${encodeURIComponent(bulan)}&tahun=${encodeURIComponent(tahun)}&daftar=${encodeURIComponent(JSON.stringify(result.daftarTidakLapor))}`);
+                            const insertResult = await insertResponse.json();
 
                             Swal.close();
-                            await Swal.fire({
-                                icon: 'success',
-                                title: '✅ Berhasil!',
-                                text: `Berhasil menambahkan ${result.totalTidakLapor} notaris tidak lapor untuk periode ${periode}\n\nStatus: "Tidak Menyampaikan Laporan"`,
-                                confirmButtonColor: '#28a745'
-                            });
 
-                            setTimeout(() => {
-                                if (typeof loadDataSheet === 'function') {
-                                    loadDataSheet();
-                                }
-                            }, 1000);
+                            if (insertResult.success) {
+                                await Swal.fire({ icon: 'success', title: '✅ Berhasil!', text: `Berhasil menambahkan ${result.totalTidakLapor} notaris tidak lapor`, confirmButtonColor: '#28a745' });
+                                setTimeout(() => loadDataSheet(), 1500);
+                            } else {
+                                await Swal.fire({ icon: 'error', title: '❌ Gagal', text: insertResult.message, confirmButtonColor: '#dc3545' });
+                            }
                         }
                     }
                 } else {
-                    await Swal.fire({
-                        icon: 'error',
-                        title: '❌ Gagal',
-                        text: result.message || 'Terjadi kesalahan saat mendeteksi',
-                        confirmButtonColor: '#dc3545'
-                    });
+                    await Swal.fire({ icon: 'error', title: '❌ Gagal', text: result.message, confirmButtonColor: '#dc3545' });
                 }
-
             } catch (error) {
                 Swal.close();
-                console.error('❌ Error detail:', error);
-
-                let errorMessage = error.message;
-                if (error.name === 'AbortError') {
-                    errorMessage = 'Request timeout. Server tidak merespon dalam 30 detik.';
-                }
-
-                await Swal.fire({
-                    icon: 'error',
-                    title: '❌ Error Koneksi',
-                    html: `Gagal terhubung ke server.<br><br>Detail: ${errorMessage}<br><br>Silakan coba lagi.`,
-                    confirmButtonColor: '#dc3545'
-                });
+                console.error('Error:', error);
+                await Swal.fire({ icon: 'error', title: 'Error Koneksi', text: error.message, confirmButtonColor: '#dc3545' });
             }
         }
 
@@ -5298,7 +5216,7 @@
         function bukaModalDeteksiTidakLapor() {
             console.log("🔍 Membuka modal deteksi tidak lapor...");
 
-            // Force close semua modal yang mungkin terbuka
+            // Force close semua modal
             if (typeof forceCloseAllModals === 'function') {
                 forceCloseAllModals();
             }
@@ -5356,74 +5274,66 @@
                 return;
             }
 
-            // Pastikan modal memiliki kelas yang benar
-            modalElement.classList.add('fade');
-            modalElement.setAttribute('tabindex', '-1');
-            modalElement.setAttribute('aria-hidden', 'true');
+            // ============================================
+            // CARA MANUAL - PAKSA TAMPILKAN MODAL (TANPA BOOTSTRAP API)
+            // ============================================
 
-            // Hapus instance modal lama jika ada
-            try {
-                let oldModal = bootstrap.Modal.getInstance(modalElement);
-                if (oldModal) {
-                    oldModal.dispose();
-                }
-            } catch (e) { }
+            // Reset modal ke state awal
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            modalElement.removeAttribute('aria-modal');
+            modalElement.removeAttribute('style');
 
-            // Buat instance modal baru dengan konfigurasi yang benar
-            const modal = new bootstrap.Modal(modalElement, {
-                backdrop: true,
-                keyboard: true,
-                focus: true
+            // Force reflow
+            void modalElement.offsetHeight;
+
+            // Tampilkan modal secara manual
+            modalElement.style.display = 'block';
+            modalElement.classList.add('show');
+            modalElement.setAttribute('aria-modal', 'true');
+            modalElement.setAttribute('role', 'dialog');
+
+            // Set body style
+            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = '0px';
+
+            // Buat backdrop baru
+            let backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+
+            // Event untuk menutup modal dengan tombol close atau klik backdrop
+            const closeButtons = modalElement.querySelectorAll('[data-bs-dismiss="modal"]');
+            closeButtons.forEach(btn => {
+                btn.onclick = function (e) {
+                    e.preventDefault();
+                    // Tutup modal manual
+                    modalElement.classList.remove('show');
+                    modalElement.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    const backdropEl = document.querySelector('.modal-backdrop');
+                    if (backdropEl) backdropEl.remove();
+                    console.log("Modal ditutup");
+                };
             });
 
-            // Event listener sebelum modal ditampilkan
-            modalElement.addEventListener('show.bs.modal', function () {
-                console.log("📱 Modal akan ditampilkan");
-                // Pastikan tidak ada backdrop tersisa
-                document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-                    backdrop.remove();
-                });
-            });
-
-            // Event listener setelah modal ditampilkan
-            modalElement.addEventListener('shown.bs.modal', function () {
-                console.log("✅ Modal deteksi tidak lapor terbuka dengan baik");
-                // Fokus ke elemen pertama
-                const firstInput = modalElement.querySelector('select, input');
-                if (firstInput) firstInput.focus();
-            });
-
-            // Event listener saat modal ditutup
-            modalElement.addEventListener('hidden.bs.modal', function () {
-                console.log("🔒 Modal ditutup");
-                // Bersihkan backdrop
-                document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-                    backdrop.remove();
-                });
+            // Klik backdrop juga menutup modal
+            backdrop.onclick = function () {
+                modalElement.classList.remove('show');
+                modalElement.style.display = 'none';
                 document.body.classList.remove('modal-open');
                 document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            });
+                if (backdrop) backdrop.remove();
+                console.log("Modal ditutup via backdrop");
+            };
 
-            // Tampilkan modal
-            modal.show();
-
-            // Fallback: jika modal tidak muncul setelah 500ms, coba paksa
-            setTimeout(() => {
-                if (!modalElement.classList.contains('show')) {
-                    console.log("⚠️ Modal tidak muncul, mencoba force display...");
-                    modalElement.style.display = 'block';
-                    modalElement.classList.add('show');
-                    document.body.classList.add('modal-open');
-
-                    // Buat backdrop jika belum ada
-                    if (document.querySelectorAll('.modal-backdrop').length === 0) {
-                        const backdrop = document.createElement('div');
-                        backdrop.className = 'modal-backdrop fade show';
-                        document.body.appendChild(backdrop);
-                    }
-                }
-            }, 500);
+            console.log("✅ Modal deteksi tidak lapor terbuka (manual)");
         }
 
         // ============================================
