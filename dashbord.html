@@ -2523,125 +2523,53 @@
         }
 
         /* ============================================
-   PERBAIKAN KHUSUS MODAL DETEKSI TIDAK LAPOR
-   ============================================ */
-
-        /* Pastikan modal deteksi terlihat dengan jelas */
-        #modalPilihBulan {
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            z-index: 99999 !important;
-        }
-
-        #modalPilihBulan .modal-dialog {
-            margin: 1.75rem auto !important;
-            max-width: 500px !important;
-        }
+        FIX MODAL DETEKSI - VERSION CORRECT
+        ============================================ */
 
         #modalPilihBulan .modal-content {
-            background: #ffffff !important;
+            background-color: #ffffff !important;
             border-radius: 24px !important;
             border: none !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-            overflow: hidden !important;
         }
 
         #modalPilihBulan .modal-header {
             background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-            color: white !important;
-            border: none !important;
-            padding: 18px 24px !important;
+            border-bottom: none !important;
+            border-top-left-radius: 24px !important;
+            border-top-right-radius: 24px !important;
         }
 
         #modalPilihBulan .modal-header .modal-title {
-            font-weight: 700 !important;
-            font-size: 1.2rem !important;
             color: white !important;
         }
 
         #modalPilihBulan .modal-header .btn-close {
             filter: brightness(0) invert(1) !important;
-            opacity: 0.8 !important;
         }
 
         #modalPilihBulan .modal-body {
             background: #ffffff !important;
             padding: 24px !important;
-            color: #1e293b !important;
         }
 
-        #modalPilihBulan .modal-body p,
-        #modalPilihBulan .modal-body label {
-            color: #1e293b !important;
-        }
-
-        #modalPilihBulan .form-label {
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
-            color: #1e293b !important;
+        #modalPilihBulan .modal-footer {
+            background: #f8fafc !important;
+            border-top: 1px solid #e2e8f0 !important;
+            border-bottom-left-radius: 24px !important;
+            border-bottom-right-radius: 24px !important;
         }
 
         #modalPilihBulan .form-select {
             background-color: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
             border-radius: 12px !important;
-            padding: 10px 16px !important;
-            color: #1e293b !important;
-        }
-
-        #modalPilihBulan .form-select:focus {
-            border-color: #38bdf8 !important;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
         }
 
         #modalPilihBulan .alert {
             background-color: #f0f9ff !important;
-            border: 1px solid #bae6fd !important;
+            border-color: #bae6fd !important;
             color: #0284c7 !important;
-            border-radius: 12px !important;
-        }
-
-        #modalPilihBulan .modal-footer {
-            background: #f8fafc !important;
-            border-top: 1px solid #e2e8f0 !important;
-            padding: 16px 24px !important;
-        }
-
-        #modalPilihBulan .btn-secondary {
-            background: #f1f5f9 !important;
-            border: 1px solid #e2e8f0 !important;
-            color: #475569 !important;
-            border-radius: 30px !important;
-            padding: 8px 20px !important;
-        }
-
-        #modalPilihBulan .btn-secondary:hover {
-            background: #e2e8f0 !important;
-            transform: translateY(-1px) !important;
-        }
-
-        #modalPilihBulan .btn-primary {
-            background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-            border: none !important;
-            border-radius: 30px !important;
-            padding: 8px 20px !important;
-            color: white !important;
-        }
-
-        #modalPilihBulan .btn-primary:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4) !important;
-        }
-
-        /* Pastikan modal tidak gelap saat show */
-        #modalPilihBulan.show {
-            display: flex !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-        }
-
-        /* Perbaiki backdrop */
-        .modal-backdrop.show {
-            opacity: 0.5 !important;
-            background-color: #000 !important;
         }
     </style>
 </head>
@@ -5216,124 +5144,74 @@
         function bukaModalDeteksiTidakLapor() {
             console.log("🔍 Membuka modal deteksi tidak lapor...");
 
-            // Force close semua modal
-            if (typeof forceCloseAllModals === 'function') {
-                forceCloseAllModals();
-            }
-
-            // Hapus semua backdrop yang tersisa
-            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-                backdrop.remove();
-            });
+            // Hapus backdrop yang mungkin tersisa
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
 
-            // Isi dropdown tahun dari data yang tersedia
+            // Isi dropdown tahun
             const tahunSelect = document.getElementById('deteksiTahun');
-            if (tahunSelect) {
+            if (tahunSelect && allData && allData.length > 0) {
                 const tahunSet = new Set();
-
-                if (allData && allData.length > 0) {
-                    allData.forEach(row => {
-                        const bulanLaporan = row["laporan_bulanan"];
-                        if (bulanLaporan) {
-                            const match = bulanLaporan.match(/\d{4}/);
-                            if (match) {
-                                tahunSet.add(parseInt(match[0]));
-                            }
-                        }
-                    });
-                }
-
-                if (tahunSet.size === 0) {
-                    tahunSet.add(new Date().getFullYear());
-                }
-
+                allData.forEach(row => {
+                    const bulanLaporan = row["laporan_bulanan"];
+                    if (bulanLaporan) {
+                        const match = bulanLaporan.match(/\d{4}/);
+                        if (match) tahunSet.add(parseInt(match[0]));
+                    }
+                });
+                if (tahunSet.size === 0) tahunSet.add(new Date().getFullYear());
                 const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
                 tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
                 tahunList.forEach(tahun => {
                     tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
                 });
-
-                if (tahunList.length > 0) {
-                    tahunSelect.value = tahunList[0];
-                }
+                if (tahunList.length > 0) tahunSelect.value = tahunList[0];
             }
 
-            // Ambil elemen modal
-            const modalElement = document.getElementById('modalPilihBulan');
-            if (!modalElement) {
-                console.error("❌ Modal element tidak ditemukan!");
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Komponen modal tidak ditemukan. Silakan refresh halaman.',
-                    confirmButtonColor: '#dc3545'
-                });
+            // Ambil modal
+            const modal = document.getElementById('modalPilihBulan');
+            if (!modal) {
+                console.error("Modal tidak ditemukan!");
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Modal tidak ditemukan!' });
                 return;
             }
 
-            // ============================================
-            // CARA MANUAL - PAKSA TAMPILKAN MODAL (TANPA BOOTSTRAP API)
-            // ============================================
+            // Gunakan Bootstrap modal API
+            try {
+                // Hapus instance lama jika ada
+                let bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) {
+                    bsModal.dispose();
+                }
 
-            // Reset modal ke state awal
-            modalElement.classList.remove('show');
-            modalElement.style.display = 'none';
-            modalElement.removeAttribute('aria-modal');
-            modalElement.removeAttribute('style');
+                // Buat instance baru
+                bsModal = new bootstrap.Modal(modal, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
 
-            // Force reflow
-            void modalElement.offsetHeight;
+                // Tampilkan modal
+                bsModal.show();
+                console.log("✅ Modal terbuka dengan Bootstrap");
 
-            // Tampilkan modal secara manual
-            modalElement.style.display = 'block';
-            modalElement.classList.add('show');
-            modalElement.setAttribute('aria-modal', 'true');
-            modalElement.setAttribute('role', 'dialog');
+            } catch (error) {
+                console.error("Error dengan Bootstrap modal:", error);
 
-            // Set body style
-            document.body.classList.add('modal-open');
-            document.body.style.overflow = 'hidden';
-            document.body.style.paddingRight = '0px';
+                // Fallback manual jika Bootstrap gagal
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+                document.body.style.overflow = 'hidden';
 
-            // Buat backdrop baru
-            let backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.remove();
+                if (document.querySelectorAll('.modal-backdrop').length === 0) {
+                    const backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    document.body.appendChild(backdrop);
+                }
+                console.log("✅ Modal terbuka dengan fallback manual");
             }
-            backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade show';
-            document.body.appendChild(backdrop);
-
-            // Event untuk menutup modal dengan tombol close atau klik backdrop
-            const closeButtons = modalElement.querySelectorAll('[data-bs-dismiss="modal"]');
-            closeButtons.forEach(btn => {
-                btn.onclick = function (e) {
-                    e.preventDefault();
-                    // Tutup modal manual
-                    modalElement.classList.remove('show');
-                    modalElement.style.display = 'none';
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    const backdropEl = document.querySelector('.modal-backdrop');
-                    if (backdropEl) backdropEl.remove();
-                    console.log("Modal ditutup");
-                };
-            });
-
-            // Klik backdrop juga menutup modal
-            backdrop.onclick = function () {
-                modalElement.classList.remove('show');
-                modalElement.style.display = 'none';
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                if (backdrop) backdrop.remove();
-                console.log("Modal ditutup via backdrop");
-            };
-
-            console.log("✅ Modal deteksi tidak lapor terbuka (manual)");
         }
 
         // ============================================
