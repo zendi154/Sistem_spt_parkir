@@ -2228,40 +2228,118 @@
             console.log("🗑️ Data tersimpan telah dihapus");
         }
 
-        // Tambahkan tombol reset data tersimpan di navbar
+        // Tambahkan tombol reset data tersimpan di navbar dengan tampilan lebih menarik
         function addResetSavedDataButton() {
             const navbarRight = document.querySelector('#mainNavbar .d-flex');
             if (navbarRight && !document.getElementById('btnResetSavedData')) {
+                // Buat wrapper untuk tombol
+                const resetWrapper = document.createElement('div');
+                resetWrapper.className = 'position-relative';
+
                 const resetBtn = document.createElement('a');
                 resetBtn.id = 'btnResetSavedData';
                 resetBtn.href = '#';
-                resetBtn.className = 'nav-link p-1';
-                resetBtn.title = 'Reset Data Tersimpan';
-                resetBtn.innerHTML = '<i class="bi bi-eraser-fill fs-5"></i>';
+                resetBtn.className = 'nav-link p-2 rounded-3';
+                resetBtn.title = 'Hapus Data Tersimpan';
+                resetBtn.style.transition = 'all 0.3s ease';
+                resetBtn.style.display = 'flex';
+                resetBtn.style.alignItems = 'center';
+                resetBtn.style.gap = '6px';
+
+                resetBtn.innerHTML = `
+            <i class="bi bi-trash3-fill fs-5" style="color: #ff6b6b;"></i>
+            <span style="font-size: 0.75rem; font-weight: 500;">Reset Data</span>
+        `;
+
+                // Hover effect
+                resetBtn.onmouseenter = function () {
+                    this.style.backgroundColor = 'rgba(255, 107, 107, 0.2)';
+                    this.style.transform = 'translateY(-2px)';
+                };
+                resetBtn.onmouseleave = function () {
+                    this.style.backgroundColor = 'transparent';
+                    this.style.transform = 'translateY(0)';
+                };
+
                 resetBtn.onclick = function (e) {
                     e.preventDefault();
+
+                    // Cek apakah ada data tersimpan
+                    const savedData = localStorage.getItem('lastSubmittedFormData');
+
+                    if (!savedData) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Tidak Ada Data Tersimpan',
+                            text: 'Saat ini tidak ada data yang tersimpan di localStorage.',
+                            confirmButtonColor: '#0d6efd',
+                            timer: 2000,
+                            showConfirmButton: true
+                        });
+                        return;
+                    }
+
+                    // Parse data untuk ditampilkan
+                    let dataInfo = '';
+                    try {
+                        const data = JSON.parse(savedData);
+                        dataInfo = `
+                    <div class="bg-light p-3 rounded mb-3" style="text-align: left;">
+                        <table style="width: 100%; font-size: 13px;">
+                            <tr><td width="120"><strong>Notaris:</strong>${'</td><td colspan="3">'}${escapeHtml(data.notarisNama?.substring(0, 50) || '-')}${'</td></tr>'}
+                            <tr><td><strong>Nomor Surat:</strong>${'</td><td colspan="3">'}${escapeHtml(data.nomorSurat || '-')}${'</td></tr>'}
+                            <tr><td><strong>Tgl Surat:</strong>${'</td><td colspan="3">'}${escapeHtml(data.tanggalSurat || '-')}${'</td></tr>'}
+                            <tr><td><strong>Tgl Diterima:</strong>${'</td><td colspan="3">'}${escapeHtml(data.tanggalDiterima || '-')}${'</td></tr>'}
+                            <tr><td><strong>Bulan Laporan:</strong>${'</td><td colspan="3">'}${escapeHtml(data.laporanBulanan || '-')}${'</td></tr>'}
+                        </table>
+                    </div>
+                `;
+                    } catch (e) {
+                        dataInfo = '<div class="alert alert-warning">Data tersimpan rusak atau tidak valid</div>';
+                    }
+
                     Swal.fire({
-                        title: 'Hapus Data Tersimpan?',
-                        text: 'Data notaris, nomor surat, dan tanggal yang tersimpan akan dihapus.',
+                        title: '<span style="color: #dc3545;"><i class="bi bi-exclamation-triangle-fill"></i> Hapus Data Tersimpan?</span>',
+                        html: `
+                    <div class="text-start">
+                        <p>Data berikut akan dihapus dari localStorage browser ini:</p>
+                        ${dataInfo}
+                        <hr>
+                        <p class="text-danger mb-0"><strong>⚠️ Perhatian:</strong></p>
+                        <small class="text-muted">Data yang dihapus TIDAK bisa dikembalikan. Namun data laporan utama tetap aman di Google Sheet.</small>
+                    </div>
+                `,
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'Ya, Hapus!',
-                        cancelButtonText: 'Batal',
-                        confirmButtonColor: '#dc3545'
+                        confirmButtonText: '<i class="bi bi-check-lg"></i> Ya, Hapus!',
+                        cancelButtonText: '<i class="bi bi-x-lg"></i> Batal',
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        reverseButtons: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             clearSavedFormData();
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Data Tersimpan Dihapus!',
-                                text: 'Data sebelumnya telah dihapus.',
-                                timer: 1500,
-                                showConfirmButton: false
+                                title: 'Berhasil Dihapus!',
+                                html: '<i class="bi bi-check-circle-fill text-success fs-2"></i><br>Data tersimpan telah dihapus dari localStorage.',
+                                timer: 2000,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end'
                             });
+
+                            // Optional: Reset form jika sedang menampilkan data tersimpan
+                            const selectNotaris = document.getElementById('notaris');
+                            if (selectNotaris && selectNotaris.selectedIndex === 0) {
+                                // Form sudah kosong, tidak perlu reset lagi
+                            }
                         }
                     });
                 };
-                navbarRight.appendChild(resetBtn);
+
+                resetWrapper.appendChild(resetBtn);
+                navbarRight.appendChild(resetWrapper);
             }
         }
 
