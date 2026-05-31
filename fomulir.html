@@ -2504,7 +2504,7 @@
             }
 
             // ============================================
-            // 8. NOMOR HAK & NOMOR SURAT
+            // 8. NOMOR HAK & NOMOR SURAT - LENGKAP DENGAN NIB
             // ============================================
             const nomorHak = document.getElementById("nomor_hak");
             if (nomorHak) {
@@ -2525,48 +2525,64 @@
 
                     // Daftar mapping untuk auto-format
                     const formatRules = [
-                        // SHM
+                        // ========== SHM DAN VARIAN ==========
+                        // SHM biasa
                         { test: /^SHM\s*(\d+)$/i, format: (n) => `SHM No. ${n}` },
                         { test: /^SHM\s+NO\.?\s*(\d+)$/i, format: (n) => `SHM No. ${n}` },
 
-                        // HM (Hak Milik)
+                        // SHM NIB (Nomor Induk Berusaha)
+                        { test: /^SHM\s+NIB\s*([\d\.]+)$/i, format: (n) => `SHM NIB No. ${n}` },
+                        { test: /^SHM\s+NIB\s+NO\.?\s*([\d\.]+)$/i, format: (n) => `SHM NIB No. ${n}` },
+
+                        // ========== HM (Hak Milik) ==========
                         { test: /^HM\s*(\d+)$/i, format: (n) => `HM No. ${n}` },
                         { test: /^HM\s+NO\.?\s*(\d+)$/i, format: (n) => `HM No. ${n}` },
 
-                        // HGB
+                        // ========== HGB DAN VARIAN ==========
+                        // HGB biasa
                         { test: /^HGB\s*(\d+)$/i, format: (n) => `HGB No. ${n}` },
                         { test: /^HGB\s+NO\.?\s*(\d+)$/i, format: (n) => `HGB No. ${n}` },
 
-                        // SHGB
+                        // HGB NIB
+                        { test: /^HGB\s+NIB\s*([\d\.]+)$/i, format: (n) => `HGB NIB No. ${n}` },
+                        { test: /^HGB\s+NIB\s+NO\.?\s*([\d\.]+)$/i, format: (n) => `HGB NIB No. ${n}` },
+
+                        // ========== SHGB DAN VARIAN ==========
+                        // SHGB biasa
                         { test: /^SHGB\s*(\d+)$/i, format: (n) => `SHGB No. ${n}` },
                         { test: /^SHGB\s+NO\.?\s*(\d+)$/i, format: (n) => `SHGB No. ${n}` },
 
-                        // HP (Hak Pakai)
+                        // SHGB NIB
+                        { test: /^SHGB\s+NIB\s*([\d\.]+)$/i, format: (n) => `SHGB NIB No. ${n}` },
+                        { test: /^SHGB\s+NIB\s+NO\.?\s*([\d\.]+)$/i, format: (n) => `SHGB NIB No. ${n}` },
+
+                        // ========== HP (Hak Pakai) ==========
                         { test: /^HP\s*(\d+)$/i, format: (n) => `HP No. ${n}` },
                         { test: /^SHP\s*(\d+)$/i, format: (n) => `SHP No. ${n}` },
 
-                        // NIB (tidak pakai No.)
-                        { test: /^NIB\s*(\d+)$/i, format: (n) => `NIB ${n}` },
+                        // ========== NIB (Nomor Induk Berusaha) ==========
+                        { test: /^NIB\s*([\d\.]+)$/i, format: (n) => `NIB ${n}` },
                         { test: /^NIB\s*(\d{13,})$/i, format: (n) => `NIB ${n}` },
+                        { test: /^NIB\s+NO\.?\s*([\d\.]+)$/i, format: (n) => `NIB ${n}` },
 
-                        // IMB
+                        // ========== IMB / PBG ==========
                         { test: /^IMB\s*(\d+)$/i, format: (n) => `IMB No. ${n}` },
                         { test: /^PBG\s*(\d+)$/i, format: (n) => `PBG No. ${n}` },
 
-                        // SLF
+                        // ========== SLF ==========
                         { test: /^SLF\s*(\d+)$/i, format: (n) => `SLF No. ${n}` },
 
-                        // HO
+                        // ========== HO ==========
                         { test: /^HO\s*(\d+)$/i, format: (n) => `HO No. ${n}` },
 
-                        // HGU
+                        // ========== HGU ==========
                         { test: /^HGU\s*(\d+)$/i, format: (n) => `HGU No. ${n}` },
                         { test: /^SHGU\s*(\d+)$/i, format: (n) => `SHGU No. ${n}` },
 
-                        // HPL
+                        // ========== HPL ==========
                         { test: /^HPL\s*(\d+)$/i, format: (n) => `HPL No. ${n}` },
 
-                        // Hak Pakai (tanpa HGB)
+                        // ========== Hak Pakai (tanpa HGB) ==========
                         { test: /^PAKAI\s*(\d+)$/i, format: (n) => `Hak Pakai No. ${n}` },
                     ];
 
@@ -2576,7 +2592,8 @@
                     for (const rule of formatRules) {
                         const match = value.match(rule.test);
                         if (match) {
-                            formatted = rule.format(match[1]);
+                            let nomor = match[1];
+                            formatted = rule.format(nomor);
                             break;
                         }
                     }
@@ -2592,7 +2609,7 @@
                     }
                 });
 
-                console.log("✅ Nomor Hak auto-format aktif untuk semua jenis (SHM, HM, HGB, SHGB, NIB, IMB, PBG, SLF, HO, HP, HGU, HPL, dll)");
+                console.log("✅ Nomor Hak auto-format aktif untuk SHM, SHGB, HGB, NIB, dan semua jenis lainnya");
             }
 
             // ============================================
