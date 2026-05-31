@@ -14,12 +14,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <style>
     /* ===============================
-   BACKGROUND HALAMAN – GRADIENT ANIMASI
-================================ */
+     BACKGROUND HALAMAN – GRADIENT ANIMASI
+    ================================ */
     body {
         min-height: 100vh;
         margin: 0;
@@ -1977,12 +1978,292 @@
         }
 
         /* =========================
-           FUNGSI FOMULIR
-        ========================= */
+       FUNGSI FOMULIR
+    ========================= */
 
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyM0LEnCH3eHRyhWGqfYwSpNpfthX7VmRoG6dQ-UeurSZ6C4XSjTES8bhd-gYdkVJTW/exec';
         const form = document.forms['LAPORAN NOTARIS'];
         let transaksiList = [];
+        let isUpdating = false;      // Untuk fungsi updateKeteranganState
+        let isRestoringData = false; // Untuk mencegah konflik saat restore data
+        let TEMPLATE_TEXT = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
+
+        // ============================================
+        // FITUR REPEAT DATA - MENYIMPAN DATA SEBELUMNYA
+        // ============================================
+
+        // Objek untuk menyimpan data terakhir yang dikirim
+        let lastSubmittedData = {
+            notarisId: '',
+            notarisNama: '',
+            notarisAlamat: '',
+            nomorSurat: '',
+            tanggalSurat: '',
+            tanggalDiterima: '',
+            laporanBulanan: ''
+        };
+
+        // Fungsi escapeHtml untuk keamanan
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Fungsi untuk menyimpan data dari form saat ini
+        function saveCurrentFormData() {
+            const selectNotaris = document.getElementById('notaris');
+            const selectedOption = selectNotaris.options[selectNotaris.selectedIndex];
+
+            lastSubmittedData = {
+                notarisId: selectedOption?.getAttribute('data-id') || '',
+                notarisNama: selectNotaris.value || '',
+                notarisAlamat: selectedOption?.getAttribute('data-alamat') || '',
+                nomorSurat: document.getElementById('nomor_surat')?.value || '',
+                tanggalSurat: document.getElementById('tanggal_surat')?.value || '',
+                tanggalDiterima: document.getElementById('tanggal_diterima')?.value || '',
+                laporanBulanan: document.getElementById('laporan_bulanan')?.value || ''
+            };
+
+            localStorage.setItem('lastSubmittedFormData', JSON.stringify(lastSubmittedData));
+            console.log("✅ Data berhasil disimpan:", lastSubmittedData);
+        }
+
+        // Fungsi untuk memuat data yang tersimpan
+        function loadSavedFormData() {
+            const savedData = localStorage.getItem('lastSubmittedFormData');
+            if (!savedData) return null;
+            try {
+                return JSON.parse(savedData);
+            } catch (e) {
+                console.error("Gagal memuat data tersimpan:", e);
+                return null;
+            }
+        }
+
+        // Fungsi untuk mengisi form dengan data tersimpan
+        function fillFormWithSavedData(savedData) {
+            if (!savedData) return false;
+
+            // Aktifkan flag untuk mencegah auto-update
+            isRestoringData = true;
+
+            try {
+                // Isi select notaris
+                const selectNotaris = document.getElementById('notaris');
+                if (savedData.notarisNama) {
+                    for (let i = 0; i < selectNotaris.options.length; i++) {
+                        if (selectNotaris.options[i].value === savedData.notarisNama) {
+                            selectNotaris.selectedIndex = i;
+                            const changeEvent = new Event('change');
+                            selectNotaris.dispatchEvent(changeEvent);
+                            break;
+                        }
+                    }
+                }
+
+                // Isi field lainnya
+                const nomorSurat = document.getElementById('nomor_surat');
+                const tanggalSurat = document.getElementById('tanggal_surat');
+                const tanggalDiterima = document.getElementById('tanggal_diterima');
+                const laporanBulanan = document.getElementById('laporan_bulanan');
+
+                if (nomorSurat) nomorSurat.value = savedData.nomorSurat || '';
+                if (tanggalSurat) tanggalSurat.value = savedData.tanggalSurat || '';
+                if (tanggalDiterima) tanggalDiterima.value = savedData.tanggalDiterima || '';
+                if (laporanBulanan) laporanBulanan.value = savedData.laporanBulanan || '';
+
+                // Trigger event untuk update status surat
+                if (tanggalDiterima) {
+                    const inputEvent = new Event('input');
+                    tanggalDiterima.dispatchEvent(inputEvent);
+                }
+
+                console.log("✅ Form diisi dengan data tersimpan");
+                return true;
+
+            } finally {
+                setTimeout(() => {
+                    isRestoringData = false;
+                }, 500);
+            }
+        }
+
+        // Fungsi untuk menampilkan dialog konfirmasi reuse data
+        async function showRepeatDataDialog() {
+            const savedData = loadSavedFormData();
+            if (!savedData || !savedData.nomorSurat) {
+                resetFormToEmpty();
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: '🔄 Gunakan Data Sebelumnya?',
+                html: `
+            <div class="text-start">
+                <p>Anda baru saja mengirim laporan dengan data:</p>
+                <div class="bg-light p-3 rounded mb-3" style="text-align: left;">
+                    <table style="width: 100%; font-size: 13px;">
+                        <tr><td width="120"><strong>Notaris:</strong></td><td colspan="3">${escapeHtml(savedData.notarisNama?.substring(0, 50) || '-')}</td></tr>
+                        <tr><td width="120"><strong>Nomor Surat:</strong></td><td colspan="3">${escapeHtml(savedData.nomorSurat || '-')}</td></tr>
+                        <tr><td width="120"><strong>Tgl Surat:</strong></td><td colspan="3">${escapeHtml(savedData.tanggalSurat || '-')}</td></tr>
+                        <tr><td width="120"><strong>Tgl Diterima:</strong></td><td colspan="3">${escapeHtml(savedData.tanggalDiterima || '-')}</td></tr>
+                        <tr><td width="120"><strong>Bulan Laporan:</strong></td><td colspan="3">${escapeHtml(savedData.laporanBulanan || '-')}</td></tr>
+                    </table>
+                </div>
+                <p class="mb-0">Apakah Anda ingin menggunakan data yang sama untuk laporan berikutnya?</p>
+                <small class="text-muted">*Klik "Ya" untuk mengisi otomatis, "Tidak" untuk form kosong</small>
+            </div>
+        `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-check-lg"></i> Ya, Gunakan Data Ini',
+                cancelButtonText: '<i class="bi bi-x-lg"></i> Tidak, Form Kosong',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d'
+            });
+
+            if (result.isConfirmed) {
+                fillFormWithSavedData(savedData);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Terisi!',
+                    text: 'Form telah diisi dengan data sebelumnya. Silakan lanjutkan input.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                resetFormToEmpty();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Form Dikosongkan',
+                    text: 'Form telah dikosongkan untuk input baru.',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+        }
+
+        // Fungsi untuk mereset form ke kondisi kosong
+        function resetFormToEmpty() {
+            isRestoringData = true;
+            try {
+                const selectNotaris = document.getElementById('notaris');
+                if (selectNotaris) {
+                    selectNotaris.selectedIndex = 0;
+                    const changeEvent = new Event('change');
+                    selectNotaris.dispatchEvent(changeEvent);
+                }
+
+                const nomorSurat = document.getElementById('nomor_surat');
+                const tanggalSurat = document.getElementById('tanggal_surat');
+                const tanggalDiterima = document.getElementById('tanggal_diterima');
+
+                if (nomorSurat) nomorSurat.value = '';
+                if (tanggalSurat) tanggalSurat.value = '';
+                if (tanggalDiterima) tanggalDiterima.value = '';
+
+                const statusSurat = document.getElementById('status_surat');
+                if (statusSurat) statusSurat.value = '';
+
+                console.log("✅ Form direset ke kosong");
+            } finally {
+                setTimeout(() => {
+                    isRestoringData = false;
+                }, 500);
+            }
+        }
+
+        // Fungsi reset keterangan
+        function resetKeteranganForm() {
+            isRestoringData = true;
+            try {
+                const keteranganField = document.getElementById('keterangan');
+                const ketHintSpan = document.getElementById('ketHint');
+                const ketErrorSpan = document.getElementById('ketError');
+                const jumlahLaporanField = document.getElementById('jumlah_laporan');
+
+                if (keteranganField) {
+                    keteranganField.value = '';
+                    keteranganField.readOnly = true;
+                    keteranganField.style.backgroundColor = '#e9ecef';
+                    keteranganField.classList.remove('is-valid', 'is-invalid');
+                }
+                if (ketHintSpan) {
+                    ketHintSpan.textContent = '🔔 Isi jumlah laporan terlebih dahulu';
+                    ketHintSpan.className = 'form-text fw-semibold text-secondary';
+                }
+                if (ketErrorSpan) ketErrorSpan.textContent = '';
+
+                if (jumlahLaporanField) {
+                    jumlahLaporanField.value = '';
+                }
+            } finally {
+                setTimeout(() => {
+                    isRestoringData = false;
+                }, 500);
+            }
+        }
+
+        // Fungsi untuk menghapus data tersimpan
+        function clearSavedFormData() {
+            localStorage.removeItem('lastSubmittedFormData');
+            lastSubmittedData = {
+                notarisId: '',
+                notarisNama: '',
+                notarisAlamat: '',
+                nomorSurat: '',
+                tanggalSurat: '',
+                tanggalDiterima: '',
+                laporanBulanan: ''
+            };
+            console.log("🗑️ Data tersimpan telah dihapus");
+        }
+
+        // Tambahkan tombol reset data tersimpan di navbar
+        function addResetSavedDataButton() {
+            const navbarRight = document.querySelector('#mainNavbar .d-flex');
+            if (navbarRight && !document.getElementById('btnResetSavedData')) {
+                const resetBtn = document.createElement('a');
+                resetBtn.id = 'btnResetSavedData';
+                resetBtn.href = '#';
+                resetBtn.className = 'nav-link p-1';
+                resetBtn.title = 'Reset Data Tersimpan';
+                resetBtn.innerHTML = '<i class="bi bi-eraser-fill fs-5"></i>';
+                resetBtn.onclick = function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Hapus Data Tersimpan?',
+                        text: 'Data notaris, nomor surat, dan tanggal yang tersimpan akan dihapus.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#dc3545'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            clearSavedFormData();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Tersimpan Dihapus!',
+                                text: 'Data sebelumnya telah dihapus.',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                };
+                navbarRight.appendChild(resetBtn);
+            }
+        }
 
         /* =========================
            FORMAT RUPIAH
@@ -2227,19 +2508,91 @@
             // ============================================
             const nomorHak = document.getElementById("nomor_hak");
             if (nomorHak) {
-                nomorHak.addEventListener("input", function () {
-                    let value = this.value.toUpperCase().replace(/\s+/g, " ").trim();
-                    if (/^SHM\s?\d+$/i.test(value)) value = value.replace(/^SHM\s?(\d+)$/i, "SHM No. $1");
-                    if (/^HGB\s?\d+$/i.test(value)) value = value.replace(/^HGB\s?(\d+)$/i, "HGB/$1");
-                    this.value = value;
-                });
-            }
+                // Hapus event listener lama (jika ada) dengan clone & replace
+                const newNomorHak = nomorHak.cloneNode(true);
+                nomorHak.parentNode.replaceChild(newNomorHak, nomorHak);
 
-            const nomorSurat = document.getElementById('nomor_surat');
-            if (nomorSurat) {
-                nomorSurat.addEventListener('input', function () {
-                    this.value = this.value.toUpperCase();
+                // Pasang event listener baru
+                newNomorHak.addEventListener("input", function (e) {
+                    let rawValue = this.value;
+
+                    // Simpan posisi kursor
+                    const cursorPos = this.selectionStart;
+                    const oldLength = this.value.length;
+
+                    let value = rawValue.toUpperCase().trim();
+                    value = value.replace(/\s+/g, " ").trim();
+
+                    // Daftar mapping untuk auto-format
+                    const formatRules = [
+                        // SHM
+                        { test: /^SHM\s*(\d+)$/i, format: (n) => `SHM No. ${n}` },
+                        { test: /^SHM\s+NO\.?\s*(\d+)$/i, format: (n) => `SHM No. ${n}` },
+
+                        // HM (Hak Milik)
+                        { test: /^HM\s*(\d+)$/i, format: (n) => `HM No. ${n}` },
+                        { test: /^HM\s+NO\.?\s*(\d+)$/i, format: (n) => `HM No. ${n}` },
+
+                        // HGB
+                        { test: /^HGB\s*(\d+)$/i, format: (n) => `HGB No. ${n}` },
+                        { test: /^HGB\s+NO\.?\s*(\d+)$/i, format: (n) => `HGB No. ${n}` },
+
+                        // SHGB
+                        { test: /^SHGB\s*(\d+)$/i, format: (n) => `SHGB No. ${n}` },
+                        { test: /^SHGB\s+NO\.?\s*(\d+)$/i, format: (n) => `SHGB No. ${n}` },
+
+                        // HP (Hak Pakai)
+                        { test: /^HP\s*(\d+)$/i, format: (n) => `HP No. ${n}` },
+                        { test: /^SHP\s*(\d+)$/i, format: (n) => `SHP No. ${n}` },
+
+                        // NIB (tidak pakai No.)
+                        { test: /^NIB\s*(\d+)$/i, format: (n) => `NIB ${n}` },
+                        { test: /^NIB\s*(\d{13,})$/i, format: (n) => `NIB ${n}` },
+
+                        // IMB
+                        { test: /^IMB\s*(\d+)$/i, format: (n) => `IMB No. ${n}` },
+                        { test: /^PBG\s*(\d+)$/i, format: (n) => `PBG No. ${n}` },
+
+                        // SLF
+                        { test: /^SLF\s*(\d+)$/i, format: (n) => `SLF No. ${n}` },
+
+                        // HO
+                        { test: /^HO\s*(\d+)$/i, format: (n) => `HO No. ${n}` },
+
+                        // HGU
+                        { test: /^HGU\s*(\d+)$/i, format: (n) => `HGU No. ${n}` },
+                        { test: /^SHGU\s*(\d+)$/i, format: (n) => `SHGU No. ${n}` },
+
+                        // HPL
+                        { test: /^HPL\s*(\d+)$/i, format: (n) => `HPL No. ${n}` },
+
+                        // Hak Pakai (tanpa HGB)
+                        { test: /^PAKAI\s*(\d+)$/i, format: (n) => `Hak Pakai No. ${n}` },
+                    ];
+
+                    let formatted = value;
+
+                    // Coba format sesuai aturan
+                    for (const rule of formatRules) {
+                        const match = value.match(rule.test);
+                        if (match) {
+                            formatted = rule.format(match[1]);
+                            break;
+                        }
+                    }
+
+                    // Jangan ubah jika sama
+                    if (formatted !== this.value) {
+                        this.value = formatted;
+
+                        // Perbaiki posisi kursor
+                        const newLength = this.value.length;
+                        const diff = newLength - oldLength;
+                        this.setSelectionRange(cursorPos + diff, cursorPos + diff);
+                    }
                 });
+
+                console.log("✅ Nomor Hak auto-format aktif untuk semua jenis (SHM, HM, HGB, SHGB, NIB, IMB, PBG, SLF, HO, HP, HGU, HPL, dll)");
             }
 
             // ============================================
@@ -2264,24 +2617,92 @@
             }
 
             // ============================================
-            // 10. SINKRON BPHTB DENGAN SSB
+            // 10. SINKRON BPHTB DENGAN SSB - PERBAIKAN
             // ============================================
             const ssbView = document.getElementById('ssb_view');
             const bphtbView = document.getElementById('sspd_bphtb_view');
+            const bphtbReal = document.getElementById('sspd_bphtb');
             const toggleSync = document.getElementById('autoBPHTB');
+            const syncIcon = document.getElementById('syncIcon');
+            const syncStatus = document.getElementById('syncStatus');
+
+            function getAngkaDariRupiah(value) {
+                if (!value) return 0;
+                return parseInt(value.replace(/\D/g, ''), 10) || 0;
+            }
+
+            function formatRupiahKeView(angka) {
+                if (!angka || angka === 0) return '';
+                return 'Rp. ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            function syncBPHTB() {
+                if (!toggleSync || !toggleSync.checked) {
+                    console.log("Auto sync OFF, tidak sinkron");
+                    return;
+                }
+
+                if (!ssbView || !bphtbView || !bphtbReal) return;
+
+                const ssbAngka = getAngkaDariRupiah(ssbView.value);
+                console.log("SSB value (angka):", ssbAngka);
+
+                // Update BPHTB view dan real
+                bphtbView.value = formatRupiahKeView(ssbAngka);
+                bphtbReal.value = ssbAngka;
+
+                // Update status
+                if (syncStatus) {
+                    syncStatus.textContent = `✓ Sinkron dengan SSB (Rp ${ssbAngka.toLocaleString('id-ID')})`;
+                    syncStatus.className = 'text-success small';
+                }
+                if (syncIcon) {
+                    syncIcon.className = 'bi bi-link-45deg fs-5 text-success';
+                    syncIcon.style.transform = 'rotate(0deg)';
+                }
+
+                console.log("BPHTB sync ke:", ssbAngka);
+            }
+
+            function offSyncBPHTB() {
+                if (!toggleSync) return;
+
+                if (syncStatus) {
+                    syncStatus.textContent = '⛔ Auto sync OFF - Input manual BPHTB';
+                    syncStatus.className = 'text-secondary small';
+                }
+                if (syncIcon) {
+                    syncIcon.className = 'bi bi-link-slash fs-5 text-secondary';
+                    syncIcon.style.transform = 'rotate(45deg)';
+                }
+                console.log("Auto sync dimatikan");
+            }
 
             if (ssbView && bphtbView && toggleSync) {
-                function syncBPHTB() {
-                    if (!toggleSync.checked) return;
-                    let angka = ssbView.value.replace(/\D/g, '');
-                    if (angka) {
-                        bphtbView.value = 'Rp. ' + angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                // Event ketika SSB berubah
+                ssbView.addEventListener('input', function () {
+                    if (toggleSync.checked) {
+                        syncBPHTB();
                     }
-                }
-                ssbView.addEventListener('input', syncBPHTB);
-                toggleSync.addEventListener('change', function () {
-                    if (this.checked) syncBPHTB();
                 });
+
+                // Event ketika toggle berubah
+                toggleSync.addEventListener('change', function () {
+                    if (this.checked) {
+                        syncBPHTB();
+                    } else {
+                        offSyncBPHTB();
+                    }
+                });
+
+                // Initial sync
+                if (toggleSync.checked) {
+                    syncBPHTB();
+                } else {
+                    offSyncBPHTB();
+                }
+
+                console.log("✅ Sinkronisasi BPHTB-SSB aktif");
             }
 
             // ============================================
@@ -2448,7 +2869,7 @@
             }
 
             // ============================================
-            // 12. SUBMIT FORM
+            // 12. SUBMIT FORM - VERSION FIXED
             // ============================================
             const formElement = document.forms['LAPORAN NOTARIS'];
             const btnKirimEl = document.querySelector('.btn-kirim');
@@ -2459,75 +2880,362 @@
                 formElement.addEventListener('submit', function (e) {
                     e.preventDefault();
 
+                    console.log("🚀 Memulai proses submit...");
+
+                    // ============================================
+                    // CEK VALIDASI DASAR
+                    // ============================================
+
+                    // Cek checkbox persetujuan
+                    const agreeCheck = document.getElementById('agreeCheck');
+                    if (!agreeCheck || !agreeCheck.checked) {
+                        alert('⚠️ Anda harus menyetujui pernyataan data yang diinput adalah benar!');
+                        if (agreeCheck) agreeCheck.focus();
+                        return;
+                    }
+
+                    // Cek jumlah laporan
+                    const jumlahLaporan = document.getElementById('jumlah_laporan');
+                    if (!jumlahLaporan || !jumlahLaporan.value) {
+                        alert('⚠️ Jumlah laporan harus diisi!');
+                        if (jumlahLaporan) jumlahLaporan.focus();
+                        return;
+                    }
+
                     const trxYa = document.getElementById('trx_ya');
                     const trxTidak = document.getElementById('trx_tidak');
 
-                    if (trxTidak && trxTidak.checked) {
-                        // Laporan nihil, lanjutkan
-                    } else {
-                        if (!document.getElementById('cekTransaksi')?.checked) {
-                            alert('⚠️ Centang konfirmasi data transaksi');
+                    // ============================================
+                    // VALIDASI & SIMPAN DATA TRANSAKSI
+                    // ============================================
+
+                    if (trxYa && trxYa.checked) {
+                        // ADA TRANSAKSI - validasi lengkap
+
+                        // Cek checkbox konfirmasi transaksi
+                        const cekTransaksi = document.getElementById('cekTransaksi');
+                        if (!cekTransaksi || !cekTransaksi.checked) {
+                            alert('⚠️ Centang konfirmasi data transaksi terlebih dahulu!');
+                            if (cekTransaksi) cekTransaksi.focus();
                             return;
                         }
 
-                        const luasInput = document.getElementById('luas_tb')?.value.trim();
-                        if (!luasInput) {
-                            alert('⚠️ Luas tanah/bangunan harus diisi');
+                        // Validasi luas tanah/bangunan
+                        const luasInput = document.getElementById('luas_tb');
+                        if (!luasInput || !luasInput.value.trim()) {
+                            alert('⚠️ Luas tanah/bangunan harus diisi!');
+                            if (luasInput) luasInput.focus();
                             return;
                         }
 
-                        const parts = luasInput.split('/');
+                        const luasValue = luasInput.value.trim();
+                        const parts = luasValue.split('/');
                         if (parts.length !== 2 || !/^\d{1,4}$/.test(parts[0]) || !/^\d{1,4}$/.test(parts[1])) {
                             alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi');
+                            if (luasInput) luasInput.focus();
                             return;
                         }
 
-                        // Push data transaksi
-                        const data = {
-                            tanggal: document.getElementById('tanggal_transaksi')?.value,
-                            no_sppd: document.getElementById('no_sppd')?.value.trim(),
-                            nomor_akta: document.getElementById('nomor_akta')?.value.trim(),
-                            nomor_hak: document.getElementById('nomor_hak')?.value.trim(),
-                            penjual: document.getElementById('nama_penjual')?.value.trim(),
-                            pembeli: document.getElementById('nama_pembeli')?.value.trim(),
-                            kecamatan: document.getElementById('kecamatan_value')?.value,
-                            kelurahan: document.getElementById('kelurahan_value')?.value,
-                            nop: document.getElementById('nop_view')?.value,
-                            njop: document.getElementById('njop_view')?.value,
-                            luas_tb: parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0'),
-                            harga: document.getElementById('harga_transaksi_view')?.value,
-                            ssp: document.getElementById('ssp_view')?.value,
-                            ssb: document.getElementById('ssb_view')?.value
+                        // Validasi kecamatan & kelurahan
+                        const kecamatanVal = document.getElementById('kecamatan_value')?.value;
+                        const kelurahanVal = document.getElementById('kelurahan_value')?.value;
+                        if (!kecamatanVal || !kelurahanVal) {
+                            alert('❌ Kecamatan & Kelurahan wajib dipilih dari daftar!');
+                            return;
+                        }
+
+                        // ============================================
+                        // AMBIL NILAI DENGAN FORMAT ANGKA BERSIH
+                        // ============================================
+
+                        // Fungsi untuk mengambil nilai bersih dari input rupiah
+                        function getAngkaBersih(elementId) {
+                            const el = document.getElementById(elementId);
+                            if (!el) return 0;
+                            let val = el.value;
+                            if (!val) return 0;
+                            // Hapus semua karakter non-digit
+                            let angka = val.replace(/\D/g, '');
+                            return angka === '' ? 0 : parseInt(angka, 10);
+                        }
+
+                        // Ambil nilai dari setiap field (dalam bentuk angka)
+                        const njop = getAngkaBersih('njop_view');
+                        const harga = getAngkaBersih('harga_transaksi_view');
+                        const ssp = getAngkaBersih('ssp_view');
+                        const ssb = getAngkaBersih('ssb_view');
+
+                        // Ambil NOP
+                        const nopView = document.getElementById('nop_view');
+                        const nopValue = nopView ? nopView.value.replace(/\./g, '') : '';
+
+                        console.log("Nilai transaksi:", { njop, harga, ssp, ssb, nop: nopValue });
+
+                        // Simpan ke hidden field dengan nilai angka bersih
+                        const sspReal = document.getElementById('ssp');
+                        const ssbReal = document.getElementById('ssb');
+                        const hargaReal = document.getElementById('harga_transaksi');
+                        const njopReal = document.getElementById('njop');
+
+                        if (sspReal) sspReal.value = ssp;
+                        if (ssbReal) ssbReal.value = ssb;
+                        if (hargaReal) hargaReal.value = harga;
+                        if (njopReal) njopReal.value = njop;
+
+                        // Format luas menjadi 4 digit / 4 digit
+                        const luasFormat = parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
+
+                        // Buat object transaksi
+                        const transaksiData = {
+                            tanggal: document.getElementById('tanggal_transaksi')?.value || '',
+                            no_sppd: document.getElementById('no_sppd')?.value.trim() || '',
+                            nomor_akta: document.getElementById('nomor_akta')?.value.trim() || '',
+                            nomor_hak: document.getElementById('nomor_hak')?.value.trim() || '',
+                            penjual: document.getElementById('nama_penjual')?.value.trim() || '',
+                            pembeli: document.getElementById('nama_pembeli')?.value.trim() || '',
+                            kecamatan: kecamatanVal,
+                            kelurahan: kelurahanVal,
+                            nop: nopValue,
+                            njop: njop,
+                            luas_tb: luasFormat,
+                            harga: harga,
+                            ssp: ssp,
+                            ssb: ssb
                         };
 
-                        if (!data.kecamatan || !data.kelurahan) {
-                            alert('❌ Kecamatan & Kelurahan wajib dipilih');
-                            return;
+                        console.log("Data transaksi yang akan dikirim:", transaksiData);
+
+                        // Simpan ke array transaksiList
+                        transaksiList.push(transaksiData);
+
+                        // Simpan ke hidden field data_transaksi (JSON string)
+                        const dataTransaksiField = document.getElementById('data_transaksi');
+                        if (dataTransaksiField) {
+                            dataTransaksiField.value = JSON.stringify(transaksiList);
+                            console.log("data_transaksi JSON:", dataTransaksiField.value);
                         }
 
-                        transaksiList.push(data);
-                        document.getElementById('data_transaksi').value = JSON.stringify(transaksiList);
+                    } else {
+                        // TIDAK ADA TRANSAKSI - kosongkan data transaksi
+                        const dataTransaksiField = document.getElementById('data_transaksi');
+                        if (dataTransaksiField) {
+                            dataTransaksiField.value = '';
+                        }
+
+                        // Kosongkan nilai SSPD/BPHTB
+                        const bphtbReal = document.getElementById('sspd_bphtb');
+                        if (bphtbReal) bphtbReal.value = '0';
                     }
 
-                    if (nomorSurat) nomorSurat.value = nomorSurat.value.toUpperCase();
+                    // ============================================
+                    // AMBIL NILAI BPHTB DENGAN BENAR
+                    // ============================================
+
+                    // Ambil nilai BPHTB dari view (format Rupiah) dan konversi ke angka bersih
+                    const bphtbView = document.getElementById('sspd_bphtb_view');
+                    const bphtbReal = document.getElementById('sspd_bphtb');
+
+                    if (bphtbView && bphtbReal) {
+                        let bphtbAngka = bphtbView.value.replace(/\D/g, '');
+                        if (bphtbAngka === '') bphtbAngka = '0';
+                        bphtbReal.value = bphtbAngka;
+                        console.log("BPHTB value:", bphtbAngka);
+                    }
+
+                    // ============================================
+                    // UPPERCASE NOMOR SURAT
+                    // ============================================
+                    const nomorSurat = document.getElementById('nomor_surat');
+                    if (nomorSurat) {
+                        nomorSurat.value = nomorSurat.value.toUpperCase();
+                    }
+
+                    // ============================================
+                    // VALIDASI KETERANGAN
+                    // ============================================
+                    const jumlahLaporanVal = parseInt(jumlahLaporan.value, 10);
+                    const keteranganFieldVal = document.getElementById('keterangan');
+
+                    if (keteranganFieldVal && jumlahLaporanVal > 0) {
+                        // Hitung total dari keterangan
+                        const ketText = keteranganFieldVal.value;
+                        const angkaDalamKeterangan = ketText.match(/\d+/g);
+                        const totalKeterangan = angkaDalamKeterangan ? angkaDalamKeterangan.map(Number).reduce((a, b) => a + b, 0) : 0;
+
+                        if (totalKeterangan !== jumlahLaporanVal) {
+                            alert(`⚠️ Jumlah rincian keterangan (${totalKeterangan}) tidak sesuai dengan Jumlah Laporan (${jumlahLaporanVal})!\n\nSilakan perbaiki keterangan.`);
+                            return;
+                        }
+                    }
+
+                    // ============================================
+                    // KIRIM DATA
+                    // ============================================
 
                     if (loadingDiv) loadingDiv.classList.remove('d-none');
                     if (btnKirimEl) btnKirimEl.classList.add('d-none');
 
+                    // Buat FormData dari form
+                    const formData = new FormData(formElement);
+
+                    // Debug: Tampilkan semua data yang akan dikirim
+                    console.log("=== DATA YANG AKAN DIKIRIM ===");
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ": " + pair[1]);
+                    }
+
                     fetch(scriptURL, {
                         method: 'POST',
-                        body: new FormData(formElement)
+                        body: formData
                     })
-                        .then(() => {
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log("Response dari server:", result);
+
                             if (loadingDiv) loadingDiv.classList.add('d-none');
-                            if (successDiv) successDiv.classList.remove('d-none');
-                            setTimeout(() => location.reload(), 5000);
+
+                            if (result.result === "success") {
+                                if (successDiv) successDiv.classList.remove('d-none');
+
+                                // ============================================
+                                // SIMPAN DATA YANG BARU SAJA DIKIRIM
+                                // ============================================
+                                saveCurrentFormData();
+
+                                // Reset transaksiList setelah sukses
+                                transaksiList = [];
+
+                                setTimeout(() => {
+                                    // Tutup success overlay
+                                    if (successDiv) successDiv.classList.add('d-none');
+
+                                    // TAMPILKAN DIALOG APAKAH INGIN MENGULANG DATA
+                                    showRepeatDataDialog();
+
+                                    // Reset checkbox persetujuan
+                                    const agreeCheck = document.getElementById('agreeCheck');
+                                    if (agreeCheck) agreeCheck.checked = false;
+
+                                    // Reset checkbox konfirmasi transaksi
+                                    const cekTransaksi = document.getElementById('cekTransaksi');
+                                    if (cekTransaksi) cekTransaksi.checked = false;
+
+                                    // Reset pilihan transaksi ke "TIDAK ADA"
+                                    const trxTidak = document.getElementById('trx_tidak');
+                                    if (trxTidak) trxTidak.checked = true;
+
+                                    // Trigger toggle transaksi
+                                    const ya = document.getElementById('trx_ya');
+                                    const tidak = document.getElementById('trx_tidak');
+                                    const blok = document.getElementById('blokTransaksi');
+                                    if (tidak && tidak.checked && blok) {
+                                        blok.classList.add('d-none');
+                                    }
+
+                                    // Reset jumlah laporan
+                                    const jumlahLaporan = document.getElementById('jumlah_laporan');
+                                    if (jumlahLaporan) jumlahLaporan.value = '';
+
+                                    // Reset field keterangan melalui fungsi yang sudah ada
+                                    if (typeof window.resetKeteranganForm === 'function') {
+                                        window.resetKeteranganForm();
+                                    }
+
+                                    // Reset BPHTB
+                                    const bphtbView = document.getElementById('sspd_bphtb_view');
+                                    const bphtbReal = document.getElementById('sspd_bphtb');
+                                    if (bphtbView) bphtbView.value = '';
+                                    if (bphtbReal) bphtbReal.value = '';
+
+                                    // Reset SSB
+                                    const ssbView = document.getElementById('ssb_view');
+                                    const ssbReal = document.getElementById('ssb');
+                                    if (ssbView) ssbView.value = '';
+                                    if (ssbReal) ssbReal.value = '';
+
+                                    // Reset field transaksi lainnya
+                                    const tanggalTransaksi = document.getElementById('tanggal_transaksi');
+                                    const noSppd = document.getElementById('no_sppd');
+                                    const nomorAkta = document.getElementById('nomor_akta');
+                                    const nomorHak = document.getElementById('nomor_hak');
+                                    const namaPenjual = document.getElementById('nama_penjual');
+                                    const namaPembeli = document.getElementById('nama_pembeli');
+                                    const nopView = document.getElementById('nop_view');
+                                    const njopView = document.getElementById('njop_view');
+                                    const luasTb = document.getElementById('luas_tb');
+                                    const hargaView = document.getElementById('harga_transaksi_view');
+
+                                    if (tanggalTransaksi) tanggalTransaksi.value = '';
+                                    if (noSppd) noSppd.value = '';
+                                    if (nomorAkta) nomorAkta.value = '';
+                                    if (nomorHak) nomorHak.value = '';
+                                    if (namaPenjual) namaPenjual.value = '';
+                                    if (namaPembeli) namaPembeli.value = '';
+                                    if (nopView) nopView.value = '';
+                                    if (njopView) njopView.value = '';
+                                    if (luasTb) luasTb.value = '';
+                                    if (hargaView) hargaView.value = '';
+
+                                    // Reset hidden fields
+                                    const kecamatanValue = document.getElementById('kecamatan_value');
+                                    const kelurahanValue = document.getElementById('kelurahan_value');
+                                    const kelurahanInput = document.getElementById('kelurahanInput');
+                                    const kecamatanSelect = document.getElementById('kecamatan');
+
+                                    if (kecamatanValue) kecamatanValue.value = '';
+                                    if (kelurahanValue) kelurahanValue.value = '';
+                                    if (kelurahanInput) kelurahanInput.value = '';
+                                    if (kecamatanSelect) {
+                                        kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                                        kecamatanSelect.disabled = true;
+                                    }
+
+                                    // Reset hidden NOP
+                                    const nopHidden = document.getElementById('nop');
+                                    if (nopHidden) nopHidden.value = '';
+
+                                    // Reset hidden NJOP
+                                    const njopHidden = document.getElementById('njop');
+                                    if (njopHidden) njopHidden.value = '';
+
+                                    // Reset hidden harga transaksi
+                                    const hargaHidden = document.getElementById('harga_transaksi');
+                                    if (hargaHidden) hargaHidden.value = '';
+
+                                    // Reset tarif SSP ke 0%
+                                    const t0Radio = document.getElementById('t0');
+                                    if (t0Radio) t0Radio.checked = true;
+
+                                    // Reset auto sync (tetap checked)
+                                    const autoBPHTB = document.getElementById('autoBPHTB');
+                                    if (autoBPHTB) autoBPHTB.checked = true;
+
+                                    // Reset field sinkronisasi
+                                    const syncIcon = document.getElementById('syncIcon');
+                                    const syncStatus = document.getElementById('syncStatus');
+                                    if (syncIcon) {
+                                        syncIcon.className = 'bi bi-link-45deg fs-5 text-success';
+                                        syncIcon.style.transform = 'rotate(0deg)';
+                                    }
+                                    if (syncStatus) {
+                                        syncStatus.textContent = 'Mengikuti Nominal Data Transaksi SSB';
+                                        syncStatus.className = 'text-success small';
+                                    }
+
+                                    console.log("✅ Semua field telah direset");
+
+                                }, 3000); // Delay 3 detik agar user melihat success message
+
+                            } else {
+                                if (btnKirimEl) btnKirimEl.classList.remove('d-none');
+                                alert('❌ Gagal mengirim laporan: ' + (result.message || 'Unknown error'));
+                            }
                         })
                         .catch(error => {
                             if (loadingDiv) loadingDiv.classList.add('d-none');
                             if (btnKirimEl) btnKirimEl.classList.remove('d-none');
-                            alert('Gagal mengirim laporan!');
-                            console.error(error);
+                            console.error('Error:', error);
+                            alert('❌ Gagal mengirim laporan! Periksa koneksi internet Anda.\n\nError: ' + error.message);
                         });
                 });
             }
@@ -2566,108 +3274,215 @@
             });
 
             // ============================================
-            // 15. FUNGSI KETERANGAN (JUMLAH LAPORAN) - DIPERBAIKI
+            // 15. FUNGSI KETERANGAN (JUMLAH LAPORAN) - PERBAIKAN TOTAL
             // ============================================
             const jumlahLaporanField = document.getElementById('jumlah_laporan');
             const keteranganField = document.getElementById('keterangan');
             const ketHintSpan = document.getElementById('ketHint');
             const ketErrorSpan = document.getElementById('ketError');
-            const TEMPLATE_TEXT = "AJB ; 0  APHT ; 0  APHB ; 0  SKMHT ; 0  Hibah ; 0  APDP ; 0  Akta Tukar Menukar ; 0 Bphtb ; 0";
+            // Gunakan TEMPLATE_TEXT dari luar (sudah dideklarasikan)
+            // Gunakan isUpdating dan isRestoringData dari luar (sudah dideklarasikan)
 
             function hitungTotalKeterangan(text) {
+                if (!text) return 0;
                 const angka = text.match(/\d+/g);
                 return angka ? angka.map(Number).reduce((a, b) => a + b, 0) : 0;
             }
 
-            function lockKeterangan(text, hint) {
-                if (keteranganField) {
-                    keteranganField.value = text;
-                    keteranganField.readOnly = true;
-                    keteranganField.style.pointerEvents = 'none';
-                    keteranganField.style.backgroundColor = '#e9ecef';
-                }
-                if (ketHintSpan) {
-                    ketHintSpan.textContent = hint;
-                    ketHintSpan.className = 'form-text fw-semibold text-secondary';
-                }
-                if (ketErrorSpan) ketErrorSpan.textContent = '';
-            }
+            // Modifikasi fungsi updateKeteranganState
+            function updateKeteranganState() {
+                // Jika sedang dalam proses restore data, abaikan update
+                if (isUpdating || isRestoringData) return;
+                isUpdating = true;
 
-            function unlockKeterangan(text, hint) {
-                if (keteranganField) {
-                    keteranganField.readOnly = false;
-                    keteranganField.style.pointerEvents = 'auto';
-                    keteranganField.style.backgroundColor = '';
-                    keteranganField.value = text;
-                }
-                if (ketHintSpan) {
-                    ketHintSpan.textContent = hint;
-                    ketHintSpan.className = 'form-text fw-semibold text-info';
-                }
-            }
+                try {
+                    const val = jumlahLaporanField.value;
 
-            function prosesKeteranganBaru() {
-                if (!jumlahLaporanField || !keteranganField) return false;
-
-                const val = jumlahLaporanField.value;
-
-                if (val === '') {
-                    lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
-                    return false;
-                }
-
-                const num = Number(val);
-
-                // JIKA JUMLAH = 0 → NIHIL
-                if (num === 0) {
-                    lockKeterangan('Nihil', '🔒 Jumlah 0 → Nihil otomatis');
-                    return true;
-                }
-
-                // JIKA JUMLAH > 0 dan masih readonly (belum pernah diisi)
-                if (keteranganField.readOnly) {
-                    unlockKeterangan(TEMPLATE_TEXT, '✏️ Isi rincian sesuai jumlah laporan');
-                }
-
-                const total = hitungTotalKeterangan(keteranganField.value);
-
-                if (total !== num) {
-                    if (ketErrorSpan) ketErrorSpan.textContent = `Total rincian ${total}, seharusnya ${num}`;
-                    if (ketHintSpan) {
-                        ketHintSpan.textContent = '❌ Jumlah rincian belum sesuai';
-                        ketHintSpan.className = 'form-text fw-semibold text-danger';
+                    if (val === '') {
+                        // Belum ada input
+                        keteranganField.value = '';
+                        keteranganField.readOnly = true;
+                        keteranganField.style.backgroundColor = '#e9ecef';
+                        if (ketHintSpan) {
+                            ketHintSpan.textContent = '🔔 Isi jumlah laporan terlebih dahulu';
+                            ketHintSpan.className = 'form-text fw-semibold text-secondary';
+                        }
+                        if (ketErrorSpan) ketErrorSpan.textContent = '';
+                        keteranganField.classList.remove('is-valid', 'is-invalid');
+                        return;
                     }
-                    if (keteranganField) keteranganField.classList.add('is-invalid');
-                    return false;
-                } else {
-                    if (ketErrorSpan) ketErrorSpan.textContent = '';
-                    if (ketHintSpan) {
-                        ketHintSpan.textContent = '✅ Jumlah rincian sesuai';
-                        ketHintSpan.className = 'form-text fw-semibold text-success';
+
+                    const num = parseInt(val, 10);
+
+                    // Jika jumlah = 0 (NIHIL)
+                    if (num === 0) {
+                        keteranganField.value = 'Nihil';
+                        keteranganField.readOnly = true;
+                        keteranganField.style.backgroundColor = '#e9ecef';
+                        if (ketHintSpan) {
+                            ketHintSpan.textContent = '🔒 Jumlah 0 → Status Nihil';
+                            ketHintSpan.className = 'form-text fw-semibold text-secondary';
+                        }
+                        if (ketErrorSpan) ketErrorSpan.textContent = '';
+                        keteranganField.classList.remove('is-valid', 'is-invalid');
+                        return;
                     }
-                    if (keteranganField) {
+
+                    // Jika jumlah > 0
+                    // Cek apakah keterangan masih kosong atau masih readonly
+                    if (keteranganField.readOnly || keteranganField.value === '' || keteranganField.value === 'Nihil') {
+                        // Isi dengan template
+                        keteranganField.value = TEMPLATE_TEXT;
+                        keteranganField.readOnly = false;
+                        keteranganField.style.backgroundColor = '';
+                        if (ketHintSpan) {
+                            ketHintSpan.textContent = '✏️ Edit rincian sesuai jumlah laporan';
+                            ketHintSpan.className = 'form-text fw-semibold text-info';
+                        }
+                    }
+
+                    // Hitung total dari keterangan
+                    const total = hitungTotalKeterangan(keteranganField.value);
+
+                    if (total !== num) {
+                        if (ketErrorSpan) ketErrorSpan.textContent = `⚠️ Total rincian ${total}, seharusnya ${num}`;
+                        if (ketHintSpan) {
+                            ketHintSpan.textContent = '❌ Jumlah rincian belum sesuai';
+                            ketHintSpan.className = 'form-text fw-semibold text-danger';
+                        }
+                        keteranganField.classList.add('is-invalid');
+                        keteranganField.classList.remove('is-valid');
+                    } else {
+                        if (ketErrorSpan) ketErrorSpan.textContent = '';
+                        if (ketHintSpan) {
+                            ketHintSpan.textContent = '✅ Jumlah rincian sesuai';
+                            ketHintSpan.className = 'form-text fw-semibold text-success';
+                        }
                         keteranganField.classList.remove('is-invalid');
                         keteranganField.classList.add('is-valid');
                     }
-                    return true;
+                } finally {
+                    isUpdating = false;
                 }
             }
 
-            // Lock awal
-            lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
+            // Event listener untuk jumlah laporan
+            if (jumlahLaporanField) {
+                jumlahLaporanField.addEventListener('input', function (e) {
+                    // Biarkan user mengisi angka, jangan diubah
+                    updateKeteranganState();
+                });
+            }
 
-            if (jumlahLaporanField) jumlahLaporanField.addEventListener('input', prosesKeteranganBaru);
-            if (keteranganField) keteranganField.addEventListener('input', prosesKeteranganBaru);
+            // Event listener untuk keterangan (hanya untuk validasi, tidak mengubah nilai)
+            if (keteranganField) {
+                keteranganField.addEventListener('input', function () {
+                    if (isUpdating) return;
+
+                    const val = jumlahLaporanField.value;
+                    if (val && parseInt(val, 10) > 0 && !keteranganField.readOnly) {
+                        const total = hitungTotalKeterangan(keteranganField.value);
+                        const num = parseInt(val, 10);
+
+                        if (total !== num) {
+                            if (ketErrorSpan) ketErrorSpan.textContent = `⚠️ Total rincian ${total}, seharusnya ${num}`;
+                            if (ketHintSpan) {
+                                ketHintSpan.textContent = '❌ Jumlah rincian belum sesuai';
+                                ketHintSpan.className = 'form-text fw-semibold text-danger';
+                            }
+                            keteranganField.classList.add('is-invalid');
+                            keteranganField.classList.remove('is-valid');
+                        } else {
+                            if (ketErrorSpan) ketErrorSpan.textContent = '';
+                            if (ketHintSpan) {
+                                ketHintSpan.textContent = '✅ Jumlah rincian sesuai';
+                                ketHintSpan.className = 'form-text fw-semibold text-success';
+                            }
+                            keteranganField.classList.remove('is-invalid');
+                            keteranganField.classList.add('is-valid');
+                        }
+                    }
+                });
+            }
+
+            // Inisialisasi awal
+            updateKeteranganState();
 
             // Reset function untuk form reset
             window.resetKeteranganForm = function () {
-                lockKeterangan('', '🔔 Isi jumlah laporan terlebih dahulu');
-                if (keteranganField) keteranganField.classList.remove('is-valid', 'is-invalid');
-                if (ketErrorSpan) ketErrorSpan.textContent = '';
+                if (isUpdating) return;
+                isUpdating = true;
+                try {
+                    if (jumlahLaporanField) jumlahLaporanField.value = '';
+                    keteranganField.value = '';
+                    keteranganField.readOnly = true;
+                    keteranganField.style.backgroundColor = '#e9ecef';
+                    keteranganField.classList.remove('is-valid', 'is-invalid');
+                    if (ketHintSpan) {
+                        ketHintSpan.textContent = '🔔 Isi jumlah laporan terlebih dahulu';
+                        ketHintSpan.className = 'form-text fw-semibold text-secondary';
+                    }
+                    if (ketErrorSpan) ketErrorSpan.textContent = '';
+                } finally {
+                    isUpdating = false;
+                }
             };
 
             // ============================================
-            // 17. PETUNJUK FORM
+            // 16. TAMBAHKAN TOMBOL RESET DATA TERSIMPAN
+            // ============================================
+            addResetSavedDataButton();
+
+            // ============================================
+            // 17. CEK APAKAH ADA DATA TERSIMPAN SAAT PERTAMA KALI LOAD
+            // ============================================
+            // (Opsional: Tanyakan apakah ingin memuat data tersimpan saat pertama kali buka form)
+            const savedData = loadSavedFormData();
+            if (savedData && savedData.nomorSurat) {
+                // Tunda sebentar agar form selesai di-load
+                setTimeout(async () => {
+                    const result = await Swal.fire({
+                        title: '📋 Data Tersimpan Ditemukan',
+                        html: `
+                            <div class="text-start">
+                                <p>Anda memiliki data tersimpan dari pengiriman sebelumnya:</p>
+                                <div class="bg-light p-3 rounded mb-3" style="text-align: left;">
+                                    <table style="width: 100%; font-size: 13px;">
+                                        <tr><td width="120"><strong>Notaris:</strong></td><td>${escapeHtml(savedData.notarisNama?.substring(0, 50) || '-')}</td></tr>
+                                        <tr><td><strong>Nomor Surat:</strong></td><td>${escapeHtml(savedData.nomorSurat || '-')}</td></tr>
+                                        <tr><td><strong>Tgl Surat:</strong></td><td>${escapeHtml(savedData.tanggalSurat || '-')}</td></tr>
+                                        <tr><td><strong>Tgl Diterima:</strong></td><td>${escapeHtml(savedData.tanggalDiterima || '-')}</td></tr>
+                                        <tr><td><strong>Bulan Laporan:</strong></td><td>${escapeHtml(savedData.laporanBulanan || '-')}</td></tr>
+                                    </table>
+                                </div>
+                                <p class="mb-0">Apakah Anda ingin memuat data tersebut ke form?</p>
+                            </div>
+                        `,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="bi bi-check-lg"></i> Ya, Muat Data',
+                        cancelButtonText: '<i class="bi bi-x-lg"></i> Tidak',
+                        confirmButtonColor: '#0d6efd',
+                        cancelButtonColor: '#6c757d'
+                    });
+
+                    if (result.isConfirmed) {
+                        fillFormWithSavedData(savedData);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Dimuat!',
+                            text: 'Form telah diisi dengan data tersimpan.',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                    }
+                }, 1000);
+            }
+
+            // ============================================
+            // 18. PETUNJUK FORM
             // ============================================
             window.tampilkanPetunjukKeterangan = function () {
                 const existingModal = document.getElementById('modalPetunjukForm');
