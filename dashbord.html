@@ -2571,6 +2571,41 @@
             border-color: #bae6fd !important;
             color: #0284c7 !important;
         }
+
+        /* ============================================
+   HIGHLIGHT UNTUK DATA BARU MASUK
+   ============================================ */
+
+        /* Warna highlight cerah untuk baris data baru */
+        .row-highlight-new {
+            background: linear-gradient(90deg, #fff3e0, #ffe0b3) !important;
+            border-left: 4px solid #f59e0b !important;
+            transition: all 0.3s ease;
+        }
+
+        /* Efek kedipan highlight */
+        @keyframes highlightBlink {
+            0% {
+                background: linear-gradient(90deg, #fff3e0, #ffe0b3);
+                box-shadow: inset 0 0 0 0 #f59e0b;
+            }
+
+            50% {
+                background: linear-gradient(90deg, #ffe0b3, #ffcc80);
+                box-shadow: inset 0 0 0 2px #f59e0b;
+            }
+
+            100% {
+                background: linear-gradient(90deg, #fff3e0, #ffe0b3);
+                box-shadow: inset 0 0 0 0 #f59e0b;
+            }
+        }
+
+        /* Efek hover pada baris yang di-highlight */
+        .row-highlight-new:hover {
+            background: linear-gradient(90deg, #ffe0b3, #ffd699) !important;
+            transform: scale(1.01);
+        }
     </style>
 </head>
 
@@ -4972,6 +5007,221 @@
                     })
                     .catch(err => console.error(err));
             }, 5000);
+
+            // ============================================
+            // FITUR HIGHLIGHT DATA BARU MASUK
+            // ============================================
+
+            let lastDataHash = "";           // Untuk menyimpan hash data terakhir
+            let highlightTimeout = null;     // Timeout untuk menghilangkan highlight
+
+            // Fungsi untuk membuat hash dari data (lebih akurat dari JSON.stringify)
+            function createDataHash(data) {
+                // Ambil hanya field penting untuk perbandingan
+                const importantFields = data.map(row => ({
+                    id: row["id"],
+                    nama: row["nama_notaris_&_ppat"],
+                    bulan: row["laporan_bulanan"],
+                    tglTerima: row["tanggal_diterima"],
+                    jumlahLaporan: row["jumlah_laporan"]
+                }));
+                return JSON.stringify(importantFields);
+            }
+
+            // Fungsi untuk menandai baris yang baru masuk dengan warna cerah
+            function highlightNewRows(oldData, newData) {
+                if (!oldData || !newData) return;
+
+                // Buat Map dari data lama berdasarkan ID + Bulan (kombinasi unik)
+                const oldKeyMap = new Map();
+                oldData.forEach(row => {
+                    const key = `${row["id"]}|${row["laporan_bulanan"]}`;
+                    oldKeyMap.set(key, true);
+                });
+
+                // Cari data baru yang tidak ada di data lama
+                const newRowIndices = [];
+                newData.forEach((row, index) => {
+                    const key = `${row["id"]}|${row["laporan_bulanan"]}`;
+                    if (!oldKeyMap.has(key)) {
+                        newRowIndices.push(index);
+                    }
+                });
+
+                if (newRowIndices.length === 0) return;
+
+                // Hapus highlight sebelumnya jika ada
+                removeAllHighlights();
+
+                // Terapkan highlight ke baris-baris baru
+                const tbody = document.querySelector("#dataNotaris");
+                if (!tbody) return;
+
+                const rows = tbody.querySelectorAll("tr");
+                newRowIndices.forEach(idx => {
+                    if (rows[idx]) {
+                        // Tambahkan class highlight
+                        rows[idx].classList.add("row-highlight-new");
+
+                        // Tambahkan efek kedipan (blink) yang halus
+                        rows[idx].style.animation = "highlightBlink 1s ease-in-out 3";
+                    }
+                });
+
+                // Tampilkan notifikasi toast
+                showNewDataToast(newRowIndices.length);
+
+                // Set timeout untuk menghilangkan highlight setelah beberapa detik
+                if (highlightTimeout) clearTimeout(highlightTimeout);
+                highlightTimeout = setTimeout(() => {
+                    removeAllHighlights();
+                    highlightTimeout = null;
+                }, 10000); // Highlight hilang setelah 10 detik
+            }
+
+            // Fungsi untuk menghapus semua highlight
+            function removeAllHighlights() {
+                const highlightedRows = document.querySelectorAll(".row-highlight-new");
+                highlightedRows.forEach(row => {
+                    row.classList.remove("row-highlight-new");
+                    row.style.animation = "";
+                });
+            }
+
+            // Fungsi untuk menampilkan notifikasi toast data baru
+            function showNewDataToast(jumlah) {
+                // Gunakan Toast dari Swal jika ada
+                if (typeof Toast !== 'undefined') {
+                    Toast.fire({
+                        icon: 'info',
+                        title: `📊 ${jumlah} Data Baru Masuk!`,
+                        text: 'Data baru telah ditandai dengan warna cerah',
+                        timer: 4000,
+                        position: 'top-end'
+                    });
+                } else {
+                    // Fallback notifikasi sederhana
+                    const toast = document.createElement('div');
+                    toast.innerHTML = `
+            <div style="position:fixed; top:80px; right:20px; z-index:9999;
+                        background:linear-gradient(135deg,#0284c7,#38bdf8);
+                        color:white; padding:12px 20px; border-radius:12px;
+                        box-shadow:0 4px 15px rgba(0,0,0,0.2);
+                        animation:slideInRight 0.3s ease;">
+                <i class="bi bi-megaphone-fill me-2"></i>
+                <strong>${jumlah} Data Baru Masuk!</strong>
+                <div style="font-size:11px; margin-top:4px;">Ditandai dengan warna cerah</div>
+            </div>
+        `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 4000);
+                }
+            }
+
+            // MODIFIKASI FUNGSI loadDataSheet yang sudah ada
+            // Simpan fungsi loadDataSheet asli jika perlu, atau replace dengan yang baru
+
+            // Backup fungsi loadDataSheet asli jika ada
+            const originalLoadDataSheet = window.loadDataSheet || loadDataSheet;
+
+            // Override fungsi loadDataSheet dengan yang baru (dengan deteksi perubahan)
+            window.loadDataSheet = async function () {
+                showLoading("Memuat data...");
+
+                try {
+                    // Gunakan Promise.allSettled agar tidak gagal total
+                    const [dataResult, pensiunResult] = await Promise.allSettled([
+                        fetch(scriptURL).then(res => {
+                            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            return res.json();
+                        }).catch(err => {
+                            console.error("Gagal fetch data utama:", err);
+                            return [];
+                        }),
+                        getNotarisPensiun()
+                    ]);
+
+                    let data = [];
+                    if (dataResult.status === 'fulfilled' && Array.isArray(dataResult.value)) {
+                        data = dataResult.value;
+                    } else {
+                        console.error("Gagal ambil data utama:", dataResult.reason);
+                        data = [];
+                    }
+
+                    if (pensiunResult.status === 'fulfilled') {
+                        dataPensiunGlobal = Array.isArray(pensiunResult.value) ? pensiunResult.value : [];
+                    } else {
+                        console.error("Gagal ambil data pensiun:", pensiunResult.reason);
+                        dataPensiunGlobal = [];
+                    }
+
+                    hideLoading();
+
+                    if (!data || data.length === 0) {
+                        console.warn("Data kosong dari server");
+                        allData = [];
+                        currentFilteredData = [];
+                        renderTable([]);
+                        tampilkanRingkasanBulanan();
+                        isiDropdownTahunOtomatis();
+                        return;
+                    }
+
+                    // ============================================
+                    // DETEKSI DATA BARU DAN HIGHLIGHT
+                    // ============================================
+                    const newDataHash = createDataHash(data);
+
+                    // Cek apakah ada data baru (berbeda dari sebelumnya)
+                    if (lastDataHash && lastDataHash !== newDataHash && allData.length > 0) {
+                        console.log("🆕 Data baru terdeteksi!");
+                        // Highlight data baru
+                        highlightNewRows(allData, data);
+                    }
+
+                    // Update hash terakhir
+                    lastDataHash = newDataHash;
+
+                    // Proses data seperti biasa
+                    lastData = JSON.stringify(data);
+                    allData = sortDataByMonth(data);
+                    currentFilteredData = allData;
+
+                    // Terapkan filter jika ada
+                    if (currentFilterStatus === 'active') {
+                        const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
+                        currentFilteredData = allData.filter(row => !idPensiun.has(row["id"]));
+                        renderTable(currentFilteredData);
+                    } else if (currentFilterStatus === 'pensiun') {
+                        const idPensiun = new Set(dataPensiunGlobal.map(p => p && p.id));
+                        currentFilteredData = allData.filter(row => idPensiun.has(row["id"]));
+                        renderTable(currentFilteredData);
+                    } else {
+                        renderTable(allData);
+                    }
+
+                    tampilkanRingkasanBulanan();
+                    updateJumlahNotarisAktif();
+                    isiDropdownTahunOtomatis();
+
+                    if (document.getElementById('selectNotarisPensiun')) {
+                        isiDropdownNotaris();
+                    }
+
+                    const cardPensiun = document.getElementById('cardPensiun');
+                    if (cardPensiun && cardPensiun.style.display === 'block') {
+                        await tampilkanTablePensiun();
+                    }
+
+                } catch (error) {
+                    hideLoading();
+                    console.error("Error loadDataSheet:", error);
+                    showError("Error", "Gagal memuat data: " + (error.message || "Coba refresh halaman"));
+                    renderTable([]);
+                    isiDropdownTahunOtomatis();
+                }
+            };
 
             // ============================================
             // SEARCH (KODE ASLI ANDA)
