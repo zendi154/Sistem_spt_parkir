@@ -584,6 +584,197 @@
             opacity: 0.5;
             pointer-events: none;
         }
+
+        /* ==================== CSS TAMBAHAN UNTUK SK PENSIUN ==================== */
+        .sk-panel {
+            margin-top: 30px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 25px;
+        }
+
+        .sk-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sk-tab {
+            padding: 10px 24px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .sk-tab.active {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+        }
+
+        .sk-tab:hover:not(.active) {
+            background: #f1f5f9;
+            color: #1e3c72;
+        }
+
+        .sk-content {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .sk-content.active {
+            display: block;
+        }
+
+        /* Form Upload SK */
+        .sk-form-group {
+            margin-bottom: 20px;
+        }
+
+        .sk-form-label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sk-file-upload {
+            border: 2px dashed #e2e8f0;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sk-file-upload:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .sk-file-upload i {
+            font-size: 40px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .sk-file-name {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #3b82f6;
+        }
+
+        /* Tabel SK Pensiun */
+        .sk-table-wrapper {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .sk-table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .sk-table th {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .sk-table td {
+            padding: 10px;
+            border-bottom: 1px solid #edf2f7;
+            text-align: center;
+        }
+
+        .sk-table tr:hover {
+            background: #f0f9ff;
+        }
+
+        .btn-sk-download {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-sk-view {
+            background: linear-gradient(135deg, #3498db, #5dade2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .sk-search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sk-search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .sk-search-box select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .cek-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .cek-result.valid {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .cek-result.invalid {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            display: block;
+        }
+
+        .sk-badge {
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #d4edda;
+            color: #155724;
+        }
     </style>
 </head>
 
@@ -750,6 +941,148 @@
         </div>
     </div>
 
+    <!-- ==================== SECTION SK PENSIUN ==================== -->
+    <div class="action-container sk-panel">
+        <div class="section-title">
+            <i class="bi bi-file-text-fill"></i>
+            <span>SK PENSIUN NOTARIS/PPAT</span>
+            <div class="title-line"></div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="sk-tabs">
+            <button class="sk-tab active" onclick="showSKTab('upload')">
+                <i class="bi bi-cloud-upload"></i> Upload SK Pensiun
+            </button>
+            <button class="sk-tab" onclick="showSKTab('data')">
+                <i class="bi bi-table"></i> Data SK Masuk
+            </button>
+            <button class="sk-tab" onclick="showSKTab('cek')">
+                <i class="bi bi-search-heart"></i> Cek Validitas SK
+            </button>
+        </div>
+
+        <!-- TAB 1: UPLOAD SK -->
+        <div id="skTabUpload" class="sk-content active">
+            <div class="info-box" style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle-fill"></i>
+                <strong>Informasi:</strong> Upload SK Pensiun Anda dalam format PDF (maksimal 5MB).
+                Setelah upload, Anda akan menerima email konfirmasi.
+            </div>
+
+            <form id="skUploadForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-person-badge"></i> ID Notaris/PPAT *</label>
+                            <input type="text" id="skIdNotaris" class="form-control" placeholder="Masukkan ID Notaris"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-person-fill"></i> Nama Lengkap *</label>
+                            <input type="text" id="skNamaNotaris" class="form-control"
+                                placeholder="Masukkan Nama Lengkap" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-envelope-fill"></i> Email Aktif *</label>
+                            <input type="email" id="skEmailNotaris" class="form-control" placeholder="email@example.com"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-calendar-fill"></i> Tanggal Pensiun *</label>
+                            <input type="date" id="skTanggalPensiun" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-geo-alt-fill"></i> Alamat Kantor</label>
+                            <textarea id="skAlamatNotaris" class="form-control" rows="2"
+                                placeholder="Alamat lengkap kantor"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="sk-form-group">
+                            <label class="sk-form-label"><i class="bi bi-file-pdf-fill"></i> File SK Pensiun (PDF)
+                                *</label>
+                            <div class="sk-file-upload" onclick="document.getElementById('skFileInput').click()">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>Klik untuk upload file PDF</p>
+                                <small>Maksimal 5MB</small>
+                            </div>
+                            <input type="file" id="skFileInput" accept=".pdf" style="display: none;"
+                                onchange="updateSKFileName()">
+                            <div id="skFileName" class="sk-file-name"></div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="skSubmitBtn" style="margin-top: 10px;">
+                    <i class="bi bi-send-fill"></i> Kirim SK Pensiun
+                </button>
+            </form>
+        </div>
+
+        <!-- TAB 2: DATA SK MASUK -->
+        <div id="skTabData" class="sk-content">
+            <div class="sk-search-box">
+                <input type="text" id="skSearchInput" placeholder="Cari Nama / ID / Nomor SK..."
+                    onkeyup="filterSKTable()">
+                <select id="skStatusFilter" onchange="filterSKTable()">
+                    <option value="">Semua Status</option>
+                    <option value="TERKIRIM">TERKIRIM</option>
+                    <option value="TERVALIDASI">TERVALIDASI</option>
+                </select>
+                <button class="btn-action btn-primary-custom" onclick="loadSKData()" style="padding: 8px 20px;">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                </button>
+            </div>
+            <div class="sk-table-wrapper">
+                <table class="sk-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>ID Notaris</th>
+                            <th>Nama</th>
+                            <th>Nomor SK</th>
+                            <th>Tgl Pensiun</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="skTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:40px;">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info-bar mt-2">
+                <span><i class="bi bi-database"></i> Total: <span id="skTotalCount">0</span> SK</span>
+            </div>
+        </div>
+
+        <!-- TAB 3: CEK VALIDITAS SK -->
+        <div id="skTabCek" class="sk-content">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" id="skCekNomor" class="form-control"
+                        placeholder="Masukkan Nomor SK (contoh: SK/PNS/ABC/001/2024)">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn-action btn-primary-custom w-100" onclick="cekValiditasSK()">
+                        <i class="bi bi-check-circle"></i> Cek Validitas
+                    </button>
+                </div>
+            </div>
+            <div id="skCekResult" class="cek-result"></div>
+        </div>
+    </div>
+
     <script>
         // ============================================
         // FUNGSI PEMBATASAN AKSES (TAMBAHKAN INI)
@@ -888,7 +1221,7 @@
         }
 
         // FUNGSI DATA
-        const BASE_URL = "https://script.google.com/macros/s/AKfycbyfftliJ7XuDLMyGYzq7Z0WhZl78iVR_unt_uN2GFkhNPGBrvRf0NHP-rcMzdPFrGlj/exec";
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbw4_19HoYHRMi-i6hH-GMM3XyUFSYeyYtmde-qJ_BGRvdAIR-XRc1t9SV3-9_rb1LzG/exec";
 
         let activeLoading = false;
 
@@ -1540,6 +1873,229 @@
                     printWindow.close();
                 };
             };
+        }
+
+        // ==================== SK PENSIUN FUNCTIONS ====================
+        let skSelectedFile = null;
+        let allSKData = [];
+
+        // Update nama file yang dipilih
+        function updateSKFileName() {
+            const fileInput = document.getElementById('skFileInput');
+            const fileNameDiv = document.getElementById('skFileName');
+            if (fileInput.files.length > 0) {
+                skSelectedFile = fileInput.files[0];
+                fileNameDiv.innerHTML = `<i class="bi bi-check-circle-fill" style="color: green;"></i> ${skSelectedFile.name} (${(skSelectedFile.size / 1024).toFixed(2)} KB)`;
+            } else {
+                skSelectedFile = null;
+                fileNameDiv.innerHTML = '';
+            }
+        }
+
+        // Show tab
+        function showSKTab(tab) {
+            document.querySelectorAll('.sk-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.sk-content').forEach(content => content.classList.remove('active'));
+
+            if (tab === 'upload') {
+                document.querySelector('.sk-tab:first-child').classList.add('active');
+                document.getElementById('skTabUpload').classList.add('active');
+            } else if (tab === 'data') {
+                document.querySelectorAll('.sk-tab')[1].classList.add('active');
+                document.getElementById('skTabData').classList.add('active');
+                loadSKData();
+            } else if (tab === 'cek') {
+                document.querySelectorAll('.sk-tab')[2].classList.add('active');
+                document.getElementById('skTabCek').classList.add('active');
+            }
+        }
+
+        // Upload SK Pensiun
+        document.getElementById('skUploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!skSelectedFile) {
+                Swal.fire('Error', 'Silakan pilih file SK Pensiun (PDF)', 'error');
+                return;
+            }
+
+            if (skSelectedFile.type !== 'application/pdf') {
+                Swal.fire('Error', 'File harus berformat PDF', 'error');
+                return;
+            }
+
+            if (skSelectedFile.size > 5 * 1024 * 1024) {
+                Swal.fire('Error', 'File maksimal 5MB', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('skSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Mengirim...';
+
+            try {
+                const reader = new FileReader();
+
+                reader.onload = async function (evt) {
+                    const fileBase64 = evt.target.result.split(',')[1];
+
+                    const data = {
+                        idNotaris: document.getElementById('skIdNotaris').value,
+                        namaNotaris: document.getElementById('skNamaNotaris').value,
+                        emailNotaris: document.getElementById('skEmailNotaris').value,
+                        alamatNotaris: document.getElementById('skAlamatNotaris').value,
+                        tanggalPensiun: document.getElementById('skTanggalPensiun').value
+                    };
+
+                    const response = await fetch(`${BASE_URL}?action=uploadSK`, {
+                        method: 'POST',
+                        body: JSON.stringify({ data: data, file: fileBase64 }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${result.nomorSK}</strong>`,
+                            icon: 'success'
+                        }).then(() => {
+                            document.getElementById('skUploadForm').reset();
+                            document.getElementById('skFileName').innerHTML = '';
+                            skSelectedFile = null;
+                            loadSKData();
+                        });
+                    } else {
+                        Swal.fire('Gagal!', result.message, 'error');
+                    }
+                };
+
+                reader.readAsDataURL(skSelectedFile);
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Terjadi kesalahan saat mengirim data', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+            }
+        });
+
+        // Load data SK dari server
+        async function loadSKData() {
+            const tbody = document.getElementById('skTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner-border text-primary"></div> Memuat...</td></tr>';
+
+            try {
+                const response = await fetch(`${BASE_URL}?action=getAllSK&t=${Date.now()}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Error: ${data.error}</td></tr>`;
+                    return;
+                }
+
+                allSKData = data;
+                renderSKTable(allSKData);
+
+            } catch (error) {
+                console.error('Error loading SK:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Gagal memuat data</td></tr>';
+            }
+        }
+
+        // Render tabel SK
+        function renderSKTable(data) {
+            const searchValue = document.getElementById('skSearchInput')?.value.toLowerCase() || '';
+            const statusValue = document.getElementById('skStatusFilter')?.value || '';
+
+            let filteredData = data.filter(item => {
+                const matchSearch = !searchValue ||
+                    (item.nama && item.nama.toLowerCase().includes(searchValue)) ||
+                    (item.id && item.id.toLowerCase().includes(searchValue)) ||
+                    (item.nomorSK && item.nomorSK.toLowerCase().includes(searchValue));
+                const matchStatus = !statusValue || item.status === statusValue;
+                return matchSearch && matchStatus;
+            });
+
+            const tbody = document.getElementById('skTableBody');
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Tidak ada data SK Pensiun</td></tr>';
+                document.getElementById('skTotalCount').innerText = '0';
+                return;
+            }
+
+            let html = '';
+            filteredData.forEach((item, idx) => {
+                html += `<tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td>${item.id || '-'}</td>
+                <td style="text-align:left;">${item.nama || '-'}</td>
+                <td>${item.nomorSK || '-'}</td>
+                <td>${item.tanggalPensiun || '-'}</td>
+                <td><span class="sk-badge">${item.status || 'TERKIRIM'}</span></td>
+                <td>
+                    ${item.fileUrl ? `<button class="btn-sk-download" onclick="window.open('${item.fileUrl}', '_blank')"><i class="bi bi-download"></i></button>` : ''}
+                    ${item.nomorSK ? `<button class="btn-sk-view" onclick="viewSKPDF('${item.nomorSK}')"><i class="bi bi-eye"></i></button>` : ''}
+                </td>
+            </tr>`;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('skTotalCount').innerText = filteredData.length;
+        }
+
+        function filterSKTable() {
+            renderSKTable(allSKData);
+        }
+
+        // Cek validitas SK
+        async function cekValiditasSK() {
+            const nomorSK = document.getElementById('skCekNomor').value.trim();
+            if (!nomorSK) {
+                Swal.fire('Error', 'Masukkan nomor SK terlebih dahulu', 'error');
+                return;
+            }
+
+            const resultDiv = document.getElementById('skCekResult');
+            resultDiv.innerHTML = '<div class="text-center"><i class="bi bi-hourglass-split"></i> Memeriksa...</div>';
+            resultDiv.className = 'cek-result';
+
+            try {
+                const response = await fetch(`${BASE_URL}?action=cekSK&nomor=${encodeURIComponent(nomorSK)}&t=${Date.now()}`);
+                const data = await response.json();
+
+                if (data && data.nomorSK) {
+                    resultDiv.innerHTML = `
+                    <i class="bi bi-check-circle-fill" style="color: #28a745; font-size: 20px;"></i>
+                    <strong>SK TERDAFTAR (VALID)</strong><br>
+                    <hr>
+                    <strong>Nomor SK:</strong> ${data.nomorSK}<br>
+                    <strong>Nama Notaris:</strong> ${data.nama}<br>
+                    <strong>ID Notaris:</strong> ${data.id}<br>
+                    <strong>Tanggal Pensiun:</strong> ${data.tanggalPensiun}<br>
+                    <strong>Status:</strong> <span class="badge bg-success">${data.status}</span><br>
+                    <a href="${data.fileUrl}" target="_blank" class="btn btn-sm btn-success mt-2">Download SK</a>
+                `;
+                    resultDiv.className = 'cek-result valid';
+                } else {
+                    resultDiv.innerHTML = `
+                    <i class="bi bi-x-circle-fill" style="color: #dc3545; font-size: 20px;"></i>
+                    <strong>SK TIDAK DITEMUKAN</strong><br>
+                    Nomor SK <strong>${nomorSK}</strong> tidak terdaftar dalam sistem.
+                `;
+                    resultDiv.className = 'cek-result invalid';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+                resultDiv.className = 'cek-result invalid';
+            }
+        }
+
+        function viewSKPDF(nomorSK) {
+            window.open(`${BASE_URL}?action=skpdf&id=${encodeURIComponent(nomorSK)}`, '_blank');
         }
     </script>
 
