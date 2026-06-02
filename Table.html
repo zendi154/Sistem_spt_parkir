@@ -1223,7 +1223,7 @@
         // ============================================
         // FUNGSI DATA 
         // ============================================
-        const BASE_URL = "https://script.google.com/macros/s/AKfycbwjWxVIavu_dASbQ7MpNYAMeKTGr6AEh76mi9KYneGcxxF3cacisfQD-WFDws6GQxry/exec";
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbwEWrks8KHDJ_wmU1CCT9ERZP1DfZvE3yW7d20rJ6Zw0KXcFkoaTZsU6WqbT4Vwd0u0/exec";
 
         let activeLoading = false;
 
@@ -1912,7 +1912,7 @@
             }
         }
 
-        // Upload SK Pensiun - VERSI dengan google.script.run (PASTI BERHASIL)
+        // Upload SK Pensiun - VERSI JSONP (SAMA SEPERTI FUNGSI LAIN)
         document.getElementById('skUploadForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -1948,34 +1948,62 @@
                     tanggalPensiun: document.getElementById('skTanggalPensiun').value
                 };
 
-                // Gunakan google.script.run (khusus untuk Web App yang sama)
-                google.script.run
-                    .withSuccessHandler(function (result) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+                // Gunakan JSONP seperti fungsi lain
+                const callbackName = 'uploadCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-                        if (result.success) {
-                            Swal.fire({
-                                title: 'Berhasil!',
-                                html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${result.nomorSK}</strong>`,
-                                icon: 'success'
-                            }).then(() => {
-                                document.getElementById('skUploadForm').reset();
-                                document.getElementById('skFileName').innerHTML = '';
-                                skSelectedFile = null;
-                                loadSKData(); // Refresh tabel SK
-                                showSKTab('data');
-                            });
-                        } else {
-                            Swal.fire('Gagal!', result.message, 'error');
-                        }
-                    })
-                    .withFailureHandler(function (error) {
+                let url = BASE_URL + "?";
+                url += "action=uploadSK&";
+                url += "data=" + encodeURIComponent(JSON.stringify(data)) + "&";
+                url += "file=" + encodeURIComponent(fileBase64) + "&";
+                url += "callback=" + callbackName;
+
+                console.log("Upload URL:", url);
+
+                const timeoutId = setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
-                        Swal.fire('Error', 'Gagal mengupload: ' + error.message, 'error');
-                    })
-                    .uploadSKPensiun(data, fileBase64);  // Panggil fungsi di Apps Script
+                        Swal.fire('Error', 'Request timeout', 'error');
+                    }
+                }, 60000); // 60 detik timeout karena file base64 besar
+
+                window[callbackName] = function (response) {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+
+                    console.log("Upload response:", response);
+
+                    if (response && response.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${response.nomorSK}</strong>`,
+                            icon: 'success'
+                        }).then(() => {
+                            document.getElementById('skUploadForm').reset();
+                            document.getElementById('skFileName').innerHTML = '';
+                            skSelectedFile = null;
+                            loadSKData();
+                            showSKTab('data');
+                        });
+                    } else {
+                        Swal.fire('Gagal!', response?.message || 'Terjadi kesalahan', 'error');
+                    }
+                };
+
+                const script = document.createElement('script');
+                script.src = url;
+                script.onerror = function () {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+                    Swal.fire('Error', 'Network error', 'error');
+                };
+                document.body.appendChild(script);
             };
 
             reader.readAsDataURL(skSelectedFile);
