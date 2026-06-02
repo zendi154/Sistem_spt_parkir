@@ -1912,8 +1912,8 @@
             }
         }
 
-        // Upload SK Pensiun - VERSI FETCH POST (LEBIH STABEL UNTUK FILE BESAR)
-        document.getElementById('skUploadForm').addEventListener('submit', async (e) => {
+        // Upload SK Pensiun - VERSI JSONP (SAMA SEPERTI FUNGSI LAIN)
+        document.getElementById('skUploadForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
             if (!skSelectedFile) {
@@ -1935,39 +1935,52 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Mengirim...';
 
-            try {
-                const reader = new FileReader();
+            const reader = new FileReader();
 
-                reader.onload = async function (evt) {
-                    const fileBase64 = evt.target.result.split(',')[1];
+            reader.onload = function (evt) {
+                const fileBase64 = evt.target.result.split(',')[1];
 
-                    const data = {
-                        idNotaris: document.getElementById('skIdNotaris').value,
-                        namaNotaris: document.getElementById('skNamaNotaris').value,
-                        emailNotaris: document.getElementById('skEmailNotaris').value,
-                        alamatNotaris: document.getElementById('skAlamatNotaris').value,
-                        tanggalPensiun: document.getElementById('skTanggalPensiun').value
-                    };
+                const data = {
+                    idNotaris: document.getElementById('skIdNotaris').value,
+                    namaNotaris: document.getElementById('skNamaNotaris').value,
+                    emailNotaris: document.getElementById('skEmailNotaris').value,
+                    alamatNotaris: document.getElementById('skAlamatNotaris').value,
+                    tanggalPensiun: document.getElementById('skTanggalPensiun').value
+                };
 
-                    // Gunakan POST dengan fetch (bukan JSONP/GET)
-                    const response = await fetch(BASE_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            action: 'uploadSK',
-                            data: data,
-                            file: fileBase64
-                        })
-                    });
+                // Gunakan JSONP seperti fungsi lain
+                const callbackName = 'uploadCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-                    const result = await response.json();
+                let url = BASE_URL + "?";
+                url += "action=uploadSK&";
+                url += "data=" + encodeURIComponent(JSON.stringify(data)) + "&";
+                url += "file=" + encodeURIComponent(fileBase64) + "&";
+                url += "callback=" + callbackName;
 
-                    if (result.success) {
+                console.log("Upload URL:", url);
+
+                const timeoutId = setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+                        Swal.fire('Error', 'Request timeout', 'error');
+                    }
+                }, 60000); // 60 detik timeout karena file base64 besar
+
+                window[callbackName] = function (response) {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+
+                    console.log("Upload response:", response);
+
+                    if (response && response.success) {
                         Swal.fire({
                             title: 'Berhasil!',
-                            html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${result.nomorSK}</strong>`,
+                            html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${response.nomorSK}</strong>`,
                             icon: 'success'
                         }).then(() => {
                             document.getElementById('skUploadForm').reset();
@@ -1977,19 +1990,23 @@
                             showSKTab('data');
                         });
                     } else {
-                        Swal.fire('Gagal!', result.message || 'Terjadi kesalahan', 'error');
+                        Swal.fire('Gagal!', response?.message || 'Terjadi kesalahan', 'error');
                     }
                 };
 
-                reader.readAsDataURL(skSelectedFile);
+                const script = document.createElement('script');
+                script.src = url;
+                script.onerror = function () {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+                    Swal.fire('Error', 'Network error', 'error');
+                };
+                document.body.appendChild(script);
+            };
 
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Terjadi kesalahan saat mengirim data: ' + error.message, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
-            }
+            reader.readAsDataURL(skSelectedFile);
         });
 
         // Load data SK dari server
