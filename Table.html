@@ -1220,8 +1220,10 @@
             });
         }
 
-        // FUNGSI DATA
-        const BASE_URL = "https://script.google.com/macros/s/AKfycbw4_19HoYHRMi-i6hH-GMM3XyUFSYeyYtmde-qJ_BGRvdAIR-XRc1t9SV3-9_rb1LzG/exec";
+        // ============================================
+        // FUNGSI DATA 
+        // ============================================
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbwjWxVIavu_dASbQ7MpNYAMeKTGr6AEh76mi9KYneGcxxF3cacisfQD-WFDws6GQxry/exec";
 
         let activeLoading = false;
 
@@ -1910,8 +1912,8 @@
             }
         }
 
-        // Upload SK Pensiun
-        document.getElementById('skUploadForm').addEventListener('submit', async (e) => {
+        // Upload SK Pensiun - VERSI dengan google.script.run (PASTI BERHASIL)
+        document.getElementById('skUploadForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
             if (!skSelectedFile) {
@@ -1933,53 +1935,50 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Mengirim...';
 
-            try {
-                const reader = new FileReader();
+            const reader = new FileReader();
 
-                reader.onload = async function (evt) {
-                    const fileBase64 = evt.target.result.split(',')[1];
+            reader.onload = function (evt) {
+                const fileBase64 = evt.target.result.split(',')[1];
 
-                    const data = {
-                        idNotaris: document.getElementById('skIdNotaris').value,
-                        namaNotaris: document.getElementById('skNamaNotaris').value,
-                        emailNotaris: document.getElementById('skEmailNotaris').value,
-                        alamatNotaris: document.getElementById('skAlamatNotaris').value,
-                        tanggalPensiun: document.getElementById('skTanggalPensiun').value
-                    };
-
-                    const response = await fetch(`${BASE_URL}?action=uploadSK`, {
-                        method: 'POST',
-                        body: JSON.stringify({ data: data, file: fileBase64 }),
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${result.nomorSK}</strong>`,
-                            icon: 'success'
-                        }).then(() => {
-                            document.getElementById('skUploadForm').reset();
-                            document.getElementById('skFileName').innerHTML = '';
-                            skSelectedFile = null;
-                            loadSKData();
-                        });
-                    } else {
-                        Swal.fire('Gagal!', result.message, 'error');
-                    }
+                const data = {
+                    idNotaris: document.getElementById('skIdNotaris').value,
+                    namaNotaris: document.getElementById('skNamaNotaris').value,
+                    emailNotaris: document.getElementById('skEmailNotaris').value,
+                    alamatNotaris: document.getElementById('skAlamatNotaris').value,
+                    tanggalPensiun: document.getElementById('skTanggalPensiun').value
                 };
 
-                reader.readAsDataURL(skSelectedFile);
+                // Gunakan google.script.run (khusus untuk Web App yang sama)
+                google.script.run
+                    .withSuccessHandler(function (result) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
 
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Terjadi kesalahan saat mengirim data', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
-            }
+                        if (result.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                html: `SK Pensiun berhasil diupload<br>Nomor SK: <strong>${result.nomorSK}</strong>`,
+                                icon: 'success'
+                            }).then(() => {
+                                document.getElementById('skUploadForm').reset();
+                                document.getElementById('skFileName').innerHTML = '';
+                                skSelectedFile = null;
+                                loadSKData(); // Refresh tabel SK
+                                showSKTab('data');
+                            });
+                        } else {
+                            Swal.fire('Gagal!', result.message, 'error');
+                        }
+                    })
+                    .withFailureHandler(function (error) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Kirim SK Pensiun';
+                        Swal.fire('Error', 'Gagal mengupload: ' + error.message, 'error');
+                    })
+                    .uploadSKPensiun(data, fileBase64);  // Panggil fungsi di Apps Script
+            };
+
+            reader.readAsDataURL(skSelectedFile);
         });
 
         // Load data SK dari server
