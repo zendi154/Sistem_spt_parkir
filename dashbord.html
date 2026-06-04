@@ -8867,6 +8867,7 @@
                                     <select id="selectNotarisTransaksi" class="form-select">
                                         <option value="">-- Pilih Notaris --</option>
                                     </select>
+                                    <small class="text-muted" id="infoJumlahNotaris"></small>
                                 </div>
                                 
                                 <!-- PILIH JENIS PERIODE -->
@@ -8902,13 +8903,13 @@
                                             <div class="col-md-6">
                                                 <label class="form-label small">Dari Bulan</label>
                                                 <select id="bulanDari" class="form-select">
-                                                    <option value="">-- Pilih Bulan --</option>
+                                                    <option value="">-- SEMUA BULAN --</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label small">Sampai Bulan</label>
                                                 <select id="bulanSampai" class="form-select">
-                                                    <option value="">-- Pilih Bulan --</option>
+                                                    <option value="">-- SEMUA BULAN --</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -8939,14 +8940,66 @@
 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                // Isi dropdown notaris
+                // ============================================
+                // ISI DROPDOWN NOTARIS - HANYA YANG PUNYA TRANSAKSI
+                // ============================================
                 const selectNotaris = document.getElementById('selectNotarisTransaksi');
                 if (selectNotaris) {
                     const semuaNotaris = getAllNotarisFromDropdown();
+                    const notarisDenganTransaksi = [];
+
+                    // Loop untuk mencari notaris yang memiliki data transaksi
+                    for (const notaris of semuaNotaris) {
+                        let punyaTransaksi = false;
+
+                        // Cek di semua data apakah notaris ini memiliki transaksi
+                        for (const row of allData) {
+                            if (row["nama_notaris_&_ppat"] === notaris.nama) {
+                                // Cek kolom data_transaksi
+                                if (row["data_transaksi"] && row["data_transaksi"].trim() !== "") {
+                                    try {
+                                        let transaksi = JSON.parse(row["data_transaksi"]);
+                                        if (Array.isArray(transaksi) && transaksi.length > 0) {
+                                            punyaTransaksi = true;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        // Abaikan error parsing
+                                    }
+                                }
+                            }
+                        }
+
+                        if (punyaTransaksi) {
+                            notarisDenganTransaksi.push(notaris);
+                        }
+                    }
+
+                    // Isi dropdown hanya dengan notaris yang punya transaksi
                     selectNotaris.innerHTML = '<option value="">-- Pilih Notaris --</option>';
-                    semuaNotaris.forEach(notaris => {
+                    notarisDenganTransaksi.forEach(notaris => {
                         selectNotaris.innerHTML += `<option value="${notaris.nama.replace(/"/g, '&quot;')}">${notaris.nama}</option>`;
                     });
+
+                    // Tampilkan info jumlah notaris
+                    const infoJumlahNotaris = document.getElementById('infoJumlahNotaris');
+                    if (infoJumlahNotaris) {
+                        if (notarisDenganTransaksi.length === 0) {
+                            infoJumlahNotaris.innerHTML = '⚠️ Tidak ada notaris yang memiliki data transaksi';
+                            infoJumlahNotaris.style.color = '#dc3545';
+                        } else {
+                            infoJumlahNotaris.innerHTML = `📋 ${notarisDenganTransaksi.length} notaris memiliki data transaksi (dari ${semuaNotaris.length} total)`;
+                            infoJumlahNotaris.style.color = '#6c757d';
+                        }
+                    }
+
+                    console.log(`✅ Dropdown notaris: ${notarisDenganTransaksi.length} dari ${semuaNotaris.length} notaris (hanya yang punya transaksi)`);
+
+                    // Auto pilih jika hanya 1 notaris yang punya transaksi
+                    if (notarisDenganTransaksi.length === 1) {
+                        selectNotaris.value = notarisDenganTransaksi[0].nama;
+                        console.log(`✅ Auto pilih notaris: ${notarisDenganTransaksi[0].nama}`);
+                    }
                 }
 
                 // Isi dropdown bulan
