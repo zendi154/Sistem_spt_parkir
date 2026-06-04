@@ -2606,6 +2606,37 @@
             background: linear-gradient(90deg, #ffe0b3, #ffd699) !important;
             transform: scale(1.01);
         }
+
+        /* Fix untuk modal print transaksi */
+        #modalPrintTransaksi {
+            z-index: 99999 !important;
+        }
+
+        #modalPrintTransaksi .modal-backdrop {
+            z-index: 99998 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
+        #modalPrintTransaksi .modal-dialog {
+            z-index: 99999 !important;
+            pointer-events: auto !important;
+        }
+
+        #modalPrintTransaksi .form-select {
+            pointer-events: auto !important;
+            background-color: white !important;
+        }
+
+        /* Pastikan backdrop tidak menghalangi */
+        .modal-backdrop.show {
+            opacity: 0.5 !important;
+        }
+
+        /* Reset body saat modal terbuka */
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
     </style>
 </head>
 
@@ -8729,95 +8760,179 @@
             }
         }
 
-        // Buka modal print transaksi
-        function bukaModalPrintTransaksi() {
-            // Hapus modal lama jika ada
-            const existingModal = document.getElementById('modalPrintTransaksi');
-            if (existingModal) {
-                const modal = bootstrap.Modal.getInstance(existingModal);
-                if (modal) {
-                    modal.hide();
-                }
-                existingModal.remove();
+        // ============================================
+        // FUNGSI FORCE CLOSE SEMUA MODAL
+        // ============================================
+        function forceCloseAllModals() {
+            console.log("🔧 Force close all modals...");
+
+            // Tutup SweetAlert terlebih dahulu
+            if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                Swal.close();
             }
 
-            // Buat modal baru
-            const modalHTML = `
-            <div class="modal fade" id="modalPrintTransaksi" tabindex="-1" data-bs-backdrop="static" style="z-index: 9999;">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content" style="border-radius: 20px;">
-                        <div class="modal-header" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: white;">
-                            <h5 class="modal-title">
-                                <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data Transaksi
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body" style="background: white;">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
-                                        <select id="selectNotarisTransaksi" class="form-select">
-                                            <option value="">-- Pilih Notaris --</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Pilih Bulan Laporan</label>
-                                        <select id="selectBulanTransaksi" class="form-select">
-                                            <option value="">-- Pilih Bulan --</option>
-                                        </select>
-                                    </div>
+            // Hapus semua backdrop Bootstrap dengan paksa
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => {
+                backdrop.remove();
+                console.log("🗑️ Backdrop dihapus");
+            });
+
+            // Tutup semua modal yang terbuka
+            const modals = document.querySelectorAll('.modal.show, .modal.fade');
+            modals.forEach(modal => {
+                try {
+                    const instance = bootstrap.Modal.getInstance(modal);
+                    if (instance) {
+                        instance.hide();
+                    }
+                } catch (e) { }
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            });
+
+            // Reset body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Hapus style inline yang mungkin tertinggal
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+
+            // Hapus juga backdrop dari modal spesifik
+            const specificBackdrops = document.querySelectorAll('#modalPrintTransaksi + .modal-backdrop');
+            specificBackdrops.forEach(backdrop => backdrop.remove());
+
+            console.log("✅ Force close selesai");
+        }
+
+        function bukaModalPrintTransaksi() {
+            // ============================================
+            // TAMBAHKAN INI - TUTUP SEMUA MODAL TERLEBIH DAHULU
+            // ============================================
+            forceCloseAllModals();
+
+            // Beri sedikit delay agar DOM benar-benar bersih
+            setTimeout(() => {
+                // Hapus modal lama jika ada
+                const existingModal = document.getElementById('modalPrintTransaksi');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Buat modal baru
+                const modalHTML = `
+        <div class="modal fade" id="modalPrintTransaksi" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 99999 !important;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="border-radius: 20px;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: white;">
+                        <h5 class="modal-title">
+                            <i class="bi bi-file-text-fill me-2"></i> Cetak / Export Data Transaksi
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="background: white;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Pilih Notaris / PPAT</label>
+                                    <select id="selectNotarisTransaksi" class="form-select">
+                                        <option value="">-- Pilih Notaris --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Pilih Bulan Laporan</label>
+                                    <select id="selectBulanTransaksi" class="form-select">
+                                        <option value="">-- Pilih Bulan --</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer" style="background: #f8f9fa;">
-                            <button type="button" class="btn btn-success" onclick="exportDataTransaksiToExcel()">
-                                <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="printDataTransaksi()">
-                                <i class="bi bi-printer-fill"></i> Cetak PDF
-                            </button>
-                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: #f8f9fa;">
+                        <button type="button" class="btn btn-success" onclick="exportDataTransaksiToExcel()">
+                            <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="printDataTransaksi()">
+                            <i class="bi bi-printer-fill"></i> Cetak PDF
+                        </button>
                     </div>
                 </div>
             </div>
-            `;
+        </div>
+        `;
 
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-            // Isi dropdown notaris
-            const selectNotaris = document.getElementById('selectNotarisTransaksi');
-            const semuaNotaris = getAllNotarisFromDropdown();
-            selectNotaris.innerHTML = '<option value="">-- Pilih Notaris --</option>';
-            semuaNotaris.forEach(notaris => {
-                selectNotaris.innerHTML += `<option value="${notaris.nama}">${notaris.nama}</option>`;
-            });
+                // Isi dropdown notaris
+                const selectNotaris = document.getElementById('selectNotarisTransaksi');
+                if (selectNotaris) {
+                    const semuaNotaris = getAllNotarisFromDropdown();
+                    selectNotaris.innerHTML = '<option value="">-- Pilih Notaris --</option>';
+                    semuaNotaris.forEach(notaris => {
+                        selectNotaris.innerHTML += `<option value="${notaris.nama.replace(/"/g, '&quot;')}">${notaris.nama}</option>`;
+                    });
+                    console.log("✅ Dropdown notaris terisi:", selectNotaris.options.length, "opsi");
+                }
 
-            // Isi dropdown bulan
-            const selectBulan = document.getElementById('selectBulanTransaksi');
-            const bulanSet = new Set();
-            if (allData && allData.length > 0) {
-                allData.forEach(row => {
-                    if (row["laporan_bulanan"]) {
-                        bulanSet.add(row["laporan_bulanan"]);
+                // Isi dropdown bulan
+                const selectBulan = document.getElementById('selectBulanTransaksi');
+                if (selectBulan && allData && allData.length > 0) {
+                    const bulanSet = new Set();
+                    allData.forEach(row => {
+                        if (row["laporan_bulanan"]) {
+                            bulanSet.add(row["laporan_bulanan"]);
+                        }
+                    });
+                    const bulanList = Array.from(bulanSet).sort((a, b) => {
+                        const getDate = (str) => {
+                            if (!str) return new Date(0);
+                            const parts = str.split(' ');
+                            const bulan = parts[0];
+                            const tahun = parseInt(parts[1]) || 0;
+                            const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                                "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                            return new Date(tahun, bulanIndex);
+                        };
+                        return getDate(b) - getDate(a);
+                    });
+                    selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+                    bulanList.forEach(bulan => {
+                        selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
+                    });
+                    console.log("✅ Dropdown bulan terisi:", selectBulan.options.length, "opsi");
+                }
+
+                // Tampilkan modal dengan Bootstrap
+                const modalElement = document.getElementById('modalPrintTransaksi');
+                if (modalElement) {
+                    // Hapus instance lama jika ada
+                    let oldInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (oldInstance) {
+                        oldInstance.dispose();
                     }
-                });
-            }
-            const bulanList = Array.from(bulanSet).sort();
-            selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
-            bulanList.forEach(bulan => {
-                selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
-            });
 
-            // Tampilkan modal
-            const modalElement = document.getElementById('modalPrintTransaksi');
-            const modal = new bootstrap.Modal(modalElement, { backdrop: 'static', keyboard: false });
-            modal.show();
+                    const modal = new bootstrap.Modal(modalElement, {
+                        backdrop: 'static',
+                        keyboard: true
+                    });
+                    modal.show();
 
-            // Hapus modal saat ditutup
-            modalElement.addEventListener('hidden.bs.modal', function () {
-                modalElement.remove();
-            });
+                    // Hapus modal saat ditutup
+                    modalElement.addEventListener('hidden.bs.modal', function () {
+                        modalElement.remove();
+                    });
+
+                    // Pastikan dropdown bisa diakses
+                    setTimeout(() => {
+                        const notarisSelect = document.getElementById('selectNotarisTransaksi');
+                        const bulanSelect = document.getElementById('selectBulanTransaksi');
+                        if (notarisSelect) notarisSelect.disabled = false;
+                        if (bulanSelect) bulanSelect.disabled = false;
+                    }, 100);
+                }
+            }, 100); // Delay 100ms untuk memastikan DOM bersih
         }
 
         // Cetak data transaksi (SEMUA TRANSAKSI DALAM 1 BULAN)
