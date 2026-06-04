@@ -8987,9 +8987,14 @@
             if (jenis === 'single') {
                 singleMode.style.display = 'block';
                 multiMode.style.display = 'none';
+                // Reset pilihan range bulan
+                document.getElementById('bulanDari').value = '';
+                document.getElementById('bulanSampai').value = '';
             } else {
                 singleMode.style.display = 'none';
                 multiMode.style.display = 'block';
+                // Reset pilihan single bulan
+                document.getElementById('selectBulanTransaksi').value = '';
             }
         }
 
@@ -9011,7 +9016,7 @@
             });
         }
 
-        // Cetak data transaksi (SEMUA TRANSAKSI DARI SEMUA BULAN)
+        // Cetak data transaksi (SESUAI MODE YANG DIPILIH)
         function printDataTransaksi() {
             const selectNotaris = document.getElementById('selectNotarisTransaksi');
 
@@ -9028,21 +9033,27 @@
             }
 
             // ============================================
-            // DAPATKAN DAFTAR BULAN BERDASARKAN MODE YANG DIPILIH
+            // CEK MODE PERIODE YANG DIPILIH
             // ============================================
             const jenisPeriode = document.getElementById('jenisPeriodeTransaksi').value;
             let daftarBulan = [];
 
             if (jenisPeriode === 'single') {
-                // Mode SATU BULAN
+                // ============================================
+                // MODE SATU BULAN
+                // ============================================
                 const bulanLaporan = document.getElementById('selectBulanTransaksi').value;
-                if (!bulanLaporan) {
-                    showError('Peringatan', 'Pilih bulan laporan terlebih dahulu!');
+
+                if (!bulanLaporan || bulanLaporan === "") {
+                    showError('Peringatan', 'Silakan pilih bulan laporan terlebih dahulu!');
                     return;
                 }
                 daftarBulan = [bulanLaporan];
+
             } else {
-                // Mode MULTI BULAN / RANGE
+                // ============================================
+                // MODE MULTI BULAN / RANGE
+                // ============================================
                 const bulanDari = document.getElementById('bulanDari').value;
                 const bulanSampai = document.getElementById('bulanSampai').value;
 
@@ -9067,6 +9078,11 @@
                     return getDate(a) - getDate(b);
                 });
 
+                if (semuaBulanNotaris.length === 0) {
+                    showError('Error', 'Tidak ada data laporan untuk notaris ini!');
+                    return;
+                }
+
                 if (!bulanDari && !bulanSampai) {
                     // Kosongkan kedua dropdown -> ambil SEMUA bulan
                     daftarBulan = semuaBulanNotaris;
@@ -9075,7 +9091,7 @@
                     const indexSampai = bulanSampai ? semuaBulanNotaris.indexOf(bulanSampai) : semuaBulanNotaris.length - 1;
 
                     if (indexDari === -1 || indexSampai === -1 || indexDari > indexSampai) {
-                        showError('Error', 'Range bulan tidak valid!');
+                        showError('Error', 'Range bulan tidak valid! Pastikan "Dari" lebih kecil dari "Sampai"');
                         return;
                     }
                     daftarBulan = semuaBulanNotaris.slice(indexDari, indexSampai + 1);
@@ -9083,9 +9099,12 @@
             }
 
             if (daftarBulan.length === 0) {
-                showError('Error', 'Tidak ada bulan yang dipilih atau data tidak ditemukan!');
+                showError('Error', 'Tidak ada bulan yang dipilih!');
                 return;
             }
+
+            console.log(`📅 Mode: ${jenisPeriode === 'single' ? 'Satu Bulan' : 'Multi Bulan'}`);
+            console.log(`📅 Bulan yang diproses:`, daftarBulan);
 
             // ============================================
             // KUMPULKAN DATA DARI SEMUA BULAN
@@ -9146,7 +9165,7 @@
             }
 
             if (semuaTransaksi.length === 0) {
-                showError('Error', 'Tidak ada data transaksi untuk dicetak!');
+                showError('Error', 'Tidak ada data transaksi untuk periode yang dipilih!');
                 return;
             }
 
@@ -9177,7 +9196,7 @@
                 periodeText = `${daftarBulan[0]} s/d ${daftarBulan[daftarBulan.length - 1]} (${daftarBulan.length} Bulan)`;
             }
 
-            // Buat HTML ringkasan per bulan
+            // Buat HTML ringkasan per bulan (hanya untuk multi bulan)
             let ringkasanHtml = '';
             if (ringkasanPerBulan.length > 1) {
                 ringkasanHtml = `
@@ -9395,16 +9414,6 @@
                 color: #64748b;
             }
             
-            .signature {
-                margin-top: 20px;
-                text-align: right;
-            }
-            
-            .signature p {
-                margin: 2px 0;
-                font-size: 8pt;
-            }
-            
             @media print {
                 body {
                     margin: 0;
@@ -9447,7 +9456,7 @@
             </div>
             
             <div class="info-transaksi">
-                <p>📋 Daftar Transaksi ${daftarBulan.length > 1 ? 'Gabungan ' + daftarBulan.length + ' Bulan' : 'Bulan ' + bulanLaporan} (${semuaTransaksi.length} Transaksi)</p>
+                <p>📋 Daftar Transaksi ${daftarBulan.length > 1 ? 'Gabungan ' + daftarBulan.length + ' Bulan' : 'Bulan ' + daftarBulan[0]} (${semuaTransaksi.length} Transaksi)</p>
                 <p>💰 TOTAL SSP: ${formatRupiahTabel(String(totalSSP))} | TOTAL SSB: ${formatRupiahTabel(String(totalSSB))} | GRAND TOTAL: ${formatRupiahTabel(String(totalSSP + totalSSB))}</p>
             </div>
             
@@ -9508,7 +9517,7 @@
             <div class="footer">
                 <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
                 <p>Di Cetak Pada Tanggal : ${tanggalCetak}</p>
-                ${daftarBulan.length > 1 ? '<p>**Laporan ini merupakan GABUNGAN dari semua periode yang tersedia</p>' : ''}
+                ${daftarBulan.length > 1 ? '<p>**Laporan ini merupakan GABUNGAN dari ${daftarBulan.length} periode</p>' : ''}
             </div>
         </div>
         <script>
