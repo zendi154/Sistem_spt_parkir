@@ -9595,7 +9595,7 @@
             printWindow.document.close();
         }
 
-        // Export data transaksi ke Excel (DENGAN GARIS BORDER) - VERSION MULTI BULAN
+        // Export data transaksi ke Excel (DENGAN GARIS BORDER) - VERSION FIXED
         function exportDataTransaksiToExcel() {
             console.log("exportDataTransaksiToExcel dipanggil");
 
@@ -9603,14 +9603,14 @@
                 const selectNotaris = document.getElementById('selectNotarisTransaksi');
 
                 if (!selectNotaris) {
-                    alert('Form tidak ditemukan!');
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Form tidak ditemukan!' });
                     return;
                 }
 
                 const namaNotaris = selectNotaris.value;
 
                 if (!namaNotaris) {
-                    alert('Pilih notaris terlebih dahulu!');
+                    Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Pilih notaris terlebih dahulu!' });
                     return;
                 }
 
@@ -9621,24 +9621,45 @@
                 let daftarBulan = [];
 
                 if (jenisPeriode === 'single') {
-                    const bulanLaporan = document.getElementById('selectBulanTransaksi').value;
-                    if (!bulanLaporan) {
-                        alert('Pilih bulan laporan terlebih dahulu!');
+                    // Mode SATU BULAN
+                    const bulanTerpilih = document.getElementById('selectBulanTransaksi').value;
+                    if (!bulanTerpilih || bulanTerpilih === "") {
+                        Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Pilih bulan laporan terlebih dahulu!' });
                         return;
                     }
-                    daftarBulan = [bulanLaporan];
+                    daftarBulan = [bulanTerpilih];
                 } else {
+                    // Mode MULTI BULAN / RANGE
                     const bulanDari = document.getElementById('bulanDari').value;
                     const bulanSampai = document.getElementById('bulanSampai').value;
 
+                    // Ambil semua bulan unik dari data untuk notaris ini
                     const bulanSet = new Set();
-                    allData.forEach(row => {
-                        if (row["nama_notaris_&_ppat"] === namaNotaris && row["laporan_bulanan"]) {
-                            bulanSet.add(row["laporan_bulanan"]);
-                        }
+                    if (allData && allData.length > 0) {
+                        allData.forEach(row => {
+                            if (row["nama_notaris_&_ppat"] === namaNotaris && row["laporan_bulanan"]) {
+                                bulanSet.add(row["laporan_bulanan"]);
+                            }
+                        });
+                    }
+
+                    const semuaBulanNotaris = Array.from(bulanSet).sort((a, b) => {
+                        const getDate = (str) => {
+                            if (!str) return new Date(0);
+                            const parts = str.split(' ');
+                            const bulan = parts[0];
+                            const tahun = parseInt(parts[1]) || 0;
+                            const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                                "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                            return new Date(tahun, bulanIndex);
+                        };
+                        return getDate(a) - getDate(b);
                     });
 
-                    const semuaBulanNotaris = Array.from(bulanSet).sort();
+                    if (semuaBulanNotaris.length === 0) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Tidak ada data laporan untuk notaris ini!' });
+                        return;
+                    }
 
                     if (!bulanDari && !bulanSampai) {
                         daftarBulan = semuaBulanNotaris;
@@ -9647,7 +9668,7 @@
                         const indexSampai = bulanSampai ? semuaBulanNotaris.indexOf(bulanSampai) : semuaBulanNotaris.length - 1;
 
                         if (indexDari === -1 || indexSampai === -1 || indexDari > indexSampai) {
-                            alert('Range bulan tidak valid!');
+                            Swal.fire({ icon: 'error', title: 'Error', text: 'Range bulan tidak valid!' });
                             return;
                         }
                         daftarBulan = semuaBulanNotaris.slice(indexDari, indexSampai + 1);
@@ -9655,40 +9676,52 @@
                 }
 
                 if (daftarBulan.length === 0) {
-                    alert('Tidak ada bulan yang dipilih!');
+                    Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Tidak ada bulan yang dipilih!' });
                     return;
                 }
 
-                // Kumpulkan semua transaksi dari semua bulan
+                console.log(`📅 Export Excel untuk ${namaNotaris}, ${daftarBulan.length} bulan:`, daftarBulan);
+
+                // ============================================
+                // KUMPULKAN DATA DARI SEMUA BULAN
+                // ============================================
                 let semuaTransaksi = [];
                 let totalSSP = 0;
                 let totalSSB = 0;
                 let firstData = null;
+                let ringkasanPerBulan = [];
 
                 for (const bulan of daftarBulan) {
-                    const dataNotarisList = allData.filter(row =>
+                    const dataNotarisPerBulan = allData.filter(row =>
                         row["nama_notaris_&_ppat"] === namaNotaris &&
                         row["laporan_bulanan"] === bulan
                     );
 
-                    if (dataNotarisList.length > 0 && !firstData) {
-                        firstData = dataNotarisList[0];
+                    if (dataNotarisPerBulan.length > 0 && !firstData) {
+                        firstData = dataNotarisPerBulan[0];
                     }
 
-                    for (const dataNotaris of dataNotarisList) {
+                    let bulanSSP = 0;
+                    let bulanSSB = 0;
+                    let jumlahTransaksi = 0;
+
+                    for (const dataNotaris of dataNotarisPerBulan) {
                         if (dataNotaris["data_transaksi"]) {
                             try {
                                 let transaksi = JSON.parse(dataNotaris["data_transaksi"]);
                                 if (Array.isArray(transaksi)) {
                                     for (const item of transaksi) {
                                         semuaTransaksi.push(item);
+                                        jumlahTransaksi++;
                                         if (item.ssp) {
                                             let val = parseInt(String(item.ssp).replace(/[^0-9]/g, '')) || 0;
                                             totalSSP += val;
+                                            bulanSSP += val;
                                         }
                                         if (item.ssb) {
                                             let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
                                             totalSSB += val;
+                                            bulanSSB += val;
                                         }
                                     }
                                 }
@@ -9697,10 +9730,17 @@
                             }
                         }
                     }
+
+                    ringkasanPerBulan.push({
+                        bulan: bulan,
+                        jumlahTransaksi: jumlahTransaksi,
+                        ssp: bulanSSP,
+                        ssb: bulanSSB
+                    });
                 }
 
                 if (semuaTransaksi.length === 0) {
-                    alert('Tidak ada data transaksi untuk periode yang dipilih!');
+                    Swal.fire({ icon: 'info', title: 'Info', text: 'Tidak ada data transaksi untuk periode yang dipilih!' });
                     return;
                 }
 
@@ -9715,190 +9755,233 @@
                     periodeText = `${daftarBulan[0]} s/d ${daftarBulan[daftarBulan.length - 1]} (${daftarBulan.length} Bulan)`;
                 }
 
-                // ========== BUAT HTML DENGAN GARIS BORDER ==========
-                let htmlContent = `<!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Transaksi ${namaNotaris} - ${bulanLaporan}</title>
-                    <style>
-                        * {
-                            margin: 0;
-                            padding: 0;
-                            box-sizing: border-box;
-                        }
-                        body {
-                            font-family: 'Times New Roman', Arial, sans-serif;
-                            font-size: 10pt;
-                            padding: 20px;
-                        }
-                        .header {
-                            text-align: center;
-                            margin-bottom: 20px;
-                            border-bottom: 2px solid #0284c7;
-                            padding-bottom: 10px;
-                        }
-                        .header h1 {
-                            color: #0284c7;
-                            font-size: 16pt;
-                        }
-                        .info-notaris {
-                            margin-bottom: 20px;
-                            padding: 10px;
-                            background: #f0f9ff;
-                            border-left: 3px solid #0284c7;
-                        }
-                        .info-notaris table {
-                            width: 100%;
-                        }
-                        .info-notaris td {
-                            padding: 4px 8px;
-                        }
-                        .info-notaris td:first-child {
-                            width: 120px;
-                            font-weight: bold;
-                        }
-                        table {
-                            border-collapse: collapse;
-                            width: 100%;
-                            margin: 15px 0;
-                        }
-                        th, td {
-                            border: 1px solid #000000;
-                            padding: 6px 4px;
-                            text-align: left;
-                            vertical-align: top;
-                        }
-                        th {
-                            background-color: #0284c7;
-                            color: white;
-                            font-weight: bold;
-                            text-align: center;
-                        }
-                        td {
-                            text-align: left;
-                        }
-                        td:nth-child(1) { text-align: center; }  /* No */
-                        td:nth-child(2) { text-align: center; }  /* Tanggal */
-                        td:nth-child(3) { text-align: center; }  /* No. SPPD */
-                        td:nth-child(11) { text-align: right; }  /* NJOP */
-                        td:nth-child(13) { text-align: right; }  /* Harga */
-                        td:nth-child(14) { text-align: right; }  /* SSP */
-                        td:nth-child(15) { text-align: right; }  /* SSB */
-                        .total-section {
-                            margin-top: 20px;
-                            padding: 10px;
-                            background: #f8fafc;
-                            border: 1px solid #cbd5e1;
-                        }
-                        .total-section table {
-                            width: 350px;
-                            margin-left: auto;
-                        }
-                        .total-section td {
-                            border: none;
-                            padding: 4px 8px;
-                        }
-                        .total-section td:first-child {
-                            font-weight: bold;
-                        }
-                        .total-section td:last-child {
-                            text-align: right;
-                            color: #059669;
-                            font-weight: bold;
-                        }
-                        .footer {
-                            margin-top: 20px;
-                            text-align: center;
-                            font-size: 8pt;
-                            color: #64748b;
-                        }
-                        .signature {
-                            margin-top: 30px;
-                            text-align: right;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>DATA TRANSAKSI PPAT / NOTARIS</h1>
-                        <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
-                        <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
-                    </div>
-                    
-                    <div class="info-notaris">
-                        <table>
-                            <tr><td>Nomor Unik</td><td colspan="3">: ${firstData["id"] || '-'}</td>
-                            <td>Bulan Laporan</td><td>: <strong>${bulanLaporan}</strong></td></tr>
-                            <tr><td>Nama Notaris</td><td colspan="5">: ${escapeHtml(namaNotaris)}</td></tr>
-                            <tr><td>Alamat Kantor</td><td colspan="5">: ${escapeHtml(firstData["alamat"] || '-')}</td></tr>
-                        </table>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>No. SPPD</th>
-                                <th>No. Akta</th>
-                                <th>No. Hak</th>
-                                <th>Penjual</th>
-                                <th>Pembeli</th>
-                                <th>Kecamatan</th>
-                                <th>Kelurahan</th>
-                                <th>NOP</th>
-                                <th>NJOP</th>
-                                <th>Luas TB</th>
-                                <th>Harga</th>
-                                <th>SSP</th>
-                                <th>SSB</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${semuaTransaksi.map((item, idx) => `
-                            <tr>
-                                <td style="text-align:center;">${idx + 1}</td>
-                                <td style="text-align:center;">${item.tanggal || '-'}</td>
-                                <td style="text-align:center;">${item.no_sppd || '-'}</td>
-                                <td style="text-align:center;">${item.nomor_akta || '-'}</td>
-                                <td style="text-align:center;">${item.nomor_hak || '-'}</td>
-                                <td>${escapeHtml(item.penjual || '-')}</td>
-                                <td>${escapeHtml(item.pembeli || '-')}</td>
-                                <td>${item.kecamatan || '-'}</td>
-                                <td>${item.kelurahan || '-'}</td>
-                                <td style="text-align:center;">${item.nop || '-'}</td>
-                                <td style="text-align:right;">${item.njop || '-'}</td>
-                                <td style="text-align:center;">${item.luas_tb || '-'}</td>
-                                <td style="text-align:right;">${item.harga || '-'}</td>
-                                <td style="text-align:right;">${item.ssp || '-'}</td>
-                                <td style="text-align:right;">${item.ssb || '-'}</td>
-                                <td>${escapeHtml(keterangan)}</td>
-                            </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    
-                    <div class="total-section">
-                        <table>
-                            <tr><td>Total SSP</td><td>: ${formatRupiahTabel(String(totalSSP))}</td></tr>
-                            <tr><td>Total SSB</td><td>: ${formatRupiahTabel(String(totalSSB))}</td></tr>
-                            <tr style="border-top:1px solid #cbd5e1;"><td>Grand Total</td><td>: ${formatRupiahTabel(String(totalSSP + totalSSB))}</td></tr>
-                        </table>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-                        <p>Dicetak pada: ${tanggalExport}</p>
-                    </div>
-                </body>
-                </html>`;
+                // Buat ringkasan HTML
+                let ringkasanHtml = '';
+                if (ringkasanPerBulan.length > 1) {
+                    ringkasanHtml = `
+            <br>
+            <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+                <caption style="font-weight: bold; margin-bottom: 5px;">📊 RINGKASAN PER BULAN</caption>
+                <thead>
+                    <tr style="background-color: #0284c7; color: white;">
+                        <th style="padding: 6px;">No</th>
+                        <th style="padding: 6px;">Bulan</th>
+                        <th style="padding: 6px;">Jumlah Transaksi</th>
+                        <th style="padding: 6px;">Total SSP</th>
+                        <th style="padding: 6px;">Total SSB</th>
+                        <th style="padding: 6px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${ringkasanPerBulan.map((item, idx) => `
+                    <tr>
+                        <td style="text-align:center; padding: 4px;">${idx + 1}</td>
+                        <td style="padding: 4px;"><strong>${item.bulan}</strong></td>
+                        <td style="text-align:center; padding: 4px;">${item.jumlahTransaksi}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(item.ssp))}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(item.ssb))}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(item.ssp + item.ssb))}</td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #e0f2fe; font-weight: bold;">
+                        <td colspan="2" style="text-align:right; padding: 4px;">TOTAL:</td>
+                        <td style="text-align:center; padding: 4px;">${semuaTransaksi.length}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(totalSSP))}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(totalSSB))}</td>
+                        <td style="text-align:right; padding: 4px;">${formatRupiahTabel(String(totalSSP + totalSSB))}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br>
+            `;
+                }
 
-                // Download sebagai file .xls (Excel bisa buka file HTML dengan border)
+                // Buat HTML untuk Excel
+                let htmlContent = `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Transaksi ${namaNotaris} - ${periodeText}</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                body {
+                    font-family: 'Times New Roman', Arial, sans-serif;
+                    font-size: 10pt;
+                    padding: 20px;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    border-bottom: 2px solid #0284c7;
+                    padding-bottom: 10px;
+                }
+                .header h1 {
+                    color: #0284c7;
+                    font-size: 16pt;
+                }
+                .info-notaris {
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    background: #f0f9ff;
+                    border-left: 3px solid #0284c7;
+                }
+                .info-notaris table {
+                    width: 100%;
+                }
+                .info-notaris td {
+                    padding: 4px 8px;
+                }
+                .info-notaris td:first-child {
+                    width: 120px;
+                    font-weight: bold;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 15px 0;
+                }
+                th, td {
+                    border: 1px solid #000000;
+                    padding: 6px 4px;
+                    text-align: left;
+                    vertical-align: top;
+                }
+                th {
+                    background-color: #0284c7;
+                    color: white;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                td {
+                    text-align: left;
+                }
+                td:nth-child(1) { text-align: center; }
+                td:nth-child(2) { text-align: center; }
+                td:nth-child(3) { text-align: center; }
+                td:nth-child(11) { text-align: right; }
+                td:nth-child(13) { text-align: right; }
+                td:nth-child(14) { text-align: right; }
+                td:nth-child(15) { text-align: right; }
+                .total-section {
+                    margin-top: 20px;
+                    padding: 10px;
+                    background: #f8fafc;
+                    border: 1px solid #cbd5e1;
+                }
+                .footer {
+                    margin-top: 20px;
+                    text-align: center;
+                    font-size: 8pt;
+                    color: #64748b;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>DATA TRANSAKSI PPAT / NOTARIS</h1>
+                <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+                <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+            </div>
+            
+            <div class="info-notaris">
+                <table>
+                    <tr>
+                        <td width="120">Nomor Unik</td>
+                        <td colspan="3">: ${firstData ? (firstData["id"] || '-') : '-'}</td>
+                        <td width="100">Periode Laporan</td>
+                        <td>: <strong>${periodeText}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Nama Notaris</td>
+                        <td colspan="5">: ${escapeHtml(namaNotaris)}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Kantor</td>
+                        <td colspan="5">: ${firstData ? escapeHtml(firstData["alamat"] || '-') : '-'}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div style="margin-bottom: 10px; padding: 8px; background: #e0f2fe;">
+                <p><strong>📋 Daftar Transaksi ${daftarBulan.length > 1 ? 'Gabungan ' + daftarBulan.length + ' Bulan' : 'Bulan ' + daftarBulan[0]} (${semuaTransaksi.length} Transaksi)</strong></p>
+                <p><strong>💰 TOTAL SSP: ${formatRupiahTabel(String(totalSSP))} | TOTAL SSB: ${formatRupiahTabel(String(totalSSB))} | GRAND TOTAL: ${formatRupiahTabel(String(totalSSP + totalSSB))}</strong></p>
+            </div>
+            
+            ${ringkasanHtml}
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>No.SPPD</th>
+                        <th>No.Akta</th>
+                        <th>No.Hak</th>
+                        <th>Penjual</th>
+                        <th>Pembeli</th>
+                        <th>Kecamatan</th>
+                        <th>Kelurahan</th>
+                        <th>NOP</th>
+                        <th>NJOP</th>
+                        <th>Luas TB</th>
+                        <th>Harga</th>
+                        <th>SSP</th>
+                        <th>SSB</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${semuaTransaksi.map((item, idx) => `
+                    <tr>
+                        <td style="text-align:center;">${idx + 1}</td>
+                        <td style="text-align:center;">${item.tanggal || '-'}</td>
+                        <td style="text-align:center;">${item.no_sppd || '-'}</td>
+                        <td style="text-align:center;">${item.nomor_akta || '-'}</td>
+                        <td style="text-align:center;">${item.nomor_hak || '-'}</td>
+                        <td>${escapeHtml(item.penjual || '-')}</td>
+                        <td>${escapeHtml(item.pembeli || '-')}</td>
+                        <td>${item.kecamatan || '-'}</td>
+                        <td>${item.kelurahan || '-'}</td>
+                        <td style="text-align:center;">${item.nop || '-'}</td>
+                        <td style="text-align:right;">${item.njop || '-'}</td>
+                        <td style="text-align:center;">${item.luas_tb || '-'}</td>
+                        <td style="text-align:right;">${item.harga || '-'}</td>
+                        <td style="text-align:right;">${item.ssp || '-'}</td>
+                        <td style="text-align:right;">${item.ssb || '-'}</td>
+                        <td>${escapeHtml(keterangan)}</td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="15" style="text-align:right; font-weight:bold;">JUMLAH: </td>
+                        <td style="text-align:right; font-weight:bold;">SSP: ${formatRupiahTabel(String(totalSSP))} | SSB: ${formatRupiahTabel(String(totalSSB))}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="total-section">
+                <strong>GRAND TOTAL:</strong> ${formatRupiahTabel(String(totalSSP + totalSSB))}
+            </div>
+            
+            <div class="footer">
+                <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+                <p>Dicetak pada: ${tanggalExport}</p>
+                ${daftarBulan.length > 1 ? '<p>**Laporan ini merupakan GABUNGAN dari ' + daftarBulan.length + ' periode</p>' : ''}
+            </div>
+        </body>
+        </html>`;
+
+                // Download sebagai file .xls
                 const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
                 const link = document.createElement('a');
-                const fileName = 'Transaksi_' + namaNotaris.replace(/[^a-zA-Z0-9]/g, '_') + '_' + bulanLaporan.replace(/ /g, '_') + '.xls';
+                const fileName = 'Transaksi_' + namaNotaris.replace(/[^a-zA-Z0-9]/g, '_') + '_' + periodeText.replace(/ /g, '_') + '.xls';
                 link.href = URL.createObjectURL(blob);
                 link.download = fileName;
                 link.click();
