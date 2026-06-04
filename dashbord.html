@@ -2573,8 +2573,8 @@
         }
 
         /* ============================================
-   HIGHLIGHT UNTUK DATA BARU MASUK
-   ============================================ */
+        HIGHLIGHT UNTUK DATA BARU MASUK
+        ============================================ */
 
         /* Warna highlight cerah untuk baris data baru */
         .row-highlight-new {
@@ -2617,6 +2617,16 @@
             background-color: rgba(0, 0, 0, 0.3) !important;
         }
 
+        /* Fix untuk modal print transaksi - TAMBAHKAN DI AKHIR TAG STYLE */
+        #modalPrintTransaksi {
+            z-index: 99999 !important;
+        }
+
+        #modalPrintTransaksi .modal-backdrop {
+            z-index: 99998 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
         #modalPrintTransaksi .modal-dialog {
             z-index: 99999 !important;
             pointer-events: auto !important;
@@ -2627,12 +2637,10 @@
             background-color: white !important;
         }
 
-        /* Pastikan backdrop tidak menghalangi */
         .modal-backdrop.show {
             opacity: 0.5 !important;
         }
 
-        /* Reset body saat modal terbuka */
         body.modal-open {
             overflow: hidden !important;
             padding-right: 0 !important;
@@ -8513,6 +8521,9 @@
                 tampilkanRingkasanBulanan();
                 updateJumlahNotarisAktif();
 
+                // Setelah data selesai diproses, cek dan update bulan baru
+                cekDanUpdateBulanBaru();
+
                 // ============================================
                 // ISI DROPDOWN TAHUN OTOMATIS DARI DATA
                 // ============================================
@@ -8536,6 +8547,25 @@
                 // Tetap coba isi dropdown tahun
                 isiDropdownTahunOtomatis();
             }
+        }
+
+        // Fungsi untuk menampilkan statistik bulan yang tersedia
+        function tampilkanStatistikBulan() {
+            const bulanList = getAllAvailableMonths();
+
+            if (bulanList.length === 0) {
+                console.log("📅 Belum ada data bulan");
+                return;
+            }
+
+            console.log("📅 STATISTIK BULAN TERSEDIA:");
+            console.log(`Total: ${bulanList.length} bulan`);
+            console.log(`Terbaru: ${bulanList[0]}`);
+            console.log(`Terlama: ${bulanList[bulanList.length - 1]}`);
+            console.log("Daftar lengkap:", bulanList);
+
+            // Opsional: Tampilkan di console dengan format tabel
+            console.table(bulanList.map((b, i) => ({ No: i + 1, Bulan: b })));
         }
 
         // ============================================
@@ -8808,12 +8838,9 @@
         }
 
         function bukaModalPrintTransaksi() {
-            // ============================================
-            // TAMBAHKAN INI - TUTUP SEMUA MODAL TERLEBIH DAHULU
-            // ============================================
+            // Tutup semua modal terlebih dahulu
             forceCloseAllModals();
 
-            // Beri sedikit delay agar DOM benar-benar bersih
             setTimeout(() => {
                 // Hapus modal lama jika ada
                 const existingModal = document.getElementById('modalPrintTransaksi');
@@ -8841,11 +8868,18 @@
                                         <option value="">-- Pilih Notaris --</option>
                                     </select>
                                 </div>
+                                // KODE BARU (dengan tombol refresh)
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Pilih Bulan Laporan</label>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label fw-bold mb-0">Pilih Bulan Laporan</label>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="updateBulanDropdownTransaksi()" title="Refresh daftar bulan">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                    </div>
                                     <select id="selectBulanTransaksi" class="form-select">
                                         <option value="">-- Pilih Bulan --</option>
                                     </select>
+                                    <small class="text-muted" id="infoJumlahBulan"></small>
                                 </div>
                             </div>
                         </div>
@@ -8876,42 +8910,22 @@
                     console.log("✅ Dropdown notaris terisi:", selectNotaris.options.length, "opsi");
                 }
 
-                // Isi dropdown bulan
-                const selectBulan = document.getElementById('selectBulanTransaksi');
-                if (selectBulan && allData && allData.length > 0) {
-                    const bulanSet = new Set();
-                    allData.forEach(row => {
-                        if (row["laporan_bulanan"]) {
-                            bulanSet.add(row["laporan_bulanan"]);
-                        }
-                    });
-                    const bulanList = Array.from(bulanSet).sort((a, b) => {
-                        const getDate = (str) => {
-                            if (!str) return new Date(0);
-                            const parts = str.split(' ');
-                            const bulan = parts[0];
-                            const tahun = parseInt(parts[1]) || 0;
-                            const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                                "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
-                            return new Date(tahun, bulanIndex);
-                        };
-                        return getDate(b) - getDate(a);
-                    });
-                    selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
-                    bulanList.forEach(bulan => {
-                        selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
-                    });
-                    console.log("✅ Dropdown bulan terisi:", selectBulan.options.length, "opsi");
+                // ============================================
+                // ISI DROPDOWN BULAN DENGAN SEMUA BULAN YANG TERSEDIA
+                // ============================================
+                updateBulanDropdownTransaksi();
+
+                // Tampilkan info jumlah bulan
+                const infoJumlah = document.getElementById('infoJumlahBulan');
+                if (infoJumlah && daftarBulanGlobal.length > 0) {
+                    infoJumlah.innerHTML = `📅 ${daftarBulanGlobal.length} bulan tersedia (${daftarBulanGlobal[0]} - ${daftarBulanGlobal[daftarBulanGlobal.length - 1]})`;
                 }
 
-                // Tampilkan modal dengan Bootstrap
+                // Tampilkan modal
                 const modalElement = document.getElementById('modalPrintTransaksi');
                 if (modalElement) {
-                    // Hapus instance lama jika ada
                     let oldInstance = bootstrap.Modal.getInstance(modalElement);
-                    if (oldInstance) {
-                        oldInstance.dispose();
-                    }
+                    if (oldInstance) oldInstance.dispose();
 
                     const modal = new bootstrap.Modal(modalElement, {
                         backdrop: 'static',
@@ -8919,20 +8933,11 @@
                     });
                     modal.show();
 
-                    // Hapus modal saat ditutup
                     modalElement.addEventListener('hidden.bs.modal', function () {
                         modalElement.remove();
                     });
-
-                    // Pastikan dropdown bisa diakses
-                    setTimeout(() => {
-                        const notarisSelect = document.getElementById('selectNotarisTransaksi');
-                        const bulanSelect = document.getElementById('selectBulanTransaksi');
-                        if (notarisSelect) notarisSelect.disabled = false;
-                        if (bulanSelect) bulanSelect.disabled = false;
-                    }, 100);
                 }
-            }, 100); // Delay 100ms untuk memastikan DOM bersih
+            }, 100);
         }
 
         // Cetak data transaksi (SEMUA TRANSAKSI DALAM 1 BULAN)
@@ -9516,7 +9521,7 @@
                     
                     <div class="info-notaris">
                         <table>
-                            <tr><td>ID Notaris</td><td colspan="3">: ${firstData["id"] || '-'}</td>
+                            <tr><td>Nomor Unik</td><td colspan="3">: ${firstData["id"] || '-'}</td>
                             <td>Bulan Laporan</td><td>: <strong>${bulanLaporan}</strong></td></tr>
                             <tr><td>Nama Notaris</td><td colspan="5">: ${escapeHtml(namaNotaris)}</td></tr>
                             <tr><td>Alamat Kantor</td><td colspan="5">: ${escapeHtml(firstData["alamat"] || '-')}</td></tr>
@@ -9614,6 +9619,94 @@
                     title: 'Error',
                     text: 'Terjadi kesalahan: ' + error.message
                 });
+            }
+        }
+
+        // ============================================
+        // FUNGSI UNTUK MENDAPATKAN SEMUA BULAN YANG TERSEDIA
+        // ============================================
+
+        // Variabel global untuk menyimpan daftar bulan terbaru
+        let daftarBulanGlobal = [];
+
+        // Fungsi untuk mendapatkan semua bulan unik dari data
+        function getAllAvailableMonths() {
+            const bulanSet = new Set();
+
+            if (allData && allData.length > 0) {
+                allData.forEach(row => {
+                    const bulan = row["laporan_bulanan"];
+                    if (bulan && bulan.trim() !== "") {
+                        bulanSet.add(bulan);
+                    }
+                });
+            }
+
+            // Konversi ke array dan urutkan berdasarkan tahun & bulan
+            const bulanList = Array.from(bulanSet);
+            bulanList.sort((a, b) => {
+                const getDate = (str) => {
+                    if (!str) return new Date(0);
+                    const parts = str.split(' ');
+                    if (parts.length < 2) return new Date(0);
+                    const bulan = parts[0];
+                    const tahun = parseInt(parts[1]) || 0;
+                    const bulanIndex = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"].indexOf(bulan);
+                    return new Date(tahun, bulanIndex);
+                };
+                return getDate(b) - getDate(a); // Urut dari terbaru ke terlama
+            });
+
+            daftarBulanGlobal = bulanList;
+            return bulanList;
+        }
+
+        // Fungsi untuk memperbarui dropdown bulan di modal print transaksi
+        function updateBulanDropdownTransaksi() {
+            const selectBulan = document.getElementById('selectBulanTransaksi');
+            if (!selectBulan) return;
+
+            const bulanList = getAllAvailableMonths();
+
+            selectBulan.innerHTML = '<option value="">-- Pilih Bulan --</option>';
+            bulanList.forEach(bulan => {
+                selectBulan.innerHTML += `<option value="${bulan}">${bulan}</option>`;
+            });
+
+            console.log(`✅ Dropdown bulan diperbarui: ${bulanList.length} bulan tersedia`);
+
+            // Jika hanya ada 1 bulan, auto pilih
+            if (bulanList.length === 1) {
+                selectBulan.value = bulanList[0];
+                console.log(`✅ Auto pilih bulan: ${bulanList[0]}`);
+            }
+        }
+
+        // Fungsi untuk memeriksa apakah ada bulan baru
+        function cekDanUpdateBulanBaru() {
+            const bulanBaru = getAllAvailableMonths();
+
+            // Bandingkan dengan daftar bulan sebelumnya
+            if (JSON.stringify(bulanBaru) !== JSON.stringify(daftarBulanGlobal)) {
+                console.log("📅 Terdeteksi bulan baru!", bulanBaru);
+                daftarBulanGlobal = bulanBaru;
+
+                // Update dropdown di modal print transaksi jika modal sedang terbuka
+                const selectBulan = document.getElementById('selectBulanTransaksi');
+                if (selectBulan && selectBulan.closest('.modal.show')) {
+                    updateBulanDropdownTransaksi();
+
+                    // Tampilkan notifikasi toast
+                    if (typeof Toast !== 'undefined') {
+                        Toast.fire({
+                            icon: 'info',
+                            title: '📅 Bulan Baru Tersedia',
+                            text: `Bulan ${bulanBaru[0]} telah ditambahkan ke dropdown`,
+                            timer: 2000
+                        });
+                    }
+                }
             }
         }
 
