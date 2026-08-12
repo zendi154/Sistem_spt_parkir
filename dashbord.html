@@ -9133,11 +9133,13 @@
                 });
             }
 
-            // Jika tidak ada data, gunakan tahun saat ini
+            // ============================================
+            // PERBAIKAN: Jika tidak ada data, gunakan TAHUN SAAT INI SAJA
+            // ============================================
             if (tahunSet.size === 0) {
                 const tahunSekarang = new Date().getFullYear();
                 tahunSet.add(tahunSekarang);
-                tahunSet.add(tahunSekarang + 1);
+                // HAPUS: tahunSet.add(tahunSekarang + 1);  // <-- HAPUS BARIS INI
             }
 
             // Urutkan tahun dari yang TERBARU ke yang LAMA
