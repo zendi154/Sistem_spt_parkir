@@ -3430,6 +3430,49 @@
         }
 
         // ============================================
+        // FUNGSI GLOBAL FORMAT TANGGAL KE: 06 Januari 2026
+        // ============================================
+        function formatTanggalGlobal(tanggal, fallback = '-') {
+            if (!tanggal || tanggal === '') return fallback;
+
+            // Jika sudah dalam format "06 Januari 2026"
+            if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                return tanggal;
+            }
+
+            let tglObj = null;
+
+            // Coba parse berbagai format
+            if (tanggal.includes('/') || tanggal.includes('-')) {
+                let parts = tanggal.split(/[/-]/);
+                if (parts.length === 3) {
+                    // Coba format YYYY/MM/DD atau YYYY-MM-DD
+                    tglObj = new Date(parts[0], parts[1] - 1, parts[2]);
+
+                    // Jika invalid, coba format DD/MM/YYYY
+                    if (isNaN(tglObj.getTime()) && parts[0].length === 2) {
+                        tglObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                    }
+                }
+            }
+
+            if (!tglObj || isNaN(tglObj.getTime())) {
+                tglObj = new Date(tanggal);
+            }
+
+            if (tglObj && !isNaN(tglObj.getTime())) {
+                const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                const hari = tglObj.getDate().toString().padStart(2, '0');
+                const bulanNama = bulan[tglObj.getMonth()];
+                const tahun = tglObj.getFullYear();
+                return `${hari} ${bulanNama} ${tahun}`;
+            }
+
+            return tanggal;
+        }
+
+        // ============================================
         // FUNGSI SAFE STRING HELPER (Tambahkan ini!)
         // ============================================
 
@@ -3680,8 +3723,8 @@
             <td>${kolomNama}</td>
             <td>${row["alamat"] || ""}${!isFirst ? '' : ''}</td>
             <td>${row["nomor_surat"] || ""}${!isFirst ? '' : ''}</td>
-            <td>${formatTanggalIndonesia(row["tanggal_surat"] || "")}${!isFirst ? '' : ''}</td>
-            <td>${formatTanggalIndonesia(row["tanggal_diterima"] || "")}${!isFirst ? '' : ''}</td>
+            <td>${formatTanggalGlobal(row["tanggal_surat"] || "")}</td>
+            <td>${formatTanggalGlobal(row["tanggal_diterima"] || "")}</td>
             <td>${row["status_surat"] || ""}${!isFirst ? '' : ''}</td>
             <td>${row["laporan_bulanan"] || ""}${!isFirst ? '' : ''}</td>
             <td style="text-align:center;">${formatDataTransaksi(row["data_transaksi"])}${!isFirst ? '' : ''}</td>
@@ -3960,7 +4003,7 @@
             container.innerHTML = html;
         }
 
-        // EXPORT EXCEL DENGAN GARIS BORDER
+        // EXPORT EXCEL DENGAN GARIS BORDER DAN FORMAT TANGGAL INDONESIA
         function exportExcel() {
             if (!currentFilteredData || currentFilteredData.length === 0) {
                 showError("Error", "Tidak ada data!");
@@ -3970,6 +4013,54 @@
             try {
                 const now = new Date();
                 const tanggalExport = now.toLocaleDateString('id-ID');
+
+                // ============================================
+                // FUNGSI FORMAT TANGGAL KE: 06 Januari 2026
+                // ============================================
+                function formatTanggalIndonesiaExport(tanggal) {
+                    if (!tanggal || tanggal === '') return '-';
+
+                    // Jika sudah dalam format "06 Januari 2026", kembalikan
+                    if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                        return tanggal;
+                    }
+
+                    // Coba parse berbagai format
+                    let tanggalObj = null;
+
+                    // Format YYYY/MM/DD atau YYYY-MM-DD
+                    if (tanggal.includes('/') || tanggal.includes('-')) {
+                        let parts = tanggal.split(/[/-]/);
+                        if (parts.length === 3) {
+                            // Asumsi format YYYY/MM/DD atau YYYY-MM-DD
+                            tanggalObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                        }
+                    }
+
+                    // Format DD/MM/YYYY
+                    if (!tanggalObj && tanggal.includes('/')) {
+                        let parts = tanggal.split('/');
+                        if (parts.length === 3 && parts[0].length === 2) {
+                            tanggalObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                        }
+                    }
+
+                    // Jika masih null, coba new Date langsung
+                    if (!tanggalObj) {
+                        tanggalObj = new Date(tanggal);
+                    }
+
+                    // Validasi tanggal valid
+                    if (tanggalObj && !isNaN(tanggalObj.getTime())) {
+                        const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                            "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                        const hari = tanggalObj.getDate().toString().padStart(2, '0');
+                        const bulanNama = bulan[tanggalObj.getMonth()];
+                        const tahun = tanggalObj.getFullYear();
+                        return `${hari} ${bulanNama} ${tahun}`;
+                    }
+                    return tanggal;
+                }
 
                 // Buat HTML dengan border
                 let htmlContent = `<!DOCTYPE html>
@@ -4073,30 +4164,29 @@
                 <tbody>
                 ${currentFilteredData.map((row, idx) => `
                 <tr>
-                <td style="text-align:center;">${idx + 1}</td>
-                <td style="text-align:center;">${escapeHtml(row["id"] || '')}</td>
-                <td>${escapeHtml(row["nama_notaris_&_ppat"] || '')}</td>
-                <td>${escapeHtml(row["alamat"] || '')}</td>
-                <td style="text-align:center;">${escapeHtml(row["nomor_surat"] || '')}</td>
-                <td style="text-align:center;">${row["tanggal_surat"] || '-'}</td>
-                <td style="text-align:center;">${row["tanggal_diterima"] || '-'}</td>
-                <td style="text-align:center;">${row["status_surat"] || '-'}</td>
-                <td style="text-align:center;">${row["laporan_bulanan"] || '-'}</td>
-                <td style="text-align:center;">${row["jumlah_laporan"] || '0'}</td>
-                <td style="text-align:right;">${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
-                <td>${escapeHtml(row["keterangan"] || '-')}</td>
-                </td>
-                            </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    
-                    <div class="footer">
-                        <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-                        <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
-                    </div>
-                </body>
-                </html>`;
+                    <td style="text-align:center;">${idx + 1}</td>
+                    <td style="text-align:center;">${escapeHtml(row["id"] || '')}</td>
+                    <td>${escapeHtml(row["nama_notaris_&_ppat"] || '')}</td>
+                    <td>${escapeHtml(row["alamat"] || '')}</td>
+                    <td style="text-align:center;">${escapeHtml(row["nomor_surat"] || '')}</td>
+                    <td style="text-align:center;">${formatTanggalGlobal(row["tanggal_surat"])}</td>
+                    <td style="text-align:center;">${formatTanggalGlobal(row["tanggal_diterima"])}</td>
+                    <td style="text-align:center;">${row["status_surat"] || '-'}</td>
+                    <td style="text-align:center;">${row["laporan_bulanan"] || '-'}</td>
+                    <td style="text-align:center;">${row["jumlah_laporan"] || '0'}</td>
+                    <td style="text-align:right;">${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
+                    <td>${escapeHtml(row["keterangan"] || '-')}</td>
+                </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+            <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
+        </div>
+    </body>
+    </html>`;
 
                 // Download sebagai file .xls
                 const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
@@ -4134,168 +4224,213 @@
             });
             const waktuCetak = now.toLocaleTimeString('id-ID');
 
+            // ============================================
+            // FUNGSI FORMAT TANGGAL KE: 06 Januari 2026
+            // ============================================
+            function formatTanggalIndonesiaPrint(tanggal) {
+                if (!tanggal || tanggal === '') return '-';
+
+                // Jika sudah dalam format "06 Januari 2026", kembalikan
+                if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                    return tanggal;
+                }
+
+                // Coba parse berbagai format
+                let tanggalObj = null;
+
+                // Format YYYY/MM/DD atau YYYY-MM-DD
+                if (tanggal.includes('/') || tanggal.includes('-')) {
+                    let parts = tanggal.split(/[/-]/);
+                    if (parts.length === 3) {
+                        tanggalObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                    }
+                }
+
+                // Format DD/MM/YYYY
+                if (!tanggalObj && tanggal.includes('/')) {
+                    let parts = tanggal.split('/');
+                    if (parts.length === 3 && parts[0].length === 2) {
+                        tanggalObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                    }
+                }
+
+                // Jika masih null, coba new Date langsung
+                if (!tanggalObj) {
+                    tanggalObj = new Date(tanggal);
+                }
+
+                // Validasi tanggal valid
+                if (tanggalObj && !isNaN(tanggalObj.getTime())) {
+                    const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                    const hari = tanggalObj.getDate().toString().padStart(2, '0');
+                    const bulanNama = bulan[tanggalObj.getMonth()];
+                    const tahun = tanggalObj.getFullYear();
+                    return `${hari} ${bulanNama} ${tahun}`;
+                }
+                return tanggal;
+            }
+
             // Buat HTML untuk print
             let htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Laporan Data PPAT/Notaris</title>
-                <style>
-                    @page {
-                        size: A4 landscape;
-                        margin: 10mm;
-                    }
-                    
-                    * {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                    }
-                    
-                    body {
-                        font-family: 'Times New Roman', 'Arial', sans-serif;
-                        font-size: 9pt;
-                        line-height: 1.2;
-                        background: white;
-                        padding: 10px;
-                    }
-                    
-                    .print-container {
-                        max-width: 100%;
-                        margin: 0 auto;
-                    }
-                    
-                    .header {
-                        text-align: center;
-                        margin-bottom: 15px;
-                        padding-bottom: 10px;
-                        border-bottom: 2px solid #0284c7;
-                    }
-                    
-                    .header h1 {
-                        font-size: 14pt;
-                        color: #0284c7;
-                        margin-bottom: 5px;
-                    }
-                    
-                    .header h3 {
-                        font-size: 11pt;
-                        color: #475569;
-                        margin-bottom: 3px;
-                    }
-                    
-                    .header p {
-                        font-size: 8pt;
-                        color: #64748b;
-                    }
-                    
-                    .info-cetak {
-                        margin-bottom: 15px;
-                        padding: 8px 12px;
-                        background: #f0f9ff;
-                        border-left: 3px solid #0284c7;
-                        font-size: 8pt;
-                        display: flex;
-                        justify-content: space-between;
-                    }
-                    
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                        margin: 10px 0;
-                        font-size: 7.5pt;
-                    }
-                    
-                    th, td {
-                        border: 1px solid #000000;
-                        padding: 6px 4px;
-                        vertical-align: top;
-                    }
-                    
-                    th {
-                        background-color: #0284c7;
-                        color: white;
-                        font-weight: bold;
-                        text-align: center;
-                        font-size: 7.5pt;
-                    }
-                    
-                    td {
-                        text-align: left;
-                    }
-                    
-                    td:nth-child(1) { text-align: center; }  /* No */
-                    td:nth-child(2) { text-align: center; }  /* Nomor Unik */
-                    td:nth-child(5) { text-align: center; }  /* Tanggal Surat */
-                    td:nth-child(6) { text-align: center; }  /* Tanggal Diterima */
-                    td:nth-child(7) { text-align: center; }  /* Status Surat */
-                    td:nth-child(8) { text-align: center; }  /* Laporan Bulanan */
-                    td:nth-child(10) { text-align: center; } /* Jumlah Laporan */
-                    td:nth-child(11) { text-align: right; }   /* Nominal BPHTB */
-                    td:nth-child(12) { text-align: left; }    /* Keterangan */
-                    
-                    .footer {
-                        margin-top: 15px;
-                        padding-top: 8px;
-                        text-align: center;
-                        font-size: 7pt;
-                        color: #64748b;
-                        border-top: 1px solid #ccc;
-                    }
-                    
-                    @media print {
-                        body {
-                            margin: 0;
-                            padding: 8px;
-                        }
-                        th {
-                            background-color: #0284c7 !important;
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    <div class="header">
-                        <h1>LAPORAN DATA PPAT / NOTARIS</h1>
-                        <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
-                        <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
-                    </div>
-                    
-                    <div class="info-cetak">
-                        <div><strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}</div>
-                        <div><strong>Total Data:</strong> ${dataToPrint.length} Laporan</div>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nomor Unik</th>
-                                <th>Nama Notaris & PPAT</th>
-                                <th>Alamat Kantor</th>
-                                <th>Tanggal Surat</th>
-                                <th>Tanggal Diterima</th>
-                                <th>Status Surat</th>
-                                <th>Laporan Bulanan</th>
-                                <th>Data Transaksi</th>
-                                <th>Jumlah Laporan</th>
-                                <th>Nominal BPHTB (Rp)</th>
-                                <th>Keterangan</th>
-                                <th>Nomor Surat Denda (STD)</th>
-                                <th>Nomor Surat Pemberitahuan Denda</th>
-                                <th>Catatan Auto</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Laporan Data PPAT/Notaris</title>
+        <style>
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Times New Roman', 'Arial', sans-serif;
+                font-size: 9pt;
+                line-height: 1.2;
+                background: white;
+                padding: 10px;
+            }
+            
+            .print-container {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            
+            .header {
+                text-align: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #0284c7;
+            }
+            
+            .header h1 {
+                font-size: 14pt;
+                color: #0284c7;
+                margin-bottom: 5px;
+            }
+            
+            .header h3 {
+                font-size: 11pt;
+                color: #475569;
+                margin-bottom: 3px;
+            }
+            
+            .header p {
+                font-size: 8pt;
+                color: #64748b;
+            }
+            
+            .info-cetak {
+                margin-bottom: 15px;
+                padding: 8px 12px;
+                background: #f0f9ff;
+                border-left: 3px solid #0284c7;
+                font-size: 8pt;
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 10px 0;
+                font-size: 7.5pt;
+            }
+            
+            th, td {
+                border: 1px solid #000000;
+                padding: 6px 4px;
+                vertical-align: top;
+            }
+            
+            th {
+                background-color: #0284c7;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                font-size: 7.5pt;
+            }
+            
+            td {
+                text-align: left;
+            }
+            
+            td:nth-child(1) { text-align: center; }
+            td:nth-child(2) { text-align: center; }
+            td:nth-child(5) { text-align: center; }
+            td:nth-child(6) { text-align: center; }
+            td:nth-child(7) { text-align: center; }
+            td:nth-child(8) { text-align: center; }
+            td:nth-child(10) { text-align: center; }
+            td:nth-child(11) { text-align: right; }
+            td:nth-child(12) { text-align: left; }
+            
+            .footer {
+                margin-top: 15px;
+                padding-top: 8px;
+                text-align: center;
+                font-size: 7pt;
+                color: #64748b;
+                border-top: 1px solid #ccc;
+            }
+            
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 8px;
+                }
+                th {
+                    background-color: #0284c7 !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="print-container">
+            <div class="header">
+                <h1>LAPORAN DATA PPAT / NOTARIS</h1>
+                <h3>Badan Pendapatan Daerah Kota Bengkulu</h3>
+                <p>Jl. WR. Supratman Kelurahan Bentiring Permai</p>
+            </div>
+            
+            <div class="info-cetak">
+                <div><strong>Tanggal Cetak:</strong> ${tanggalCetak} | ${waktuCetak}</div>
+                <div><strong>Total Data:</strong> ${dataToPrint.length} Laporan</div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nomor Unik</th>
+                        <th>Nama Notaris & PPAT</th>
+                        <th>Alamat Kantor</th>
+                        <th>Tanggal Surat</th>
+                        <th>Tanggal Diterima</th>
+                        <th>Status Surat</th>
+                        <th>Laporan Bulanan</th>
+                        <th>Data Transaksi</th>
+                        <th>Jumlah Laporan</th>
+                        <th>Nominal BPHTB (Rp)</th>
+                        <th>Keterangan</th>
+                        <th>Nomor Surat Denda (STD)</th>
+                        <th>Nomor Surat Pemberitahuan Denda</th>
+                        <th>Catatan Auto</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
 
-            // Loop data untuk membuat baris tabel
             dataToPrint.forEach((row, idx) => {
-                // Format data transaksi untuk print
                 let dataTransaksiTeks = '-';
                 try {
                     if (row["data_transaksi"]) {
@@ -4309,24 +4444,24 @@
                 }
 
                 htmlContent += `
-            <tr>
-                <td style="text-align:center;">${idx + 1}</td>
-                <td style="text-align:center;">${escapeHtml(row["id"] || '-')}</td>
-                <td>${escapeHtml(row["nama_notaris_&_ppat"] || '-')}</td>
-                <td>${escapeHtml(row["alamat"] || '-')}</td>
-                <td style="text-align:center;">${row["tanggal_surat"] || '-'}</td>
-                <td style="text-align:center;">${row["tanggal_diterima"] || '-'}</td>
-                <td style="text-align:center;">${row["status_surat"] || '-'}</td>
-                <td style="text-align:center;">${row["laporan_bulanan"] || '-'}</td>
-                <td style="text-align:center;">${dataTransaksiTeks}</td>
-                <td style="text-align:center;">${row["jumlah_laporan"] || '0'}</td>
-                <td style="text-align:right;">${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
-                <td style="text-align:left;">${escapeHtml(row["keterangan"] || '-')}</td>
-                <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? row["nomor_std"] : '-'}</td>
-                <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? row["nomor_pemberitahuan"] : '-'}</td>
-                <td style="text-align:center;">${getCatatanAutoPrint(row)}</td>
-            </tr>
-        `;
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td style="text-align:center;">${escapeHtml(row["id"] || '-')}</td>
+            <td>${escapeHtml(row["nama_notaris_&_ppat"] || '-')}</td>
+            <td>${escapeHtml(row["alamat"] || '-')}</td>
+            <td style="text-align:center;">${formatTanggalGlobal(row["tanggal_surat"])}</td>
+            <td style="text-align:center;">${formatTanggalGlobal(row["tanggal_diterima"])}</td>
+            <td style="text-align:center;">${row["status_surat"] || '-'}</td>
+            <td style="text-align:center;">${row["laporan_bulanan"] || '-'}</td>
+            <td style="text-align:center;">${dataTransaksiTeks}</td>
+            <td style="text-align:center;">${row["jumlah_laporan"] || '0'}</td>
+            <td style="text-align:right;">${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
+            <td style="text-align:left;">${escapeHtml(row["keterangan"] || '-')}</td>
+            <td style="text-align:center;">${row["nomor_std"] && row["nomor_std"].trim() !== "" ? row["nomor_std"] : '-'}</td>
+            <td style="text-align:center;">${row["nomor_pemberitahuan"] && row["nomor_pemberitahuan"].trim() !== "" ? row["nomor_pemberitahuan"] : '-'}</td>
+            <td style="text-align:center;">${getCatatanAutoPrint(row)}</td>
+        </tr>
+    `;
             });
 
             // Hitung total
@@ -4340,34 +4475,34 @@
             });
 
             htmlContent += `
-                </tbody>
-                <tfoot>
-                    <tr style="background-color: #f0f9ff;">
-                        <td colspan="9" style="text-align:right; font-weight:bold;">TOTAL :</td>
-                        <td style="text-align:center; font-weight:bold;">${totalLaporan}</td>
-                        <td style="text-align:right; font-weight:bold;">${formatRupiahTabel(String(totalBPHTB))}</td>
-                        <td colspan="4"></td>
-                    </tr>
-                </tfoot>
-            </table>
-            
-            <div class="footer">
-                <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
-                <p>*Bidang Pengendalian dan Evaluasi Pendapatan Daerah</p>
-                <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-            </div>
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f0f9ff;">
+                    <td colspan="9" style="text-align:right; font-weight:bold;">TOTAL :</td>
+                    <td style="text-align:center; font-weight:bold;">${totalLaporan}</td>
+                    <td style="text-align:right; font-weight:bold;">${formatRupiahTabel(String(totalBPHTB))}</td>
+                    <td colspan="4"></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="footer">
+            <p>Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
+            <p>*Bidang Pengendalian dan Evaluasi Pendapatan Daerah</p>
+            <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
         </div>
-        <script>
-            window.onload = function() {
-                setTimeout(function() {
-                    window.print();
-                    window.onafterprint = function() { window.close(); };
-                    setTimeout(function() { window.close(); }, 500);
-                }, 300);
-            };
-        <\/script>
-    </body>
-    </html>`;
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+                setTimeout(function() { window.close(); }, 500);
+            }, 300);
+        };
+    <\/script>
+</body>
+</html>`;
 
             // Buka window baru untuk print
             const printWindow = window.open('', '_blank');
@@ -9087,6 +9222,19 @@
                 return;
             }
 
+            // Tambahkan fungsi format tanggal di dalam printDataTransaksi
+            function formatTanggalPrintTransaksi(tanggal) {
+                if (!tanggal || tanggal === '') return '-';
+                if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                    return tanggal;
+                }
+                let tgl = new Date(tanggal);
+                if (isNaN(tgl.getTime())) return tanggal;
+                const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                return `${tgl.getDate().toString().padStart(2, '0')} ${bulan[tgl.getMonth()]} ${tgl.getFullYear()}`;
+            }
+
             // ============================================
             // CEK MODE PERIODE YANG DIPILIH
             // ============================================
@@ -9542,7 +9690,7 @@
                             ${semuaTransaksi.map((item, idx) => `
                             <tr>
                                 <td style="text-align:center;">${idx + 1}</td>
-                                <td style="text-align:center;">${item.tanggal || '-'}</td>
+                                <td style="text-align:center;">${formatTanggalGlobal(item.tanggal)}</td>
                                 <td style="text-align:center;">${item.no_sppd || '-'}</td>
                                 <td style="text-align:center;">${item.nomor_akta || '-'}</td>
                                 <td style="text-align:center;">${item.nomor_hak || '-'}</td>
@@ -9615,6 +9763,19 @@
                 if (!namaNotaris) {
                     Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Pilih notaris terlebih dahulu!' });
                     return;
+                }
+
+                // Tambahkan fungsi format tanggal di dalam exportDataTransaksiToExcel
+                function formatTanggalExportTransaksi(tanggal) {
+                    if (!tanggal || tanggal === '') return '-';
+                    if (tanggal.match(/^\d{1,2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}$/i)) {
+                        return tanggal;
+                    }
+                    let tgl = new Date(tanggal);
+                    if (isNaN(tgl.getTime())) return tanggal;
+                    const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                    return `${tgl.getDate().toString().padStart(2, '0')} ${bulan[tgl.getMonth()]} ${tgl.getFullYear()}`;
                 }
 
                 // ============================================
@@ -9955,7 +10116,7 @@
             ${semuaTransaksi.map((item, idx) => `
             <tr>
                 <td style="text-align:center;">${idx + 1}</td>
-                <td style="text-align:center;">${item.tanggal || '-'}</td>
+                <td style="text-align:center;">${formatTanggalGlobal(item.tanggal)}</td>
                 <td style="text-align:center;">${item.no_sppd || '-'}</td>
                 <td style="text-align:center;">${item.nomor_akta || '-'}</td>
                 <td style="text-align:center;">${item.nomor_hak || '-'}</td>
