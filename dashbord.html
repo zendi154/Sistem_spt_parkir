@@ -3122,7 +3122,7 @@
 
             <!-- Kiri: Judul -->
             <a class="navbar-brand d-flex align-items-center" href="">
-                <i class="bi bi-speedometer2"> Rekapitulasi Auto</i>
+                <i class="bi bi-speedometer2"> SIARDA </i>
             </a>
 
             <!-- Kanan: Icon Scan -->
@@ -4003,9 +4003,8 @@
             container.innerHTML = html;
         }
 
-        // EXPORT EXCEL DENGAN LOGO DAN FORMAT TANGGAL INDONESIA
         // ============================================
-        // EXPORT EXCEL - VERSI MODERN ELEGAN
+        // EXPORT EXCEL - VERSI MODERN ELEGAN (LOGO DIPERKECIL)
         // ============================================
         function exportExcel() {
             if (!currentFilteredData || currentFilteredData.length === 0) {
@@ -4054,19 +4053,19 @@
         body {
             font-family: 'Segoe UI', 'Times New Roman', Arial, sans-serif;
             font-size: 9pt;
-            padding: 25px;
+            padding: 20px;
             background: #ffffff;
             color: #1e293b;
         }
         
-        /* ===== HEADER MODERN ===== */
+        /* ===== HEADER MODERN - LOGO KECIL ===== */
         .header-modern {
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 16px;
-            padding: 20px 25px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
             border: 1px solid #bae6fd;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);
             position: relative;
             overflow: hidden;
         }
@@ -4076,8 +4075,8 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
             border-radius: 50%;
         }
@@ -4091,70 +4090,74 @@
         
         .header-table td {
             border: none;
-            padding: 5px 12px;
+            padding: 3px 8px;
             vertical-align: middle;
         }
         
         .header-table .logo-cell {
-            width: 12%;
+            width: 8%;
             text-align: center;
         }
         
         .header-table .logo {
-            width: 75px;
-            height: 75px;
+            width: 40px;  /* DIPERKECIL DARI 75px MENJADI 40px */
+            height: 40px;
             object-fit: contain;
             background: white;
             border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
-            transition: transform 0.3s ease;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.10);
         }
         
         .header-table .text-cell {
-            width: 88%;
+            width: 92%;
             text-align: center;
         }
         
         .header-table .instansi {
-            font-size: 16pt;
+            font-size: 13pt;  /* DIPERKECIL DARI 16pt */
             font-weight: 800;
             color: #0284c7;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             margin: 0;
+            line-height: 1.2;
         }
         
         .header-table .kota {
-            font-size: 12pt;
+            font-size: 10pt;  /* DIPERKECIL DARI 12pt */
             font-weight: 600;
             color: #0369a1;
-            margin: 2px 0;
+            margin: 1px 0;
+            line-height: 1.2;
         }
         
         .header-table .bidang {
-            font-size: 9pt;
+            font-size: 7.5pt;  /* DIPERKECIL DARI 9pt */
             color: #475569;
             font-weight: 500;
-            margin: 2px 0;
-            letter-spacing: 0.3px;
+            margin: 1px 0;
+            letter-spacing: 0.2px;
+            line-height: 1.2;
         }
         
         .header-table .alamat {
-            font-size: 7.5pt;
+            font-size: 6.5pt;  /* DIPERKECIL DARI 7.5pt */
             color: #64748b;
-            margin: 2px 0;
+            margin: 1px 0;
+            line-height: 1.2;
         }
         
         .header-table .judul-laporan {
-            font-size: 13pt;
+            font-size: 11pt;  /* DIPERKECIL DARI 13pt */
             font-weight: 700;
             color: #0c4a6e;
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 2px solid rgba(2, 132, 199, 0.15);
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 2px solid rgba(2, 132, 199, 0.12);
             display: inline-block;
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-left: 15px;
+            padding-right: 15px;
+            line-height: 1.2;
         }
         
         /* ===== INFO CETAK MODERN ===== */
@@ -4163,54 +4166,54 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 18px;
-            padding: 10px 18px;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 8px 14px;
             background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #e2e8f0;
         }
         
         .info-cetak-modern .left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
         
         .info-cetak-modern .badge-info {
             background: linear-gradient(135deg, #0284c7, #38bdf8);
             color: white;
-            padding: 4px 14px;
+            padding: 3px 12px;
             border-radius: 30px;
-            font-size: 7.5pt;
+            font-size: 7pt;
             font-weight: 600;
         }
         
         .info-cetak-modern .label {
             color: #64748b;
-            font-size: 7.5pt;
+            font-size: 7pt;
         }
         
         .info-cetak-modern .value {
             font-weight: 600;
             color: #1e293b;
-            font-size: 8pt;
+            font-size: 7.5pt;
         }
         
         /* ===== TABLE MODERN ===== */
         .table-wrapper {
             overflow-x: auto;
-            margin: 10px 0;
-            border-radius: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
             border: 1px solid #e2e8f0;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 7.5pt;
-            min-width: 1200px;
+            font-size: 7pt;
+            min-width: 1100px;
         }
         
         thead {
@@ -4221,20 +4224,16 @@
             color: white;
             font-weight: 600;
             text-align: center;
-            padding: 8px 6px;
-            font-size: 7pt;
+            padding: 6px 5px;
+            font-size: 6.5pt;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             border: none;
-            border-right: 1px solid rgba(255,255,255,0.15);
+            border-right: 1px solid rgba(255,255,255,0.12);
         }
         
         thead th:last-child {
             border-right: none;
-        }
-        
-        tbody tr {
-            transition: background 0.15s ease;
         }
         
         tbody tr:nth-child(even) {
@@ -4246,10 +4245,10 @@
         }
         
         tbody td {
-            padding: 5px 6px;
+            padding: 4px 5px;
             border-bottom: 1px solid #e2e8f0;
             vertical-align: middle;
-            font-size: 7pt;
+            font-size: 6.5pt;
         }
         
         tbody td:first-child {
@@ -4268,10 +4267,10 @@
         
         /* ===== FOOTER MODERN ===== */
         .footer-modern {
-            margin-top: 20px;
-            padding: 12px 18px;
+            margin-top: 16px;
+            padding: 10px 14px;
             background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #bae6fd;
             display: flex;
             justify-content: space-between;
@@ -4281,23 +4280,23 @@
         
         .footer-modern .total-box {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
         }
         
         .footer-modern .total-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
         
         .footer-modern .total-item .label {
-            font-size: 7.5pt;
+            font-size: 7pt;
             color: #475569;
         }
         
         .footer-modern .total-item .value {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: 700;
             color: #0284c7;
         }
@@ -4308,7 +4307,7 @@
         
         .footer-modern .signature {
             text-align: right;
-            font-size: 7pt;
+            font-size: 6.5pt;
             color: #64748b;
         }
         
@@ -4318,16 +4317,16 @@
         
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .header-table .logo { width: 50px; height: 50px; }
-            .header-table .instansi { font-size: 13pt; }
-            .header-table .judul-laporan { font-size: 11pt; }
+            .header-table .logo { width: 32px; height: 32px; }
+            .header-table .instansi { font-size: 11pt; }
+            .header-table .judul-laporan { font-size: 9pt; }
             .info-cetak-modern { flex-direction: column; text-align: center; }
-            .footer-modern { flex-direction: column; text-align: center; gap: 10px; }
+            .footer-modern { flex-direction: column; text-align: center; gap: 8px; }
         }
     </style>
 </head>
 <body>
-    <!-- ===== HEADER MODERN ===== -->
+    <!-- ===== HEADER MODERN - LOGO KECIL ===== -->
     <div class="header-modern">
         <table class="header-table">
             <tr>
@@ -4338,8 +4337,8 @@
                     <div class="instansi">BADAN PENDAPATAN DAERAH</div>
                     <div class="kota">KOTA BENGKULU</div>
                     <div class="bidang">Bidang Pengendalian dan Evaluasi Pendapatan Daerah</div>
-                    <div class="alamat">Jl. WR. Supratman Kelurahan Bentiring Permai | Website: sibabe.bengkulukota.go.id</div>
-                    <div class="judul-laporan"> LAPORAN DATA PPAT / NOTARIS</div>
+                    <div class="alamat">Jl. WR. Supratman Kelurahan Bentiring Permai</div>
+                    <div class="judul-laporan">LAPORAN DATA PPAT / NOTARIS</div>
                 </td>
             </tr>
         </table>
@@ -4348,13 +4347,13 @@
     <!-- ===== INFO CETAK MODERN ===== -->
     <div class="info-cetak-modern">
         <div class="left">
-            <span class="badge-info"> LAPORAN</span>
+            <span class="badge-info">LAPORAN</span>
             <span class="label">Tanggal Cetak :</span>
             <span class="value">${tanggalExport} | ${waktuExport}</span>
         </div>
         <div>
             <span class="label">Total Data :</span>
-            <span class="value" style="color:#0284c7; font-size:9pt;">${currentFilteredData.length} Laporan</span>
+            <span class="value" style="color:#0284c7; font-size:8.5pt;">${currentFilteredData.length} Laporan</span>
         </div>
     </div>
 
@@ -4363,16 +4362,16 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width:4%;">No</th>
-                    <th style="width:8%;">Nomor Unik</th>
-                    <th style="width:16%;">Nama Notaris &amp; PPAT</th>
-                    <th style="width:16%;">Alamat Kantor</th>
+                    <th style="width:3%;">No</th>
+                    <th style="width:7%;">Nomor Unik</th>
+                    <th style="width:15%;">Nama Notaris &amp; PPAT</th>
+                    <th style="width:15%;">Alamat Kantor</th>
                     <th style="width:8%;">Nomor Surat</th>
                     <th style="width:8%;">Tanggal Surat</th>
                     <th style="width:8%;">Tanggal Diterima</th>
                     <th style="width:8%;">Status</th>
                     <th style="width:8%;">Bulan Laporan</th>
-                    <th style="width:6%;">Jml Laporan</th>
+                    <th style="width:5%;">Jml</th>
                     <th style="width:10%;">BPHTB (Rp)</th>
                     <th style="width:10%;">Keterangan</th>
                 </tr>
@@ -4402,21 +4401,21 @@
     <div class="footer-modern">
         <div class="total-box">
             <div class="total-item">
-                <span class="label"> Total Laporan :</span>
+                <span class="label">Total Laporan :</span>
                 <span class="value">${totalLaporan}</span>
             </div>
             <div class="total-item">
-                <span class="label"> Total BPHTB :</span>
+                <span class="label">Total BPHTB :</span>
                 <span class="value green">${formatRupiahTabel(String(totalBPHTB))}</span>
             </div>
             <div class="total-item">
-                <span class="label"> Total Data :</span>
+                <span class="label">Total Data :</span>
                 <span class="value">${currentFilteredData.length}</span>
             </div>
         </div>
         <div class="signature">
             <strong>Bapenda Kota Bengkulu</strong><br>
-            <span style="font-size:6.5pt;">Dicetak secara elektronik • ${tanggalExport}</span>
+            <span style="font-size:6pt;">Dicetak secara elektronik • ${tanggalExport}</span>
         </div>
     </div>
 </body>
@@ -9626,7 +9625,7 @@
         }
 
         // ============================================
-        // FUNGSI PRINT DATA TRANSAKSI (DENGAN LOGO & HEADER LENGKAP)
+        // FUNGSI PRINT DATA TRANSAKSI (DENGAN LOGO & KETERANGAN DARI SHEET)
         // ============================================
 
         function printDataTransaksi() {
@@ -9735,8 +9734,16 @@
                             if (dataNotaris["data_transaksi"]) {
                                 let transaksi = JSON.parse(dataNotaris["data_transaksi"]);
                                 if (Array.isArray(transaksi)) {
+                                    // ============================================
+                                    // AMBIL KETERANGAN DARI KOLOM TERPISAH DI SHEET
+                                    // ============================================
+                                    const keteranganDariSheet = dataNotaris["keterangan"] || '';
+
                                     transaksi.forEach(item => {
+                                        // Simpan bulan asal transaksi
                                         item._bulan_laporan = bulan;
+                                        // Simpan keterangan dari kolom terpisah
+                                        item._keterangan = keteranganDariSheet;
                                         semuaTransaksi.push(item);
                                         jumlahTransaksi++;
 
@@ -9789,7 +9796,7 @@
 
             // Ambil data notaris pertama untuk info
             const firstData = dataNotarisList[0];
-            const keterangan = firstData["keterangan"] || '-';
+            const keteranganFallback = firstData["keterangan"] || '-';
 
             // Tentukan judul periode
             let periodeText = '';
@@ -9802,7 +9809,7 @@
             // LOGO URL
             const LOGO_URL = "https://lh3.googleusercontent.com/d/1VJ8sMX4zC4_W7uZCiVCFvYJ22mXia57x=s200";
 
-            // Buat HTML ringkasan per bulan
+            // Buat HTML ringkasan per bulan (hanya untuk multi bulan)
             let ringkasanHtml = '';
             if (ringkasanPerBulan.length > 1) {
                 ringkasanHtml = `
@@ -9846,7 +9853,7 @@
             }
 
             // ============================================
-            // BUAT HTML PRINT - DENGAN LOGO & HEADER LENGKAP
+            // BUAT HTML PRINT - DENGAN LOGO & KETERANGAN DARI SHEET
             // ============================================
             const printHTML = `<!DOCTYPE html>
 <html>
@@ -10129,7 +10136,7 @@
         
         ${ringkasanHtml}
         
-        <!-- TABEL DENGAN KOLOM BULAN LAPORAN PER BARIS -->
+        <!-- TABEL DENGAN KOLOM PERIODE & KETERANGAN PER BARIS -->
         <table class="table-transaksi">
             <thead>
                 <tr>
@@ -10171,7 +10178,7 @@
                     <td style="text-align:right;">${item.ssp || '-'}</td>
                     <td style="text-align:right;">${item.ssb || '-'}</td>
                     <td style="text-align:center;"><strong>${item._bulan_laporan || '-'}</strong></td>
-                    <td style="text-align:left;">${escapeHtml(keterangan)}</td>
+                    <td style="text-align:left;">${escapeHtml(item._keterangan || keteranganFallback || '-')}</td>
                 </tr>
                 `).join('')}
             </tbody>
@@ -10212,7 +10219,7 @@
             printWindow.document.close();
         }
 
-        // Export data transaksi ke Excel (DENGAN LOGO KECIL & HEADER LENGKAP)
+        // Export data transaksi ke Excel (DENGAN LOGO DI KOLOM A, NAMA KANTOR DI KOLOM B-C)
         function exportDataTransaksiToExcel() {
             console.log("exportDataTransaksiToExcel dipanggil");
 
@@ -10324,14 +10331,11 @@
                             try {
                                 let transaksi = JSON.parse(dataNotaris["data_transaksi"]);
                                 if (Array.isArray(transaksi)) {
-                                    // ============================================
-                                    // AMBIL KETERANGAN DARI KOLOM TERPISAH
-                                    // ============================================
                                     const keteranganDariSheet = dataNotaris["keterangan"] || '';
 
                                     for (const item of transaksi) {
                                         item._bulan_laporan = bulan;
-                                        item._keterangan = keteranganDariSheet;  // <-- SIMPAN KE ITEM
+                                        item._keterangan = keteranganDariSheet;
                                         semuaTransaksi.push(item);
                                         jumlahTransaksi++;
 
@@ -10366,7 +10370,6 @@
                     return;
                 }
 
-                // Keterangan dari firstData sebagai fallback
                 const keteranganFallback = firstData ? firstData["keterangan"] || '-' : '-';
                 const now = new Date();
                 const tanggalExport = now.toLocaleDateString('id-ID');
@@ -10424,7 +10427,7 @@
                 }
 
                 // ============================================
-                // BUAT HTML EXCEL
+                // BUAT HTML EXCEL - LAYOUT RAPI (LOGO DI KOLOM A)
                 // ============================================
                 let htmlContent = `<!DOCTYPE html>
 <html>
@@ -10440,118 +10443,130 @@
         body {
             font-family: 'Times New Roman', Arial, sans-serif;
             font-size: 10pt;
-            padding: 15px;
+            padding: 20px;
+            background: #ffffff;
         }
-        .header-modern {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            border: 1px solid #bae6fd;
-        }
+        
+        /* ===== HEADER TABLE - LAYOUT RAPI ===== */
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .header-table td {
-            border: none;
-            padding: 3px 8px;
+            padding: 8px 12px;
             vertical-align: middle;
+            border: 1px solid #d1d5db;
         }
         .header-table .logo-cell {
-            width: 8%;
+            width: 10%;
             text-align: center;
+            background: #f8fafc;
         }
         .header-table .logo {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
-            background: white;
-            border-radius: 50%;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
         }
-        .header-table .text-cell {
-            width: 92%;
-            text-align: center;
+        .header-table .title-cell {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
         }
         .header-table .instansi {
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: 800;
             color: #0284c7;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
         }
         .header-table .kota {
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: 600;
             color: #0369a1;
         }
         .header-table .bidang {
-            font-size: 8.5pt;
+            font-size: 9pt;
             color: #475569;
             font-weight: 500;
         }
         .header-table .alamat {
-            font-size: 7pt;
+            font-size: 7.5pt;
             color: #64748b;
         }
         .header-table .judul-laporan {
-            font-size: 11pt;
+            font-size: 13pt;
             font-weight: 700;
             color: #0c4a6e;
-            margin-top: 4px;
-            padding-top: 4px;
-            border-top: 2px solid rgba(2, 132, 199, 0.15);
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 2px solid rgba(2, 132, 199, 0.2);
             display: inline-block;
-            padding-left: 15px;
-            padding-right: 15px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
+        
+        /* ===== INFO NOTARIS ===== */
         .info-notaris {
-            margin-bottom: 15px;
-            padding: 8px 12px;
-            background: #f0f9ff;
-            border-left: 3px solid #0284c7;
-        }
-        .info-notaris table {
             width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .info-notaris td {
-            padding: 3px 6px;
+            padding: 5px 10px;
+            border: 1px solid #d1d5db;
             font-size: 8.5pt;
         }
-        .info-notaris td:first-child {
-            width: 100px;
-            font-weight: bold;
+        .info-notaris .label {
+            font-weight: 600;
+            color: #475569;
+            background: #f8fafc;
+            width: 120px;
         }
+        .info-notaris .value {
+            color: #1e293b;
+        }
+        .info-notaris .value strong {
+            color: #0284c7;
+        }
+        
+        /* ===== INFO TRANSAKSI ===== */
         .info-transaksi {
-            margin-bottom: 10px;
-            padding: 6px 10px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
             background: #e0f2fe;
-            border-radius: 5px;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
         }
         .info-transaksi p {
             font-size: 8.5pt;
             font-weight: bold;
             color: #0284c7;
+            margin: 2px 0;
         }
+        
+        /* ===== TABLE UTAMA ===== */
         table {
             border-collapse: collapse;
             width: 100%;
-            margin: 10px 0;
+            margin: 8px 0;
             font-size: 8pt;
         }
         th, td {
             border: 1px solid #000000;
             padding: 5px 4px;
             text-align: left;
-            vertical-align: top;
+            vertical-align: middle;
         }
         th {
             background-color: #0284c7;
             color: white;
             font-weight: bold;
             text-align: center;
-            font-size: 7.5pt;
+            font-size: 7pt;
         }
         td {
             text-align: left;
@@ -10566,127 +10581,237 @@
         td:nth-child(14) { text-align: right; }
         td:nth-child(15) { text-align: right; }
         td:nth-child(16) { text-align: center; }
+        
+        /* ===== TOTAL SECTION ===== */
         .total-section {
-            margin-top: 15px;
-            padding: 8px 12px;
+            margin-top: 12px;
+            padding: 8px 14px;
             background: #f8fafc;
             border: 1px solid #cbd5e1;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 9pt;
+            font-weight: 700;
         }
+        .total-section .grand {
+            color: #059669;
+            font-size: 10pt;
+        }
+        
+        /* ===== FOOTER ===== */
         .footer {
             margin-top: 15px;
             text-align: center;
             font-size: 7pt;
             color: #64748b;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* ===== RINGKASAN BULANAN ===== */
+        .ringkasan-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+            font-size: 8pt;
+        }
+        .ringkasan-table th {
+            background-color: #0284c7;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px;
+            border: 1px solid #000000;
+        }
+        .ringkasan-table td {
+            padding: 5px 6px;
+            border: 1px solid #000000;
+            text-align: center;
+        }
+        .ringkasan-table td:nth-child(3),
+        .ringkasan-table td:nth-child(4),
+        .ringkasan-table td:nth-child(5),
+        .ringkasan-table td:nth-child(6) {
+            text-align: right;
+        }
+        .ringkasan-table tfoot td {
+            background: #e0f2fe;
+            font-weight: bold;
+        }
+        .ringkasan-caption {
+            font-weight: bold;
+            font-size: 9pt;
+            margin-bottom: 5px;
+            color: #0284c7;
         }
     </style>
 </head>
 <body>
-    <div class="header-modern">
-        <table class="header-table">
-            <tr>
-                <td class="logo-cell">
-                    <img src="${LOGO_URL}" class="logo" alt="Logo Bapenda">
-                </td>
-                <td class="text-cell">
-                    <div class="instansi">BADAN PENDAPATAN DAERAH</div>
-                    <div class="kota">KOTA BENGKULU</div>
-                    <div class="bidang">Bidang Pengendalian dan Evaluasi Pendapatan Daerah</div>
-                    <div class="alamat">Jl. WR. Supratman Kelurahan Bentiring Permai</div>
-                    <div class="judul-laporan"> DATA TRANSAKSI PPAT / NOTARIS</div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    
-    <div class="info-notaris">
-        <table>
-            <tr>
-                <td width="100">Nomor Unik</td>
-                <td colspan="3">: ${firstData ? (firstData["id"] || '-') : '-'}</td>
-                <td width="80">Periode Laporan</td>
-                <td>: <strong>${periodeText}</strong></td>
-            </tr>
-            <tr>
-                <td>Nama Notaris</td>
-                <td colspan="5">: ${escapeHtml(namaNotaris)}</td>
-            </tr>
-            <tr>
-                <td>Alamat Kantor</td>
-                <td colspan="5">: ${firstData ? escapeHtml(firstData["alamat"] || '-') : '-'}</td>
-            </tr>
-        </table>
-    </div>
-    
-    <div class="info-transaksi">
-        <p><strong>📋 Daftar Transaksi ${daftarBulan.length > 1 ? 'Gabungan ' + daftarBulan.length + ' Bulan' : 'Bulan ' + daftarBulan[0]} (${semuaTransaksi.length} Transaksi)</strong></p>
-        <p><strong>💰 TOTAL SSP: ${formatRupiahTabel(String(totalSSP))} | TOTAL SSB: ${formatRupiahTabel(String(totalSSB))} | GRAND TOTAL: ${formatRupiahTabel(String(totalSSP + totalSSB))}</strong></p>
-    </div>
-    
-    ${ringkasanHtml}
-    
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Tanggal Transaksi</th>
-                <th>No.SPPD</th>
-                <th>No.Akta</th>
-                <th>No.Hak</th>
-                <th>Pemberi</th>
-                <th>Penerima</th>
-                <th>Kecamatan</th>
-                <th>Kelurahan</th>
-                <th>NOP</th>
-                <th>NJOP</th>
-                <th>Luas TB</th>
-                <th>Harga</th>
-                <th>SSP</th>
-                <th>SSB</th>
-                <th>Periode</th>
-                <th>Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${semuaTransaksi.map((item, idx) => `
-            <tr>
-                <td style="text-align:center;">${idx + 1}</td>
-                <td style="text-align:center;">${formatTanggalGlobal(item.tanggal)}</td>
-                <td style="text-align:center;">${item.no_sppd || '-'}</td>
-                <td style="text-align:center;">${item.nomor_akta || '-'}</td>
-                <td style="text-align:center;">${item.nomor_hak || '-'}</td>
-                <td>${escapeHtml(item.penjual || '-')}</td>
-                <td>${escapeHtml(item.pembeli || '-')}</td>
-                <td>${item.kecamatan || '-'}</td>
-                <td>${item.kelurahan || '-'}</td>
-                <td style="text-align:center;">${item.nop || '-'}</td>
-                <td style="text-align:right;">${item.njop || '-'}</td>
-                <td style="text-align:center;">${item.luas_tb || '-'}</td>
-                <td style="text-align:right;">${item.harga || '-'}</td>
-                <td style="text-align:right;">${item.ssp || '-'}</td>
-                <td style="text-align:right;">${item.ssb || '-'}</td>
-                <td style="text-align:center;"><strong>${item._bulan_laporan || '-'}</strong></td>
-                <td>${escapeHtml(item._keterangan || keteranganFallback || '-')}</td>  <!-- <-- PAKAI _keterangan -->
-            </tr>
-            `).join('')}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="16" style="text-align:right; font-weight:bold;">JUMLAH: </td>
-                <td style="text-align:right; font-weight:bold;">SSP: ${formatRupiahTabel(String(totalSSP))} | SSB: ${formatRupiahTabel(String(totalSSB))}</td>
-            </tr>
-        </tfoot>
-    </table>
-    
-    <div class="total-section">
-        <strong>GRAND TOTAL:</strong> ${formatRupiahTabel(String(totalSSP + totalSSB))}
-    </div>
-    
-    <div class="footer">
-        <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
-        <p>Dicetak pada: ${tanggalExport}</p>
-        ${daftarBulan.length > 1 ? '<p>**Laporan ini merupakan GABUNGAN dari ' + daftarBulan.length + ' periode</p>' : ''}
-    </div>
+
+<!-- ========================================== -->
+<!-- HEADER - LAYOUT RAPI (LOGO DI KOLOM A)    -->
+<!-- ========================================== -->
+<table class="header-table">
+    <tr>
+        <td class="logo-cell" rowspan="2" style="width:10%;">
+            <img src="${LOGO_URL}" class="logo" alt="Logo Bapenda">
+        </td>
+        <td class="title-cell" style="text-align:center;">
+            <div class="instansi">BADAN PENDAPATAN DAERAH</div>
+            <div class="kota">KOTA BENGKULU</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="title-cell" style="text-align:center;">
+            <div class="bidang">Bidang Pengendalian dan Evaluasi Pendapatan Daerah</div>
+            <div class="alamat">Jl. WR. Supratman Kelurahan Bentiring Permai</div>
+            <div class="judul-laporan">DATA TRANSAKSI PPAT / NOTARIS</div>
+        </td>
+    </tr>
+</table>
+
+<!-- ========================================== -->
+<!-- INFO NOTARIS                               -->
+<!-- ========================================== -->
+<table class="info-notaris">
+    <tr>
+        <td class="label">Nomor Unik</td>
+        <td class="value">: ${firstData ? (firstData["id"] || '-') : '-'}</td>
+        <td class="label" style="width:100px;">Periode Laporan</td>
+        <td class="value">: <strong>${periodeText}</strong></td>
+    </tr>
+    <tr>
+        <td class="label">Nama Notaris</td>
+        <td class="value" colspan="3">: ${escapeHtml(namaNotaris)}</td>
+    </tr>
+    <tr>
+        <td class="label">Alamat Kantor</td>
+        <td class="value" colspan="3">: ${firstData ? escapeHtml(firstData["alamat"] || '-') : '-'}</td>
+    </tr>
+</table>
+
+<!-- ========================================== -->
+<!-- INFO TRANSAKSI                             -->
+<!-- ========================================== -->
+<div class="info-transaksi">
+    <p>📋 Daftar Transaksi ${daftarBulan.length > 1 ? 'Gabungan ' + daftarBulan.length + ' Bulan' : 'Bulan ' + daftarBulan[0]} (${semuaTransaksi.length} Transaksi)</p>
+    <p>💰 TOTAL SSP: ${formatRupiahTabel(String(totalSSP))} | TOTAL SSB: ${formatRupiahTabel(String(totalSSB))} | GRAND TOTAL: ${formatRupiahTabel(String(totalSSP + totalSSB))}</p>
+</div>
+
+<!-- ========================================== -->
+<!-- RINGKASAN PER BULAN (JIKA MULTI BULAN)     -->
+<!-- ========================================== -->
+${ringkasanPerBulan.length > 1 ? `
+<div class="ringkasan-caption">📊 RINGKASAN PER BULAN</div>
+<table class="ringkasan-table">
+    <thead>
+        <tr>
+            <th style="width:8%;">No</th>
+            <th style="width:35%;">Bulan</th>
+            <th style="width:15%;">Jumlah Transaksi</th>
+            <th style="width:14%;">Total SSP</th>
+            <th style="width:14%;">Total SSB</th>
+            <th style="width:14%;">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        ${ringkasanPerBulan.map((item, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td><strong>${item.bulan}</strong></td>
+            <td style="text-align:center;">${item.jumlahTransaksi}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(item.ssp))}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(item.ssb))}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(item.ssp + item.ssb))}</td>
+        </tr>
+        `).join('')}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2" style="text-align:right;">TOTAL:</td>
+            <td style="text-align:center;">${semuaTransaksi.length}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(totalSSP))}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(totalSSB))}</td>
+            <td style="text-align:right;">${formatRupiahTabel(String(totalSSP + totalSSB))}</td>
+        </tr>
+    </tfoot>
+</table>
+<br>
+` : ''}
+
+<!-- ========================================== -->
+<!-- TABEL TRANSAKSI                            -->
+<!-- ========================================== -->
+<table>
+    <thead>
+        <tr>
+            <th style="width:3%;">No</th>
+            <th style="width:7%;">Tanggal Transaksi</th>
+            <th style="width:7%;">No.SPPD</th>
+            <th style="width:6%;">No.Akta</th>
+            <th style="width:6%;">No.Hak</th>
+            <th style="width:10%;">Pemberi</th>
+            <th style="width:10%;">Penerima</th>
+            <th style="width:6%;">Kecamatan</th>
+            <th style="width:6%;">Kelurahan</th>
+            <th style="width:6%;">NOP</th>
+            <th style="width:6%;">NJOP</th>
+            <th style="width:4%;">Luas TB</th>
+            <th style="width:7%;">Harga</th>
+            <th style="width:5%;">SSP</th>
+            <th style="width:5%;">SSB</th>
+            <th style="width:7%;">Periode</th>
+            <th style="width:10%;">Keterangan</th>
+        </tr>
+    </thead>
+    <tbody>
+        ${semuaTransaksi.map((item, idx) => `
+        <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td style="text-align:center;">${formatTanggalGlobal(item.tanggal)}</td>
+            <td style="text-align:center;">${item.no_sppd || '-'}</td>
+            <td style="text-align:center;">${item.nomor_akta || '-'}</td>
+            <td style="text-align:center;">${item.nomor_hak || '-'}</td>
+            <td>${escapeHtml(item.penjual || '-')}</td>
+            <td>${escapeHtml(item.pembeli || '-')}</td>
+            <td>${item.kecamatan || '-'}</td>
+            <td>${item.kelurahan || '-'}</td>
+            <td style="text-align:center;">${item.nop || '-'}</td>
+            <td style="text-align:right;">${item.njop || '-'}</td>
+            <td style="text-align:center;">${item.luas_tb || '-'}</td>
+            <td style="text-align:right;">${item.harga || '-'}</td>
+            <td style="text-align:right;">${item.ssp || '-'}</td>
+            <td style="text-align:right;">${item.ssb || '-'}</td>
+            <td style="text-align:center;"><strong>${item._bulan_laporan || '-'}</strong></td>
+            <td>${escapeHtml(item._keterangan || keteranganFallback || '-')}</td>
+        </tr>
+        `).join('')}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="16" style="text-align:right; font-weight:bold;">JUMLAH: </td>
+            <td style="text-align:right; font-weight:bold;">SSP: ${formatRupiahTabel(String(totalSSP))} | SSB: ${formatRupiahTabel(String(totalSSB))}</td>
+        </tr>
+    </tfoot>
+</table>
+
+<!-- ========================================== -->
+<!-- TOTAL SECTION                              -->
+<!-- ========================================== -->
+<div class="total-section">
+    <span>GRAND TOTAL : </span>
+    <span class="grand">${formatRupiahTabel(String(totalSSP + totalSSB))}</span>
+</div>
+
+<!-- ========================================== -->
+<!-- FOOTER                                     -->
+<!-- ========================================== -->
+<div class="footer">
+    <p>Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
+    <p>Dicetak pada: ${tanggalExport}</p>
+    ${daftarBulan.length > 1 ? '<p>**Laporan ini merupakan GABUNGAN dari ' + daftarBulan.length + ' periode</p>' : ''}
+    <p style="margin-top:5px; font-size:6.5pt;">Sistem Informasi Laporan PPAT - Badan Pendapatan Daerah Kota Bengkulu</p>
+</div>
+
 </body>
 </html>`;
 
