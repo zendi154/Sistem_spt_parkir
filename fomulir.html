@@ -4286,7 +4286,7 @@
                         statusIndex = (statusIndex + 1) % loadingStatuses.length;
                         if (loadingStatus) loadingStatus.textContent = loadingStatuses[statusIndex].text;
                         if (loadingSubstatus) loadingSubstatus.textContent = loadingStatuses[statusIndex].sub;
-                    }, 1500);
+                    }, 3300);
 
                     // Buat FormData dari form
                     const formData = new FormData(formElement);
@@ -4374,7 +4374,7 @@
                 </div>
             `,
                                     showConfirmButton: false,
-                                    timer: 3000,
+                                    timer: 10000,
                                     timerProgressBar: true,
                                     allowOutsideClick: false,
                                     backdrop: `rgba(10, 15, 30, 0.75)`,
@@ -4486,7 +4486,7 @@
 
                                     console.log("✅ Semua field telah direset & tombol kirim aktif kembali");
 
-                                }, 3200);
+                                }, 10200);
 
                             } else {
                                 // ❌ GAGAL
