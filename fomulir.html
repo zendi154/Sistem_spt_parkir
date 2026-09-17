@@ -487,22 +487,25 @@
     }
 
     /* ===============================
-   SPINNER MODERN - DUAL RING + DOT
-================================ */
+      SPINNER MODERN - DUAL RING + DOT
+    ================================ */
     .loading-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: rgba(10, 15, 30, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        z-index: 99999;
-        animation: fadeIn 0.3s ease;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: rgba(10, 15, 30, 0.85) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        z-index: 99999 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .loading-box {
@@ -2722,37 +2725,6 @@
                                                     Kirim Laporan
                                                 </button>
                                             </div>
-
-                                            <!-- ✅ LOADING OVERLAY MODERN - DENGAN ID loadingWrapper -->
-                                            <div class="loading-wrapper d-none" id="loadingWrapper">
-                                                <div class="loading-box text-center">
-
-                                                    <!-- Dual ring spinner -->
-                                                    <div class="spinner-dual">
-                                                        <div class="ring ring-outer"></div>
-                                                        <div class="ring ring-inner"></div>
-                                                        <div class="dot-center"></div>
-                                                    </div>
-
-                                                    <!-- Status text dinamis -->
-                                                    <p class="loading-status-modern" id="loadingStatus">Mengirim Laporan
-                                                    </p>
-                                                    <p class="loading-substatus-modern" id="loadingSubstatus">
-                                                        Menghubungi server...</p>
-
-                                                    <!-- Progress bar -->
-                                                    <div class="loading-progress-modern">
-                                                        <div class="loading-progress-modern-bar"></div>
-                                                    </div>
-
-                                                    <!-- Dots tambahan -->
-                                                    <div class="loading-dots">
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </form>
         </section><br><br>
 
@@ -2799,6 +2771,28 @@
             </div>
         </nav>
         <!-- Akhir Navbar -->
+        <!-- ✅ LOADING OVERLAY - DI LUAR FORM -->
+        <div class="loading-wrapper d-none" id="loadingWrapper">
+            <div class="loading-box text-center">
+                <div class="spinner-dual">
+                    <div class="ring ring-outer"></div>
+                    <div class="ring ring-inner"></div>
+                    <div class="dot-center"></div>
+                </div>
+                <p class="loading-status-modern" id="loadingStatus">Mengirim Laporan</p>
+                <p class="loading-substatus-modern" id="loadingSubstatus">Harap Tunggu!, Menghubungi server...</p>
+                <div class="loading-progress-modern">
+                    <div class="loading-progress-modern-bar"></div>
+                </div>
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
             // HAPUS ATAU KOMENTARI SELURUH BLOK TERSEBUT
