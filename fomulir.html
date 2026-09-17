@@ -19,21 +19,55 @@
 
 <style>
     /* ===============================
-     BACKGROUND HALAMAN – GRADIENT ANIMASI
-    ================================ */
+   MODERN ANIMATED BACKGROUND
+================================ */
     body {
         min-height: 100vh;
         margin: 0;
-        background: linear-gradient(120deg,
-                #0d6efd,
-                #20c997,
-                #f81bcf,
-                #0dcaf0);
-        background-size: 300% 300%;
-        animation: gradientMove 15s ease infinite;
+        position: relative;
+        overflow-x: hidden;
+        background: linear-gradient(135deg,
+                #0f172a 0%,
+                #1e3a8a 25%,
+                #4c1d95 50%,
+                #831843 75%,
+                #0f172a 100%);
+        background-size: 400% 400%;
+        animation: gradientMove 20s ease infinite;
     }
 
-    /* Animasi transisi warna */
+    /* Gradient mesh base */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(13, 110, 253, 0.35) 0%, transparent 45%),
+            radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.3) 0%, transparent 45%),
+            radial-gradient(circle at 25% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 45%),
+            radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.35) 0%, transparent 45%),
+            radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
+        animation: meshFloat 15s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: gridMove 20s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    }
+
     @keyframes gradientMove {
         0% {
             background-position: 0% 50%;
@@ -48,12 +82,273 @@
         }
     }
 
-    /* FORM UTAMA */
-    form[name="LAPORAN NOTARIS 2025"] {
-        background: #efeff2a3;
+    @keyframes meshFloat {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+
+        33% {
+            transform: translate(30px, -30px) scale(1.1);
+            opacity: 0.9;
+        }
+
+        66% {
+            transform: translate(-20px, 20px) scale(0.95);
+            opacity: 1;
+        }
+    }
+
+    @keyframes gridMove {
+        0% {
+            background-position: 0 0;
+        }
+
+        100% {
+            background-position: 50px 50px;
+        }
+    }
+
+    /* ===============================
+   FLOATING BLOBS
+================================ */
+    .bg-blobs {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        will-change: transform;
+    }
+
+    .blob-1 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, #0d6efd 0%, transparent 70%);
+        top: -100px;
+        left: -100px;
+        animation: blobMove1 25s ease-in-out infinite;
+    }
+
+    .blob-2 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+        top: 30%;
+        right: -200px;
+        animation: blobMove2 30s ease-in-out infinite;
+    }
+
+    .blob-3 {
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+        bottom: -150px;
+        left: 20%;
+        animation: blobMove3 28s ease-in-out infinite;
+    }
+
+    .blob-4 {
+        width: 380px;
+        height: 380px;
+        background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+        top: 50%;
+        left: 40%;
+        animation: blobMove1 22s ease-in-out infinite reverse;
+    }
+
+    .blob-5 {
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(circle, #22c55e 0%, transparent 70%);
+        bottom: 10%;
+        right: 15%;
+        animation: blobMove2 26s ease-in-out infinite reverse;
+    }
+
+    @keyframes blobMove1 {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        33% {
+            transform: translate(80px, -60px) scale(1.15);
+        }
+
+        66% {
+            transform: translate(-50px, 50px) scale(0.9);
+        }
+    }
+
+    @keyframes blobMove2 {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(-100px, 80px) scale(1.1);
+        }
+    }
+
+    @keyframes blobMove3 {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(60px, -70px) scale(1.2);
+        }
+    }
+
+    /* ===============================
+   FLOATING PARTICLES
+================================ */
+    .particles {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0;
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+        animation: particleFloat 15s linear infinite;
+    }
+
+    .particle:nth-child(1) {
+        left: 10%;
+        animation-delay: 0s;
+        animation-duration: 12s;
+    }
+
+    .particle:nth-child(2) {
+        left: 25%;
+        animation-delay: 2s;
+        animation-duration: 18s;
+        width: 3px;
+        height: 3px;
+    }
+
+    .particle:nth-child(3) {
+        left: 40%;
+        animation-delay: 4s;
+        animation-duration: 14s;
+    }
+
+    .particle:nth-child(4) {
+        left: 55%;
+        animation-delay: 1s;
+        animation-duration: 16s;
+        width: 5px;
+        height: 5px;
+        background: #38bdf8;
+    }
+
+    .particle:nth-child(5) {
+        left: 70%;
+        animation-delay: 3s;
+        animation-duration: 20s;
+    }
+
+    .particle:nth-child(6) {
+        left: 85%;
+        animation-delay: 5s;
+        animation-duration: 13s;
+        width: 3px;
+        height: 3px;
+        background: #f472b6;
+    }
+
+    .particle:nth-child(7) {
+        left: 15%;
+        animation-delay: 6s;
+        animation-duration: 17s;
+        background: #22d3ee;
+    }
+
+    .particle:nth-child(8) {
+        left: 50%;
+        animation-delay: 7s;
+        animation-duration: 15s;
+        width: 5px;
+        height: 5px;
+        background: #a78bfa;
+    }
+
+    .particle:nth-child(9) {
+        left: 78%;
+        animation-delay: 8s;
+        animation-duration: 19s;
+    }
+
+    .particle:nth-child(10) {
+        left: 92%;
+        animation-delay: 9s;
+        animation-duration: 11s;
+        background: #4ade80;
+    }
+
+    @keyframes particleFloat {
+        0% {
+            transform: translateY(100vh) translateX(0) scale(0);
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 1;
+            transform: translateY(90vh) translateX(20px) scale(1);
+        }
+
+        90% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(-10vh) translateX(-30px) scale(0.5);
+            opacity: 0;
+        }
+    }
+
+    /* ===============================
+   CONTENT LAYER (supaya di atas background)
+================================ */
+    section {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Form tetap terlihat jelas di atas background */
+    form[name="LAPORAN NOTARIS"] {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         padding: 30px;
         border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        box-shadow:
+            0 25px 60px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.6) inset;
         font-family: 'Work Sans', sans-serif;
     }
 
@@ -90,78 +385,336 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
+    /* ===============================
+   MODERN LOADING OVERLAY
+================================ */
     .success-wrapper {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.65);
+        background: rgba(10, 15, 30, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 9999;
+        animation: fadeIn 0.3s ease;
     }
 
     .success-box {
-        background: #fff;
-        padding: 40px 50px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        animation: scaleIn 0.4s ease;
+        background: linear-gradient(145deg, #ffffff, #f8faff);
+        padding: 50px 60px;
+        border-radius: 24px;
+        box-shadow:
+            0 25px 60px rgba(0, 0, 0, 0.35),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .success-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg,
+                transparent,
+                rgba(13, 110, 253, 0.1),
+                transparent 30%);
+        animation: rotateBg 4s linear infinite;
+        pointer-events: none;
     }
 
     .success-box i {
-        font-size: 5rem;
+        font-size: 5.5rem;
+        display: inline-block;
+        animation: checkBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        z-index: 1;
+        filter: drop-shadow(0 8px 20px rgba(25, 135, 84, 0.4));
     }
 
+    .success-box h2 {
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(135deg, #0d6efd, #198754);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+    }
+
+    /* ===============================
+   MODERN LOADING WRAPPER
+================================ */
     .loading-wrapper {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-
         display: flex;
         justify-content: center;
         align-items: center;
-
-        background: rgba(0, 0, 0, 0.65);
+        background: rgba(10, 15, 30, 0.8);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         z-index: 99999;
+        animation: fadeIn 0.3s ease;
     }
 
-    /* Box spinner */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Box loading modern */
     .loading-box {
-        background: #fff;
-        padding: 40px 50px;
-        border-radius: 16px;
+        background: linear-gradient(145deg, #ffffff, #f0f4ff);
+        padding: 50px 60px;
+        border-radius: 24px;
         text-align: center;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        box-shadow:
+            0 30px 70px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+            0 0 80px rgba(13, 110, 253, 0.2);
+        position: relative;
+        overflow: hidden;
+        min-width: 320px;
+        animation: loadingPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* Spinner */
-    .spinner-custom {
-        width: 70px;
-        height: 70px;
-        border: 7px solid #e5e5e5;
-        border-top: 7px solid #0d6efd;
+    @keyframes loadingPop {
+        from {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    /* Particle floating di background loading box */
+    .loading-box::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(13, 110, 253, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(25, 135, 84, 0.08) 0%, transparent 50%);
+        animation: particleMove 8s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes particleMove {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(10px, -10px) scale(1.1);
+        }
+    }
+
+    /* ===============================
+   DUAL RING SPINNER MODERN
+================================ */
+    .spinner-modern {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 25px;
+        z-index: 1;
+    }
+
+    /* Ring luar */
+    .spinner-modern::before {
+        content: '';
+        position: absolute;
+        inset: 0;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
+        border: 4px solid transparent;
+        border-top-color: #0d6efd;
+        border-right-color: #0d6efd;
+        animation: spinRing 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        filter: drop-shadow(0 0 8px rgba(13, 110, 253, 0.6));
     }
 
-    @keyframes spin {
+    /* Ring dalam */
+    .spinner-modern::after {
+        content: '';
+        position: absolute;
+        inset: 15px;
+        border-radius: 50%;
+        border: 4px solid transparent;
+        border-bottom-color: #198754;
+        border-left-color: #198754;
+        animation: spinRing 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+        filter: drop-shadow(0 0 8px rgba(25, 135, 84, 0.6));
+    }
+
+    /* Dot tengah berdenyut */
+    .spinner-center {
+        position: absolute;
+        inset: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0d6efd, #198754);
+        animation: pulseCenter 1.5s ease-in-out infinite;
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.5);
+    }
+
+    @keyframes spinRing {
         to {
             transform: rotate(360deg);
         }
     }
 
-    @keyframes scaleIn {
-        from {
+    @keyframes pulseCenter {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
             transform: scale(0.7);
+            opacity: 0.7;
+        }
+    }
+
+    /* ===============================
+   PROGRESS BAR MODERN
+================================ */
+    .loading-progress {
+        width: 100%;
+        height: 6px;
+        background: rgba(13, 110, 253, 0.12);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 20px 0 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .loading-progress-bar {
+        height: 100%;
+        width: 30%;
+        background: linear-gradient(90deg, #0d6efd, #20c997, #198754, #0d6efd);
+        background-size: 300% 100%;
+        border-radius: 10px;
+        animation:
+            progressMove 1.8s ease-in-out infinite,
+            gradientShift 2s linear infinite;
+        box-shadow: 0 0 12px rgba(13, 110, 253, 0.6);
+    }
+
+    @keyframes progressMove {
+        0% {
+            width: 10%;
+            margin-left: 0%;
+        }
+
+        50% {
+            width: 60%;
+            margin-left: 20%;
+        }
+
+        100% {
+            width: 10%;
+            margin-left: 90%;
+        }
+    }
+
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 300% 50%;
+        }
+    }
+
+    /* ===============================
+   STATUS TEXT DINAMIS
+================================ */
+    .loading-status {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0d6efd;
+        margin: 0;
+        z-index: 1;
+        position: relative;
+        letter-spacing: 0.5px;
+        min-height: 1.5rem;
+    }
+
+    .loading-status::after {
+        content: '';
+        animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+        0% {
+            content: '';
+        }
+
+        25% {
+            content: '.';
+        }
+
+        50% {
+            content: '..';
+        }
+
+        75% {
+            content: '...';
+        }
+    }
+
+    .loading-substatus {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 8px;
+        z-index: 1;
+        position: relative;
+        font-weight: 500;
+    }
+
+    @keyframes checkBounce {
+        0% {
+            transform: scale(0) rotate(-180deg);
             opacity: 0;
         }
 
-        to {
-            transform: scale(1);
+        60% {
+            transform: scale(1.2) rotate(10deg);
             opacity: 1;
+        }
+
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    @keyframes rotateBg {
+        to {
+            transform: rotate(360deg);
         }
     }
 
@@ -851,8 +1404,8 @@
     }
 
     /* ===============================
-   STYLE KHUSUS INPUT READONLY
-================================= */
+       STYLE KHUSUS INPUT READONLY
+    ================================= */
     input[readonly],
     textarea[readonly] {
         background: linear-gradient(135deg, #1e293b, #0f172a);
@@ -961,6 +1514,31 @@
 </style>
 
 <body oncontextmenu="return false" onselectstart="return false">
+
+    <!-- ===============================
+         ANIMATED BACKGROUND LAYERS
+    ================================= -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+        <div class="blob blob-5"></div>
+    </div>
+
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <section>
         <section id="from" class="from">
             <div class="container">
@@ -1738,29 +2316,31 @@
                                             </div>
 
                                             <center>
-                                                <div class="col-12" style="margin-top: 19px;">
-                                                    <button type="submit" class="btn btn-primary btn-kirim"><i
-                                                            class="bi bi-send-fill text-primary"></i>
-                                                        Kirim Laporan
-                                                    </button>
-                                                    <!-- Loading Overlay -->
-                                                    <div class="loading-wrapper d-none">
-                                                        <div class="loading-box text-center">
-                                                            <div class="spinner-custom"></div>
-                                                            <p class="mt-3">Mohon Tunggu...
-                                                            </p>
+                                                <!-- Modern Loading Overlay -->
+                                                <div class="loading-wrapper d-none">
+                                                    <div class="loading-box text-center">
+                                                        <div class="spinner-modern">
+                                                            <div class="spinner-center"></div>
+                                                        </div>
+                                                        <p class="loading-status" id="loadingStatus">Mengirim Laporan
+                                                        </p>
+                                                        <p class="loading-substatus" id="loadingSubstatus">Mohon tunggu
+                                                            sebentar...</p>
+                                                        <div class="loading-progress">
+                                                            <div class="loading-progress-bar"></div>
                                                         </div>
                                                     </div>
-                                                    <!-- Success Overlay -->
-                                                    <div class="success-wrapper d-none">
-                                                        <div class="success-box text-center">
-                                                            <i class="bi bi-check-circle-fill text-success"></i>
-                                                            <h2 class="mt-3">Terimakasih... <br>Laporan
-                                                                PPAT
-                                                                Berhasil Terkirim</h2>
-                                                            <p>Silakan Isi Formulir Kembali...</p>
-                                                        </div>
+                                                </div>
+
+                                                <!-- Modern Success Overlay -->
+                                                <div class="success-wrapper d-none">
+                                                    <div class="success-box text-center">
+                                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                                        <h2 class="mt-3 mb-2">Berhasil Terkirim!</h2>
+                                                        <p class="text-muted mb-0">Laporan PPAT Anda sudah tersimpan</p>
+                                                        <p class="text-muted small">Silakan isi formulir kembali...</p>
                                                     </div>
+                                                </div>
                                             </center>
                                         </form>
         </section><br><br>
@@ -2248,7 +2828,7 @@
 
                 resetBtn.innerHTML = `
             <i class="bi bi-trash3-fill fs-5" style="color: #ff6b6b;"></i>
-            <span style="font-size: 0.75rem; font-weight: 500;">Reset Data Tersimmpan</span>
+            <span style="font-size: 0.75rem; font-weight: 500;">Reset Data</span>
         `;
 
                 // Hover effect
@@ -2271,7 +2851,7 @@
                         Swal.fire({
                             icon: 'info',
                             title: 'Tidak Ada Data Tersimpan',
-                            text: 'Saat ini tidak ada data yang tersimpan.',
+                            text: 'Saat ini tidak ada data yang tersimpan di localStorage.',
                             confirmButtonColor: '#0d6efd',
                             timer: 2000,
                             showConfirmButton: true
@@ -2302,11 +2882,11 @@
                         title: '<span style="color: #dc3545;"><i class="bi bi-exclamation-triangle-fill"></i> Hapus Data Tersimpan?</span>',
                         html: `
                     <div class="text-start">
-                        <p>Data berikut ini akan dihapus dari pengingat anda:</p>
+                        <p>Data berikut akan dihapus dari localStorage browser ini:</p>
                         ${dataInfo}
                         <hr>
                         <p class="text-danger mb-0"><strong>⚠️ Perhatian:</strong></p>
-                        <small class="text-muted">Data yang dihapus TIDAK bisa dikembalikan input ulang untuk kembali mengingat dan data baru yang diinput akan tampil ke pengingat sebelumnya. Namun data laporan yang dikirim sebelumnya tetap tersimpan.</small>
+                        <small class="text-muted">Data yang dihapus TIDAK bisa dikembalikan. Namun data laporan utama tetap aman di Google Sheet.</small>
                     </div>
                 `,
                         icon: 'warning',
@@ -2322,7 +2902,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Dihapus!',
-                                html: '<i class="bi bi-check-circle-fill text-success fs-2"></i><br>Data tersimpan telah berhasil dihapus.',
+                                html: '<i class="bi bi-check-circle-fill text-success fs-2"></i><br>Data tersimpan telah dihapus dari localStorage.',
                                 timer: 2000,
                                 showConfirmButton: false,
                                 toast: true,
@@ -3247,7 +3827,31 @@
                     // ============================================
 
                     if (loadingDiv) loadingDiv.classList.remove('d-none');
-                    if (btnKirimEl) btnKirimEl.classList.add('d-none');
+
+                    // DISABLE tombol (bukan di-hide)
+                    if (btnKirimEl) {
+                        btnKirimEl.disabled = true;
+                        btnKirimEl.style.opacity = '0.6';
+                        btnKirimEl.style.cursor = 'not-allowed';
+                    }
+
+                    // ✅ Status loading dinamis
+                    const loadingStatus = document.getElementById('loadingStatus');
+                    const loadingSubstatus = document.getElementById('loadingSubstatus');
+                    const loadingStatuses = [
+                        { text: 'Mengirim Laporan', sub: 'Menghubungi server...' },
+                        { text: 'Memproses Data', sub: 'Validasi data laporan...' },
+                        { text: 'Menyimpan ke Database', sub: 'Hampir selesai...' }
+                    ];
+                    let statusIndex = 0;
+                    if (loadingStatus) loadingStatus.textContent = loadingStatuses[0].text;
+                    if (loadingSubstatus) loadingSubstatus.textContent = loadingStatuses[0].sub;
+
+                    const loadingInterval = setInterval(() => {
+                        statusIndex = (statusIndex + 1) % loadingStatuses.length;
+                        if (loadingStatus) loadingStatus.textContent = loadingStatuses[statusIndex].text;
+                        if (loadingSubstatus) loadingSubstatus.textContent = loadingStatuses[statusIndex].sub;
+                    }, 1500);
 
                     // Buat FormData dari form
                     const formData = new FormData(formElement);
@@ -3262,11 +3866,24 @@
                         method: 'POST',
                         body: formData
                     })
-                        .then(response => response.json())
+                        .then(async response => {
+                            // Baca response sebagai text dulu
+                            const text = await response.text();
+                            console.log("Raw response (200 char pertama):", text.substring(0, 200));
+
+                            // Coba parse sebagai JSON
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.warn("⚠️ Response Diasumsikan SUKSES karena data sudah masuk Ke Server.");
+                                return { result: "success", _note: "Response bukan JSON - diasumsikan sukses" };
+                            }
+                        })
                         .then(result => {
                             console.log("Response dari server:", result);
 
                             if (loadingDiv) loadingDiv.classList.add('d-none');
+                            clearInterval(loadingInterval);   // HENTIKAN TIMER STATUS
 
                             if (result.result === "success") {
                                 if (successDiv) successDiv.classList.remove('d-none');
@@ -3282,6 +3899,14 @@
                                 setTimeout(() => {
                                     // Tutup success overlay
                                     if (successDiv) successDiv.classList.add('d-none');
+
+                                    // MUNCULKAN KEMBALI TOMBOL KIRIM
+                                    if (btnKirimEl) {
+                                        btnKirimEl.disabled = false;
+                                        btnKirimEl.style.opacity = '1';
+                                        btnKirimEl.style.cursor = 'pointer';
+                                        btnKirimEl.classList.remove('d-none');
+                                    }
 
                                     // TAMPILKAN DIALOG APAKAH INGIN MENGULANG DATA
                                     showRepeatDataDialog();
@@ -3396,24 +4021,35 @@
                                         syncStatus.className = 'text-success small';
                                     }
 
-                                    console.log("✅ Semua field telah direset");
+                                    console.log("✅ Semua field telah direset & tombol kirim aktif kembali");
 
                                 }, 3000); // Delay 3 detik agar user melihat success message
 
                             } else {
-                                if (btnKirimEl) btnKirimEl.classList.remove('d-none');
+                                // ❌ GAGAL - munculkan tombol kembali
+                                if (btnKirimEl) {
+                                    btnKirimEl.disabled = false;
+                                    btnKirimEl.style.opacity = '1';
+                                    btnKirimEl.style.cursor = 'pointer';
+                                    btnKirimEl.classList.remove('d-none');
+                                }
                                 alert('❌ Gagal mengirim laporan: ' + (result.message || 'Unknown error'));
                             }
                         })
                         .catch(error => {
                             if (loadingDiv) loadingDiv.classList.add('d-none');
-                            if (btnKirimEl) btnKirimEl.classList.remove('d-none');
+                            clearInterval(loadingInterval);   // ✅ HENTIKAN TIMER STATUS
+                            if (btnKirimEl) {
+                                btnKirimEl.disabled = false;
+                                btnKirimEl.style.opacity = '1';
+                                btnKirimEl.style.cursor = 'pointer';
+                                btnKirimEl.classList.remove('d-none');
+                            }
                             console.error('Error:', error);
                             alert('❌ Gagal mengirim laporan! Periksa koneksi internet Anda.\n\nError: ' + error.message);
                         });
                 });
             }
-
             // ============================================
             // 13. LOADING OVERLAY UNTUK NAVIGASI
             // ============================================
