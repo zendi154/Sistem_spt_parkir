@@ -487,7 +487,7 @@
     }
 
     /* ===============================
-   MODERN LOADING WRAPPER
+   SPINNER MODERN - DUAL RING + DOT
 ================================ */
     .loading-wrapper {
         position: fixed;
@@ -498,24 +498,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: rgba(10, 15, 30, 0.8);
+        background: rgba(10, 15, 30, 0.85);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         z-index: 99999;
         animation: fadeIn 0.3s ease;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    /* Box loading modern */
     .loading-box {
         background: linear-gradient(145deg, #ffffff, #f0f4ff);
         padding: 50px 60px;
@@ -525,10 +514,21 @@
             0 30px 70px rgba(0, 0, 0, 0.4),
             0 0 0 1px rgba(255, 255, 255, 0.6) inset,
             0 0 80px rgba(13, 110, 253, 0.2);
+        min-width: 320px;
         position: relative;
         overflow: hidden;
-        min-width: 320px;
         animation: loadingPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .loading-box::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(13, 110, 253, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(25, 135, 84, 0.08) 0%, transparent 50%);
+        animation: particleMove 8s ease-in-out infinite;
+        pointer-events: none;
     }
 
     @keyframes loadingPop {
@@ -541,18 +541,6 @@
             opacity: 1;
             transform: scale(1) translateY(0);
         }
-    }
-
-    /* Particle floating di background loading box */
-    .loading-box::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image:
-            radial-gradient(circle at 20% 30%, rgba(13, 110, 253, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(25, 135, 84, 0.08) 0%, transparent 50%);
-        animation: particleMove 8s ease-in-out infinite;
-        pointer-events: none;
     }
 
     @keyframes particleMove {
@@ -568,50 +556,57 @@
     }
 
     /* ===============================
-   DUAL RING SPINNER MODERN
+   DUAL RING SPINNER
 ================================ */
-    .spinner-modern {
+    .spinner-dual {
         position: relative;
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
         margin: 0 auto 25px;
         z-index: 1;
     }
 
-    /* Ring luar */
-    .spinner-modern::before {
-        content: '';
+    .ring {
         position: absolute;
-        inset: 0;
         border-radius: 50%;
-        border: 4px solid transparent;
+        border-style: solid;
+        border-color: transparent;
+    }
+
+    /* Ring luar - biru */
+    .ring-outer {
+        inset: 0;
+        border-width: 5px;
         border-top-color: #0d6efd;
         border-right-color: #0d6efd;
         animation: spinRing 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        filter: drop-shadow(0 0 8px rgba(13, 110, 253, 0.6));
+        box-shadow:
+            0 0 15px rgba(13, 110, 253, 0.6),
+            inset 0 0 15px rgba(13, 110, 253, 0.2);
     }
 
-    /* Ring dalam */
-    .spinner-modern::after {
-        content: '';
-        position: absolute;
-        inset: 15px;
-        border-radius: 50%;
-        border: 4px solid transparent;
+    /* Ring dalam - hijau (berputar berlawanan) */
+    .ring-inner {
+        inset: 18px;
+        border-width: 5px;
         border-bottom-color: #198754;
         border-left-color: #198754;
         animation: spinRing 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
-        filter: drop-shadow(0 0 8px rgba(25, 135, 84, 0.6));
+        box-shadow:
+            0 0 15px rgba(25, 135, 84, 0.6),
+            inset 0 0 15px rgba(25, 135, 84, 0.2);
     }
 
-    /* Dot tengah berdenyut */
-    .spinner-center {
+    /* Dot tengah - gradient pulse */
+    .dot-center {
         position: absolute;
-        inset: 38px;
+        inset: 42px;
         border-radius: 50%;
         background: linear-gradient(135deg, #0d6efd, #198754);
-        animation: pulseCenter 1.5s ease-in-out infinite;
-        box-shadow: 0 0 20px rgba(13, 110, 253, 0.5);
+        animation: pulseDot 1.5s ease-in-out infinite;
+        box-shadow:
+            0 0 25px rgba(13, 110, 253, 0.8),
+            0 0 50px rgba(25, 135, 84, 0.4);
     }
 
     @keyframes spinRing {
@@ -620,7 +615,7 @@
         }
     }
 
-    @keyframes pulseCenter {
+    @keyframes pulseDot {
 
         0%,
         100% {
@@ -629,26 +624,49 @@
         }
 
         50% {
-            transform: scale(0.7);
+            transform: scale(0.6);
             opacity: 0.7;
         }
     }
 
     /* ===============================
-   PROGRESS BAR MODERN
+   STATUS TEXT
 ================================ */
-    .loading-progress {
+    .loading-status-modern {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin: 0 0 8px 0;
+        z-index: 1;
+        position: relative;
+        letter-spacing: 0.5px;
+    }
+
+    .loading-substatus-modern {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0 0 20px 0;
+        z-index: 1;
+        position: relative;
+        font-weight: 500;
+    }
+
+    /* ===============================
+   PROGRESS BAR
+================================ */
+    .loading-progress-modern {
         width: 100%;
         height: 6px;
         background: rgba(13, 110, 253, 0.12);
         border-radius: 10px;
         overflow: hidden;
-        margin: 20px 0 15px;
+        margin: 0 0 15px 0;
         position: relative;
         z-index: 1;
     }
 
-    .loading-progress-bar {
+    .loading-progress-modern-bar {
         height: 100%;
         width: 30%;
         background: linear-gradient(90deg, #0d6efd, #20c997, #198754, #0d6efd);
@@ -688,72 +706,102 @@
     }
 
     /* ===============================
-   STATUS TEXT DINAMIS
+   DOTS ANIMASI
 ================================ */
-    .loading-status {
-        font-family: 'Work Sans', sans-serif;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #0d6efd;
-        margin: 0;
+    .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 5px;
         z-index: 1;
         position: relative;
-        letter-spacing: 0.5px;
-        min-height: 1.5rem;
     }
 
-    .loading-status::after {
-        content: '';
-        animation: dots 1.5s steps(4, end) infinite;
+    .loading-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #0d6efd;
+        animation: dotsBounce 1.4s infinite;
     }
 
-    @keyframes dots {
-        0% {
-            content: '';
-        }
-
-        25% {
-            content: '.';
-        }
-
-        50% {
-            content: '..';
-        }
-
-        75% {
-            content: '...';
-        }
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+        background: #20c997;
     }
 
-    .loading-substatus {
-        font-size: 0.85rem;
-        color: #6c757d;
-        margin-top: 8px;
-        z-index: 1;
-        position: relative;
-        font-weight: 500;
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+        background: #198754;
     }
 
-    @keyframes checkBounce {
-        0% {
-            transform: scale(0) rotate(-180deg);
-            opacity: 0;
+    @keyframes dotsBounce {
+
+        0%,
+        60%,
+        100% {
+            transform: translateY(0);
+            opacity: 0.5;
         }
 
-        60% {
-            transform: scale(1.2) rotate(10deg);
+        30% {
+            transform: translateY(-8px);
             opacity: 1;
+        }
+    }
+
+    /* ===============================
+   SWEETALERT MODERN
+================================ */
+    .swal-modern-popup {
+        border-radius: 24px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4) !important;
+        font-family: 'Work Sans', sans-serif !important;
+    }
+
+    .swal-modern-popup .swal2-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .swal2-popup.swal-modern-popup .swal2-icon {
+        margin: 30px auto 10px !important;
+        border: none !important;
+    }
+
+    /* Confetti effect */
+    .confetti-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0;
+        animation: confettiFall 3s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+        0% {
+            top: -10%;
+            opacity: 1;
+            transform: rotate(0deg) translateX(0);
         }
 
         100% {
-            transform: scale(1) rotate(0deg);
-            opacity: 1;
-        }
-    }
-
-    @keyframes rotateBg {
-        to {
-            transform: rotate(360deg);
+            top: 110%;
+            opacity: 0;
+            transform: rotate(720deg) translateX(100px);
         }
     }
 
@@ -1824,74 +1872,26 @@
         }
     }
 
-    /* ===============================
-   SPINNER FIX - Menggunakan div konkret
-================================ */
-    .spinner-fix {
-        position: relative;
-        width: 100px;
-        height: 100px;
-        margin: 0 auto 25px;
-    }
-
-    .spinner-ring-outer {
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        border: 5px solid rgba(13, 110, 253, 0.15);
-        border-top-color: #0d6efd;
-        border-right-color: #0d6efd;
-        animation: spinRing 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        box-shadow:
-            0 0 15px rgba(13, 110, 253, 0.6),
-            inset 0 0 15px rgba(13, 110, 253, 0.2);
-    }
-
-    .spinner-ring-inner {
-        position: absolute;
-        inset: 18px;
-        border-radius: 50%;
-        border: 5px solid rgba(25, 135, 84, 0.15);
-        border-bottom-color: #198754;
-        border-left-color: #198754;
-        animation: spinRing 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
-        box-shadow:
-            0 0 15px rgba(25, 135, 84, 0.6),
-            inset 0 0 15px rgba(25, 135, 84, 0.2);
-    }
-
-    .spinner-dot {
-        position: absolute;
-        inset: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0d6efd, #198754);
-        animation: pulseCenter 1.5s ease-in-out infinite;
-        box-shadow:
-            0 0 25px rgba(13, 110, 253, 0.8),
-            0 0 50px rgba(25, 135, 84, 0.4);
-    }
-
-    @keyframes spinRing {
-        from {
-            transform: rotate(0deg);
-        }
-
+    @keyframes checkDraw {
         to {
-            transform: rotate(360deg);
+            stroke-dashoffset: 0;
         }
     }
 
-    @keyframes pulseCenter {
+    @keyframes successBounce {
+        0% {
+            transform: scale(0) rotate(-180deg);
+            opacity: 0;
+        }
 
-        0%,
-        100% {
-            transform: scale(1);
+        60% {
+            transform: scale(1.15) rotate(10deg);
             opacity: 1;
         }
 
-        50% {
-            transform: scale(0.6);
-            opacity: 0.7;
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
         }
     }
 </style>
@@ -2723,38 +2723,36 @@
                                                 </button>
                                             </div>
 
-                                            <center>
-                                                <!-- Modern Loading Overlay -->
-                                                <div class="loading-wrapper d-none">
-                                                    <div class="loading-box text-center">
+                                            <!-- ✅ LOADING OVERLAY MODERN - DENGAN ID loadingWrapper -->
+                                            <div class="loading-wrapper d-none" id="loadingWrapper">
+                                                <div class="loading-box text-center">
 
-                                                        <!-- ✅ SPINNER FIX - 3 div konkret -->
-                                                        <div class="spinner-fix">
-                                                            <div class="spinner-ring-outer"></div>
-                                                            <div class="spinner-ring-inner"></div>
-                                                            <div class="spinner-dot"></div>
-                                                        </div>
+                                                    <!-- Dual ring spinner -->
+                                                    <div class="spinner-dual">
+                                                        <div class="ring ring-outer"></div>
+                                                        <div class="ring ring-inner"></div>
+                                                        <div class="dot-center"></div>
+                                                    </div>
 
-                                                        <p class="loading-status" id="loadingStatus">Mengirim Laporan
-                                                        </p>
-                                                        <p class="loading-substatus" id="loadingSubstatus">Mohon tunggu
-                                                            sebentar Ya!...</p>
-                                                        <div class="loading-progress">
-                                                            <div class="loading-progress-bar"></div>
-                                                        </div>
+                                                    <!-- Status text dinamis -->
+                                                    <p class="loading-status-modern" id="loadingStatus">Mengirim Laporan
+                                                    </p>
+                                                    <p class="loading-substatus-modern" id="loadingSubstatus">
+                                                        Menghubungi server...</p>
+
+                                                    <!-- Progress bar -->
+                                                    <div class="loading-progress-modern">
+                                                        <div class="loading-progress-modern-bar"></div>
+                                                    </div>
+
+                                                    <!-- Dots tambahan -->
+                                                    <div class="loading-dots">
+                                                        <span></span>
+                                                        <span></span>
+                                                        <span></span>
                                                     </div>
                                                 </div>
-
-                                                <!-- Modern Success Overlay -->
-                                                <div class="success-wrapper d-none">
-                                                    <div class="success-box text-center">
-                                                        <i class="bi bi-check-circle-fill text-success"></i>
-                                                        <h2 class="mt-3 mb-2">Berhasil Terkirim!</h2>
-                                                        <p class="text-muted mb-0">Laporan PPAT Anda sudah tersimpan</p>
-                                                        <p class="text-muted small">Silakan isi formulir kembali...</p>
-                                                    </div>
-                                                </div>
-                                            </center>
+                                            </div>
                                         </form>
         </section><br><br>
 
@@ -4316,36 +4314,111 @@
                                 return { result: "success", _note: "Response bukan JSON - diasumsikan sukses" };
                             }
                         })
+
                         .then(result => {
                             console.log("Response dari server:", result);
 
                             if (loadingDiv) loadingDiv.classList.add('d-none');
-                            clearInterval(loadingInterval);   // HENTIKAN TIMER STATUS
+                            clearInterval(loadingInterval);
 
                             if (result.result === "success") {
-                                if (successDiv) successDiv.classList.remove('d-none');
 
                                 // ============================================
-                                // SIMPAN DATA YANG BARU SAJA DIKIRIM
+                                // ✅ SWEETALERT MODERN SUKSES + CONFETTI
+                                // ============================================
+                                Swal.fire({
+                                    html: `
+                <div class="confetti-container" id="confettiBox"></div>
+                <div style="text-align: center; padding: 30px 25px 20px; position: relative; z-index: 1;">
+                    <div style="
+                        width: 100px;
+                        height: 100px;
+                        margin: 0 auto 20px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #0d6efd, #198754);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 15px 40px rgba(25, 135, 84, 0.4);
+                        animation: successBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    ">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12" style="
+                                stroke-dasharray: 30;
+                                stroke-dashoffset: 30;
+                                animation: checkDraw 0.6s ease 0.3s forwards;
+                            "></polyline>
+                        </svg>
+                    </div>
+                    <h2 style="
+                        font-family: 'Work Sans', sans-serif;
+                        font-size: 1.6rem;
+                        font-weight: 800;
+                        background: linear-gradient(135deg, #0d6efd, #198754);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                        margin: 0 0 12px 0;
+                    ">Berhasil Terkirim!</h2>
+                    <p style="
+                        color: #64748b;
+                        font-size: 0.95rem;
+                        margin: 0 0 6px 0;
+                        font-weight: 500;
+                    ">Laporan PPAT Anda sudah tersimpan dengan aman</p>
+                    <p style="
+                        color: #94a3b8;
+                        font-size: 0.8rem;
+                        margin: 0;
+                    ">Terima kasih telah melaporkan tepat waktu</p>
+                </div>
+            `,
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    allowOutsideClick: false,
+                                    backdrop: `rgba(10, 15, 30, 0.75)`,
+                                    customClass: {
+                                        popup: 'swal-modern-popup'
+                                    },
+                                    didOpen: () => {
+                                        const confettiBox = document.getElementById('confettiBox');
+                                        if (confettiBox) {
+                                            const colors = ['#0d6efd', '#198754', '#20c997', '#ffd43b', '#ff6b6b', '#a855f7'];
+                                            for (let i = 0; i < 30; i++) {
+                                                const confetti = document.createElement('div');
+                                                confetti.className = 'confetti';
+                                                confetti.style.left = Math.random() * 100 + '%';
+                                                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                                                confetti.style.animationDelay = Math.random() * 1.5 + 's';
+                                                confetti.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+                                                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                                                confetti.style.width = (6 + Math.random() * 8) + 'px';
+                                                confetti.style.height = confetti.style.width;
+                                                confettiBox.appendChild(confetti);
+                                            }
+                                        }
+                                    }
+                                });
+
+                                // ============================================
+                                // SIMPAN DATA
                                 // ============================================
                                 saveCurrentFormData();
-
-                                // Reset transaksiList setelah sukses
                                 transaksiList = [];
 
+                                // ============================================
+                                // RESET FORM SETELAH 3.2 DETIK
+                                // ============================================
                                 setTimeout(() => {
-                                    // Tutup success overlay
-                                    if (successDiv) successDiv.classList.add('d-none');
-
-                                    // MUNCULKAN KEMBALI TOMBOL KIRIM
+                                    // Aktifkan kembali tombol
                                     if (btnKirimEl) {
                                         btnKirimEl.disabled = false;
                                         btnKirimEl.style.opacity = '1';
                                         btnKirimEl.style.cursor = 'pointer';
-                                        btnKirimEl.classList.remove('d-none');
                                     }
 
-                                    // TAMPILKAN DIALOG APAKAH INGIN MENGULANG DATA
+                                    // Dialog repeat data
                                     showRepeatDataDialog();
 
                                     // Reset checkbox persetujuan
@@ -4356,97 +4429,50 @@
                                     const cekTransaksi = document.getElementById('cekTransaksi');
                                     if (cekTransaksi) cekTransaksi.checked = false;
 
-                                    // Reset pilihan transaksi ke "TIDAK ADA"
+                                    // Reset pilihan transaksi
                                     const trxTidak = document.getElementById('trx_tidak');
                                     if (trxTidak) trxTidak.checked = true;
 
-                                    // Trigger toggle transaksi
-                                    const ya = document.getElementById('trx_ya');
-                                    const tidak = document.getElementById('trx_tidak');
-                                    const blok = document.getElementById('blokTransaksi');
-                                    if (tidak && tidak.checked && blok) {
-                                        blok.classList.add('d-none');
-                                    }
+                                    // Sembunyikan blok transaksi
+                                    const blokTransaksi = document.getElementById('blokTransaksi');
+                                    if (blokTransaksi) blokTransaksi.classList.add('d-none');
 
-                                    // Reset jumlah laporan
-                                    const jumlahLaporan = document.getElementById('jumlah_laporan');
-                                    if (jumlahLaporan) jumlahLaporan.value = '';
-
-                                    // Reset field keterangan melalui fungsi yang sudah ada
+                                    // Reset keterangan
                                     if (typeof window.resetKeteranganForm === 'function') {
                                         window.resetKeteranganForm();
                                     }
 
-                                    // Reset BPHTB
-                                    const bphtbView = document.getElementById('sspd_bphtb_view');
-                                    const bphtbReal = document.getElementById('sspd_bphtb');
-                                    if (bphtbView) bphtbView.value = '';
-                                    if (bphtbReal) bphtbReal.value = '';
-
-                                    // Reset SSB
-                                    const ssbView = document.getElementById('ssb_view');
-                                    const ssbReal = document.getElementById('ssb');
-                                    if (ssbView) ssbView.value = '';
-                                    if (ssbReal) ssbReal.value = '';
-
-                                    // Reset field transaksi lainnya
-                                    const tanggalTransaksi = document.getElementById('tanggal_transaksi');
-                                    const noSppd = document.getElementById('no_sppd');
-                                    const nomorAkta = document.getElementById('nomor_akta');
-                                    const nomorHak = document.getElementById('nomor_hak');
-                                    const namaPenjual = document.getElementById('nama_penjual');
-                                    const namaPembeli = document.getElementById('nama_pembeli');
-                                    const nopView = document.getElementById('nop_view');
-                                    const njopView = document.getElementById('njop_view');
-                                    const luasTb = document.getElementById('luas_tb');
-                                    const hargaView = document.getElementById('harga_transaksi_view');
-
-                                    if (tanggalTransaksi) tanggalTransaksi.value = '';
-                                    if (noSppd) noSppd.value = '';
-                                    if (nomorAkta) nomorAkta.value = '';
-                                    if (nomorHak) nomorHak.value = '';
-                                    if (namaPenjual) namaPenjual.value = '';
-                                    if (namaPembeli) namaPembeli.value = '';
-                                    if (nopView) nopView.value = '';
-                                    if (njopView) njopView.value = '';
-                                    if (luasTb) luasTb.value = '';
-                                    if (hargaView) hargaView.value = '';
+                                    // Reset field transaksi
+                                    ['tanggal_transaksi', 'no_sppd', 'nomor_akta', 'nomor_hak',
+                                        'nama_penjual', 'nama_pembeli', 'nop_view', 'njop_view',
+                                        'luas_tb', 'harga_transaksi_view', 'ssb_view', 'sspd_bphtb_view'].forEach(id => {
+                                            const el = document.getElementById(id);
+                                            if (el) el.value = '';
+                                        });
 
                                     // Reset hidden fields
-                                    const kecamatanValue = document.getElementById('kecamatan_value');
-                                    const kelurahanValue = document.getElementById('kelurahan_value');
-                                    const kelurahanInput = document.getElementById('kelurahanInput');
-                                    const kecamatanSelect = document.getElementById('kecamatan');
+                                    ['kecamatan_value', 'kelurahan_value', 'kelurahanInput', 'nop', 'njop',
+                                        'harga_transaksi', 'ssp', 'ssb', 'sspd_bphtb'].forEach(id => {
+                                            const el = document.getElementById(id);
+                                            if (el) el.value = '';
+                                        });
 
-                                    if (kecamatanValue) kecamatanValue.value = '';
-                                    if (kelurahanValue) kelurahanValue.value = '';
-                                    if (kelurahanInput) kelurahanInput.value = '';
-                                    if (kecamatanSelect) {
-                                        kecamatanSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
-                                        kecamatanSelect.disabled = true;
+                                    // Reset kecamatan select
+                                    const kecSelect = document.getElementById('kecamatan');
+                                    if (kecSelect) {
+                                        kecSelect.innerHTML = '<option value="">Fitur (Auto)</option>';
+                                        kecSelect.disabled = true;
                                     }
 
-                                    // Reset hidden NOP
-                                    const nopHidden = document.getElementById('nop');
-                                    if (nopHidden) nopHidden.value = '';
-
-                                    // Reset hidden NJOP
-                                    const njopHidden = document.getElementById('njop');
-                                    if (njopHidden) njopHidden.value = '';
-
-                                    // Reset hidden harga transaksi
-                                    const hargaHidden = document.getElementById('harga_transaksi');
-                                    if (hargaHidden) hargaHidden.value = '';
-
-                                    // Reset tarif SSP ke 0%
+                                    // Reset tarif SSP
                                     const t0Radio = document.getElementById('t0');
                                     if (t0Radio) t0Radio.checked = true;
 
-                                    // Reset auto sync (tetap checked)
+                                    // Reset auto sync
                                     const autoBPHTB = document.getElementById('autoBPHTB');
                                     if (autoBPHTB) autoBPHTB.checked = true;
 
-                                    // Reset field sinkronisasi
+                                    // Reset sync display
                                     const syncIcon = document.getElementById('syncIcon');
                                     const syncStatus = document.getElementById('syncStatus');
                                     if (syncIcon) {
@@ -4460,30 +4486,38 @@
 
                                     console.log("✅ Semua field telah direset & tombol kirim aktif kembali");
 
-                                }, 3000); // Delay 3 detik agar user melihat success message
+                                }, 3200);
 
                             } else {
-                                // ❌ GAGAL - munculkan tombol kembali
+                                // ❌ GAGAL
                                 if (btnKirimEl) {
                                     btnKirimEl.disabled = false;
                                     btnKirimEl.style.opacity = '1';
                                     btnKirimEl.style.cursor = 'pointer';
-                                    btnKirimEl.classList.remove('d-none');
                                 }
-                                alert('❌ Gagal mengirim laporan: ' + (result.message || 'Unknown error'));
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal Mengirim',
+                                    text: result.message || 'Terjadi kesalahan. Silakan coba lagi.',
+                                    confirmButtonColor: '#dc3545'
+                                });
                             }
                         })
                         .catch(error => {
                             if (loadingDiv) loadingDiv.classList.add('d-none');
-                            clearInterval(loadingInterval);   // ✅ HENTIKAN TIMER STATUS
+                            clearInterval(loadingInterval);
                             if (btnKirimEl) {
                                 btnKirimEl.disabled = false;
                                 btnKirimEl.style.opacity = '1';
                                 btnKirimEl.style.cursor = 'pointer';
-                                btnKirimEl.classList.remove('d-none');
                             }
                             console.error('Error:', error);
-                            alert('❌ Gagal mengirim laporan! Periksa koneksi internet Anda.\n\nError: ' + error.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Mengirim',
+                                text: 'Periksa koneksi internet Anda. Error: ' + error.message,
+                                confirmButtonColor: '#dc3545'
+                            });
                         });
                 });
             }
