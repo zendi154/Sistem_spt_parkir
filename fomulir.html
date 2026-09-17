@@ -4317,62 +4317,65 @@
 
                         .then(result => {
                             console.log("Response dari server:", result);
-
-                            if (loadingDiv) loadingDiv.classList.add('d-none');
                             clearInterval(loadingInterval);
+
+                            // Spinner hilang setelah minimal 4 detik
+                            setTimeout(() => {
+                                if (loadingDiv) loadingDiv.classList.add('d-none');
+                            }, 4000);
 
                             if (result.result === "success") {
 
                                 // ============================================
-                                // ✅ SWEETALERT MODERN SUKSES + CONFETTI
+                                //  SWEETALERT MODERN SUKSES + CONFETTI
                                 // ============================================
                                 Swal.fire({
                                     html: `
-                <div class="confetti-container" id="confettiBox"></div>
-                <div style="text-align: center; padding: 30px 25px 20px; position: relative; z-index: 1;">
-                    <div style="
-                        width: 100px;
-                        height: 100px;
-                        margin: 0 auto 20px;
-                        border-radius: 50%;
-                        background: linear-gradient(135deg, #0d6efd, #198754);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: 0 15px 40px rgba(25, 135, 84, 0.4);
-                        animation: successBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    ">
-                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12" style="
-                                stroke-dasharray: 30;
-                                stroke-dashoffset: 30;
-                                animation: checkDraw 0.6s ease 0.3s forwards;
-                            "></polyline>
-                        </svg>
-                    </div>
-                    <h2 style="
-                        font-family: 'Work Sans', sans-serif;
-                        font-size: 1.6rem;
-                        font-weight: 800;
-                        background: linear-gradient(135deg, #0d6efd, #198754);
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                        background-clip: text;
-                        margin: 0 0 12px 0;
-                    ">Berhasil Terkirim!</h2>
-                    <p style="
-                        color: #64748b;
-                        font-size: 0.95rem;
-                        margin: 0 0 6px 0;
-                        font-weight: 500;
-                    ">Laporan PPAT Anda sudah tersimpan dengan aman</p>
-                    <p style="
-                        color: #94a3b8;
-                        font-size: 0.8rem;
-                        margin: 0;
-                    ">Terima kasih telah melaporkan tepat waktu</p>
-                </div>
-            `,
+                                            <div class="confetti-container" id="confettiBox"></div>
+                                            <div style="text-align: center; padding: 30px 25px 20px; position: relative; z-index: 1;">
+                                                <div style="
+                                                    width: 100px;
+                                                    height: 100px;
+                                                    margin: 0 auto 20px;
+                                                    border-radius: 50%;
+                                                    background: linear-gradient(135deg, #0d6efd, #198754);
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    box-shadow: 0 15px 40px rgba(25, 135, 84, 0.4);
+                                                    animation: successBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                                                ">
+                                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="20 6 9 17 4 12" style="
+                                                            stroke-dasharray: 30;
+                                                            stroke-dashoffset: 30;
+                                                            animation: checkDraw 0.6s ease 0.3s forwards;
+                                                        "></polyline>
+                                                    </svg>
+                                                </div>
+                                                <h2 style="
+                                                    font-family: 'Work Sans', sans-serif;
+                                                    font-size: 1.6rem;
+                                                    font-weight: 800;
+                                                    background: linear-gradient(135deg, #0d6efd, #198754);
+                                                    -webkit-background-clip: text;
+                                                    -webkit-text-fill-color: transparent;
+                                                    background-clip: text;
+                                                    margin: 0 0 12px 0;
+                                                ">Berhasil Terkirim!</h2>
+                                                <p style="
+                                                    color: #64748b;
+                                                    font-size: 0.95rem;
+                                                    margin: 0 0 6px 0;
+                                                    font-weight: 500;
+                                                ">Laporan PPAT Anda sudah tersimpan dengan aman</p>
+                                                <p style="
+                                                    color: #94a3b8;
+                                                    font-size: 0.8rem;
+                                                    margin: 0;
+                                                ">Terima kasih telah melaporkan tepat waktu</p>
+                                            </div>
+                                        `,
                                     showConfirmButton: false,
                                     timer: 10000,
                                     timerProgressBar: true,
