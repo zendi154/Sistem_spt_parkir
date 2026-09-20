@@ -3264,7 +3264,7 @@
                         Swal.fire({
                             icon: 'info',
                             title: 'Tidak Ada Data Tersimpan',
-                            text: 'Saat ini tidak ada data yang tersimpan di localStorage.',
+                            text: 'Saat ini tidak ada data yang tersimpan di localStorage Anda.',
                             confirmButtonColor: '#0d6efd',
                             timer: 2000,
                             showConfirmButton: true
@@ -3299,7 +3299,7 @@
                         ${dataInfo}
                         <hr>
                         <p class="text-danger mb-0"><strong>⚠️ Perhatian:</strong></p>
-                        <small class="text-muted">Data yang dihapus TIDAK bisa dikembalikan. Namun data laporan utama tetap aman di Google Sheet.</small>
+                        <small class="text-muted">Data yang dihapus TIDAK bisa dikembalikan. Namun data laporan utama tetap aman di dalam "Database!"</small>
                     </div>
                 `,
                         icon: 'warning',
@@ -4324,7 +4324,7 @@
                             // Spinner hilang setelah minimal 4 detik
                             setTimeout(() => {
                                 if (loadingDiv) loadingDiv.classList.add('d-none');
-                            }, 5000);
+                            }, 4000);
 
                             if (result.result === "success") {
 
@@ -4502,8 +4502,8 @@
                                 }
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Gagal Mengirim',
-                                    text: result.message || 'Terjadi kesalahan. Silakan coba lagi.',
+                                    title: 'Gagal Mengirim. Periksa Sambungan Internet Anda!',
+                                    text: result.message || 'Terjadi kesalahan. Silakan coba lagi. data yang anda kirim akan di proses dan dikirim secara otomatis kedalam database, jangan mengirim laporan Ulang, jika data baru berikutnya gagal hubungi adminstrator. Terimakasih!',
                                     confirmButtonColor: '#dc3545'
                                 });
                             }
