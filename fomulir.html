@@ -2526,7 +2526,7 @@
                                                             <i
                                                                 class="bi bi-arrows-angle-expand position-absolute top-50 start-0 translate-middle-y ms-3"></i>
                                                             <input type="text" class="form-control ps-5" id="luas_tb"
-                                                                placeholder="0000/0000" inputmode="numeric"
+                                                                placeholder="00000/00000" inputmode="numeric"
                                                                 maxlength="9" autocomplete="off">
                                                             <label for="luas_tb">Tanah/Bangunan (m²)</label>
                                                         </div>
@@ -2624,8 +2624,6 @@
 
                                             </div>
                                         </div>
-
-                                        <input type="hidden" name="data_transaksi" id="data_transaksi">
 
                                         <form id="form-laporan" class="row g-3" novalidate>
 
@@ -3358,7 +3356,7 @@
 
             view.addEventListener('input', function () {
                 let angka = this.value.replace(/\D/g, '').slice(0, 18);
-                real.value = angka;
+
                 let f = '';
                 if (angka.length > 0) f += angka.substring(0, 2);
                 if (angka.length > 2) f += '.' + angka.substring(2, 4);
@@ -3367,19 +3365,95 @@
                 if (angka.length > 10) f += '.' + angka.substring(10, 13);
                 if (angka.length > 13) f += '.' + angka.substring(13, 17);
                 if (angka.length > 17) f += '.' + angka.substring(17, 18);
+
                 this.value = f;
+                real.value = f;
             });
         }
 
         function formatLuasTB(id) {
             const input = document.getElementById(id);
             if (!input) return;
-            input.addEventListener('input', function () {
-                let angka = this.value.replace(/\D/g, '').slice(0, 8);
-                if (angka.length > 4) {
-                    this.value = angka.slice(0, 4) + '/' + angka.slice(4);
+
+            input.addEventListener('input', function (e) {
+                const justTypedDot = (e.inputType === 'insertText' && e.data === '.');
+                const justTypedSlash = (e.inputType === 'insertText' && e.data === '/');
+
+                let raw = this.value;
+                const hasSlash = raw.includes('/');
+
+                // === SUDAH ADA SLASH: format tanah/bangunan ===
+                if (hasSlash) {
+                    let parts = raw.split('/');
+                    let tanah = (parts[0] || '').replace(/\D/g, '').slice(0, 5);
+                    let bangunan = (parts[1] || '').replace(/\D/g, '').slice(0, 5);
+                    this.value = tanah + '/' + bangunan;
+                    return;
+                }
+
+                // === BELUM ADA SLASH ===
+                let angka = raw.replace(/\D/g, '');
+
+                // User ketik titik
+                if (justTypedDot) {
+                    if (angka.length >= 4) {
+                        // ≥4 digit → 5 digit + slash
+                        this.value = angka.slice(0, 5) + '/';
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    } else {
+                        // <4 digit → hapus titik, biarkan angka (termasuk 3 digit)
+                        this.value = angka;
+                    }
+                    return;
+                }
+
+                // User ketik slash manual
+                if (justTypedSlash) {
+                    if (angka.length > 0) {
+                        this.value = angka.slice(0, 5) + '/';
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    } else {
+                        this.value = '';
+                    }
+                    return;
+                }
+
+                // Auto-slash berdasarkan jumlah digit
+                if (angka.length > 5) {
+                    // >5 → 5 digit + slash + sisa
+                    this.value = angka.slice(0, 5) + '/' + angka.slice(5, 10);
+                } else if (angka.length === 5) {
+                    // 5 digit → auto slash
+                    this.value = angka + '/';
+                    this.setSelectionRange(this.value.length, this.value.length);
+                } else if (angka.length === 4) {
+                    // 4 digit → auto slash
+                    this.value = angka + '/';
+                    this.setSelectionRange(this.value.length, this.value.length);
                 } else {
+                    //  3 digit atau kurang → BIARKAN apa adanya
+                    // (1, 2, 3 digit tidak di-auto-slash)
                     this.value = angka;
+                }
+            });
+
+            // Saat blur: finalisasi format
+            input.addEventListener('blur', function () {
+                let val = this.value.trim();
+                if (!val) return;
+
+                if (!val.includes('/')) {
+                    // Belum ada slash → tambah /0
+                    let angka = val.replace(/\D/g, '');
+                    if (angka.length > 0) {
+                        this.value = angka + '/0';
+                    }
+                } else {
+                    // Sudah ada slash → pastikan sisi kanan ada isinya
+                    let parts = val.split('/');
+                    let tanah = (parts[0] || '').replace(/\D/g, '') || '0';
+                    let bangunan = (parts[1] || '').replace(/\D/g, '') || '0';
+                    this.value = tanah + '/' + bangunan;
                 }
             });
         }
@@ -4121,8 +4195,8 @@
 
                         const luasValue = luasInput.value.trim();
                         const parts = luasValue.split('/');
-                        if (parts.length !== 2 || !/^\d{1,4}$/.test(parts[0]) || !/^\d{1,4}$/.test(parts[1])) {
-                            alert('⚠️ Format luas tanah/bangunan harus 0000/0000 atau minimal 1 digit per sisi');
+                        if (parts.length !== 2 || !/^\d{1,5}$/.test(parts[0]) || !/^\d{1,5}$/.test(parts[1])) {
+                            alert('⚠️ Format luas tanah/bangunan maksimal 5 digit per sisi!');
                             if (luasInput) luasInput.focus();
                             return;
                         }
@@ -4150,33 +4224,43 @@
                             return angka === '' ? 0 : parseInt(angka, 10);
                         }
 
-                        // Ambil nilai dari setiap field (dalam bentuk angka)
-                        const njop = getAngkaBersih('njop_view');
-                        const harga = getAngkaBersih('harga_transaksi_view');
-                        const ssp = getAngkaBersih('ssp_view');
-                        const ssb = getAngkaBersih('ssb_view');
+                        // ============================================
+                        // AMBIL NILAI FORMAT RUPIAH
+                        // ============================================
 
-                        // Ambil NOP
-                        const nopView = document.getElementById('nop_view');
-                        const nopValue = nopView ? nopView.value.replace(/\./g, '') : '';
+                        // Ambil langsung dari view (sudah ada "Rp. X.XXX.XXX")
+                        const njopFormatted = document.getElementById('njop_view')?.value || '';
+                        const hargaFormatted = document.getElementById('harga_transaksi_view')?.value || '';
+                        const sspFormatted = document.getElementById('ssp_view')?.value || '';
+                        const ssbFormatted = document.getElementById('ssb_view')?.value || '';
 
-                        console.log("Nilai transaksi:", { njop, harga, ssp, ssb, nop: nopValue });
+                        // Ambil NOP DENGAN titik (sesuai keinginan Anda)
+                        const nopValue = document.getElementById('nop')?.value ||
+                            document.getElementById('nop_view')?.value || '';
 
-                        // Simpan ke hidden field dengan nilai angka bersih
+                        console.log("Nilai transaksi:", {
+                            njop: njopFormatted,
+                            harga: hargaFormatted,
+                            ssp: sspFormatted,
+                            ssb: ssbFormatted,
+                            nop: nopValue
+                        });
+
+                        // Simpan ke hidden field (format Rp. & NOP dengan titik)
                         const sspReal = document.getElementById('ssp');
                         const ssbReal = document.getElementById('ssb');
                         const hargaReal = document.getElementById('harga_transaksi');
                         const njopReal = document.getElementById('njop');
 
-                        if (sspReal) sspReal.value = ssp;
-                        if (ssbReal) ssbReal.value = ssb;
-                        if (hargaReal) hargaReal.value = harga;
-                        if (njopReal) njopReal.value = njop;
+                        if (sspReal) sspReal.value = sspFormatted;    // → "Rp. 3.000.000"
+                        if (ssbReal) ssbReal.value = ssbFormatted;    // → "Rp. 2.000.000"
+                        if (hargaReal) hargaReal.value = hargaFormatted;  // → "Rp. 120.000.000"
+                        if (njopReal) njopReal.value = njopFormatted;   // → "Rp. 1.970.000"
 
-                        // Format luas menjadi 4 digit / 4 digit
-                        const luasFormat = parts[0].padStart(4, '0') + '/' + parts[1].padStart(4, '0');
+                        // Format luas menjadi 5 digit / 5 digit
+                        const luasFormat = parts[0].padStart(5, '0') + '/' + parts[1].padStart(5, '0');
 
-                        // Buat object transaksi
+                        // Object transaksi
                         const transaksiData = {
                             tanggal: document.getElementById('tanggal_transaksi')?.value || '',
                             no_sppd: document.getElementById('no_sppd')?.value.trim() || '',
@@ -4187,11 +4271,11 @@
                             kecamatan: kecamatanVal,
                             kelurahan: kelurahanVal,
                             nop: nopValue,
-                            njop: njop,
+                            njop: njopFormatted,
                             luas_tb: luasFormat,
-                            harga: harga,
-                            ssp: ssp,
-                            ssb: ssb
+                            harga: hargaFormatted,
+                            ssp: sspFormatted,
+                            ssb: ssbFormatted
                         };
 
                         console.log("Data transaksi yang akan dikirim:", transaksiData);
