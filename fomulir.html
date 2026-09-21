@@ -979,45 +979,112 @@
         font-size: 0.8rem;
     }
 
-    /* WRAPPER */
+    /* ===============================
+   PROMO WRAPPER
+================================ */
     .promo-wrapper {
         position: relative;
-        overflow: hidden;
         width: 100%;
+        margin-bottom: 8px;
     }
 
-    /* Informasi */
-    .promo-ajb {
-        display: inline-block;
-        white-space: nowrap;
-        font-size: 0.85rem;
-        border-left: 4px solid #0d6efd;
-        padding-left: 10px;
-
-        /* animasi dari kanan ke kiri terus-menerus */
-        animation: promoMove 60s linear infinite;
-    }
-
-    /* Informasi */
+    .promo-ajb,
     .promo-auto {
-        display: inline-block;
-        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
         font-size: 0.85rem;
-        border-left: 4px solid #841b04;
-        padding-left: 10px;
-
-        /* animasi dari kanan ke kiri terus-menerus */
-        animation: promoMove 120s linear infinite;
+        overflow: hidden;
     }
 
-    /* TEKS DALAM */
-    .promo-text {
-        margin-left: 10px;
+    .promo-ajb {
+        border-left: 4px solid #0d6efd;
+    }
+
+    .promo-auto {
+        border-left: 4px solid #841b04;
     }
 
     /* ===============================
-   TARIF SSP – MINI & CLEAN
+   IKON DIAM
 ================================ */
+    .promo-icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        border-radius: 50%;
+        color: #fff;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.35);
+        animation: iconPulse 2s ease-in-out infinite;
+        z-index: 2;
+    }
+
+    .promo-auto .promo-icon {
+        background: linear-gradient(135deg, #841b04, #a52a2a);
+        box-shadow: 0 2px 8px rgba(132, 27, 4, 0.35);
+    }
+
+    @keyframes iconPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    /* ===============================
+   KONTEN & SCROLL AREA
+================================ */
+    .promo-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .promo-content>strong {
+        flex-shrink: 0;
+        white-space: nowrap;
+        color: #0b5ed7;
+        font-weight: 700;
+    }
+
+    .promo-auto .promo-content>strong {
+        color: #841b04;
+    }
+
+    .promo-scroll {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        min-width: 0;
+        mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    }
+
+    .promo-text {
+        display: inline-block;
+        white-space: nowrap;
+        will-change: transform;
+        /* Animasi dihapus, dihandle JS */
+    }
+
+    /* ===============================
+       TARIF SSP – MINI & CLEAN
+    ================================ */
 
     .tarif-ssp small {
         font-size: 0.75rem;
@@ -1942,48 +2009,67 @@
                                         <div class="mb-8">
                                             <div class="promo-wrapper">
                                                 <div class="promo-ajb alert alert-info small">
-                                                    <i class="bi bi-megaphone-fill"></i>
-                                                    <strong>Informasi Jenis Akta:</strong>
-                                                    <span class="promo-text">
-                                                        <b>AJB</b> – Akta Jual Beli •
-                                                        <b>APHT</b> – Akta Pemberian Hak Tanggungan •
-                                                        <b>APHB</b> – Akta Pembagian Hak Bersama •
-                                                        <b>SKMHT</b> – Surat Kuasa Membebankan Hak Tanggungan •
-                                                        <b>Hibah</b> – Akta Hibah •
-                                                        <b>APDP</b> – Akta Pembagian Dengan Pemisahan •
-                                                        <b>ATM</b> – Akta Tukar Menukar
-                                                    </span>
+                                                    <div class="promo-icon">
+                                                        <i class="bi bi-megaphone-fill"></i>
+                                                    </div>
+                                                    <div class="promo-content">
+                                                        <strong>Informasi Jenis Akta:</strong>
+                                                        <div class="promo-scroll" data-speed="60">
+                                                            <span class="promo-text">
+                                                                <b>AJB</b> – Akta Jual Beli •
+                                                                <b>APHT</b> – Akta Pemberian Hak Tanggungan •
+                                                                <b>APHB</b> – Akta Pembagian Hak Bersama •
+                                                                <b>SKMHT</b> – Surat Kuasa Membebankan Hak Tanggungan •
+                                                                <b>Hibah</b> – Akta Hibah •
+                                                                <b>APDP</b> – Akta Pembagian Dengan Pemisahan •
+                                                                <b>ATM</b> – Akta Tukar Menukar
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                             <div class="promo-wrapper">
                                                 <div class="promo-auto alert alert-info small">
-                                                    <i class="bi bi-megaphone-fill"></i>
-                                                    <strong>Informasi Penting:</strong>
-                                                    <span class="promo-text">
-                                                        <b>Dasar Hukum :</b> • Perda Kota Bengkulu No 01 Tahun 2024
-                                                        - tentang
-                                                        Pajak daerah dan retribusi daerah pasal 16 ayat (1)
-                                                        dan (2)" •
-                                                        <b>Dasar Hukum Lainnya :</b> • Undang‑Undang Nomor 5
-                                                        Tahun 1960 tentang Peraturan Dasar Pokok‑Pokok Agraria. •
-                                                        <b>Undang‑Undang Nomor 4 Tahun 1996</b> tentang Hak
-                                                        Tanggungan
-                                                        atas Tanah Beserta Benda‑Benda yang Berkaitan dengan
-                                                        Tanah •
-                                                        <b>Peraturan Presiden Nomor 20 Tahun 2015</b> tentang Badan
-                                                        Pertanahan Nasional •
-                                                        <b>Peraturan Pemerintah Nomor 24 Tahun 2016 </b> tentang
-                                                        Perubahan atas Peraturan Pemerintah Nomor 37 Tahun 1998
-                                                        tentang Jabatan PPAT •
-                                                        <b>Peraturan Menteri ATR/BPN Nomor 5 Tahun 2020</b> tentang
-                                                        Pelayanan Hak Tanggungan Terintegrasi Secara
-                                                        Elektronik •
-                                                        <b>Peraturan Menteri ATR/BPN Nomor 3 Tahun 2021</b> tentang
-                                                        Ketentuan Pelaksanaan Pendaftaran Tanah Elektronik •
-                                                        <b>Undang‑Undang Nomor 30 Tahun 2004</b> - tentang Jabatan
-                                                        Notaris (jo. UU No. 2 Tahun 2014) — bagi notaris dalam
-                                                        membuat akta umum.
-                                                    </span>
+                                                    <div class="promo-icon">
+                                                        <i class="bi bi-megaphone-fill"></i>
+                                                    </div>
+                                                    <div class="promo-content">
+                                                        <strong>Informasi Penting:</strong>
+                                                        <div class="promo-scroll" data-speed="120">
+                                                            <span class="promo-text">
+                                                                <b>Dasar Hukum :</b> • Perda Kota Bengkulu No 01 Tahun
+                                                                2024
+                                                                - tentang
+                                                                Pajak daerah dan retribusi daerah pasal 16 ayat (1)
+                                                                dan (2)" •
+                                                                <b>Dasar Hukum Lainnya :</b> • Undang‑Undang Nomor 5
+                                                                Tahun 1960 tentang Peraturan Dasar Pokok‑Pokok Agraria.
+                                                                •
+                                                                <b>Undang‑Undang Nomor 4 Tahun 1996</b> tentang Hak
+                                                                Tanggungan
+                                                                atas Tanah Beserta Benda‑Benda yang Berkaitan dengan
+                                                                Tanah •
+                                                                <b>Peraturan Presiden Nomor 20 Tahun 2015</b> tentang
+                                                                Badan
+                                                                Pertanahan Nasional •
+                                                                <b>Peraturan Pemerintah Nomor 24 Tahun 2016 </b> tentang
+                                                                Perubahan atas Peraturan Pemerintah Nomor 37 Tahun 1998
+                                                                tentang Jabatan PPAT •
+                                                                <b>Peraturan Menteri ATR/BPN Nomor 5 Tahun 2020</b>
+                                                                tentang
+                                                                Pelayanan Hak Tanggungan Terintegrasi Secara
+                                                                Elektronik •
+                                                                <b>Peraturan Menteri ATR/BPN Nomor 3 Tahun 2021</b>
+                                                                tentang
+                                                                Ketentuan Pelaksanaan Pendaftaran Tanah Elektronik •
+                                                                <b>Undang‑Undang Nomor 30 Tahun 2004</b> - tentang
+                                                                Jabatan
+                                                                Notaris (jo. UU No. 2 Tahun 2014) — bagi notaris dalam
+                                                                membuat akta umum.
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             </h3>
@@ -4904,6 +4990,122 @@
                 });
             }
         });
+
+        /* ============================================
+       MARQUEE ENGINE - IKON DIAM, TEKS BERGERAK
+    ============================================ */
+        (function initPromoMarquee() {
+
+            const scrollers = document.querySelectorAll('.promo-scroll');
+
+            scrollers.forEach(scroller => {
+                const text = scroller.querySelector('.promo-text');
+                if (!text) return;
+
+                // Kecepatan dari data-attribute (detik untuk 1 putaran penuh)
+                const duration = parseFloat(scroller.dataset.speed) || 60;
+
+                // State
+                let isPaused = false;
+                let isHovering = false;
+                let startTime = null;
+                let offset = 0; // posisi saat ini dalam pixel
+                let textWidth = 0;
+                let containerWidth = 0;
+                let rafId = null;
+
+                // Clone teks untuk seamless loop
+                function setupClone() {
+                    // Hapus clone lama jika ada
+                    const oldClone = scroller.querySelector('.promo-text-clone');
+                    if (oldClone) oldClone.remove();
+
+                    // Pastikan text asli punya display inline-block
+                    text.style.display = 'inline-block';
+                    text.style.whiteSpace = 'nowrap';
+
+                    // Ukur lebar
+                    textWidth = text.offsetWidth;
+                    containerWidth = scroller.offsetWidth;
+
+                    // Clone teks untuk seamless (2x untuk jarak)
+                    const clone = text.cloneNode(true);
+                    clone.classList.add('promo-text-clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.style.marginLeft = '60px'; // jarak antar teks
+                    scroller.appendChild(clone);
+                }
+
+                // Loop animasi
+                function animate(timestamp) {
+                    if (startTime === null) startTime = timestamp;
+
+                    if (!isPaused && !isHovering) {
+                        const delta = timestamp - startTime;
+                        startTime = timestamp;
+
+                        // Hitung kecepatan: (textWidth + jarak) / duration
+                        const totalWidth = textWidth + 60; // 60 = margin-left clone
+                        const speed = totalWidth / (duration * 1000); // px per ms
+
+                        offset -= speed * delta;
+
+                        // Reset offset jika sudah melewati satu siklus penuh
+                        if (Math.abs(offset) >= totalWidth) {
+                            offset += totalWidth;
+                        }
+
+                        text.style.transform = `translateX(${offset}px)`;
+                    }
+
+                    rafId = requestAnimationFrame(animate);
+                }
+
+                // Start
+                function start() {
+                    setupClone();
+                    // Posisi awal: mulai dari kanan container
+                    offset = containerWidth;
+                    text.style.transform = `translateX(${offset}px)`;
+                    startTime = null;
+                    cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(animate);
+                }
+
+                // Pause on hover (opsional)
+                scroller.addEventListener('mouseenter', () => {
+                    isHovering = true;
+                });
+
+                scroller.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    startTime = null; // reset biar tidak jump
+                });
+
+                // Pause kalau tab tidak aktif (hemat resource)
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        cancelAnimationFrame(rafId);
+                    } else {
+                        startTime = null;
+                        rafId = requestAnimationFrame(animate);
+                    }
+                });
+
+                // Restart saat resize (karena ukuran berubah)
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        start();
+                    }, 300);
+                });
+
+                // Jalankan
+                start();
+            });
+
+        })();
     </script>
 
 </body>
