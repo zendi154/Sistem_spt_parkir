@@ -3122,7 +3122,7 @@
 
             <!-- Kiri: Judul -->
             <a class="navbar-brand d-flex align-items-center" href="">
-                <i class="bi bi-speedometer2"> SIARDA </i>
+                <i class="bi bi-speedometer2"> Rekapitulasi Auto</i>
             </a>
 
             <!-- Kanan: Icon Scan -->
@@ -4004,12 +4004,32 @@
         }
 
         // ============================================
-        // EXPORT EXCEL - VERSI MODERN ELEGAN (LOGO DIPERKECIL)
+        // EXPORT EXCEL - VERSI BARU FIX 2026
         // ============================================
         function exportExcel() {
+            // ============================================
+            // DEBUG: Cek data
+            // ============================================
+            console.log("=== DEBUG EXPORT EXCEL ===");
+            console.log("Total data:", currentFilteredData?.length);
+
             if (!currentFilteredData || currentFilteredData.length === 0) {
-                showError("Error", "Tidak ada data!");
+                showError("Error", "Tidak ada data untuk di-export!");
                 return;
+            }
+
+            // Cek keys tersedia
+            const keys = Object.keys(currentFilteredData[0]);
+            console.log("Keys tersedia:", keys);
+            console.log("Sample row 1:", currentFilteredData[0]);
+
+            // Cek apakah kolom keterangan ada
+            if (!keys.includes("keterangan")) {
+                console.warn("⚠️ Kolom 'keterangan' TIDAK ADA di data!");
+            } else {
+                console.log("✅ Kolom keterangan ADA");
+                console.log("  Row 1:", currentFilteredData[0]?.["keterangan"]);
+                console.log("  Row 47:", currentFilteredData[46]?.["keterangan"]);
             }
 
             try {
@@ -4024,7 +4044,9 @@
 
                 const LOGO_URL = "https://lh3.googleusercontent.com/d/1VJ8sMX4zC4_W7uZCiVCFvYJ22mXia57x=s200";
 
-                // Hitung total untuk ringkasan
+                // ============================================
+                // HITUNG TOTAL
+                // ============================================
                 let totalLaporan = 0;
                 let totalBPHTB = 0;
                 currentFilteredData.forEach(row => {
@@ -4034,406 +4056,270 @@
                     totalBPHTB += bphtb;
                 });
 
-                let htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Notaris - Bapenda Kota Bengkulu</title>
-    <style>
-        /* ============================================
-           MODERN STYLE - ELEGAN & PROFESIONAL
-        ============================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', 'Times New Roman', Arial, sans-serif;
-            font-size: 9pt;
-            padding: 20px;
-            background: #ffffff;
-            color: #1e293b;
-        }
-        
-        /* ===== HEADER MODERN - LOGO KECIL ===== */
-        .header-modern {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 12px;
-            padding: 12px 18px;
-            margin-bottom: 16px;
-            border: 1px solid #bae6fd;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .header-table td {
-            border: none;
-            padding: 3px 8px;
-            vertical-align: middle;
-        }
-        
-        .header-table .logo-cell {
-            width: 8%;
-            text-align: center;
-        }
-        
-        .header-table .logo {
-            width: 40px;  /* DIPERKECIL DARI 75px MENJADI 40px */
-            height: 40px;
-            object-fit: contain;
-            background: white;
-            border-radius: 50%;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.10);
-        }
-        
-        .header-table .text-cell {
-            width: 92%;
-            text-align: center;
-        }
-        
-        .header-table .instansi {
-            font-size: 13pt;  /* DIPERKECIL DARI 16pt */
-            font-weight: 800;
-            color: #0284c7;
-            letter-spacing: 0.3px;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .header-table .kota {
-            font-size: 10pt;  /* DIPERKECIL DARI 12pt */
-            font-weight: 600;
-            color: #0369a1;
-            margin: 1px 0;
-            line-height: 1.2;
-        }
-        
-        .header-table .bidang {
-            font-size: 7.5pt;  /* DIPERKECIL DARI 9pt */
-            color: #475569;
-            font-weight: 500;
-            margin: 1px 0;
-            letter-spacing: 0.2px;
-            line-height: 1.2;
-        }
-        
-        .header-table .alamat {
-            font-size: 6.5pt;  /* DIPERKECIL DARI 7.5pt */
-            color: #64748b;
-            margin: 1px 0;
-            line-height: 1.2;
-        }
-        
-        .header-table .judul-laporan {
-            font-size: 11pt;  /* DIPERKECIL DARI 13pt */
-            font-weight: 700;
-            color: #0c4a6e;
-            margin-top: 4px;
-            padding-top: 4px;
-            border-top: 2px solid rgba(2, 132, 199, 0.12);
-            display: inline-block;
-            padding-left: 15px;
-            padding-right: 15px;
-            line-height: 1.2;
-        }
-        
-        /* ===== INFO CETAK MODERN ===== */
-        .info-cetak-modern {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .info-cetak-modern .left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .info-cetak-modern .badge-info {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: white;
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 7pt;
-            font-weight: 600;
-        }
-        
-        .info-cetak-modern .label {
-            color: #64748b;
-            font-size: 7pt;
-        }
-        
-        .info-cetak-modern .value {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 7.5pt;
-        }
-        
-        /* ===== TABLE MODERN ===== */
-        .table-wrapper {
-            overflow-x: auto;
-            margin: 8px 0;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 7pt;
-            min-width: 1100px;
-        }
-        
-        thead {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-        }
-        
-        thead th {
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            padding: 6px 5px;
-            font-size: 6.5pt;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border: none;
-            border-right: 1px solid rgba(255,255,255,0.12);
-        }
-        
-        thead th:last-child {
-            border-right: none;
-        }
-        
-        tbody tr:nth-child(even) {
-            background: #f8fafc;
-        }
-        
-        tbody tr:hover {
-            background: #e0f2fe;
-        }
-        
-        tbody td {
-            padding: 4px 5px;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
-            font-size: 6.5pt;
-        }
-        
-        tbody td:first-child {
-            text-align: center;
-            font-weight: 600;
-            color: #0284c7;
-        }
-        
-        tbody td:nth-child(2) { text-align: center; }
-        tbody td:nth-child(5) { text-align: center; }
-        tbody td:nth-child(6) { text-align: center; }
-        tbody td:nth-child(7) { text-align: center; }
-        tbody td:nth-child(8) { text-align: center; }
-        tbody td:nth-child(10) { text-align: center; }
-        tbody td:nth-child(11) { text-align: right; font-weight: 600; color: #059669; }
-        
-        /* ===== FOOTER MODERN ===== */
-        .footer-modern {
-            margin-top: 16px;
-            padding: 10px 14px;
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border-radius: 10px;
-            border: 1px solid #bae6fd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .footer-modern .total-box {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .footer-modern .total-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .footer-modern .total-item .label {
-            font-size: 7pt;
-            color: #475569;
-        }
-        
-        .footer-modern .total-item .value {
-            font-size: 8pt;
-            font-weight: 700;
-            color: #0284c7;
-        }
-        
-        .footer-modern .total-item .value.green {
-            color: #059669;
-        }
-        
-        .footer-modern .signature {
-            text-align: right;
-            font-size: 6.5pt;
-            color: #64748b;
-        }
-        
-        .footer-modern .signature strong {
-            color: #1e293b;
-        }
-        
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .header-table .logo { width: 32px; height: 32px; }
-            .header-table .instansi { font-size: 11pt; }
-            .header-table .judul-laporan { font-size: 9pt; }
-            .info-cetak-modern { flex-direction: column; text-align: center; }
-            .footer-modern { flex-direction: column; text-align: center; gap: 8px; }
-        }
-    </style>
-</head>
-<body>
-    <!-- ===== HEADER MODERN - LOGO KECIL ===== -->
-    <div class="header-modern">
-        <table class="header-table">
-            <tr>
-                <td class="logo-cell">
-                    <img src="${LOGO_URL}" class="logo" alt="Logo Bapenda">
-                </td>
-                <td class="text-cell">
-                    <div class="instansi">BADAN PENDAPATAN DAERAH</div>
-                    <div class="kota">KOTA BENGKULU</div>
-                    <div class="bidang">Bidang Pengendalian dan Evaluasi Pendapatan Daerah</div>
-                    <div class="alamat">Jl. WR. Supratman Kelurahan Bentiring Permai</div>
-                    <div class="judul-laporan">LAPORAN DATA PPAT / NOTARIS</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+                // ============================================
+                // FUNGSI BANTU
+                // ============================================
+                const safe = (val) => {
+                    if (val === null || val === undefined) return '';
+                    return String(val);
+                };
 
-    <!-- ===== INFO CETAK MODERN ===== -->
-    <div class="info-cetak-modern">
-        <div class="left">
-            <span class="badge-info">LAPORAN</span>
-            <span class="label">Tanggal Cetak :</span>
-            <span class="value">${tanggalExport} | ${waktuExport}</span>
-        </div>
-        <div>
-            <span class="label">Total Data :</span>
-            <span class="value" style="color:#0284c7; font-size:8.5pt;">${currentFilteredData.length} Laporan</span>
-        </div>
-    </div>
+                const safeTanggal = (val) => {
+                    if (!val) return '-';
+                    try {
+                        // Kalau format "02-Feb-26"
+                        const bulan = {
+                            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                            'May': '05', 'Mei': '05', 'Jun': '06', 'Jul': '07',
+                            'Aug': '08', 'Agu': '08', 'Sep': '09', 'Oct': '10',
+                            'Okt': '10', 'Nov': '11', 'Dec': '12', 'Des': '12'
+                        };
+                        const parts = String(val).split('-');
+                        if (parts.length === 3 && bulan[parts[1]]) {
+                            const hari = parts[0].padStart(2, '0');
+                            const bln = bulan[parts[1]];
+                            let tahun = parts[2];
+                            if (tahun.length === 2) tahun = '20' + tahun;
+                            return `${hari}/${bln}/${tahun}`;
+                        }
+                        return String(val);
+                    } catch (e) {
+                        return String(val);
+                    }
+                };
 
-    <!-- ===== TABLE MODERN ===== -->
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%;">No</th>
-                    <th style="width:7%;">Nomor Unik</th>
-                    <th style="width:15%;">Nama Notaris &amp; PPAT</th>
-                    <th style="width:15%;">Alamat Kantor</th>
-                    <th style="width:8%;">Nomor Surat</th>
-                    <th style="width:8%;">Tanggal Surat</th>
-                    <th style="width:8%;">Tanggal Diterima</th>
-                    <th style="width:8%;">Status</th>
-                    <th style="width:8%;">Bulan Laporan</th>
-                    <th style="width:5%;">Jml</th>
-                    <th style="width:10%;">BPHTB (Rp)</th>
-                    <th style="width:10%;">Keterangan</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${currentFilteredData.map((row, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${escapeHtml(row["id"] || '')}</td>
-                    <td>${escapeHtml(row["nama_notaris_&_ppat"] || '')}</td>
-                    <td>${escapeHtml(row["alamat"] || '')}</td>
-                    <td>${escapeHtml(row["nomor_surat"] || '')}</td>
-                    <td>${formatTanggalGlobal(row["tanggal_surat"])}</td>
-                    <td>${formatTanggalGlobal(row["tanggal_diterima"])}</td>
-                    <td>${row["status_surat"] || '-'}</td>
-                    <td>${row["laporan_bulanan"] || '-'}</td>
-                    <td>${row["jumlah_laporan"] || '0'}</td>
-                    <td>${formatRupiahTabel(row["sspd_bphtb"] || '0')}</td>
-                    <td>${escapeHtml(row["keterangan"] || '-')}</td>
-                </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    </div>
+                const safeRupiah = (val) => {
+                    if (!val) return 'Rp. 0';
+                    const str = String(val);
+                    if (str.startsWith('Rp')) return str;
+                    const angka = parseInt(str.replace(/\D/g, '')) || 0;
+                    return 'Rp. ' + angka.toLocaleString('id-ID');
+                };
 
-    <!-- ===== FOOTER MODERN ===== -->
-    <div class="footer-modern">
-        <div class="total-box">
-            <div class="total-item">
-                <span class="label">Total Laporan :</span>
-                <span class="value">${totalLaporan}</span>
-            </div>
-            <div class="total-item">
-                <span class="label">Total BPHTB :</span>
-                <span class="value green">${formatRupiahTabel(String(totalBPHTB))}</span>
-            </div>
-            <div class="total-item">
-                <span class="label">Total Data :</span>
-                <span class="value">${currentFilteredData.length}</span>
-            </div>
-        </div>
-        <div class="signature">
-            <strong>Bapenda Kota Bengkulu</strong><br>
-            <span style="font-size:6pt;">Dicetak secara elektronik • ${tanggalExport}</span>
-        </div>
-    </div>
-</body>
-</html>`;
+                // ============================================
+                // BUILD HTML UNTUK EXCEL
+                // ============================================
+                let htmlContent = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+                        xmlns:x="urn:schemas-microsoft-com:office:excel"
+                        xmlns="http://www.w3.org/TR/REC-html40">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="ProgId" content="Excel.Sheet">
+                        <meta name="Generator" content="Microsoft Excel 15">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Laporan Notaris - Bapenda Kota Bengkulu</title>
+                        <!--[if gte mso 9]>
+                        <xml>
+                            <x:ExcelWorkbook>
+                                <x:ExcelWorksheets>
+                                    <x:ExcelWorksheet>
+                                        <x:Name>Laporan PPAT</x:Name>
+                                        <x:WorksheetOptions>
+                                            <x:DisplayGridlines/>
+                                            <x:FreezePanes/>
+                                            <x:FrozenNoSplit/>
+                                            <x:SplitHorizontal>5</x:SplitHorizontal>
+                                            <x:TopRowBottomPane>5</x:TopRowBottomPane>
+                                            <x:ActivePane>2</x:ActivePane>
+                                        </x:WorksheetOptions>
+                                    </x:ExcelWorksheet>
+                                </x:ExcelWorksheets>
+                            </x:ExcelWorkbook>
+                        </xml>
+                        <![endif]-->
+                        <style>
+                            table {
+                                border-collapse: collapse;
+                                font-family: 'Segoe UI', Arial, sans-serif;
+                                font-size: 10pt;
+                            }
+                            th {
+                                background: #0284c7;
+                                color: #ffffff;
+                                font-weight: bold;
+                                text-align: center;
+                                padding: 6px;
+                                border: 1px solid #0369a1;
+                                font-size: 10pt;
+                            }
+                            td {
+                                padding: 4px 6px;
+                                border: 1px solid #cbd5e1;
+                                font-size: 10pt;
+                                vertical-align: top;
+                            }
+                            .header-instansi {
+                                font-size: 14pt;
+                                font-weight: bold;
+                                color: #0284c7;
+                                text-align: center;
+                            }
+                            .header-kota {
+                                font-size: 12pt;
+                                font-weight: bold;
+                                color: #0369a1;
+                                text-align: center;
+                            }
+                            .header-bidang {
+                                font-size: 10pt;
+                                color: #475569;
+                                text-align: center;
+                            }
+                            .header-alamat {
+                                font-size: 9pt;
+                                color: #64748b;
+                                text-align: center;
+                            }
+                            .judul-laporan {
+                                font-size: 13pt;
+                                font-weight: bold;
+                                color: #0c4a6e;
+                                text-align: center;
+                            }
+                            .info-cetak {
+                                font-size: 9pt;
+                                color: #475569;
+                            }
+                            .text-center { text-align: center; }
+                            .text-right { text-align: right; }
+                            .text-bold { font-weight: bold; }
+                            .bg-blue { background: #e0f2fe; }
+                            .bg-green { background: #dcfce7; }
+                            .bg-yellow { background: #fef9c3; }
+                        </style>
+                    </head>
+                    <body>
 
-                // Download sebagai file .xls
-                const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
+                        <!-- ===== HEADER ===== -->
+                        <table style="width: 100%; margin-bottom: 15px; border: none;">
+                            <tr>
+                                <td style="width: 10%; text-align: center; border: none; vertical-align: middle;">
+                                    <img src="${LOGO_URL}" alt="Logo" style="width: 60px; height: 60px;" />
+                                </td>
+                                <td style="width: 90%; text-align: center; border: none;">
+                                    <div class="header-instansi">BADAN PENDAPATAN DAERAH</div>
+                                    <div class="header-kota">KOTA BENGKULU</div>
+                                    <div class="header-bidang">Bidang Pengendalian dan Evaluasi Pendapatan Daerah</div>
+                                    <div class="header-alamat">Jl. WR. Supratman Kelurahan Bentiring Permai</div>
+                                    <div class="judul-laporan" style="margin-top: 8px;">LAPORAN DATA PPAT / NOTARIS</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ===== INFO CETAK ===== -->
+                        <table style="width: 100%; margin-bottom: 10px; border: none;">
+                            <tr>
+                                <td style="border: none; font-size: 9pt; color: #475569;">
+                                    <b>Tanggal Cetak:</b> ${tanggalExport} | ${waktuExport}
+                                </td>
+                                <td style="border: none; text-align: right; font-size: 9pt; color: #475569;">
+                                    <b>Total Data:</b> ${currentFilteredData.length} Laporan
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ===== TABEL DATA ===== -->
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">No</th>
+                                    <th style="width: 120px;">Nomor Unik</th>
+                                    <th style="width: 200px;">Nama Notaris &amp; PPAT</th>
+                                    <th style="width: 250px;">Alamat Kantor</th>
+                                    <th style="width: 120px;">Nomor Surat</th>
+                                    <th style="width: 90px;">Tanggal Surat</th>
+                                    <th style="width: 90px;">Tanggal Diterima</th>
+                                    <th style="width: 100px;">Status</th>
+                                    <th style="width: 80px;">Bulan Laporan</th>
+                                    <th style="width: 50px;">Jml</th>
+                                    <th style="width: 100px;">BPHTB (Rp)</th>
+                                    <th style="width: 300px;">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                // ============================================
+                // ISI TABEL DARI currentFilteredData
+                // ============================================
+                currentFilteredData.forEach((row, idx) => {
+                    // Ambil keterangan — coba beberapa nama key
+                    const keterangan = row["keterangan"]
+                        || row["Keterangan"]
+                        || row["rincian"]
+                        || row["RINCIAN"]
+                        || '-';
+
+                    const statusSurat = row["status_surat"] || row["Status Surat"] || '-';
+                    const statusClass = String(statusSurat).includes('Tepat')
+                        ? 'bg-green'
+                        : String(statusSurat).includes('Terlambat')
+                            ? 'bg-yellow'
+                            : '';
+
+                    htmlContent += `
+                                <tr>
+                                    <td class="text-center">${idx + 1}</td>
+                                    <td>${safe(row["id"])}</td>
+                                    <td>${safe(row["nama_notaris_&_ppat"] || row["nama_notaris_&amp;_ppat"])}</td>
+                                    <td>${safe(row["alamat"])}</td>
+                                    <td class="text-center">${safe(row["nomor_surat"])}</td>
+                                    <td class="text-center">${safeTanggal(row["tanggal_surat"])}</td>
+                                    <td class="text-center">${safeTanggal(row["tanggal_diterima"])}</td>
+                                    <td class="text-center ${statusClass}">${safe(statusSurat)}</td>
+                                    <td class="text-center">${safe(row["laporan_bulanan"])}</td>
+                                    <td class="text-center text-bold">${safe(row["jumlah_laporan"]) || '0'}</td>
+                                    <td class="text-right text-bold">${safeRupiah(row["sspd_bphtb"])}</td>
+                                    <td>${safe(keterangan)}</td>
+                                </tr>
+                                `;
+                });
+
+                htmlContent += `
+                            </tbody>
+                        </table>
+
+                        <!-- ===== FOOTER ===== -->
+                        <table style="width: 100%; margin-top: 15px; border: none;">
+                            <tr>
+                                <td style="border: none; padding: 10px; background: #e0f2fe;">
+                                    <b>Total Laporan:</b> ${totalLaporan} &nbsp; | &nbsp;
+                                    <b>Total BPHTB:</b> ${safeRupiah(String(totalBPHTB))} &nbsp; | &nbsp;
+                                    <b>Total Data:</b> ${currentFilteredData.length}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none; padding: 10px; text-align: right; font-size: 9pt; color: #64748b;">
+                                    <b>Bapenda Kota Bengkulu</b><br>
+                                    Dicetak secara elektronik • ${tanggalExport}
+                                </td>
+                            </tr>
+                        </table>
+
+                    </body>
+                    </html>`;
+
+                // ============================================
+                // DOWNLOAD SEBAGAI FILE .xls
+                // ============================================
+                const blob = new Blob(['\ufeff', htmlContent], {
+                    type: 'application/vnd.ms-excel;charset=utf-8'
+                });
                 const link = document.createElement('a');
                 const fileName = `Laporan_PPAT_${new Date().toISOString().slice(0, 10)}.xls`;
                 link.href = URL.createObjectURL(blob);
                 link.download = fileName;
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
                 URL.revokeObjectURL(link.href);
 
-                showSuccess("✅ Export Berhasil!", "File Excel modern dengan logo dan border telah didownload");
+                console.log("✅ Export berhasil:", fileName);
+                showSuccess("✅ Export Berhasil!", "File Excel modern telah didownload");
 
             } catch (error) {
-                console.error("Error export:", error);
+                console.error("❌ Error export:", error);
                 showError("Error", "Terjadi kesalahan saat export: " + error.message);
             }
         }
