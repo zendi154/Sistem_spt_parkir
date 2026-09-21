@@ -2523,53 +2523,277 @@
         }
 
         /* ============================================
-        FIX MODAL DETEKSI - VERSION CORRECT
+        FIX MODAL DETEKSI
         ============================================ */
+
+        /* ============================================
+        MODAL CONTAINER - Z-INDEX & DISPLAY
+        ============================================ */
+        #modalPilihBulan {
+            z-index: 99999 !important;
+        }
+
+        #modalPilihBulan.modal {
+            z-index: 99999 !important;
+        }
+
+        /* Saat modal terbuka, pastikan display block */
+        #modalPilihBulan.show {
+            display: block !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* ============================================
+        MODAL DIALOG & CONTENT
+        ============================================ */
+        #modalPilihBulan .modal-dialog {
+            z-index: 100000 !important;
+            position: relative !important;
+            pointer-events: auto !important;
+            margin: 1.75rem auto !important;
+        }
 
         #modalPilihBulan .modal-content {
             background-color: #ffffff !important;
             border-radius: 24px !important;
             border: none !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            z-index: 100001 !important;
+            position: relative !important;
+            pointer-events: auto !important;
         }
 
+        /* ============================================
+        MODAL HEADER
+        ============================================ */
         #modalPilihBulan .modal-header {
             background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
             border-bottom: none !important;
             border-top-left-radius: 24px !important;
             border-top-right-radius: 24px !important;
+            padding: 16px 20px !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 100002 !important;
         }
 
         #modalPilihBulan .modal-header .modal-title {
             color: white !important;
+            font-weight: 600 !important;
         }
 
         #modalPilihBulan .modal-header .btn-close {
             filter: brightness(0) invert(1) !important;
+            opacity: 0.9 !important;
+            z-index: 100003 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
 
+        #modalPilihBulan .modal-header .btn-close:hover {
+            opacity: 1 !important;
+            transform: rotate(90deg);
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+        MODAL BODY - AREA DROPDOWN
+        ============================================ */
         #modalPilihBulan .modal-body {
             background: #ffffff !important;
             padding: 24px !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 100002 !important;
         }
 
+        /* ============================================
+        ✅ FIX UTAMA: DROPDOWN & INPUT BISA DIKLIK
+        ============================================ */
+        #modalPilihBulan select,
+        #modalPilihBulan .form-select,
+        #modalPilihBulan input,
+        #modalPilihBulan .form-control,
+        #modalPilihBulan textarea {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative !important;
+            z-index: 100003 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            font-size: 0.9rem !important;
+            color: #1e293b !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            -webkit-appearance: auto !important;
+            -moz-appearance: auto !important;
+            appearance: auto !important;
+        }
+
+        #modalPilihBulan select:hover,
+        #modalPilihBulan .form-select:hover {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
+        }
+
+        #modalPilihBulan select:focus,
+        #modalPilihBulan .form-select:focus {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2) !important;
+            outline: none !important;
+        }
+
+        /* Option di dalam dropdown */
+        #modalPilihBulan select option {
+            background: #ffffff !important;
+            color: #1e293b !important;
+            padding: 8px 12px !important;
+            font-size: 0.9rem !important;
+        }
+
+        /* Label */
+        #modalPilihBulan label,
+        #modalPilihBulan .form-label {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            margin-bottom: 6px !important;
+            display: block !important;
+            pointer-events: none !important;
+        }
+
+        /* ============================================
+        MODAL FOOTER & TOMBOL
+        ============================================ */
         #modalPilihBulan .modal-footer {
             background: #f8fafc !important;
             border-top: 1px solid #e2e8f0 !important;
             border-bottom-left-radius: 24px !important;
             border-bottom-right-radius: 24px !important;
+            padding: 14px 20px !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 100002 !important;
         }
 
-        #modalPilihBulan .form-select {
-            background-color: #ffffff !important;
-            border: 1px solid #cbd5e1 !important;
-            border-radius: 12px !important;
+        #modalPilihBulan .modal-footer .btn {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative !important;
+            z-index: 100003 !important;
+            border-radius: 10px !important;
+            padding: 10px 20px !important;
+            font-weight: 600 !important;
         }
 
+        #modalPilihBulan .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        #modalPilihBulan .modal-footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        #modalPilihBulan .modal-footer .btn-secondary {
+            background: #e2e8f0 !important;
+            color: #475569 !important;
+            border: none !important;
+        }
+
+        #modalPilihBulan .modal-footer .btn-secondary:hover {
+            background: #cbd5e1 !important;
+        }
+
+        /* ============================================
+        ALERT INFO
+        ============================================ */
         #modalPilihBulan .alert {
             background-color: #f0f9ff !important;
-            border-color: #bae6fd !important;
+            border: 1px solid #bae6fd !important;
             color: #0284c7 !important;
+            border-radius: 12px !important;
+            padding: 12px 16px !important;
+            font-size: 0.8rem !important;
+        }
+
+        #modalPilihBulan .alert-info {
+            background-color: #f0f9ff !important;
+            border-color: #bae6fd !important;
+        }
+
+        /* ============================================
+        BACKDROP - DI BAWAH MODAL
+        ============================================ */
+        .modal-backdrop {
+            z-index: 99998 !important;
+            background-color: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.4 !important;
+        }
+
+        /* ============================================
+        BODY SAAT MODAL TERBUKA
+        ============================================ */
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        /* ============================================
+        SWEETALERT - DI BAWAH MODAL DETEKSI
+        ============================================ */
+        .swal2-container {
+            z-index: 99990 !important;
+        }
+
+        .swal2-popup {
+            z-index: 99991 !important;
+        }
+
+        /* ============================================
+        ANIMASI MODAL
+        ============================================ */
+        #modalPilihBulan.fade .modal-dialog {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out !important;
+        }
+
+        #modalPilihBulan.show .modal-dialog {
+            transform: none !important;
+            opacity: 1 !important;
+        }
+
+        /* ============================================
+        RESPONSIVE
+        ============================================ */
+        @media (max-width: 576px) {
+            #modalPilihBulan .modal-dialog {
+                margin: 10px !important;
+            }
+
+            #modalPilihBulan .modal-content {
+                border-radius: 16px !important;
+            }
+
+            #modalPilihBulan .modal-header {
+                border-top-left-radius: 16px !important;
+                border-top-right-radius: 16px !important;
+            }
+
+            #modalPilihBulan .modal-footer {
+                border-bottom-left-radius: 16px !important;
+                border-bottom-right-radius: 16px !important;
+            }
+
+            #modalPilihBulan .modal-body {
+                padding: 16px !important;
+            }
         }
 
         /* ============================================
