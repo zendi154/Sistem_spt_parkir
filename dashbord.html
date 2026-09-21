@@ -4219,25 +4219,24 @@
                             </tr>
                         </table>
 
-                        <!-- ===== TABEL DATA ===== -->
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;">No</th>
-                                    <th style="width: 120px;">Nomor Unik</th>
-                                    <th style="width: 200px;">Nama Notaris &amp; PPAT</th>
-                                    <th style="width: 250px;">Alamat Kantor</th>
-                                    <th style="width: 120px;">Nomor Surat</th>
-                                    <th style="width: 90px;">Tanggal Surat</th>
-                                    <th style="width: 90px;">Tanggal Diterima</th>
-                                    <th style="width: 100px;">Status</th>
-                                    <th style="width: 80px;">Bulan Laporan</th>
-                                    <th style="width: 50px;">Jml</th>
-                                    <th style="width: 100px;">BPHTB (Rp)</th>
-                                    <th style="width: 300px;">Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                       <!-- ===== TABEL DATA ===== -->
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <!-- Header pakai <tr><td> BUKAN <thead><th> agar Excel bisa baca -->
+                        <tr>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:40px;">No</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:110px;">Nomor Unik</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:200px;">Nama Notaris &amp; PPAT</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:250px;">Alamat Kantor</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:120px;">Nomor Surat</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:90px;">Tgl Surat</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:90px;">Tgl Diterima</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:110px;">Status Surat</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:90px;">Bulan Laporan</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:60px;">Jml Laporan</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:130px;">Nominal BPHTB (Rp)</td>
+                            <td style="background:#0284c7; color:#ffffff; font-weight:bold; text-align:center; padding:8px 4px; border:1px solid #0369a1; width:300px;">Keterangan</td>
+                        </tr>
+                        <tbody>
                     `;
 
                 // ============================================
@@ -4258,22 +4257,27 @@
                             ? 'bg-yellow'
                             : '';
 
+                    let statusBg = '#ffffff';
+                    if (String(statusSurat).includes('Tepat')) statusBg = '#dcfce7';
+                    else if (String(statusSurat).includes('Terlambat')) statusBg = '#fef9c3';
+                    else if (String(statusSurat).includes('Tidak')) statusBg = '#fee2e2';
+
                     htmlContent += `
-                                <tr>
-                                    <td class="text-center">${idx + 1}</td>
-                                    <td>${safe(row["id"])}</td>
-                                    <td>${safe(row["nama_notaris_&_ppat"] || row["nama_notaris_&amp;_ppat"])}</td>
-                                    <td>${safe(row["alamat"])}</td>
-                                    <td class="text-center">${safe(row["nomor_surat"])}</td>
-                                    <td class="text-center">${safeTanggal(row["tanggal_surat"])}</td>
-                                    <td class="text-center">${safeTanggal(row["tanggal_diterima"])}</td>
-                                    <td class="text-center ${statusClass}">${safe(statusSurat)}</td>
-                                    <td class="text-center">${safe(row["laporan_bulanan"])}</td>
-                                    <td class="text-center text-bold">${safe(row["jumlah_laporan"]) || '0'}</td>
-                                    <td class="text-right text-bold">${safeRupiah(row["sspd_bphtb"])}</td>
-                                    <td>${safe(keterangan)}</td>
-                                </tr>
-                                `;
+                    <tr>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1;">${idx + 1}</td>
+                        <td style="padding:6px 4px; border:1px solid #cbd5e1;">${safe(row["id"])}</td>
+                        <td style="padding:6px 4px; border:1px solid #cbd5e1;">${safe(row["nama_notaris_&_ppat"] || row["nama_notaris_&amp;_ppat"])}</td>
+                        <td style="padding:6px 4px; border:1px solid #cbd5e1;">${safe(row["alamat"])}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1;">${safe(row["nomor_surat"])}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1;">${safeTanggal(row["tanggal_surat"])}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1;">${safeTanggal(row["tanggal_diterima"])}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1; background:${statusBg};">${safe(statusSurat)}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1;">${safe(row["laporan_bulanan"])}</td>
+                        <td style="text-align:center; padding:6px 4px; border:1px solid #cbd5e1; font-weight:bold;">${safe(row["jumlah_laporan"]) || '0'}</td>
+                        <td style="text-align:right; padding:6px 4px; border:1px solid #cbd5e1; font-weight:bold;">${safeRupiah(row["sspd_bphtb"])}</td>
+                        <td style="padding:6px 4px; border:1px solid #cbd5e1;">${safe(keterangan)}</td>
+                    </tr>
+                `;
                 });
 
                 htmlContent += `
