@@ -2893,33 +2893,34 @@
                     </div>
                 </div>
 
-                <!-- MODAL PILIH BULAN UNTUK DETEKSI TIDAK LAPOR -->
+                <!-- ============================================
+                     MODAL DETEKSI TIDAK LAPOR
+                ============================================= -->
                 <div class="modal fade" id="modalPilihBulan" tabindex="-1" aria-labelledby="modalPilihBulanLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title" id="modalPilihBulanLabel">
-                                    <i class="bi bi-calendar-month"></i> Deteksi Notaris Tidak Lapor
+                                    <i class="bi bi-search"></i> Deteksi Notaris Tidak Lapor
                                 </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p class="text-muted mb-3">Pilih bulan dan tahun untuk mendeteksi notaris/PPAT yang
-                                    belum melaporkan
-                                    laporan.</p>
-
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Tahun</label>
-                                    <select id="deteksiTahun" class="form-select">
+                                    <label for="deteksiTahun" class="form-label fw-semibold">
+                                        <i class="bi bi-calendar-event"></i> Pilih Tahun
+                                    </label>
+                                    <select class="form-select" id="deteksiTahun">
                                         <option value="">-- Pilih Tahun --</option>
                                     </select>
                                 </div>
-
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Bulan</label>
-                                    <select id="deteksiBulan" class="form-select">
+                                    <label for="deteksiBulan" class="form-label fw-semibold">
+                                        <i class="bi bi-calendar-month"></i> Pilih Bulan
+                                    </label>
+                                    <select class="form-select" id="deteksiBulan">
                                         <option value="">-- Pilih Bulan --</option>
                                         <option value="Januari">Januari</option>
                                         <option value="Februari">Februari</option>
@@ -2935,17 +2936,18 @@
                                         <option value="Desember">Desember</option>
                                     </select>
                                 </div>
-
-                                <div class="alert alert-info py-2 small">
-                                    <i class="bi bi-info-circle"></i> Sistem akan mendeteksi notaris/PPAT yang belum
-                                    melapor pada
-                                    periode yang dipilih.
+                                <div class="alert alert-info small mb-0">
+                                    <i class="bi bi-info-circle"></i>
+                                    Deteksi akan mencari notaris yang <strong>belum melapor</strong> pada periode yang
+                                    dipilih.
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle"></i> Batal
+                                </button>
                                 <button type="button" class="btn btn-primary" onclick="jalankanDeteksiTidakLapor()">
-                                    <i class="bi bi-search"></i> Deteksi Sekarang
+                                    <i class="bi bi-search"></i> Mulai Deteksi
                                 </button>
                             </div>
                         </div>
