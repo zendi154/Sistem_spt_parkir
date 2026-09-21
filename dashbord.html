@@ -3235,7 +3235,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn-close" onclick="tutupModalDeteksi()"
+                                    aria-label="Close"></button>
                                 <button type="button" class="btn btn-success" onclick="jalankanWANotifikasi()">
                                     <i class="bi bi-whatsapp"></i> Kirim WA Sekarang
                                 </button>
@@ -3348,7 +3349,7 @@
 
             <!-- Kiri: Judul -->
             <a class="navbar-brand d-flex align-items-center" href="">
-                <i class="bi bi-speedometer2"> Rekapitulasi Auto</i>
+                <i class="bi bi-speedometer2"> SIARDA</i>
             </a>
 
             <!-- Kanan: Icon Scan -->
@@ -6088,24 +6089,31 @@
         }
 
         function bukaModalDeteksiTidakLapor() {
-            console.log("🔍 Membuka modal deteksi tidak lapor...");
+            console.log("🔍 MEMBUKA MODAL DETEKSI (manual mode)");
 
-            // Hapus backdrop yang mungkin tersisa
-            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            // ============================================
+            // 1. BERSIHKAN SEMUA
+            // ============================================
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
 
-            // Isi dropdown tahun
+            // ============================================
+            // 2. ISI DROPDOWN TAHUN
+            // ============================================
             const tahunSelect = document.getElementById('deteksiTahun');
-            if (tahunSelect && allData && allData.length > 0) {
+            if (tahunSelect) {
                 const tahunSet = new Set();
-                allData.forEach(row => {
-                    const bulanLaporan = row["laporan_bulanan"];
-                    if (bulanLaporan) {
-                        const match = bulanLaporan.match(/\d{4}/);
-                        if (match) tahunSet.add(parseInt(match[0]));
-                    }
-                });
+                if (typeof allData !== 'undefined' && allData && allData.length > 0) {
+                    allData.forEach(row => {
+                        const bulanLaporan = row["laporan_bulanan"];
+                        if (bulanLaporan) {
+                            const match = bulanLaporan.match(/\d{4}/);
+                            if (match) tahunSet.add(parseInt(match[0]));
+                        }
+                    });
+                }
                 if (tahunSet.size === 0) tahunSet.add(new Date().getFullYear());
                 const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
                 tahunSelect.innerHTML = '<option value="">-- Pilih Tahun --</option>';
@@ -6113,51 +6121,105 @@
                     tahunSelect.innerHTML += `<option value="${tahun}">${tahun}</option>`;
                 });
                 if (tahunList.length > 0) tahunSelect.value = tahunList[0];
+                console.log("✅ Dropdown tahun diisi:", tahunList);
             }
 
-            // Ambil modal
-            const modal = document.getElementById('modalPilihBulan');
-            if (!modal) {
-                console.error("Modal tidak ditemukan!");
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Modal tidak ditemukan!' });
+            // ============================================
+            // 3. AMBIL MODAL ELEMENT
+            // ============================================
+            const modalElement = document.getElementById('modalPilihBulan');
+            if (!modalElement) {
+                console.error("❌ Modal tidak ditemukan!");
                 return;
             }
 
-            // Gunakan Bootstrap modal API
-            try {
-                // Hapus instance lama jika ada
-                let bsModal = bootstrap.Modal.getInstance(modal);
-                if (bsModal) {
-                    bsModal.dispose();
-                }
+            // ============================================
+            // 4. PAKSA TAMPILKAN MODAL - MANUAL MURNI
+            // ============================================
 
-                // Buat instance baru
-                bsModal = new bootstrap.Modal(modal, {
-                    backdrop: true,
-                    keyboard: true,
-                    focus: true
+            // Set display block
+            modalElement.style.display = 'block';
+            modalElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0';
+            modalElement.style.left = '0';
+            modalElement.style.width = '100%';
+            modalElement.style.height = '100%';
+            modalElement.style.zIndex = '99999';
+            modalElement.style.overflow = 'auto';
+
+            // Tambah class show
+            modalElement.classList.add('show');
+            modalElement.setAttribute('aria-hidden', 'false');
+            modalElement.setAttribute('aria-modal', 'true');
+            modalElement.setAttribute('role', 'dialog');
+
+            // Body
+            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+
+            // Backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.style.zIndex = '99998';
+            backdrop.onclick = function () {
+                // Klik backdrop = tutup modal
+                tutupModalDeteksi();
+            };
+            document.body.appendChild(backdrop);
+
+            // ============================================
+            // 5. PASTIKAN DROPDOWN BISA DIKLIK
+            // ============================================
+            setTimeout(() => {
+                const tahun = document.getElementById('deteksiTahun');
+                const bulan = document.getElementById('deteksiBulan');
+
+                [tahun, bulan].forEach(el => {
+                    if (el) {
+                        el.style.pointerEvents = 'auto';
+                        el.style.cursor = 'pointer';
+                        el.style.position = 'relative';
+                        el.style.zIndex = '100003';
+                        el.disabled = false;
+                        el.readOnly = false;
+                    }
                 });
 
-                // Tampilkan modal
-                bsModal.show();
-                console.log("✅ Modal terbuka dengan Bootstrap");
+                // Focus ke tahun
+                if (tahun) tahun.focus();
 
-            } catch (error) {
-                console.error("Error dengan Bootstrap modal:", error);
+                console.log("✅ Modal dipaksa terbuka");
+                console.log("classList:", modalElement.classList.toString());
+                console.log("display:", modalElement.style.display);
 
-                // Fallback manual jika Bootstrap gagal
-                modal.style.display = 'block';
-                modal.classList.add('show');
-                document.body.classList.add('modal-open');
-                document.body.style.overflow = 'hidden';
+                // Verifikasi dropdown bisa diklik
+                const rect = tahun.getBoundingClientRect();
+                const elemAtPoint = document.elementFromPoint(
+                    rect.left + rect.width / 2,
+                    rect.top + rect.height / 2
+                );
+                console.log("Element di atas dropdown sekarang:", elemAtPoint?.tagName, elemAtPoint?.id);
+                console.log("Sama dengan dropdown?", elemAtPoint === tahun);
+            }, 100);
+        }
 
-                if (document.querySelectorAll('.modal-backdrop').length === 0) {
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
-                }
-                console.log("✅ Modal terbuka dengan fallback manual");
+        // ============================================
+        // FUNGSI TUTUP MODAL
+        // ============================================
+        function tutupModalDeteksi() {
+            const modalElement = document.getElementById('modalPilihBulan');
+            if (modalElement) {
+                modalElement.classList.remove('show');
+                modalElement.style.display = 'none';
+                modalElement.setAttribute('aria-hidden', 'true');
             }
+
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+
+            console.log("✅ Modal ditutup");
         }
 
         // ============================================
