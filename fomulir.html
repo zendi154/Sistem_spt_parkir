@@ -1108,7 +1108,7 @@
     }
 
     /* ===============================
-       KONTEN - LABEL DIAM + TEKS SCROLL
+      KONTEN - LABEL DIAM + TEKS SCROLL
     ================================ */
     .promo-content {
         flex: 1;
@@ -1157,33 +1157,26 @@
     .promo-text {
         display: inline-block;
         white-space: nowrap;
-        will-change: transform;
         padding-left: 10px;
+        animation: promoScroll 60s linear infinite;
     }
 
-    .promo-content>strong {
-        flex-shrink: 0;
-        white-space: nowrap;
-        font-weight: 700;
-        position: relative;
-        z-index: 2;
-
-        /* Background solid sesuai warna alert-info */
-        background: #cff4fc;
-        /* ← warna bg alert-info bootstrap */
-        padding-right: 8px;
-        /* ← beri jarak ke kanan */
-        border-radius: 4px;
+    .promo-auto .promo-text {
+        animation-duration: 120s;
     }
 
-    .promo-ajb .promo-content>strong {
-        color: #0b5ed7;
+    .promo-scroll:hover .promo-text {
+        animation-play-state: paused;
     }
 
-    .promo-auto .promo-content>strong {
-        color: #841b04;
-        background: #cff4fc;
-        /* sama, karena pakai alert-info */
+    @keyframes promoScroll {
+        0% {
+            transform: translateX(100%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
     }
 
     /* ===============================
@@ -2143,9 +2136,8 @@
                                                         <div class="promo-scroll" data-speed="120">
                                                             <span class="promo-text">
                                                                 <b>Dasar Hukum :</b> • Perda Kota Bengkulu No 01 Tahun
-                                                                2024
-                                                                - tentang
-                                                                Pajak daerah dan retribusi daerah pasal 16 ayat (1)
+                                                                2024 - tentang Pajak daerah dan retribusi daerah pasal
+                                                                16 ayat (1)
                                                                 dan (2)" •
                                                                 <b>Dasar Hukum Lainnya :</b> • Undang‑Undang Nomor 5
                                                                 Tahun 1960 tentang Peraturan Dasar Pokok‑Pokok Agraria.
@@ -5094,122 +5086,6 @@
                 });
             }
         });
-
-        /* ============================================
-       MARQUEE ENGINE - IKON DIAM, TEKS BERGERAK
-    ============================================ */
-        (function initPromoMarquee() {
-
-            const scrollers = document.querySelectorAll('.promo-scroll');
-
-            scrollers.forEach(scroller => {
-                const text = scroller.querySelector('.promo-text');
-                if (!text) return;
-
-                // Kecepatan dari data-attribute (detik untuk 1 putaran penuh)
-                const duration = parseFloat(scroller.dataset.speed) || 60;
-
-                // State
-                let isPaused = false;
-                let isHovering = false;
-                let startTime = null;
-                let offset = 0; // posisi saat ini dalam pixel
-                let textWidth = 0;
-                let containerWidth = 0;
-                let rafId = null;
-
-                // Clone teks untuk seamless loop
-                function setupClone() {
-                    // Hapus clone lama jika ada
-                    const oldClone = scroller.querySelector('.promo-text-clone');
-                    if (oldClone) oldClone.remove();
-
-                    // Pastikan text asli punya display inline-block
-                    text.style.display = 'inline-block';
-                    text.style.whiteSpace = 'nowrap';
-
-                    // Ukur lebar
-                    textWidth = text.offsetWidth;
-                    containerWidth = scroller.offsetWidth;
-
-                    // Clone teks untuk seamless (2x untuk jarak)
-                    const clone = text.cloneNode(true);
-                    clone.classList.add('promo-text-clone');
-                    clone.setAttribute('aria-hidden', 'true');
-                    clone.style.marginLeft = '60px'; // jarak antar teks
-                    scroller.appendChild(clone);
-                }
-
-                // Loop animasi
-                function animate(timestamp) {
-                    if (startTime === null) startTime = timestamp;
-
-                    if (!isPaused && !isHovering) {
-                        const delta = timestamp - startTime;
-                        startTime = timestamp;
-
-                        // Hitung kecepatan: (textWidth + jarak) / duration
-                        const totalWidth = textWidth + 60; // 60 = margin-left clone
-                        const speed = totalWidth / (duration * 1000); // px per ms
-
-                        offset -= speed * delta;
-
-                        // Reset offset jika sudah melewati satu siklus penuh
-                        if (Math.abs(offset) >= totalWidth) {
-                            offset += totalWidth;
-                        }
-
-                        text.style.transform = `translateX(${offset}px)`;
-                    }
-
-                    rafId = requestAnimationFrame(animate);
-                }
-
-                // Start
-                function start() {
-                    setupClone();
-                    // Posisi awal: mulai dari kanan container
-                    offset = containerWidth;
-                    text.style.transform = `translateX(${offset}px)`;
-                    startTime = null;
-                    cancelAnimationFrame(rafId);
-                    rafId = requestAnimationFrame(animate);
-                }
-
-                // Pause on hover (opsional)
-                scroller.addEventListener('mouseenter', () => {
-                    isHovering = true;
-                });
-
-                scroller.addEventListener('mouseleave', () => {
-                    isHovering = false;
-                    startTime = null; // reset biar tidak jump
-                });
-
-                // Pause kalau tab tidak aktif (hemat resource)
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) {
-                        cancelAnimationFrame(rafId);
-                    } else {
-                        startTime = null;
-                        rafId = requestAnimationFrame(animate);
-                    }
-                });
-
-                // Restart saat resize (karena ukuran berubah)
-                let resizeTimeout;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(() => {
-                        start();
-                    }, 300);
-                });
-
-                // Jalankan
-                start();
-            });
-
-        })();
     </script>
 
 </body>
