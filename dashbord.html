@@ -3349,7 +3349,7 @@
 
             <!-- Kiri: Judul -->
             <a class="navbar-brand d-flex align-items-center" href="">
-                <i class="bi bi-speedometer2"> SIARDA</i>
+                <i class="bi bi-speedometer2"> Rekapitulasi Auto</i>
             </a>
 
             <!-- Kanan: Icon Scan -->
@@ -9478,9 +9478,31 @@
             console.log("✅ Filter bulan telah direset");
         }
 
-        // ===============================
-        // FUNGSI PRINT DATA TRANSAKSI
-        // ===============================
+        // ============================================
+        // FUNGSI TERBILANG (ANGKA KE HURUF) UNTUK TRANSAKSI
+        // ============================================
+        function angkaKeTerbilang(angka) {
+            angka = Math.abs(Math.floor(angka));
+            if (angka === 0) return "Nol Rupiah";
+
+            const satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+
+            function terbilang(n) {
+                if (n < 12) return satuan[n];
+                if (n < 20) return terbilang(n - 10) + " Belas";
+                if (n < 100) return terbilang(Math.floor(n / 10)) + " Puluh " + terbilang(n % 10);
+                if (n < 200) return "Seratus " + terbilang(n - 100);
+                if (n < 1000) return terbilang(Math.floor(n / 100)) + " Ratus " + terbilang(n % 100);
+                if (n < 2000) return "Seribu " + terbilang(n - 1000);
+                if (n < 1000000) return terbilang(Math.floor(n / 1000)) + " Ribu " + terbilang(n % 1000);
+                if (n < 1000000000) return terbilang(Math.floor(n / 1000000)) + " Juta " + terbilang(n % 1000000);
+                if (n < 1000000000000) return terbilang(Math.floor(n / 1000000000)) + " Miliar " + terbilang(n % 1000000000);
+                return terbilang(Math.floor(n / 1000000000000)) + " Triliun " + terbilang(n % 1000000000000);
+            }
+
+            let hasil = terbilang(angka).replace(/\s+/g, " ").trim();
+            return hasil + " Rupiah";
+        }
 
         // Fungsi untuk memformat data transaksi agar tampil rapi di tabel
         function formatDataTransaksi(jsonStr) {
@@ -9803,7 +9825,7 @@
         }
 
         // ============================================
-        // FUNGSI PRINT DATA TRANSAKSI (DENGAN LOGO & KETERANGAN DARI SHEET)
+        // FUNGSI PRINT DATA TRANSAKSI (DENGAN LOGO)
         // ============================================
 
         function printDataTransaksi() {
@@ -9891,6 +9913,7 @@
             let semuaTransaksi = [];
             let totalSSP = 0;
             let totalSSB = 0;
+            let totalHarga = 0;
             let dataNotarisList = [];
             let ringkasanPerBulan = [];
 
@@ -9934,6 +9957,10 @@
                                             let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
                                             totalSSB += val;
                                             bulanSSB += val;
+                                        }
+                                        if (item.harga) {
+                                            let val = parseInt(String(item.harga).replace(/[^0-9]/g, '')) || 0;
+                                            totalHarga += val;
                                         }
                                     });
                                 }
@@ -10368,6 +10395,55 @@
                 </tr>
             </tfoot>
         </table>
+
+        <!-- ===== TOTAL & TERBILANG ===== -->
+        <div style="margin-top: 12px; padding: 10px 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 7.5pt; page-break-inside: avoid;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 180px; font-weight: bold; padding: 4px 0; vertical-align: top;">Total SSP</td>
+                    <td style="width: 10px; vertical-align: top;">:</td>
+                    <td style="font-weight: bold; color: #0284c7; padding: 4px 0; vertical-align: top;">${formatRupiahTabel(String(totalSSP))}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Terbilang</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-style: italic; color: #475569; padding: 4px 0; vertical-align: top;">${angkaKeTerbilang(totalSSP)}</td>
+                </tr>
+                <tr><td colspan="3" style="border-top: 1px dashed #bae6fd; padding-top: 6px;"></td></tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Total SSB</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-weight: bold; color: #0284c7; padding: 4px 0; vertical-align: top;">${formatRupiahTabel(String(totalSSB))}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Terbilang</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-style: italic; color: #475569; padding: 4px 0; vertical-align: top;">${angkaKeTerbilang(totalSSB)}</td>
+                </tr>
+                <tr><td colspan="3" style="border-top: 1px dashed #bae6fd; padding-top: 6px;"></td></tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Total Harga</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-weight: bold; color: #0284c7; padding: 4px 0; vertical-align: top;">${formatRupiahTabel(String(totalHarga))}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Terbilang</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-style: italic; color: #475569; padding: 4px 0; vertical-align: top;">${angkaKeTerbilang(totalHarga)}</td>
+                </tr>
+                <tr><td colspan="3" style="border-top: 2px solid #0284c7; padding-top: 8px;"></td></tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top; font-size: 8.5pt;">GRAND TOTAL (SSP + SSB)</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-weight: bold; color: #059669; padding: 4px 0; vertical-align: top; font-size: 8.5pt;">${formatRupiahTabel(String(totalSSP + totalSSB))}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 4px 0; vertical-align: top;">Terbilang</td>
+                    <td style="vertical-align: top;">:</td>
+                    <td style="font-style: italic; color: #475569; padding: 4px 0; vertical-align: top;">${angkaKeTerbilang(totalSSP + totalSSB)}</td>
+                </tr>
+            </table>
+        </div>
         
         <div class="footer">
             <p>*Dokumen ini dicetak secara elektronik dan tidak memerlukan tanda tangan basah</p>
@@ -10397,7 +10473,10 @@
             printWindow.document.close();
         }
 
+        // ============================================
+        // Fungsi Export Data Transaksi To Excel
         // Export data transaksi ke Excel (DENGAN LOGO DI KOLOM A, NAMA KANTOR DI KOLOM B-C)
+        // ============================================
         function exportDataTransaksiToExcel() {
             console.log("exportDataTransaksiToExcel dipanggil");
 
@@ -10487,6 +10566,7 @@
                 let semuaTransaksi = [];
                 let totalSSP = 0;
                 let totalSSB = 0;
+                let totalHarga = 0;
                 let firstData = null;
                 let ringkasanPerBulan = [];
 
@@ -10526,6 +10606,10 @@
                                             let val = parseInt(String(item.ssb).replace(/[^0-9]/g, '')) || 0;
                                             totalSSB += val;
                                             bulanSSB += val;
+                                        }
+                                        if (item.harga) {
+                                            let val = parseInt(String(item.harga).replace(/[^0-9]/g, '')) || 0;
+                                            totalHarga += val;
                                         }
                                     }
                                 }
@@ -10975,10 +11059,51 @@ ${ringkasanPerBulan.length > 1 ? `
 <!-- ========================================== -->
 <!-- TOTAL SECTION                              -->
 <!-- ========================================== -->
-<div class="total-section">
-    <span>GRAND TOTAL : </span>
-    <span class="grand">${formatRupiahTabel(String(totalSSP + totalSSB))}</span>
-</div>
+<!-- ========================================== -->
+<!-- TOTAL SECTION + TERBILANG                  -->
+<!-- ========================================== -->
+<table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9pt;">
+    <tr>
+        <td style="width: 200px; font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Total SSP</td>
+        <td style="width: 15px; text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-weight: bold; color: #0284c7; padding: 6px 8px; border: 1px solid #000;">${formatRupiahTabel(String(totalSSP))}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Terbilang</td>
+        <td style="text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-style: italic; color: #475569; padding: 6px 8px; border: 1px solid #000;">${angkaKeTerbilang(totalSSP)}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Total SSB</td>
+        <td style="text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-weight: bold; color: #0284c7; padding: 6px 8px; border: 1px solid #000;">${formatRupiahTabel(String(totalSSB))}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Terbilang</td>
+        <td style="text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-style: italic; color: #475569; padding: 6px 8px; border: 1px solid #000;">${angkaKeTerbilang(totalSSB)}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Total Harga</td>
+        <td style="text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-weight: bold; color: #0284c7; padding: 6px 8px; border: 1px solid #000;">${formatRupiahTabel(String(totalHarga))}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #f0f9ff;">Terbilang</td>
+        <td style="text-align: center; border: 1px solid #000; background: #f0f9ff;">:</td>
+        <td style="font-style: italic; color: #475569; padding: 6px 8px; border: 1px solid #000;">${angkaKeTerbilang(totalHarga)}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #e0f2fe; font-size: 10pt;">GRAND TOTAL (SSP + SSB)</td>
+        <td style="text-align: center; border: 1px solid #000; background: #e0f2fe;">:</td>
+        <td style="font-weight: bold; color: #059669; padding: 8px; border: 1px solid #000; font-size: 10pt;">${formatRupiahTabel(String(totalSSP + totalSSB))}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; padding: 6px 8px; border: 1px solid #000; background: #e0f2fe;">Terbilang</td>
+        <td style="text-align: center; border: 1px solid #000; background: #e0f2fe;">:</td>
+        <td style="font-style: italic; color: #475569; padding: 6px 8px; border: 1px solid #000; background: #e0f2fe;">${angkaKeTerbilang(totalSSP + totalSSB)}</td>
+    </tr>
+</table>
 
 <!-- ========================================== -->
 <!-- FOOTER                                     -->
