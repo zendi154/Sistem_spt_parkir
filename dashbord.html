@@ -7136,7 +7136,7 @@
             try {
                 // HAPUS AbortController, gunakan timeout sederhana
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // Naikkan jadi 30 detik
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
 
                 const response = await fetch(scriptURL, {
                     signal: controller.signal,
